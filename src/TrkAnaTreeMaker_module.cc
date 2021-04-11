@@ -87,7 +87,7 @@ namespace mu2e {
   using CLHEP::Hep3Vector;
   typedef KalSeedCollection::const_iterator KSCIter;
 
-  class TrackAnalysisReco : public art::EDAnalyzer {
+  class TrkAnaTreeMaker : public art::EDAnalyzer {
 
   public:
 
@@ -154,8 +154,8 @@ namespace mu2e {
     };
     typedef art::EDAnalyzer::Table<Config> Parameters;
 
-    explicit TrackAnalysisReco(const Parameters& conf);
-    virtual ~TrackAnalysisReco() { }
+    explicit TrkAnaTreeMaker(const Parameters& conf);
+    virtual ~TrkAnaTreeMaker() { }
 
     void beginJob();
     void beginSubRun(const art::SubRun & subrun ) override;
@@ -210,7 +210,7 @@ namespace mu2e {
     std::vector<TrkInfoMCStep> _allMCEntTIs, _allMCMidTIs, _allMCXitTIs;
     std::vector<CaloClusterInfoMC> _allMCTCHIs;
 
-    // hit level info branches 
+    // hit level info branches
     std::vector<std::vector<TrkStrawHitInfo>> _allTSHIs;
     std::vector<std::vector<TrkStrawMatInfo>> _allTSMIs;
     std::vector<std::vector<TrkStrawHitInfoMC>> _allTSHIMCs;
@@ -242,12 +242,12 @@ namespace mu2e {
     void fillAllInfos(const art::Handle<KalSeedCollection>& ksch, size_t i_branch, size_t i_kseed);
 
     template <typename T, typename TI>
-    std::vector<art::Handle<T> > createSpecialBranch(const art::Event& event, const std::string& branchname, 
-						     std::vector<art::Handle<T> >& handles, TI& infostruct, const std::string& selection = "");
+    std::vector<art::Handle<T> > createSpecialBranch(const art::Event& event, const std::string& branchname,
+                                                     std::vector<art::Handle<T> >& handles, TI& infostruct, const std::string& selection = "");
 
 };
 
-  TrackAnalysisReco::TrackAnalysisReco(const Parameters& conf):
+  TrkAnaTreeMaker::TrkAnaTreeMaker(const Parameters& conf):
     art::EDAnalyzer(conf),
     _conf(conf()),
     _trigbitsh(0),
@@ -265,7 +265,7 @@ namespace mu2e {
     std::vector<BranchConfig> supps;
     if (_conf.supplements(supps)) {
       for(const auto& i_supp : supps) {
-	_allBranches.push_back(i_supp);
+        _allBranches.push_back(i_supp);
       }
     }
 
@@ -277,10 +277,10 @@ namespace mu2e {
       _allEntTIs.push_back(ent);
       _allMidTIs.push_back(mid);
       _allXitTIs.push_back(xit);
-      
+
       TrkCaloHitInfo tchi;
       _allTCHIs.push_back(tchi);
-      
+
       TrkInfoMC mcti;
       _allMCTIs.push_back(mcti);
       GenInfo mcgen, mcpri;
@@ -290,7 +290,7 @@ namespace mu2e {
       _allMCEntTIs.push_back(mcent);
       _allMCMidTIs.push_back(mcmid);
       _allMCXitTIs.push_back(mcxit);
-      
+
       CaloClusterInfoMC mctchi;
       _allMCTCHIs.push_back(mctchi);
 
@@ -310,7 +310,7 @@ namespace mu2e {
     }
   }
 
-  void TrackAnalysisReco::beginJob( ){
+  void TrkAnaTreeMaker::beginJob( ){
     art::ServiceHandle<art::TFileService> tfs;
 // create TTree
     _trkana=tfs->make<TTree>("trkana","track analysis");
@@ -336,31 +336,31 @@ namespace mu2e {
       _trkana->Branch((branch+"xit").c_str(),&_allXitTIs.at(i_branch),TrkFitInfo::leafnames().c_str());
       _trkana->Branch((branch+"tch").c_str(),&_allTCHIs.at(i_branch),TrkCaloHitInfo::leafnames().c_str());
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
-	_trkana->Branch((branch+"trkqual").c_str(), &_allTQIs.at(i_branch), TrkQualInfo::leafnames().c_str());
+        _trkana->Branch((branch+"trkqual").c_str(), &_allTQIs.at(i_branch), TrkQualInfo::leafnames().c_str());
       }
       if (_conf.filltrkpid() && i_branchConfig.options().filltrkpid()) {
-	_trkana->Branch((branch+"trkpid").c_str(), &_allTPIs.at(i_branch), TrkPIDInfo::leafnames().c_str());
+        _trkana->Branch((branch+"trkpid").c_str(), &_allTPIs.at(i_branch), TrkPIDInfo::leafnames().c_str());
       }
       // optionally add hit-level branches
       // (for the time being diagLevel : 2 will still work, but I propose removing this at some point)
-      if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){ 
-	_trkana->Branch((branch+"tsh").c_str(),&_allTSHIs.at(i_branch));
-	_trkana->Branch((branch+"tsm").c_str(),&_allTSMIs.at(i_branch));
+      if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){
+        _trkana->Branch((branch+"tsh").c_str(),&_allTSHIs.at(i_branch));
+        _trkana->Branch((branch+"tsm").c_str(),&_allTSMIs.at(i_branch));
       }
       // optionall add MC branches
       if(_conf.fillmc() && i_branchConfig.options().fillmc()){
-	_trkana->Branch((branch+"mc").c_str(),&_allMCTIs.at(i_branch),TrkInfoMC::leafnames().c_str());
-	_trkana->Branch((branch+"mcgen").c_str(),&_allMCGenTIs.at(i_branch),GenInfo::leafnames().c_str());
-	_trkana->Branch((branch+"mcpri").c_str(),&_allMCPriTIs.at(i_branch),GenInfo::leafnames().c_str());
-	_trkana->Branch((branch+"mcent").c_str(),&_allMCEntTIs.at(i_branch),TrkInfoMCStep::leafnames().c_str());
-	_trkana->Branch((branch+"mcmid").c_str(),&_allMCMidTIs.at(i_branch),TrkInfoMCStep::leafnames().c_str());
-	_trkana->Branch((branch+"mcxit").c_str(),&_allMCXitTIs.at(i_branch),TrkInfoMCStep::leafnames().c_str());
-	_trkana->Branch((branch+"tchmc").c_str(),&_allMCTCHIs.at(i_branch),CaloClusterInfoMC::leafnames().c_str());
-	// at hit-level MC information
-	// (for the time being diagLevel will still work, but I propose removing this at some point)
-	if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){ 
-	  _trkana->Branch((branch+"tshmc").c_str(),&_allTSHIMCs.at(i_branch));
-	}
+        _trkana->Branch((branch+"mc").c_str(),&_allMCTIs.at(i_branch),TrkInfoMC::leafnames().c_str());
+        _trkana->Branch((branch+"mcgen").c_str(),&_allMCGenTIs.at(i_branch),GenInfo::leafnames().c_str());
+        _trkana->Branch((branch+"mcpri").c_str(),&_allMCPriTIs.at(i_branch),GenInfo::leafnames().c_str());
+        _trkana->Branch((branch+"mcent").c_str(),&_allMCEntTIs.at(i_branch),TrkInfoMCStep::leafnames().c_str());
+        _trkana->Branch((branch+"mcmid").c_str(),&_allMCMidTIs.at(i_branch),TrkInfoMCStep::leafnames().c_str());
+        _trkana->Branch((branch+"mcxit").c_str(),&_allMCXitTIs.at(i_branch),TrkInfoMCStep::leafnames().c_str());
+        _trkana->Branch((branch+"tchmc").c_str(),&_allMCTCHIs.at(i_branch),CaloClusterInfoMC::leafnames().c_str());
+        // at hit-level MC information
+        // (for the time being diagLevel will still work, but I propose removing this at some point)
+        if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){
+          _trkana->Branch((branch+"tshmc").c_str(),&_allTSHIMCs.at(i_branch));
+        }
       }
     }
 // trigger info.  Actual names should come from the BeginRun object FIXME
@@ -378,7 +378,7 @@ namespace mu2e {
         _trkana->Branch("crvwaveforminfo",&_crvwaveforminfo);
       }
       if(_conf.fillmc()){
-	if(_conf.crv())
+        if(_conf.crv())
         {
           _trkana->Branch("crvinfomc",&_crvinfomc);
           _trkana->Branch("crvsummarymc",&_crvsummarymc);
@@ -392,7 +392,7 @@ namespace mu2e {
    if(_conf.helices()) _trkana->Branch("helixinfo",&_hinfo,HelixInfo::leafnames().c_str());
   }
 
-  void TrackAnalysisReco::beginSubRun(const art::SubRun & subrun ) {
+  void TrkAnaTreeMaker::beginSubRun(const art::SubRun & subrun ) {
     // mean number of protons on target
     art::Handle<ProtonBunchIntensity> PBIHandle;
     subrun.getByLabel(_conf.meanPBItag(), PBIHandle);
@@ -402,7 +402,7 @@ namespace mu2e {
     _infoStructHelper.updateSubRun();
   }
 
-  void TrackAnalysisReco::analyze(const art::Event& event) {
+  void TrkAnaTreeMaker::analyze(const art::Event& event) {
     // update timing maps for MC
     if(_conf.fillmc()){
       _infoMCStructHelper.updateEvent(event);
@@ -430,9 +430,9 @@ namespace mu2e {
       std::vector<art::Handle<RecoQualCollection> > selectedRQCHs;
       selectedRQCHs = createSpecialBranch(event, i_branchConfig.branch()+"qual", recoQualCollHandles, _allRQIs.at(i_branch), i_branchConfig.suffix());
       for (const auto& i_selectedRQCH : selectedRQCHs) {
-	if (i_selectedRQCH->size() != kalSeedCollHandle->size()) {
-	  throw cet::exception("TrkAna") << "Sizes of KalSeedCollection and this RecoQualCollection are inconsistent (" << kalSeedCollHandle->size() << " and " << i_selectedRQCH->size() << " respectively)";
-	}
+        if (i_selectedRQCH->size() != kalSeedCollHandle->size()) {
+          throw cet::exception("TrkAna") << "Sizes of KalSeedCollection and this RecoQualCollection are inconsistent (" << kalSeedCollHandle->size() << " and " << i_selectedRQCH->size() << " respectively)";
+        }
       }
       _allRQCHs.push_back(selectedRQCHs);
 
@@ -440,11 +440,11 @@ namespace mu2e {
       std::string i_trkqual_tag;
       art::Handle<TrkQualCollection> trkQualCollHandle;
       if (i_branchConfig.options().trkqual(i_trkqual_tag) && i_branchConfig.options().filltrkqual() && _conf.filltrkqual()) {
-	art::InputTag trkQualInputTag = i_trkqual_tag + i_branchConfig.suffix();
-	event.getByLabel(trkQualInputTag,trkQualCollHandle);
-	if (trkQualCollHandle->size() != kalSeedCollHandle->size()) {
-	  throw cet::exception("TrkAna") << "Sizes of KalSeedCollection and TrkQualCollection are inconsistent (" << kalSeedCollHandle->size() << " and " << trkQualCollHandle->size() << " respectively)";
-	}
+        art::InputTag trkQualInputTag = i_trkqual_tag + i_branchConfig.suffix();
+        event.getByLabel(trkQualInputTag,trkQualCollHandle);
+        if (trkQualCollHandle->size() != kalSeedCollHandle->size()) {
+          throw cet::exception("TrkAna") << "Sizes of KalSeedCollection and TrkQualCollection are inconsistent (" << kalSeedCollHandle->size() << " and " << trkQualCollHandle->size() << " respectively)";
+        }
       }
       _allTQCHs.push_back(trkQualCollHandle);
 
@@ -452,11 +452,11 @@ namespace mu2e {
       std::string i_trkpid_tag;
       art::Handle<TrkCaloHitPIDCollection> trkpidCollHandle;
       if (i_branchConfig.options().trkpid(i_trkpid_tag) && i_branchConfig.options().filltrkpid() && _conf.filltrkpid()) {
-	art::InputTag trkpidInputTag = i_trkpid_tag + i_branchConfig.suffix();
-	event.getByLabel(trkpidInputTag,trkpidCollHandle);
-	if (trkpidCollHandle->size() != kalSeedCollHandle->size()) {
-	  throw cet::exception("TrkAna") << "Sizes of KalSeedCollection and TrkCaloHitPIDCollection are inconsistent (" << kalSeedCollHandle->size() << " and " << trkpidCollHandle->size() << " respectively)";
-	}
+        art::InputTag trkpidInputTag = i_trkpid_tag + i_branchConfig.suffix();
+        event.getByLabel(trkpidInputTag,trkpidCollHandle);
+        if (trkpidCollHandle->size() != kalSeedCollHandle->size()) {
+          throw cet::exception("TrkAna") << "Sizes of KalSeedCollection and TrkCaloHitPIDCollection are inconsistent (" << kalSeedCollHandle->size() << " and " << trkpidCollHandle->size() << " respectively)";
+        }
       }
       _allTCHPCHs.push_back(trkpidCollHandle);
     }
@@ -509,56 +509,56 @@ namespace mu2e {
 
       // Now loop through all the branches (both candidate + supplements)...
       for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
-	if (i_branch == _candidateIndex) { // ...but actually ignore candidate
-	  continue;
-	}
-	// check if supplement input collection is the same as the candidate input collections
-	bool sameColl = false;
-	if ( (_allBranches.at(_candidateIndex).input()+_allBranches.at(_candidateIndex).suffix()) 
-	     == (_allBranches.at(i_branch).input()+_allBranches.at(i_branch).suffix()) ) {
-	  sameColl = true;
-	}
-	const auto& i_supplementKSCH = _allKSCHs.at(i_branch);
-	const auto& i_supplementKSC = *i_supplementKSCH;
+        if (i_branch == _candidateIndex) { // ...but actually ignore candidate
+          continue;
+        }
+        // check if supplement input collection is the same as the candidate input collections
+        bool sameColl = false;
+        if ( (_allBranches.at(_candidateIndex).input()+_allBranches.at(_candidateIndex).suffix())
+             == (_allBranches.at(i_branch).input()+_allBranches.at(i_branch).suffix()) ) {
+          sameColl = true;
+        }
+        const auto& i_supplementKSCH = _allKSCHs.at(i_branch);
+        const auto& i_supplementKSC = *i_supplementKSCH;
 
-	// If we require a supplement track of this type, and there are none...
-	if (i_supplementKSC.size()==0 && _allBranches.at(i_branch).options().required()) {
-	  skip_kseed = true; // ...skip this KalSeed
-	}	  
+        // If we require a supplement track of this type, and there are none...
+        if (i_supplementKSC.size()==0 && _allBranches.at(i_branch).options().required()) {
+          skip_kseed = true; // ...skip this KalSeed
+        }
 
-	// find the supplement track closest in time
-	auto i_supplementKS = findSupplementTrack(i_supplementKSC,candidateKS,sameColl);
-	if(i_supplementKS < i_supplementKSC.size()) { 
-	  fillAllInfos(_allKSCHs.at(i_branch), i_branch, i_supplementKS);
-	}
+        // find the supplement track closest in time
+        auto i_supplementKS = findSupplementTrack(i_supplementKSC,candidateKS,sameColl);
+        if(i_supplementKS < i_supplementKSC.size()) {
+          fillAllInfos(_allKSCHs.at(i_branch), i_branch, i_supplementKS);
+        }
       }
-    
+
       if (skip_kseed) {
-	continue;
+        continue;
       }
 
       // TODO we want MC information when we don't have a track
       // fill CRV info
       if(_conf.crv()){
-	CRVAnalysis::FillCrvHitInfoCollections(_conf.crvCoincidenceModuleLabel(), _conf.crvCoincidenceMCModuleLabel(),
+        CRVAnalysis::FillCrvHitInfoCollections(_conf.crvCoincidenceModuleLabel(), _conf.crvCoincidenceMCModuleLabel(),
                                                _conf.crvRecoPulseLabel(), _conf.crvStepLabel(), _conf.simParticleLabel(), _conf.mcTrajectoryLabel(), event,
                                                _crvinfo, _crvinfomc, _crvsummary, _crvsummarymc, _crvinfomcplane, _conf.crvPlaneY());
         if(_conf.crvpulses())
           CRVAnalysis::FillCrvPulseInfoCollections(_conf.crvRecoPulseLabel(), _conf.crvWaveformsModuleLabel(), _conf.crvDigiModuleLabel(),
                                                    _infoMCStructHelper.getTimeMaps(), event, _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
 
-//	find the best CRV match (closest in time)
-	_bestcrv=-1;
-	float mindt=1.0e9;
-	float t0 = candidateKS.t0().t0();
-	for(size_t icrv=0;icrv< _crvinfo.size(); ++icrv){
-	  auto const& crvinfo = _crvinfo[icrv];
-	  float dt = std::min(fabs(crvinfo._timeWindowStart-t0), fabs(crvinfo._timeWindowEnd-t0) );
-	  if(dt < mindt){
-	    mindt =dt;
-	    _bestcrv = icrv;
-	  }
-	}
+//      find the best CRV match (closest in time)
+        _bestcrv=-1;
+        float mindt=1.0e9;
+        float t0 = candidateKS.t0().t0();
+        for(size_t icrv=0;icrv< _crvinfo.size(); ++icrv){
+          auto const& crvinfo = _crvinfo[icrv];
+          float dt = std::min(fabs(crvinfo._timeWindowStart-t0), fabs(crvinfo._timeWindowEnd-t0) );
+          if(dt < mindt){
+            mindt =dt;
+            _bestcrv = icrv;
+          }
+        }
       }
       // fill this row in the TTree
       _trkana->Fill();
@@ -569,7 +569,7 @@ namespace mu2e {
     }
   }
 
-  size_t TrackAnalysisReco::findSupplementTrack(KalSeedCollection const& kcol,const KalSeed& candidate, bool sameColl) {
+  size_t TrkAnaTreeMaker::findSupplementTrack(KalSeedCollection const& kcol,const KalSeed& candidate, bool sameColl) {
     size_t retval = kcol.size();
 
     // loop over supplement tracks and find the closest
@@ -578,17 +578,17 @@ namespace mu2e {
     for(auto i_kseed=kcol.begin(); i_kseed != kcol.end(); i_kseed++) {
       double supplement_time = i_kseed->t0().t0();
       if( fabs(supplement_time - candidate_time) < fabs(closest_time-candidate_time)) {
-	if (sameColl && fabs(supplement_time - candidate_time)<1e-5) {
-	  continue; // don't want the exact same track
-	}
-	closest_time = supplement_time;
-	retval = i_kseed - kcol.begin();
+        if (sameColl && fabs(supplement_time - candidate_time)<1e-5) {
+          continue; // don't want the exact same track
+        }
+        closest_time = supplement_time;
+        retval = i_kseed - kcol.begin();
       }
     }
     return retval;
   }
 
-  void TrackAnalysisReco::fillEventInfo( const art::Event& event) {
+  void TrkAnaTreeMaker::fillEventInfo( const art::Event& event) {
     // fill basic event information
     _einfo._eventid = event.event();
     _einfo._runid = event.run();
@@ -599,19 +599,19 @@ namespace mu2e {
     for (const auto& i_weightHandle : _wtHandles) {
       double weight = i_weightHandle->weight();
       if (i_weightHandle.provenance()->moduleLabel() == _conf.PBIwtTag().label()) {
-	if (_meanPBI > 0.0){
-	  _einfo._nprotons = _meanPBI*weight;
-	}
-	else {
-	  _einfo._nprotons = 1; // for non-background mixed jobs
-	}
+        if (_meanPBI > 0.0){
+          _einfo._nprotons = _meanPBI*weight;
+        }
+        else {
+          _einfo._nprotons = 1; // for non-background mixed jobs
+        }
       }
       weights.push_back(weight);
     }
     _wtinfo.setWeights(weights);
   }
 
-  void TrackAnalysisReco::fillTriggerBits(const art::Event& event,std::string const& process) {
+  void TrkAnaTreeMaker::fillTriggerBits(const art::Event& event,std::string const& process) {
     //get the TriggerResult from the process that created the KalFinalFit downstream collection
     art::InputTag const tag{Form("TriggerResults::%s", process.c_str())};
     auto trigResultsH = event.getValidHandle<art::TriggerResults>(tag);
@@ -623,44 +623,44 @@ namespace mu2e {
       unsigned ntrig(0);
       unsigned npath = trigResults->size();
       for(size_t ipath=0;ipath < npath; ++ipath){
-	if (tnav.getTrigPath(ipath).find(_conf.trigpathsuffix()) != std::string::npos) {
-	  _tmap[ipath] = ntrig;
-	  ntrig++;
-	}
+        if (tnav.getTrigPath(ipath).find(_conf.trigpathsuffix()) != std::string::npos) {
+          _tmap[ipath] = ntrig;
+          ntrig++;
+        }
       }
       // build trigger histogram
       art::ServiceHandle<art::TFileService> tfs;
       _trigbitsh = tfs->make<TH1F>("trigbits","Trigger IDs",ntrig,-0.5,ntrig-0.5);
       for(size_t ipath=0;ipath < npath; ++ipath){
-	auto ifnd = _tmap.find(ipath);
-	if(ifnd != _tmap.end()){
-	  _trigbitsh->GetXaxis()->SetBinLabel(ifnd->second+1,tnav.getTrigPath(ipath).c_str());
-	}
+        auto ifnd = _tmap.find(ipath);
+        if(ifnd != _tmap.end()){
+          _trigbitsh->GetXaxis()->SetBinLabel(ifnd->second+1,tnav.getTrigPath(ipath).c_str());
+        }
       }
     }
     for(size_t ipath=0;ipath < trigResults->size(); ++ipath){
       if(trigResults->accept(ipath)) {
-	auto ifnd = _tmap.find(ipath);
-	if(ifnd != _tmap.end()){
-	  unsigned itrig = ifnd->second;
-	  _trigbitsh->Fill(itrig);
-	  _trigbits |= 1 << itrig;
-	  if(_conf.debug() > 1)
-	    cout << "Trigger path " << tnav.getTrigPath(ipath) << " Trigger ID " << itrig << " returns " << trigResults->accept(ipath) << endl;
-	}
+        auto ifnd = _tmap.find(ipath);
+        if(ifnd != _tmap.end()){
+          unsigned itrig = ifnd->second;
+          _trigbitsh->Fill(itrig);
+          _trigbits |= 1 << itrig;
+          if(_conf.debug() > 1)
+            cout << "Trigger path " << tnav.getTrigPath(ipath) << " Trigger ID " << itrig << " returns " << trigResults->accept(ipath) << endl;
+        }
       }
     }
     if(_conf.debug() > 0){
       cout << "Found TriggerResults for process " << process << " with " << trigResults->size() << " Lines"
-	<< " trigger bits word " << _trigbits << endl;
+        << " trigger bits word " << _trigbits << endl;
       if(_conf.debug() > 1){
-	TriggerResultsNavigator tnav(trigResults);
-	tnav.print();
+        TriggerResultsNavigator tnav(trigResults);
+        tnav.print();
       }
     }
   }
 
-  void TrackAnalysisReco::fillAllInfos(const art::Handle<KalSeedCollection>& ksch, size_t i_branch, size_t i_kseed) {
+  void TrkAnaTreeMaker::fillAllInfos(const art::Handle<KalSeedCollection>& ksch, size_t i_branch, size_t i_kseed) {
 
     const auto& kseed = ksch->at(i_kseed);
     BranchConfig branchConfig = _allBranches.at(i_branch);
@@ -692,10 +692,10 @@ namespace mu2e {
       _tcnt._ndec = 1; // only 1 possible calo hit at the moment
       // test
       if(_conf.debug()>0){
-	auto const& tch = kseed.caloHit();
-	auto const& cc = tch.caloCluster();
-	std::cout << "CaloCluster has energy " << cc->energyDep()
-		  << " +- " << cc->energyDepErr() << std::endl;
+        auto const& tch = kseed.caloHit();
+        auto const& cc = tch.caloCluster();
+        std::cout << "CaloCluster has energy " << cc->energyDep()
+                  << " +- " << cc->energyDepErr() << std::endl;
       }
     }
 
@@ -710,12 +710,12 @@ namespace mu2e {
     _allRQIs.at(i_branch).setQuals(recoQuals);
 // TrkQual
     std::string trkqual_branch;
-    if(_conf.filltrkqual() && branchConfig.options().filltrkqual() && branchConfig.options().trkqual(trkqual_branch)) { 
+    if(_conf.filltrkqual() && branchConfig.options().filltrkqual() && branchConfig.options().trkqual(trkqual_branch)) {
       const auto& trkQualCollHandle = _allTQCHs.at(i_branch);
       if (trkQualCollHandle.isValid()) { // we could have put an empty TrkQualCollection in, if we didn't want it
-	const auto& trkQualColl = *trkQualCollHandle;
-	const auto& trkQual = trkQualColl.at(i_kseed);
-	_infoStructHelper.fillTrkQualInfo(trkQual, _allTQIs.at(i_branch));
+        const auto& trkQualColl = *trkQualCollHandle;
+        const auto& trkQual = trkQualColl.at(i_kseed);
+        _infoStructHelper.fillTrkQualInfo(trkQual, _allTQIs.at(i_branch));
       }
     }
 // TrkCaloHitPID
@@ -723,87 +723,87 @@ namespace mu2e {
     if (_conf.filltrkpid() && branchConfig.options().filltrkpid() && branchConfig.options().trkpid(trkpid_branch)) {
       const auto& tchpcolH = _allTCHPCHs.at(i_branch);
       if (tchpcolH.isValid()) {
-	const auto& tchpcol = *tchpcolH;
-	auto const& tpid = tchpcol.at(i_kseed);
-	_infoStructHelper.fillTrkPIDInfo(tpid, kseed, _allTPIs.at(i_branch));
+        const auto& tchpcol = *tchpcolH;
+        auto const& tpid = tchpcol.at(i_kseed);
+        _infoStructHelper.fillTrkPIDInfo(tpid, kseed, _allTPIs.at(i_branch));
       }
     }
 // fill MC info associated with this track
-    if(_conf.fillmc() && branchConfig.options().fillmc()) { 
+    if(_conf.fillmc() && branchConfig.options().fillmc()) {
       const PrimaryParticle& primary = *_pph;
       // use Assns interface to find the associated KalSeedMC; this uses ptrs
       auto kptr = art::Ptr<KalSeed>(ksch,i_kseed);
-      //	std::cout << "KalSeedMCMatch has " << _ksmcah->size() << " entries" << std::endl;
+      //        std::cout << "KalSeedMCMatch has " << _ksmcah->size() << " entries" << std::endl;
       for(auto iksmca = _ksmcah->begin(); iksmca!= _ksmcah->end(); iksmca++){
-	//	  std::cout << "KalSeed Ptr " << kptr << " match Ptr " << iksmca->first << std::endl;
-	if(iksmca->first == kptr) {
-	  auto const& kseedmc = *(iksmca->second);
-	  _infoMCStructHelper.fillTrkInfoMC(kseedmc, _allMCTIs.at(i_branch));
-	  double t0 = kseed.t0().t0();
-	  _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCEntTIs.at(i_branch), _entvids, t0);
-	  _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCMidTIs.at(i_branch), _midvids, t0);
-	  _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCXitTIs.at(i_branch), _xitvids, t0);
-	  _infoMCStructHelper.fillGenAndPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch), _allMCGenTIs.at(i_branch));
-	    
-	  if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){ 
-	    _infoMCStructHelper.fillHitInfoMCs(kseedmc, _allTSHIMCs.at(i_branch));
-	  }
-	  break;
-	}
+        //        std::cout << "KalSeed Ptr " << kptr << " match Ptr " << iksmca->first << std::endl;
+        if(iksmca->first == kptr) {
+          auto const& kseedmc = *(iksmca->second);
+          _infoMCStructHelper.fillTrkInfoMC(kseedmc, _allMCTIs.at(i_branch));
+          double t0 = kseed.t0().t0();
+          _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCEntTIs.at(i_branch), _entvids, t0);
+          _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCMidTIs.at(i_branch), _midvids, t0);
+          _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCXitTIs.at(i_branch), _xitvids, t0);
+          _infoMCStructHelper.fillGenAndPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch), _allMCGenTIs.at(i_branch));
+
+          if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){
+            _infoMCStructHelper.fillHitInfoMCs(kseedmc, _allTSHIMCs.at(i_branch));
+          }
+          break;
+        }
       }
       if (kseed.hasCaloCluster()) {
-	// fill MC truth of the associated CaloCluster.  Use the fact that these are correlated by index with the clusters in that collection
-	auto index = kseed.caloCluster().key();
-	auto const& ccmcc = *_ccmcch;
-	auto const& ccmc = ccmcc[index];
-	_infoMCStructHelper.fillCaloClusterInfoMC(ccmc,_allMCTCHIs.at(i_branch));  // currently broken due to CaloMC changes.  This needs fixing in compression
+        // fill MC truth of the associated CaloCluster.  Use the fact that these are correlated by index with the clusters in that collection
+        auto index = kseed.caloCluster().key();
+        auto const& ccmcc = *_ccmcch;
+        auto const& ccmc = ccmcc[index];
+        _infoMCStructHelper.fillCaloClusterInfoMC(ccmc,_allMCTCHIs.at(i_branch));  // currently broken due to CaloMC changes.  This needs fixing in compression
       }
     }
   }
 
   // some branches can't be made until the analyze() function because we want to write out all data products of a certain type
   template <typename T, typename TI>
-  std::vector<art::Handle<T> >  TrackAnalysisReco::createSpecialBranch(const art::Event& event, const std::string& branchname, 
-								       std::vector<art::Handle<T> >& handles, TI& infostruct, const std::string& selection) {
+  std::vector<art::Handle<T> >  TrkAnaTreeMaker::createSpecialBranch(const art::Event& event, const std::string& branchname,
+                                                                       std::vector<art::Handle<T> >& handles, TI& infostruct, const std::string& selection) {
     std::vector<art::Handle<T> > outputHandles;
     event.getManyByType(handles);
     if (handles.size()>0) {
       std::vector<std::string> labels;
       for (const auto& i_handle : handles) {
-	std::string moduleLabel = i_handle.provenance()->moduleLabel();
-	// event.getMany() doesn't have a way to wildcard part of the ModuleLabel, do it ourselves here
-	size_t pos;
-	if (selection != "") { // if we want to add a selection
-	  pos = moduleLabel.find(selection);
+        std::string moduleLabel = i_handle.provenance()->moduleLabel();
+        // event.getMany() doesn't have a way to wildcard part of the ModuleLabel, do it ourselves here
+        size_t pos;
+        if (selection != "") { // if we want to add a selection
+          pos = moduleLabel.find(selection);
 
-	  // make sure that the selection (e.g. "DeM") appears at the end of the module label
-	  if (pos == std::string::npos) {
-	    //      std::cout << "Selection not found" << std::endl;
-	    continue;
-	  }
-	  else if (pos+selection.length() != moduleLabel.size()) {
-	    //      std::cout << "Selection wasn't at end of moduleLabel" << std::endl;
-	    continue;
-	  }
-	  moduleLabel = moduleLabel.erase(pos, selection.length());
-	}
-	std::string instanceName = i_handle.provenance()->productInstanceName();
+          // make sure that the selection (e.g. "DeM") appears at the end of the module label
+          if (pos == std::string::npos) {
+            //      std::cout << "Selection not found" << std::endl;
+            continue;
+          }
+          else if (pos+selection.length() != moduleLabel.size()) {
+            //      std::cout << "Selection wasn't at end of moduleLabel" << std::endl;
+            continue;
+          }
+          moduleLabel = moduleLabel.erase(pos, selection.length());
+        }
+        std::string instanceName = i_handle.provenance()->productInstanceName();
 
-	std::string branchname = moduleLabel;
-	if (instanceName != "") {
-	  branchname += "_" + instanceName;
-	}
-	outputHandles.push_back(i_handle);
-	labels.push_back(branchname);
+        std::string branchname = moduleLabel;
+        if (instanceName != "") {
+          branchname += "_" + instanceName;
+        }
+        outputHandles.push_back(i_handle);
+        labels.push_back(branchname);
       }
       if (!_trkana->GetBranch(branchname.c_str())) {  // only want to create the branch once
-	_trkana->Branch(branchname.c_str(), &infostruct, infostruct.leafnames(labels).c_str());
+        _trkana->Branch(branchname.c_str(), &infostruct, infostruct.leafnames(labels).c_str());
       }
     }
     return outputHandles;
   }
 
-  void TrackAnalysisReco::resetBranches() {
+  void TrkAnaTreeMaker::resetBranches() {
     for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _allTIs.at(i_branch).reset();
       _allEntTIs.at(i_branch).reset();
@@ -842,5 +842,5 @@ namespace mu2e {
 
 // Part of the magic that makes this class a module.
 // create an instance of the module.  It also registers
-using mu2e::TrackAnalysisReco;
-DEFINE_ART_MODULE(TrackAnalysisReco);
+using mu2e::TrkAnaTreeMaker;
+DEFINE_ART_MODULE(TrkAnaTreeMaker);
