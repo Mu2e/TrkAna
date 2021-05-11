@@ -17,6 +17,8 @@
 #include "Offline/MCDataProducts/inc/EventWeight.hh"
 #include "Offline/MCDataProducts/inc/KalSeedMC.hh"
 #include "Offline/MCDataProducts/inc/CaloClusterMC.hh"
+#include "Offline/RecoDataProducts/inc/KalSeed.hh"
+#include "Offline/RecoDataProducts/inc/KalSeedAssns.hh"
 #include "Offline/RecoDataProducts/inc/CaloHit.hh"
 #include "Offline/RecoDataProducts/inc/TrkCaloHitPID.hh"
 #include "Offline/TrkReco/inc/TrkUtilities.hh"
@@ -418,6 +420,14 @@ namespace mu2e {
     _allRQCHs.clear();
     _allTQCHs.clear();
     _allTCHPCHs.clear();
+
+    art::Handle<KalHelixAssns> khaH;
+    if(_conf.helices()){ // find associated Helices
+      BranchConfig i_branchConfig = _allBranches.at(0);
+      art::InputTag kalSeedInputTag = i_branchConfig.input() + i_branchConfig.suffix();
+      event.getByLabel(kalSeedInputTag,khaH);
+    }
+
     for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       art::Handle<KalSeedCollection> kalSeedCollHandle;
@@ -506,6 +516,13 @@ namespace mu2e {
 
       auto const& candidateKS = candidateKSC.at(i_kseed);
       fillAllInfos(candidateKSCH, _candidateIndex, i_kseed); // fill the info structs for the candidate
+      if(_conf.helices()){
+        auto const& khassns = khaH.product();
+        // find the associated HelixSeed to this KalSeed using the assns.
+        auto hptr = (*khassns)[i_kseed].second;
+        _infoStructHelper.fillHelixInfo(hptr, _hinfo);
+      }
+
 
       // Now loop through all the branches (both candidate + supplements)...
       for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
@@ -681,9 +698,6 @@ namespace mu2e {
     if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){ // want hit level info
       _infoStructHelper.fillHitInfo(kseed, _allTSHIs.at(i_branch));
       _infoStructHelper.fillMatInfo(kseed, _allTSMIs.at(i_branch));
-    }
-    if(_conf.helices()){
-      _infoStructHelper.fillHelixInfo(kseed, _hinfo);
     }
 
 // calorimeter info
