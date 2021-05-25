@@ -112,7 +112,7 @@ BEGIN_PROLOG
     module_type : TrackPID
     MaxDE : 5.0 # MeV
     DeltaTOffset : -1.15 # specific to MDC2018h
-    MVAConfig : { MVAWeights : "TrkDiag/test/TrkCaloHitPID.weights.xml"}
+    MVAConfig : { MVAWeights : "Offline/TrkDiag/test/TrkCaloHitPID.weights.xml"}
   }
 # this module only makes sense for downstream electron fits
   TrkPIDDeM		       : @local::TrkPID
