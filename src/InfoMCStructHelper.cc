@@ -40,7 +40,8 @@ namespace mu2e {
     GeomHandle<DetectorSystem> det;
     trkinfomc._otime = trkprimary->startGlobalTime() + _toff.totalTimeOffset(trkprimary);
     trkinfomc._opos = Geom::toXYZVec(det->toDetector(trkprimary->startPosition()));
-    trkinfomc._omom = Geom::toXYZVec(trkprimary->startMomentum());
+    trkinfomc._odir = Geom::toXYZVec(trkprimary->startMomentum().vect().unit());
+    trkinfomc._omom = trkprimary->startMomentum().vect().mag();
   }
 
   void InfoMCStructHelper::fillTrkInfoMCDigis(const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
@@ -135,7 +136,8 @@ namespace mu2e {
     const auto& genParticle = primary.primary();
     priinfo._pdg = genParticle.pdgId();
     priinfo._gen = genParticle.generatorId().id();
-    priinfo._mom = Geom::toXYZVec(genParticle.momentum());
+    priinfo._dir = Geom::toXYZVec(genParticle.momentum().vect().unit());
+    priinfo._mom = genParticle.momentum().vect().mag();
     priinfo._pos = Geom::toXYZVec(det->toDetector(genParticle.position()));
     priinfo._time = genParticle.time(); // NB doesn't have time offsets applied
   }
@@ -147,7 +149,8 @@ namespace mu2e {
     if(gp.isNonnull()){
       geninfo._pdg = gp->pdgId();
       geninfo._gen = gp->generatorId().id();
-      geninfo._mom = Geom::toXYZVec(gp->momentum());
+      geninfo._dir = Geom::toXYZVec(gp->momentum().vect().unit());
+      geninfo._mom = gp->momentum().vect().mag();
       geninfo._pos = Geom::toXYZVec(det->toDetector(gp->position()));
       geninfo._time = gp->time(); // NB doesn't have time offsets applied
     }
@@ -173,7 +176,8 @@ namespace mu2e {
 	  if(fabs(target_time - corrected_time) < dmin){
 	    dmin = fabs(target_time - corrected_time);//i_mcstep._time;
 	    trkinfomcstep._time = i_mcstep._time;
-	    trkinfomcstep._mom = Geom::Hep3Vec(i_mcstep._mom);
+	    trkinfomcstep._dir = Geom::Hep3Vec(i_mcstep._mom.unit());
+	    trkinfomcstep._mom = std::sqrt(i_mcstep._mom.mag2());
 	    trkinfomcstep._pos = Geom::Hep3Vec(i_mcstep._pos);
 
 	    CLHEP::HepVector parvec(5,0);
