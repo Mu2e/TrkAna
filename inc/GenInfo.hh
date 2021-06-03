@@ -16,16 +16,16 @@ namespace mu2e
   struct GenInfo {
     Int_t _pdg, _gen; // true PDG code, generator code
     Float_t _time;  // time of this step
-    XYZVec _dir;   // direction at the start of this step
     Float_t _mom; // scalar momentum at the start of this step
+    Float_t _costh; // cos(theta), where theta is angle between particle's momentum and z-axis
+    Float_t _phi;   // azimuthal angle of particle's momentum vector
     XYZVec _pos;  // particle position at the start of this step
     GenInfo() { reset(); }
-    void reset() { _pdg = _gen = -1; _time = -1.0; _dir=XYZVec(); _mom = 0; _pos = XYZVec(); }
-    static std::string leafnames() { static std::string leaves; 
-      leaves = std::string("pdg/I:gen/I:t0/F:")+Geom::XYZnames("dir") + std::string(":mom/F:") + Geom::XYZnames("pos");
+    void reset() { _pdg = _gen = -1; _time = -1.0; _mom = 0; _costh = 0; _phi = 0; _pos = XYZVec(); }
+    static std::string leafnames() { static std::string leaves;
+      leaves = std::string("pdg/I:gen/I:t0/F:mom/F:costh/F:phi/F:") + Geom::XYZnames("pos");
       return leaves;
     }
-  };  
+  };
 }
 #endif
-
