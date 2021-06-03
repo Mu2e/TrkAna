@@ -77,7 +77,9 @@ namespace mu2e
     TrkInfoMC() { reset(); }
     void reset() { _ndigi = _ndigigood = _nactive = _nhits = _nambig = _pdg = _gen  = _proc= -1;  _otime=0.0;
       _prel = MCRelationship();
-      _opos = _odir = XYZVec(); _omom = -1;}
+      _opos = _odir = XYZVec();
+      _omom = -1;
+    }
     static std::string leafnames() { static std::string leaves; leaves =
       std::string("ndigi/I:ndigigood/I:nhits/I:nactive/I:nambig/I:pdg/I:gen/I:proc/I:otime/F:")
     + Geom::XYZnames("opos") + std::string(":") + Geom::XYZnames("odir") + std::string(":omom/F:prel/B:prem/B");
