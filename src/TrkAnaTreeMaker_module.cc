@@ -778,12 +778,13 @@ namespace mu2e {
   // some branches can't be made until the analyze() function because we want to write out all data products of a certain type
   template <typename T, typename TI>
   std::vector<art::Handle<T> >  TrkAnaTreeMaker::createSpecialBranch(const art::Event& event, const std::string& branchname,
-                                                                       std::vector<art::Handle<T> >& handles, TI& infostruct, const std::string& selection) {
+                                                                     std::vector<art::Handle<T> >& handles, // this parameter is only needed so that the template parameter T can be deduced. There is probably a better way to do this FIXME
+                                                                     TI& infostruct, const std::string& selection) {
     std::vector<art::Handle<T> > outputHandles;
-    event.getManyByType(handles);
-    if (handles.size()>0) {
+    std::vector<art::Handle<T> > inputHandles = event.getMany<T>();
+    if (inputHandles.size()>0) {
       std::vector<std::string> labels;
-      for (const auto& i_handle : handles) {
+      for (const auto& i_handle : inputHandles) {
         std::string moduleLabel = i_handle.provenance()->moduleLabel();
         // event.getMany() doesn't have a way to wildcard part of the ModuleLabel, do it ourselves here
         size_t pos;
