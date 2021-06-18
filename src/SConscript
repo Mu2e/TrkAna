@@ -61,9 +61,10 @@ helper.make_plugins( [
     ] )
 
 # Fixme: do I need all of babarlibs below?
-#helper.make_dict_and_map( [
-#        mainlib,
-#    ] )
+helper.make_dict_and_map( [
+        mainlib,
+        'Core'
+    ] )
 
 
 # This tells emacs to view this file in python mode.
