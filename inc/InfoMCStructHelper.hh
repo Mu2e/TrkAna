@@ -32,8 +32,7 @@ namespace mu2e {
     SimParticleTimeOffset _toff;
     double _mingood;
 
-    void fillPriInfo(const PrimaryParticle& primary, GenInfo& priinfo);
-    void fillGenInfo(const art::Ptr<GenParticle>& gp, GenInfo& geninfo);
+    void fillGenInfo(const art::Ptr<SimParticle>& sp, GenInfo& geninfo);
 
   public:
 
