@@ -106,8 +106,6 @@ namespace mu2e {
   void InfoMCStructHelper::fillGenAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, GenInfo& priinfo, GenInfo& geninfo) {
     auto trkprimary = kseedmc.simParticle().simParticle(_spcH);
 
-    fillPriInfo(primary, priinfo);
-
     // go through the SimParticles of this primary, and find the one most related to the
     // downstream fit (KalSeedMC)
 
@@ -122,40 +120,23 @@ namespace mu2e {
 	bestrel = mcrel;
 	bestprimarysp = spp;
       }
-    }
-    priinfo._time = primary.primary().time() + _toff.totalTimeOffset(bestprimarysp);
-
-    const auto& gp = bestprimarysp->genParticle();
-    fillGenInfo(gp, geninfo);
-    geninfo._time = gp->time() + _toff.totalTimeOffset(bestprimarysp);
+    } // redundant: FIXME!
+    fillGenInfo(bestprimarysp, priinfo);
+    fillGenInfo(bestprimarysp, geninfo);
   }
 
-  void InfoMCStructHelper::fillPriInfo(const PrimaryParticle& primary, GenInfo& priinfo) {
-
-    GeomHandle<DetectorSystem> det;
-    // fill primary info from the primary GenParticle
-    const auto& genParticle = primary.primary();
-    priinfo._pdg = genParticle.pdgId();
-    priinfo._gen = genParticle.generatorId().id();
-    priinfo._mom = genParticle.momentum().vect().mag();
-    priinfo._costh = std::cos(genParticle.momentum().vect().theta());
-    priinfo._phi = genParticle.momentum().vect().phi();
-    priinfo._pos = Geom::toXYZVec(det->toDetector(genParticle.position()));
-    priinfo._time = genParticle.time(); // NB doesn't have time offsets applied
-  }
-
-  void InfoMCStructHelper::fillGenInfo(const art::Ptr<GenParticle>& gp, GenInfo& geninfo) {
+  void InfoMCStructHelper::fillGenInfo(const art::Ptr<SimParticle>& gp, GenInfo& geninfo) {
 
     GeomHandle<DetectorSystem> det;
 
     if(gp.isNonnull()){
       geninfo._pdg = gp->pdgId();
-      geninfo._gen = gp->generatorId().id();
-      geninfo._mom = gp->momentum().vect().mag();
-      geninfo._costh = std::cos(gp->momentum().vect().theta());
-      geninfo._phi = gp->momentum().vect().phi();
-      geninfo._pos = Geom::toXYZVec(det->toDetector(gp->position()));
-      geninfo._time = gp->time(); // NB doesn't have time offsets applied
+      geninfo._gen = gp->creationCode();
+      geninfo._mom = gp->startMomentum().vect().mag();
+      geninfo._costh = std::cos(gp->startMomentum().vect().theta());
+      geninfo._phi = gp->startMomentum().vect().phi();
+      geninfo._pos = Geom::toXYZVec(det->toDetector(gp->startPosition()));
+      geninfo._time = gp->startGlobalTime(); 
     }
   }
 
