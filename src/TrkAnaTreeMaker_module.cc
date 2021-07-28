@@ -27,6 +27,7 @@
 // Framework includes.
 #include "art/Framework/Core/EDAnalyzer.h"
 #include "art/Framework/Principal/Event.h"
+#include "art/Framework/Principal/SubRun.h"
 #include "art/Framework/Principal/Handle.h"
 #include "art_root_io/TFileService.h"
 #include "art/Framework/Core/ModuleMacros.h"
@@ -414,7 +415,7 @@ namespace mu2e {
     std::vector<art::Handle<EventWeight> > eventWeightHandles;
     _wtHandles = createSpecialBranch(event, "evtwt", eventWeightHandles, _wtinfo);
 
-    std::string process = "Digitize"; // Digitization process is where the trigger is run
+    std::string process = "MixPrimary"; // Digitization process is where the trigger is run
     // Get the KalSeedCollections for both the candidate and all supplements
     _allKSCHs.clear();
     _allRQCHs.clear();
