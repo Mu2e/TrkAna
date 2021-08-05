@@ -123,8 +123,7 @@ namespace mu2e {
       fhicl::Table<BranchConfig> candidate{Name("candidate"), Comment("Candidate physics track info")};
       fhicl::OptionalSequence< fhicl::Table<BranchConfig> > supplements{Name("supplements"), Comment("Supplemental physics track info (TrkAna will find closest in time to candidate)")};
       fhicl::Atom<art::InputTag> rctag{Name("RecoCountTag"), Comment("RecoCount"), art::InputTag()};
-      fhicl::Atom<art::InputTag> meanPBItag{Name("MeanBeamIntensity"), Comment("Tag for MeanBeamIntensity"), art::InputTag()};
-      fhicl::Atom<art::InputTag> PBIwtTag{Name("PBIWeightTag"), Comment("Tag for PBIWeight") ,art::InputTag()};
+      fhicl::Atom<art::InputTag> PBITag{Name("PBITag"), Comment("Tag for ProtonBunchIntensity object") ,art::InputTag()};
       fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
       fhicl::Atom<std::string> crvCoincidenceModuleLabel{Name("CrvCoincidenceModuleLabel"), Comment("CrvCoincidenceModuleLabel")};
       fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
@@ -177,8 +176,8 @@ namespace mu2e {
     TTree* _trkana;
     TProfile* _tht; // profile plot of track hit times: just an example
     // general event info branch
-    double _meanPBI;
     EventInfo _einfo;
+    art::InputTag _PBITag;
     // hit counting
     HitCount _hcnt;
     // track counting
@@ -253,6 +252,7 @@ namespace mu2e {
   TrkAnaTreeMaker::TrkAnaTreeMaker(const Parameters& conf):
     art::EDAnalyzer(conf),
     _conf(conf()),
+    _PBITag(conf().PBITag()),
     _trigbitsh(0),
     _infoMCStructHelper(conf().infoMCStructHelper())
   {
@@ -396,11 +396,6 @@ namespace mu2e {
   }
 
   void TrkAnaTreeMaker::beginSubRun(const art::SubRun & subrun ) {
-    // mean number of protons on target
-    art::Handle<ProtonBunchIntensity> PBIHandle;
-    subrun.getByLabel(_conf.meanPBItag(), PBIHandle);
-    if(PBIHandle.isValid())
-      _meanPBI = PBIHandle->intensity();
     // get bfield
     _infoStructHelper.updateSubRun();
   }
@@ -612,18 +607,14 @@ namespace mu2e {
     _einfo._runid = event.run();
     _einfo._subrunid = event.subRun();
 
+    auto PBIhandle = event.getValidHandle<mu2e::ProtonBunchIntensity>(_PBITag);
+    auto PBI = *PBIhandle;
+    _einfo._nprotons = PBI.intensity();
+
     // get event weight products
     std::vector<Float_t> weights;
     for (const auto& i_weightHandle : _wtHandles) {
       double weight = i_weightHandle->weight();
-      if (i_weightHandle.provenance()->moduleLabel() == _conf.PBIwtTag().label()) {
-        if (_meanPBI > 0.0){
-          _einfo._nprotons = _meanPBI*weight;
-        }
-        else {
-          _einfo._nprotons = 1; // for non-background mixed jobs
-        }
-      }
       weights.push_back(weight);
     }
     _wtinfo.setWeights(weights);
