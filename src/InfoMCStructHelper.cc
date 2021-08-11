@@ -103,10 +103,11 @@ namespace mu2e {
     tshinfomc._doca = pca.dca();
   }
 
-  void InfoMCStructHelper::fillGenAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, GenInfo& priinfo, GenInfo& geninfo, GenInfo& parentinfo) {
+  void InfoMCStructHelper::fillGenAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, GenInfo& priinfo, GenInfo& geninfo, GenInfo& parentinfo, GenInfo& gparentinfo) {
     auto trkprimary = kseedmc.simParticle().simParticle(_spcH);
 
-    fillGenInfo(trkprimary->parent(), parentinfo);
+    fillGenInfo(trkprimary->parent()->originParticle(), parentinfo);
+    fillGenInfo(trkprimary->parent()->originParticle().parent()->originParticle(), gparentinfo);
     // go through the SimParticles of this primary, and find the one most related to the
     // downstream fit (KalSeedMC)
 
@@ -126,7 +127,14 @@ namespace mu2e {
     fillGenInfo(bestprimarysp, geninfo);
   }
 
+  
   void InfoMCStructHelper::fillGenInfo(const art::Ptr<SimParticle>& gp, GenInfo& geninfo) {
+    if(gp.isNonnull()){
+      fillGenInfo(*gp, geninfo);
+    }
+  }
+
+  void InfoMCStructHelper::fillGenInfo(const SimParticle& gp, GenInfo& geninfo) {
 
     GeomHandle<DetectorSystem> det;
 
@@ -137,12 +145,11 @@ namespace mu2e {
       geninfo._costh = std::cos(gp->startMomentum().vect().theta());
       geninfo._phi = gp->startMomentum().vect().phi();
       geninfo._pos = XYZVectorF(det->toDetector(gp->startPosition()));
-      geninfo._time = gp->startGlobalTime(); 
+      geninfo._time = gp->startGlobalTime();
     }
-  }
 
-  void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep,
-					     std::vector<int> const& vids, double target_time) {
+    void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep,
+                                               std::vector<int> const& vids, double target_time) {
 
     GeomHandle<BFieldManager> bfmgr;
     GeomHandle<DetectorSystem> det;
