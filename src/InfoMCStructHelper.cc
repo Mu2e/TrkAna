@@ -106,8 +106,12 @@ namespace mu2e {
   void InfoMCStructHelper::fillGenAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, GenInfo& priinfo, GenInfo& geninfo, GenInfo& parentinfo, GenInfo& gparentinfo) {
     auto trkprimary = kseedmc.simParticle().simParticle(_spcH);
 
-    fillGenInfo(trkprimary->parent()->originParticle(), parentinfo);
-    fillGenInfo(trkprimary->parent()->originParticle().parent()->originParticle(), gparentinfo);
+    if (trkprimary->parent().isNonnull()) {
+      fillGenInfo(trkprimary->parent()->originParticle(), parentinfo);
+    }
+    if (trkprimary->parent()->originParticle().parent().isNonnull()) {
+      fillGenInfo(trkprimary->parent()->originParticle().parent()->originParticle(), gparentinfo);
+    }
     // go through the SimParticles of this primary, and find the one most related to the
     // downstream fit (KalSeedMC)
 
