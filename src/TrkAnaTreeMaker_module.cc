@@ -208,6 +208,7 @@ namespace mu2e {
     std::vector<int> _entvids, _midvids, _xitvids;
     // MC truth branches (outputs)
     std::vector<TrkInfoMC> _allMCTIs;
+    std::vector<GenInfo> _allMCParentTIs;
     std::vector<GenInfo> _allMCGenTIs, _allMCPriTIs;
     std::vector<TrkInfoMCStep> _allMCEntTIs, _allMCMidTIs, _allMCXitTIs;
     std::vector<CaloClusterInfoMC> _allMCTCHIs;
@@ -286,9 +287,10 @@ namespace mu2e {
 
       TrkInfoMC mcti;
       _allMCTIs.push_back(mcti);
-      GenInfo mcgen, mcpri;
+      GenInfo mcgen, mcpri, mcparent;
       _allMCGenTIs.push_back(mcgen);
       _allMCPriTIs.push_back(mcpri);
+      _allMCParentTIs.push_back(mcparent);
       TrkInfoMCStep mcent, mcmid, mcxit;
       _allMCEntTIs.push_back(mcent);
       _allMCMidTIs.push_back(mcmid);
@@ -353,6 +355,7 @@ namespace mu2e {
       // optionall add MC branches
       if(_conf.fillmc() && i_branchConfig.options().fillmc()){
         _trkana->Branch((branch+"mc").c_str(),&_allMCTIs.at(i_branch),TrkInfoMC::leafnames().c_str());
+        _trkana->Branch((branch+"mcparent").c_str(),&_allMCParentTIs.at(i_branch),GenInfo::leafnames().c_str());
         _trkana->Branch((branch+"mcgen").c_str(),&_allMCGenTIs.at(i_branch),GenInfo::leafnames().c_str());
         _trkana->Branch((branch+"mcpri").c_str(),&_allMCPriTIs.at(i_branch),GenInfo::leafnames().c_str());
         _trkana->Branch((branch+"mcent").c_str(),&_allMCEntTIs.at(i_branch),TrkInfoMCStep::leafnames().c_str());
@@ -749,7 +752,7 @@ namespace mu2e {
           _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCEntTIs.at(i_branch), _entvids, t0);
           _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCMidTIs.at(i_branch), _midvids, t0);
           _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCXitTIs.at(i_branch), _xitvids, t0);
-          _infoMCStructHelper.fillGenAndPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch), _allMCGenTIs.at(i_branch));
+          _infoMCStructHelper.fillGenAndPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch), _allMCGenTIs.at(i_branch), _allMCParentTIs.at(i_branch));
 
           if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){
             _infoMCStructHelper.fillHitInfoMCs(kseedmc, _allTSHIMCs.at(i_branch));
