@@ -103,9 +103,10 @@ namespace mu2e {
     tshinfomc._doca = pca.dca();
   }
 
-  void InfoMCStructHelper::fillGenAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, GenInfo& priinfo, GenInfo& geninfo) {
+  void InfoMCStructHelper::fillGenAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, GenInfo& priinfo, GenInfo& geninfo, GenInfo& parentinfo) {
     auto trkprimary = kseedmc.simParticle().simParticle(_spcH);
 
+    fillGenInfo(trkprimary->parent(), parentinfo);
     // go through the SimParticles of this primary, and find the one most related to the
     // downstream fit (KalSeedMC)
 

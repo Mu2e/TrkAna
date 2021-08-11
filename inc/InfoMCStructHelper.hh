@@ -57,7 +57,7 @@ namespace mu2e {
     void fillTrkInfoMC(const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
     void fillTrkInfoMCDigis(const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
     void fillHitInfoMC(const KalSeedMC& kseedmc, TrkStrawHitInfoMC& tshinfomc, const TrkStrawHitMC& tshmc);
-    void fillGenAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, GenInfo& priinfo, GenInfo& geninfo);
+    void fillGenAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, GenInfo& priinfo, GenInfo& geninfo, GenInfo& parentinfo);
     void fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep, std::vector<int> const& vids, double target_time);
 
     void fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs);
