@@ -33,6 +33,7 @@ namespace mu2e {
     double _mingood;
 
     void fillGenInfo(const art::Ptr<SimParticle>& sp, GenInfo& geninfo);
+    void fillGenInfo(const SimParticle& sp, GenInfo& geninfo);
 
   public:
 
@@ -57,7 +58,7 @@ namespace mu2e {
     void fillTrkInfoMC(const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
     void fillTrkInfoMCDigis(const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
     void fillHitInfoMC(const KalSeedMC& kseedmc, TrkStrawHitInfoMC& tshinfomc, const TrkStrawHitMC& tshmc);
-    void fillGenAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, GenInfo& priinfo, GenInfo& geninfo, GenInfo& parentinfo);
+    void fillGenAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, GenInfo& priinfo, GenInfo& geninfo, GenInfo& parentinfo, GenInfo& gparentinfo);
     void fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep, std::vector<int> const& vids, double target_time);
 
     void fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs);
