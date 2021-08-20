@@ -11,7 +11,7 @@
 
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
 #include "TrkAna/inc/TrkInfo.hh"
-#include "TrkAna/inc/GenInfo.hh"
+#include "TrkAna/inc/SimInfo.hh"
 #include "TrkAna/inc/TrkStrawHitInfoMC.hh"
 #include "TrkAna/inc/CaloClusterInfoMC.hh"
 #include "Offline/MCDataProducts/inc/KalSeedMC.hh"
@@ -32,8 +32,8 @@ namespace mu2e {
     SimParticleTimeOffset _toff;
     double _mingood;
 
-    void fillGenInfo(const art::Ptr<SimParticle>& sp, GenInfo& geninfo);
-    void fillGenInfo(const SimParticle& sp, GenInfo& geninfo);
+    void fillSimInfo(const art::Ptr<SimParticle>& sp, SimInfo& siminfo);
+    void fillSimInfo(const SimParticle& sp, SimInfo& siminfo);
 
   public:
 
@@ -58,7 +58,7 @@ namespace mu2e {
     void fillTrkInfoMC(const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
     void fillTrkInfoMCDigis(const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
     void fillHitInfoMC(const KalSeedMC& kseedmc, TrkStrawHitInfoMC& tshinfomc, const TrkStrawHitMC& tshmc);
-    void fillGenAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, GenInfo& priinfo, GenInfo& geninfo, GenInfo& parentinfo, GenInfo& gparentinfo);
+    void fillSimAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, SimInfo& priinfo, SimInfo& siminfo, SimInfo& parentinfo, SimInfo& gparentinfo);
     void fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep, std::vector<int> const& vids, double target_time);
 
     void fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs);

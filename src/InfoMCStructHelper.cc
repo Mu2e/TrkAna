@@ -103,14 +103,14 @@ namespace mu2e {
     tshinfomc._doca = pca.dca();
   }
 
-  void InfoMCStructHelper::fillGenAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, GenInfo& priinfo, GenInfo& geninfo, GenInfo& parentinfo, GenInfo& gparentinfo) {
+  void InfoMCStructHelper::fillSimAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, SimInfo& priinfo, SimInfo& siminfo, SimInfo& parentinfo, SimInfo& gparentinfo) {
     auto trkprimary = kseedmc.simParticle().simParticle(_spcH);
 
     if (trkprimary->parent().isNonnull()) {
-      fillGenInfo(trkprimary->parent()->originParticle(), parentinfo);
+      fillSimInfo(trkprimary->parent()->originParticle(), parentinfo);
     }
     if (trkprimary->parent()->originParticle().parent().isNonnull()) {
-      fillGenInfo(trkprimary->parent()->originParticle().parent()->originParticle(), gparentinfo);
+      fillSimInfo(trkprimary->parent()->originParticle().parent()->originParticle(), gparentinfo);
     }
     // go through the SimParticles of this primary, and find the one most related to the
     // downstream fit (KalSeedMC)
@@ -127,28 +127,28 @@ namespace mu2e {
 	bestprimarysp = spp;
       }
     } // redundant: FIXME!
-    fillGenInfo(bestprimarysp, priinfo);
-    fillGenInfo(bestprimarysp, geninfo);
+    fillSimInfo(bestprimarysp, priinfo);
+    fillSimInfo(bestprimarysp, siminfo);
   }
 
   
-  void InfoMCStructHelper::fillGenInfo(const art::Ptr<SimParticle>& gp, GenInfo& geninfo) {
-    if(gp.isNonnull()){
-      fillGenInfo(*gp, geninfo);
+  void InfoMCStructHelper::fillSimInfo(const art::Ptr<SimParticle>& sp, SimInfo& siminfo) {
+    if(sp.isNonnull()){
+      fillSimInfo(*sp, siminfo);
     }
   }
 
-  void InfoMCStructHelper::fillGenInfo(const SimParticle& gp, GenInfo& geninfo) {
+  void InfoMCStructHelper::fillSimInfo(const SimParticle& sp, SimInfo& siminfo) {
 
     GeomHandle<DetectorSystem> det;
 
-    geninfo._pdg = gp.pdgId();
-    geninfo._gen = gp.creationCode();
-    geninfo._mom = gp.startMomentum().vect().mag();
-    geninfo._costh = std::cos(gp.startMomentum().vect().theta());
-    geninfo._phi = gp.startMomentum().vect().phi();
-    geninfo._pos = XYZVectorF(det->toDetector(gp.startPosition()));
-    geninfo._time = gp.startGlobalTime();
+    siminfo._pdg = sp.pdgId();
+    siminfo._gen = sp.creationCode();
+    siminfo._mom = sp.startMomentum().vect().mag();
+    siminfo._costh = std::cos(sp.startMomentum().vect().theta());
+    siminfo._phi = sp.startMomentum().vect().phi();
+    siminfo._pos = XYZVectorF(det->toDetector(sp.startPosition()));
+    siminfo._time = sp.startGlobalTime();
   }
 
   void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep,
