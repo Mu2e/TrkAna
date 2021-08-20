@@ -4,7 +4,7 @@
 #ifndef TrkStrawHitInfo_HH
 #define TrkStrawHitInfo_HH
 #include "Rtypes.h"
-#include "DataProducts/inc/XYZVec.hh"
+#include "DataProducts/inc/GenVector.hh"
 namespace mu2e 
 {
   struct TrkStrawHitInfo {
@@ -15,7 +15,7 @@ namespace mu2e
     Int_t _ambig;     // left-right amibiguity.  This signes the angular momentum of the track WRT the wire
     Int_t _driftend; // which end(s) was used in computing the drift
     Float_t _tdrift; // drift time
-    XYZVec _poca; // Position of Point Of Closest Approach (POCA)
+    XYZVectorF _poca; // Position of Point Of Closest Approach (POCA)
     Float_t _resid;	  // residual = Distance Of Closest Approach (DOCA) between the drift cylinder and the track, signed by the track angular momentum WRT the wire
     Float_t _residerr;	  // error on the residual, including components from the hit, the track, and potentially other effects 
     Float_t _rdrift, _rdrifterr;	  // drift radius and error of this hit

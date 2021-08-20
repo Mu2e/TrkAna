@@ -6,9 +6,10 @@
 //
 #ifndef TrkInfo_HH
 #define TrkInfo_HH
-#include "Offline/DataProducts/inc/XYZVec.hh"
+#include "Offline/DataProducts/inc/GenVector.hh"
 #include "TrkAna/inc/helixpar.hh"
 #include "Offline/MCDataProducts/inc/MCRelationship.hh"
+#include "TrkAna/inc/Names.hh"
 #include "Rtypes.h"
 namespace mu2e
 {
@@ -69,7 +70,7 @@ namespace mu2e
     Int_t _nambig; // number of true hits where the reconstruction assigned the correct left-right ambiguity
     Int_t _pdg, _gen, _proc; // true PDG code, generator code, and process code of the primary particle
     Float_t _otime;  // origin time
-    XYZVec _opos;  // origin position
+    XYZVectorF _opos;  // origin position
     Float_t _omom;   // origin momentum (scalar)
     Float_t _ocosth; // origin cos(theta), where theta is the angle between the particle's momentum and z-axis
     Float_t _ophi; // origin phi (azimuthal angle of particle's momentum vector)
@@ -78,12 +79,12 @@ namespace mu2e
     TrkInfoMC() { reset(); }
     void reset() { _ndigi = _ndigigood = _nactive = _nhits = _nambig = _pdg = _gen  = _proc= -1;  _otime=0.0;
       _prel = MCRelationship();
-      _opos = XYZVec();
+      _opos = XYZVectorF();
       _omom = -1, _ocosth = -1, _ophi=-1;
     }
     static std::string leafnames() { static std::string leaves; leaves =
       std::string("ndigi/I:ndigigood/I:nhits/I:nactive/I:nambig/I:pdg/I:gen/I:proc/I:otime/F:")
-    + Geom::XYZnames("opos") + std::string(":omom/F:ocosth/F:ophi/F:prel/B:prem/B");
+    + Names::XYZnames("opos") + std::string(":omom/F:ocosth/F:ophi/F:prel/B:prem/B");
 
       return leaves;
     }
@@ -94,12 +95,12 @@ namespace mu2e
     Float_t _mom; // scalar momentum of particle at the start of this step
     Float_t _costh; // cos(theta) of momentum vector of particles at the start of this step (theta is angle between momentum vector and z-axis)
     Float_t _phi; // azimuthal angle of momentum vector
-    XYZVec _pos;  // particle position at the start of this step
+    XYZVectorF _pos;  // particle position at the start of this step
     helixpar _hpar; // helix parameters corresponding to the particle position and momentum assuming the nominal BField
     TrkInfoMCStep() { reset(); }
-    void reset() { _time = -1; _mom = -1; _costh = -1; _phi = -1; _pos = XYZVec(); _hpar.reset(); }
+    void reset() { _time = -1; _mom = -1; _costh = -1; _phi = -1; _pos = XYZVectorF(); _hpar.reset(); }
     static std::string leafnames() { static std::string leaves; leaves =
-      std::string("t0/F:mom/F:costh/F:phi/F:") + Geom::XYZnames("pos") + std::string(":")+helixpar::leafnames();
+      std::string("t0/F:mom/F:costh/F:phi/F:") + Names::XYZnames("pos") + std::string(":")+helixpar::leafnames();
       return leaves;
     }
   };

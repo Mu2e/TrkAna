@@ -5,14 +5,14 @@
 #ifndef TrkCaloHitInfo_HH
 #define TrkCaloHitInfo_HH
 #include "Rtypes.h"
-#include "DataProducts/inc/XYZVec.hh"
+#include "DataProducts/inc/GenVector.hh"
 namespace mu2e 
 {
   struct TrkCaloHitInfo {
     Int_t _active;   // is this hit used in the track?
     Int_t _did; // disk ID
-    XYZVec _poca; // Position of Point Of Closest Approach (POCA)
-    XYZVec _mom; // Track momentum vector at Point Of Closest Approach (POCA)
+    XYZVectorF _poca; // Position of Point Of Closest Approach (POCA)
+    XYZVectorF _mom; // Track momentum vector at Point Of Closest Approach (POCA)
     Float_t _trklen;	// distance along the helix of the POCA for this hit
     Float_t _clen;    // length along the crystal from the front face
     Float_t _doca;	// DOCA of this hit
