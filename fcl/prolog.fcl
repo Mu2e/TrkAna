@@ -141,8 +141,8 @@ BEGIN_PROLOG
 # converts ProtonBunchIntensity object to EventWeight object
   PBIWeight : { 
     module_type : PBIWeight
-    PBITag : "protonBunchIntensity"
-    meanPBITag : "protonBunchIntensity:MeanIntensity"
+    PBITag : "PBISim"
+    meanPBITag : "PBISim:MeanIntensity"
   }
 #Example configuration of RMCWeightModule
   RMCWeight : { 
@@ -207,8 +207,7 @@ BEGIN_PROLOG
   TrkAnaTreeMaker : {
     module_type : TrkAnaTreeMaker
     RecoCountTag : "SelectRecoMC"
-    MeanBeamIntensity : "protonBunchIntensity:MeanIntensity"
-    PBIWeightTag : "PBIWeight"
+    PBITag : "PBISim"
     CrvCoincidenceModuleLabel : "SelectRecoMC"
     CrvCoincidenceMCModuleLabel : "compressRecoMCs"
     CrvRecoPulseLabel : "SelectRecoMC"
@@ -239,8 +238,7 @@ BEGIN_PROLOG
   TrkAnaReco : {
 
    producers: {
-      PBIWeight : { @table::PBIWeight
-      		    PBITag : "SelectRecoMC" }
+      PBIWeight : @local::PBIWeight
       TrkQualDeM : @local::TrkQualDeM
       TrkQualUeM : @local::TrkQualUeM
       TrkQualDeP : @local::TrkQualDeP
