@@ -5,7 +5,7 @@
 #ifndef CaloClusterInfoMC_HH
 #define CaloClusterInfoMC_HH
 #include "Rtypes.h"
-#include "DataProducts/inc/XYZVec.hh"
+#include "DataProducts/inc/GenVector.hh"
 #include "MCDataProducts/inc/MCRelationship.hh"
 namespace mu2e 
 {

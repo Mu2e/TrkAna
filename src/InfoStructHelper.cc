@@ -86,7 +86,7 @@ namespace mu2e {
     fillTrkInfoStraws(kseed, trkinfo);
   }
 
-  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed,TrkFitInfo& trkfitinfo, const XYZVec& pos) {
+  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed,TrkFitInfo& trkfitinfo, const XYZVectorF& pos) {
     const auto& ksegIter = kseed.nearestSegment(pos);
     if (ksegIter == kseed.segments().end()) {
       cet::exception("InfoStructHelper") << "Couldn't find KalSegment that includes pos = " << pos;
@@ -154,9 +154,9 @@ namespace mu2e {
       // find nearest segment
       auto ikseg = kseed.nearestSegment(ihit->trkLen());
       if(ikseg != kseed.segments().end()){
-	XYZVec dir;
+	XYZVectorF dir;
 	ikseg->helix().direction(ikseg->localFlt(ihit->trkLen()),dir);
-	auto tdir = Geom::Hep3Vec(dir);
+	auto tdir = GenVector::Hep3Vec(dir);
 	tshinfo._wdot = tdir.dot(straw.getDirection());
       }
       tshinfo._residerr = ihit->radialErr();
@@ -183,7 +183,7 @@ namespace mu2e {
       auto const& wiredir = straw.getDirection();
       auto const& mid = straw.getMidPoint();
       CLHEP::Hep3Vector hpos = mid + wiredir*ihit->hitLen();
-      tshinfo._poca = Geom::toXYZVec(hpos);
+      tshinfo._poca = XYZVectorF(hpos);
 
       // count correlations with other TSH
       for(std::vector<TrkStrawHitSeed>::const_iterator jhit=kseed.hits().begin(); jhit != ihit; ++jhit) {
@@ -248,7 +248,7 @@ namespace mu2e {
       // transform cog to tracker coordinates; requires 2 steps.  This is at the front
       // of the disk
       mu2e::GeomHandle<mu2e::Calorimeter> calo;
-      XYZVec cpos = Geom::toXYZVec(calo->geomUtil().mu2eToTracker(calo->geomUtil().diskToMu2e(cc->diskID(),cc->cog3Vector())));
+      XYZVectorF cpos = XYZVectorF(calo->geomUtil().mu2eToTracker(calo->geomUtil().diskToMu2e(cc->diskID(),cc->cog3Vector())));
       // move to the front face and 
       // add the cluster length (relative to the front face).  crystal size should come from geom FIXME!
       cpos.SetZ(cpos.z() -200.0 + tch.hitLen());
@@ -314,7 +314,7 @@ namespace mu2e {
       auto ffpos = calo->geomUtil().mu2eToTracker(calo->geomUtil().diskFFToMu2e(idisk,origin));
       float flen = trkhel.zFlight(ffpos.z());
       float blen = trkhel.zFlight(ffpos.z()+207.5); // private communication B. Echenard FIXME!!!!
-      XYZVec extpos;
+      XYZVectorF extpos;
       trkhel.position(flen,extpos);
       trkpidInfo._diskfrad[idisk] = sqrt(extpos.Perp2());	
       trkhel.position(blen,extpos);

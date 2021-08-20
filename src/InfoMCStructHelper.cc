@@ -39,7 +39,7 @@ namespace mu2e {
     // fill the origin information of this SimParticle
     GeomHandle<DetectorSystem> det;
     trkinfomc._otime = trkprimary->startGlobalTime() + _toff.totalTimeOffset(trkprimary);
-    trkinfomc._opos = Geom::toXYZVec(det->toDetector(trkprimary->startPosition()));
+    trkinfomc._opos = XYZVectorF(det->toDetector(trkprimary->startPosition()));
     trkinfomc._omom = trkprimary->startMomentum().vect().mag();
     trkinfomc._ocosth = std::cos(trkprimary->startMomentum().vect().theta());
     trkinfomc._ophi = trkprimary->startMomentum().vect().phi();
@@ -90,16 +90,16 @@ namespace mu2e {
 	
     // find the step midpoint
     const Straw& straw = tracker.getStraw(tshmc._strawId);
-    CLHEP::Hep3Vector mcsep = Geom::Hep3Vec(tshmc._cpos)-straw.getMidPoint();
+    CLHEP::Hep3Vector mcsep = GenVector::Hep3Vec(tshmc._cpos)-straw.getMidPoint();
     tshinfomc._len = mcsep.dot(straw.getDirection());
-    CLHEP::Hep3Vector mdir = Geom::Hep3Vec(tshmc._mom.unit());
+    CLHEP::Hep3Vector mdir = GenVector::Hep3Vec(tshmc._mom.unit());
     CLHEP::Hep3Vector mcperp = (mdir.cross(straw.getDirection())).unit();
     double dperp = mcperp.dot(mcsep);
     tshinfomc._twdot = mdir.dot(straw.getDirection());
     tshinfomc._dist = fabs(dperp);
     tshinfomc._ambig = dperp > 0 ? -1 : 1; // follow TrkPoca convention
     // use 2-line POCA here
-    TwoLinePCA pca(Geom::Hep3Vec(tshmc._cpos),mdir,straw.getMidPoint(),straw.getDirection());
+    TwoLinePCA pca(GenVector::Hep3Vec(tshmc._cpos),mdir,straw.getMidPoint(),straw.getDirection());
     tshinfomc._doca = pca.dca();
   }
 
@@ -135,7 +135,7 @@ namespace mu2e {
       geninfo._mom = gp->startMomentum().vect().mag();
       geninfo._costh = std::cos(gp->startMomentum().vect().theta());
       geninfo._phi = gp->startMomentum().vect().phi();
-      geninfo._pos = Geom::toXYZVec(det->toDetector(gp->startPosition()));
+      geninfo._pos = XYZVectorF(det->toDetector(gp->startPosition()));
       geninfo._time = gp->startGlobalTime(); 
     }
   }
@@ -163,12 +163,12 @@ namespace mu2e {
 	    trkinfomcstep._mom = std::sqrt(i_mcstep._mom.mag2());
 	    trkinfomcstep._costh = std::cos(i_mcstep._mom.theta());
 	    trkinfomcstep._phi = i_mcstep._mom.phi();
-	    trkinfomcstep._pos = Geom::Hep3Vec(i_mcstep._pos);
+	    trkinfomcstep._pos = GenVector::Hep3Vec(i_mcstep._pos);
 
 	    CLHEP::HepVector parvec(5,0);
 	    double hflt(0.0);
 	    HepPoint ppos(trkinfomcstep._pos.x(), trkinfomcstep._pos.y(), trkinfomcstep._pos.z());
-	    CLHEP::Hep3Vector mom = Geom::Hep3Vec(i_mcstep._mom);
+	    CLHEP::Hep3Vector mom = GenVector::Hep3Vec(i_mcstep._mom);
 	    double charge = pdt->particle(kseedmc.simParticle()._pdg).ref().charge();
 	    TrkHelixUtils::helixFromMom( parvec, hflt,ppos, mom,charge,bz);
 	    trkinfomcstep._hpar = helixpar(parvec);

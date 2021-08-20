@@ -4,7 +4,7 @@
 #ifndef TrkStrawHitInfoMC_HH
 #define TrkStrawHitInfoMC_HH
 #include "Rtypes.h"
-#include "DataProducts/inc/XYZVec.hh"
+#include "DataProducts/inc/GenVector.hh"
 #include "MCDataProducts/inc/MCRelationship.hh"
 namespace mu2e 
 {
@@ -18,7 +18,7 @@ namespace mu2e
     Float_t _edep;  // true energy deposit sum by trigger particles in the straw gas
     Float_t _mom;   // true particle momentum at the POCA
     Float_t _twdot; // dot product between track and wire directions
-    XYZVec _cpos; // threshold cluster position 
+    XYZVectorF _cpos; // threshold cluster position 
     Int_t _ambig;   // true left-right ambiguity = true angular momentum sign of the particle WRT the wire
     TrkStrawHitInfoMC() : _pdg(-1), _gen(-1), _proc(-1),
     _t0(-1000.0),  _dist(-1000.0), _doca(-1000.0), _len(-1000.0),

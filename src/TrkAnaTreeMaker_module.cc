@@ -686,9 +686,9 @@ namespace mu2e {
     // get VD positions
     mu2e::GeomHandle<VirtualDetector> vdHandle;
     mu2e::GeomHandle<DetectorSystem> det;
-    const XYZVec& entpos = XYZVec(det->toDetector(vdHandle->getGlobal(*_entvids.begin())));
-    const XYZVec& midpos = XYZVec(det->toDetector(vdHandle->getGlobal(*_midvids.begin())));
-    const XYZVec& xitpos = XYZVec(det->toDetector(vdHandle->getGlobal(*_xitvids.begin())));
+    const XYZVectorF& entpos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_entvids.begin())));
+    const XYZVectorF& midpos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_midvids.begin())));
+    const XYZVectorF& xitpos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_xitvids.begin())));
 
     _infoStructHelper.fillTrkInfo(kseed,_allTIs.at(i_branch));
     _infoStructHelper.fillTrkFitInfo(kseed,_allEntTIs.at(i_branch),entpos);
