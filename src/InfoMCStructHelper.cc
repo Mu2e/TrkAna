@@ -142,18 +142,17 @@ namespace mu2e {
 
     GeomHandle<DetectorSystem> det;
 
-    if(gp.isNonnull()){
-      geninfo._pdg = gp->pdgId();
-      geninfo._gen = gp->creationCode();
-      geninfo._mom = gp->startMomentum().vect().mag();
-      geninfo._costh = std::cos(gp->startMomentum().vect().theta());
-      geninfo._phi = gp->startMomentum().vect().phi();
-      geninfo._pos = XYZVectorF(det->toDetector(gp->startPosition()));
-      geninfo._time = gp->startGlobalTime();
-    }
+    geninfo._pdg = gp.pdgId();
+    geninfo._gen = gp.creationCode();
+    geninfo._mom = gp.startMomentum().vect().mag();
+    geninfo._costh = std::cos(gp.startMomentum().vect().theta());
+    geninfo._phi = gp.startMomentum().vect().phi();
+    geninfo._pos = XYZVectorF(det->toDetector(gp.startPosition()));
+    geninfo._time = gp.startGlobalTime();
+  }
 
-    void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep,
-                                               std::vector<int> const& vids, double target_time) {
+  void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep,
+                                             std::vector<int> const& vids, double target_time) {
 
     GeomHandle<BFieldManager> bfmgr;
     GeomHandle<DetectorSystem> det;
