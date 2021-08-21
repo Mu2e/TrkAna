@@ -168,6 +168,7 @@ BEGIN_PROLOG
 	     trkpid : "TrkPID"
 	     fillTrkPID : true
 	     fillHits : true
+	     genealogyDepth : 5
   }
 
   DeM : { input : "KFF" 

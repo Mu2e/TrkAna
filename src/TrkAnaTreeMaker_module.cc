@@ -104,6 +104,7 @@ namespace mu2e {
       fhicl::OptionalAtom<std::string> trkpid{Name("trkpid"), Comment("TrkCaloHitPIDCollection input tag to be written out (use prefix if fcl parameter suffix is defined)")};
       fhicl::Atom<bool> filltrkpid{Name("fillTrkPID"), Comment("Switch to turn on filling of the full TrkPIDInfo for this set of tracks"), false};
       fhicl::Atom<bool> required{Name("required"), Comment("True/false if you require this type of track in the event"), false};
+      fhicl::Atom<int> genealogyDepth{Name("genealogyDepth"), Comment("The depth of the genealogy information you want to keep"), 1};
     };
 
     struct BranchConfig {
@@ -208,8 +209,8 @@ namespace mu2e {
     std::vector<int> _entvids, _midvids, _xitvids;
     // MC truth branches (outputs)
     std::vector<TrkInfoMC> _allMCTIs;
-    std::vector<SimInfo> _allMCParentTIs, _allMCGParentTIs;
-    std::vector<SimInfo> _allMCSimTIs, _allMCPriTIs;
+    std::vector<std::vector<SimInfo>> _allMCSimTIs;
+    std::vector<SimInfo> _allMCPriTIs;
     std::vector<TrkInfoMCStep> _allMCEntTIs, _allMCMidTIs, _allMCXitTIs;
     std::vector<CaloClusterInfoMC> _allMCTCHIs;
 
@@ -287,11 +288,14 @@ namespace mu2e {
 
       TrkInfoMC mcti;
       _allMCTIs.push_back(mcti);
-      SimInfo mcsim, mcpri, mcparent, mcgparent;
-      _allMCSimTIs.push_back(mcsim);
+      std::vector<SimInfo> tempMCSimTIs;
+      for (int i_generation = 0; i_generation < _allBranches.at(i_branch).options().genealogyDepth(); ++i_generation){
+        SimInfo mcsim;
+        tempMCSimTIs.push_back(mcsim);
+      }
+      _allMCSimTIs.push_back(tempMCSimTIs);
+      SimInfo mcpri;
       _allMCPriTIs.push_back(mcpri);
-      _allMCParentTIs.push_back(mcparent);
-      _allMCGParentTIs.push_back(mcgparent);
       TrkInfoMCStep mcent, mcmid, mcxit;
       _allMCEntTIs.push_back(mcent);
       _allMCMidTIs.push_back(mcmid);
@@ -356,9 +360,20 @@ namespace mu2e {
       // optionall add MC branches
       if(_conf.fillmc() && i_branchConfig.options().fillmc()){
         _trkana->Branch((branch+"mc").c_str(),&_allMCTIs.at(i_branch),TrkInfoMC::leafnames().c_str());
-        _trkana->Branch((branch+"mcparent").c_str(),&_allMCParentTIs.at(i_branch),SimInfo::leafnames().c_str());
-        _trkana->Branch((branch+"mcgparent").c_str(),&_allMCGParentTIs.at(i_branch),SimInfo::leafnames().c_str());
-        _trkana->Branch((branch+"mcsim").c_str(),&_allMCSimTIs.at(i_branch),SimInfo::leafnames().c_str());
+        std::string branch_suffix = "";
+        for (int i_generation = 0; i_generation < i_branchConfig.options().genealogyDepth(); ++i_generation) {
+          if (i_generation == 0) {
+            branch_suffix = "sim";
+          }
+          else if (i_generation == 1) {
+            branch_suffix = "parent";
+          }
+          else {
+            branch_suffix = "g" + branch_suffix;
+          }
+          std::string full_branchname = branch + "mc" + branch_suffix;
+          _trkana->Branch((full_branchname).c_str(),&_allMCSimTIs.at(i_branch).at(i_generation),SimInfo::leafnames().c_str());
+        }
         _trkana->Branch((branch+"mcpri").c_str(),&_allMCPriTIs.at(i_branch),SimInfo::leafnames().c_str());
         _trkana->Branch((branch+"mcent").c_str(),&_allMCEntTIs.at(i_branch),TrkInfoMCStep::leafnames().c_str());
         _trkana->Branch((branch+"mcmid").c_str(),&_allMCMidTIs.at(i_branch),TrkInfoMCStep::leafnames().c_str());
@@ -754,7 +769,7 @@ namespace mu2e {
           _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCEntTIs.at(i_branch), _entvids, t0);
           _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCMidTIs.at(i_branch), _midvids, t0);
           _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCXitTIs.at(i_branch), _xitvids, t0);
-          _infoMCStructHelper.fillSimAndPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch), _allMCSimTIs.at(i_branch), _allMCParentTIs.at(i_branch), _allMCGParentTIs.at(i_branch));
+          _infoMCStructHelper.fillSimAndPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch), _allMCSimTIs.at(i_branch).at(0), _allMCSimTIs.at(i_branch).at(1), _allMCSimTIs.at(i_branch).at(2));
 
           if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){
             _infoMCStructHelper.fillHitInfoMCs(kseedmc, _allTSHIMCs.at(i_branch));
@@ -825,7 +840,9 @@ namespace mu2e {
       _allTCHIs.at(i_branch).reset();
 
       _allMCTIs.at(i_branch).reset();
-      _allMCSimTIs.at(i_branch).reset();
+      for (int i_generation = 0; i_generation < _allBranches.at(i_branch).options().genealogyDepth(); ++i_generation){
+        _allMCSimTIs.at(i_branch).at(i_generation).reset();
+      }
       _allMCPriTIs.at(i_branch).reset();
 
       _allMCEntTIs.at(i_branch).reset();
