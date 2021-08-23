@@ -103,15 +103,23 @@ namespace mu2e {
     tshinfomc._doca = pca.dca();
   }
 
-  void InfoMCStructHelper::fillSimAndPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, SimInfo& priinfo, SimInfo& siminfo, SimInfo& parentinfo, SimInfo& gparentinfo) {
+  void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, std::vector<SimInfo>& siminfos, int n_generations) {
+    auto trkprimary = kseedmc.simParticle().simParticle(_spcH)->originParticle();
+
+    for (int i_generation = 0; i_generation < n_generations; ++i_generation) {
+      fillSimInfo(trkprimary, siminfos.at(i_generation));
+      if (trkprimary.parent().isNonnull()) {
+        trkprimary = trkprimary.parent()->originParticle();
+      }
+      else {
+        break; // this particle doesn't have a parent
+      }
+    }
+  }
+
+  void InfoMCStructHelper::fillPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, SimInfo& priinfo) {
     auto trkprimary = kseedmc.simParticle().simParticle(_spcH);
 
-    if (trkprimary->parent().isNonnull()) {
-      fillSimInfo(trkprimary->parent()->originParticle(), parentinfo);
-    }
-    if (trkprimary->parent()->originParticle().parent().isNonnull()) {
-      fillSimInfo(trkprimary->parent()->originParticle().parent()->originParticle(), gparentinfo);
-    }
     // go through the SimParticles of this primary, and find the one most related to the
     // downstream fit (KalSeedMC)
 
@@ -128,7 +136,6 @@ namespace mu2e {
       }
     } // redundant: FIXME!
     fillSimInfo(bestprimarysp, priinfo);
-    fillSimInfo(bestprimarysp, siminfo);
   }
 
   

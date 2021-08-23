@@ -769,7 +769,8 @@ namespace mu2e {
           _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCEntTIs.at(i_branch), _entvids, t0);
           _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCMidTIs.at(i_branch), _midvids, t0);
           _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCXitTIs.at(i_branch), _xitvids, t0);
-          _infoMCStructHelper.fillSimAndPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch), _allMCSimTIs.at(i_branch).at(0), _allMCSimTIs.at(i_branch).at(1), _allMCSimTIs.at(i_branch).at(2));
+          _infoMCStructHelper.fillPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch));
+          _infoMCStructHelper.fillAllSimInfos(kseedmc, _allMCSimTIs.at(i_branch), branchConfig.options().genealogyDepth());
 
           if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){
             _infoMCStructHelper.fillHitInfoMCs(kseedmc, _allTSHIMCs.at(i_branch));
