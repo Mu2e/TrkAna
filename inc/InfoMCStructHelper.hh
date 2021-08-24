@@ -6,8 +6,7 @@
 #define TrkAna_InfoMCStructHelper_hh
 #include "Offline/RecoDataProducts/inc/StrawHitIndex.hh"
 #include "Offline/MCDataProducts/inc/StrawDigiMC.hh"
-#include "Offline/MCDataProducts/inc/StrawDigiMCCollection.hh"
-#include "Offline/MCDataProducts/inc/StepPointMCCollection.hh"
+#include "Offline/MCDataProducts/inc/StepPointMC.hh"
 
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
 #include "TrkAna/inc/TrkInfo.hh"
