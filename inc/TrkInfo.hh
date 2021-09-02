@@ -26,6 +26,18 @@ namespace mu2e
     }
   };
 
+  struct TrkFitInfoKK {
+    Float_t _mom, _momerr;
+    Float_t _rad, _raderr;
+    TrkFitInfoKK() { reset(); }
+    void reset() { _mom=_momerr=-1000.0; _rad=_raderr=0; }
+    static std::string leafnames() {
+      static std::string leaves;
+      leaves = std::string("mom/F:momerr/F:rad/F:raderr/F");
+      return leaves;
+    }
+  };
+
 // general information about a track
   struct TrkInfo {
     Int_t _status; // Kalman fit status

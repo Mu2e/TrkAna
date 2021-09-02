@@ -72,13 +72,14 @@ namespace mu2e {
     double firstflt = 9999999;
     double lastflt = -9999999;
     for (const auto& kseg : kseed.segments()) {
-      //	std::cout << "AE: min = " << kseg.fmin() << ", max = " << kseg.fmax() << std::endl;
+      //      std::cout << "AE: min = " << kseg.fmin() << ", max = " << kseg.fmax() << std::endl;
       if (kseg.globalFlt(kseg.fmin()) < firstflt) {
 	firstflt = kseg.globalFlt(kseg.fmin());
       }
       if (kseg.globalFlt(kseg.fmax()) > lastflt) {
 	lastflt = kseg.globalFlt(kseg.fmax());
       }
+      //      std::cout << "AE: " << kseg.loopHelix().rad() << " " << kseg.loopHelix().lam() << s" " << kseg.loopHelix().cx() << " " << kseg.loopHelix().cy() << " " << kseg.loopHelix().phi0() << " " << kseg.loopHelix().t0() << std::endl;
     }
     trkinfo._startvalid = firstflt;
     trkinfo._endvalid = lastflt;
@@ -86,7 +87,7 @@ namespace mu2e {
     fillTrkInfoStraws(kseed, trkinfo);
   }
 
-  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed,TrkFitInfo& trkfitinfo, const XYZVectorF& pos) {
+  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed,TrkFitInfo& trkfitinfo, TrkFitInfoKK& trkfitinfokk, const XYZVectorF& pos) {
     const auto& ksegIter = kseed.nearestSegment(pos);
     if (ksegIter == kseed.segments().end()) {
       cet::exception("InfoStructHelper") << "Couldn't find KalSegment that includes pos = " << pos;
@@ -97,6 +98,11 @@ namespace mu2e {
     CLHEP::HepSymMatrix pcov;
     ksegIter->covar().symMatrix(pcov);
     trkfitinfo._fitparerr = helixpar(pcov);
+
+    trkfitinfokk._mom = ksegIter->loopHelix().momentum();
+    trkfitinfokk._momerr = std::sqrt(ksegIter->loopHelix().momentumVariance());
+    trkfitinfokk._rad = ksegIter->loopHelix().rad();
+    trkfitinfokk._raderr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::rad_));
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
