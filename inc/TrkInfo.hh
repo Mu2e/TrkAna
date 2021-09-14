@@ -16,20 +16,24 @@ namespace mu2e
 // information about the track fit at a particular place
   struct TrkFitInfo {
     Float_t _mom, _momerr; // momentum and its uncertinaty [MeV/c]
-    Float_t _minr; // minimum radius of the helix [mm]
-    Float_t _maxr; // maximum radius of the helix [mm]
+    Float_t _minr; // minimum radial position of the helix [mm]
+    Float_t _maxr; // maximum radial position of the helix [mm]
     Float_t _pitch; // pitch angle [rad]
-    Float_t _rad, _raderr;
-    Float_t _lam, _lamerr;
-    Float_t _cx, _cxerr;
-    Float_t _cy, _cyerr;
-    Float_t _phi0, _phi0err;
-    Float_t _t0, _t0err;
+    Float_t _time; // time of helix at this segment [ns]
+    Float_t _phi; // azimuthal angle of helix at this segment [rad]
+
+    // LoopHelix parameters
+    Float_t _rad, _raderr; // radius of helix [mm]
+    Float_t _lam, _lamerr; // longitudinal wavelength of helix [mm]
+    Float_t _cx, _cxerr; // x-position of helix center [mm]
+    Float_t _cy, _cyerr; // y-position of helix center [mm]
+    Float_t _phi0, _phi0err; // azimuthal angle of helix at z=0 [rad]
+    Float_t _t0, _t0err; // time of helix at z=0 [ns]
     TrkFitInfo() { reset(); }
-    void reset() { _mom=_momerr=-1000.0; _minr=_maxr=_pitch=_rad=_raderr=_lam=_lamerr=_cx=_cxerr=_cy=_cyerr=_phi0=_phi0err=_t0=_t0err=0; }
+    void reset() { _mom=_momerr=-1000.0; _minr=_maxr=_pitch=_time=_phi=_rad=_raderr=_lam=_lamerr=_cx=_cxerr=_cy=_cyerr=_phi0=_phi0err=_t0=_t0err=0; }
     static std::string leafnames() {
       static std::string leaves;
-      leaves = std::string("mom/F:momerr/F:minr/F:maxr/F:pitch/F:rad/F:raderr/F:lam/F:lamerr/F:cx/F:cxerr/F:cy/F:cyerr/F:phi0/F:phi0err/F:t0/F:t0err/F");
+      leaves = std::string("mom/F:momerr/F:minr/F:maxr/F:pitch/F:time/F:phi/F:rad/F:raderr/F:lam/F:lamerr/F:cx/F:cxerr/F:cy/F:cyerr/F:phi0/F:phi0err/F:t0/F:t0err/F");
       return leaves;
     }
   };

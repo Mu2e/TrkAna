@@ -105,12 +105,14 @@ namespace mu2e {
     trkfitinfo._cyerr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::cy_));
     trkfitinfo._phi0 = ksegIter->loopHelix().phi0();
     trkfitinfo._phi0err = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::phi0_));
-    trkfitinfo._t0 = ksegIter->loopHelix().ztime(ksegIter->position3().z());
+    trkfitinfo._t0 = ksegIter->loopHelix().t0();
     trkfitinfo._t0err = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::t0_));
 
     trkfitinfo._minr = std::sqrt(trkfitinfo._cx*trkfitinfo._cx + trkfitinfo._cy*trkfitinfo._cy) - trkfitinfo._rad;
     trkfitinfo._maxr = std::sqrt(trkfitinfo._cx*trkfitinfo._cx + trkfitinfo._cy*trkfitinfo._cy) + trkfitinfo._rad;
     trkfitinfo._pitch = std::atan2(trkfitinfo._maxr, trkfitinfo._lam);
+    trkfitinfo._time = ksegIter->loopHelix().ztime(ksegIter->position3().z());
+    trkfitinfo._phi = ksegIter->loopHelix().zphi(ksegIter->position3().z());
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
