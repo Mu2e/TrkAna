@@ -108,7 +108,7 @@ namespace mu2e {
 
     trkfitinfo._minr = std::sqrt(trkfitinfo._cx*trkfitinfo._cx + trkfitinfo._cy*trkfitinfo._cy) - trkfitinfo._rad;
     trkfitinfo._maxr = std::sqrt(trkfitinfo._cx*trkfitinfo._cx + trkfitinfo._cy*trkfitinfo._cy) + trkfitinfo._rad;
-    trkfitinfo._pitch = std::atan2(trkfitinfo._maxr, (0.5*trkfitinfo._lam));
+    trkfitinfo._pitch = std::atan2(trkfitinfo._maxr, trkfitinfo._lam);
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
