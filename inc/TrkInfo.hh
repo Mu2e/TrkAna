@@ -15,18 +15,6 @@ namespace mu2e
 {
 // information about the track fit at a particular place
   struct TrkFitInfo {
-    Float_t _fitmom,_fitmomerr;
-    helixpar _fitpar;
-    helixpar _fitparerr;
-    TrkFitInfo() { reset(); }
-    void reset() { _fitmom=_fitmomerr=-1000.0; _fitpar.reset(); _fitparerr.reset(); }
-    static std::string leafnames() { static std::string leaves; leaves =
-      std::string("mom/F:momerr/F:")+helixpar::leafnames()+std::string(":d0err/F:p0err/F:omerr/F:z0err/F:tderr/F");
-      return leaves;
-    }
-  };
-
-  struct TrkFitInfoKK {
     Float_t _mom, _momerr; // momentum and its uncertinaty [MeV/c]
     Float_t _minr; // minimum radius of the helix [mm]
     Float_t _maxr; // maximum radius of the helix [mm]
@@ -36,7 +24,7 @@ namespace mu2e
     Float_t _cx, _cxerr;
     Float_t _cy, _cyerr;
     Float_t _t0, _t0err;
-    TrkFitInfoKK() { reset(); }
+    TrkFitInfo() { reset(); }
     void reset() { _mom=_momerr=-1000.0; _minr=_maxr=_pitch=_rad=_raderr=_lam=_lamerr=_cx=_cxerr=_cy=_cyerr=_t0=_t0err=0; }
     static std::string leafnames() {
       static std::string leaves;

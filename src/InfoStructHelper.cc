@@ -88,34 +88,27 @@ namespace mu2e {
     fillTrkInfoStraws(kseed, trkinfo);
   }
 
-  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed,TrkFitInfo& trkfitinfo, TrkFitInfoKK& trkfitinfokk, const XYZVectorF& pos) {
+  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed,TrkFitInfo& trkfitinfo, const XYZVectorF& pos) {
     const auto& ksegIter = kseed.nearestSegment(pos);
     if (ksegIter == kseed.segments().end()) {
       cet::exception("InfoStructHelper") << "Couldn't find KalSegment that includes pos = " << pos;
     }
-    trkfitinfo._fitmom = ksegIter->mom();
-    trkfitinfo._fitmomerr = ksegIter->momerr();
-    trkfitinfo._fitpar = ksegIter->helix();
-    CLHEP::HepSymMatrix pcov;
-    ksegIter->covar().symMatrix(pcov);
-    trkfitinfo._fitparerr = helixpar(pcov);
+    trkfitinfo._mom = ksegIter->loopHelix().momentum();
+    trkfitinfo._momerr = std::sqrt(ksegIter->loopHelix().momentumVariance());
+    trkfitinfo._rad = ksegIter->loopHelix().rad();
+    trkfitinfo._raderr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::rad_));
+    trkfitinfo._lam = ksegIter->loopHelix().lam();
+    trkfitinfo._lamerr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::lam_));
+    trkfitinfo._cx = ksegIter->loopHelix().cx();
+    trkfitinfo._cxerr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::cx_));
+    trkfitinfo._cy = ksegIter->loopHelix().cy();
+    trkfitinfo._cyerr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::cy_));
+    trkfitinfo._t0 = ksegIter->loopHelix().ztime(ksegIter->position3().z());
+    trkfitinfo._t0err = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::t0_));
 
-    trkfitinfokk._mom = ksegIter->loopHelix().momentum();
-    trkfitinfokk._momerr = std::sqrt(ksegIter->loopHelix().momentumVariance());
-    trkfitinfokk._rad = ksegIter->loopHelix().rad();
-    trkfitinfokk._raderr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::rad_));
-    trkfitinfokk._lam = ksegIter->loopHelix().lam();
-    trkfitinfokk._lamerr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::lam_));
-    trkfitinfokk._cx = ksegIter->loopHelix().cx();
-    trkfitinfokk._cxerr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::cx_));
-    trkfitinfokk._cy = ksegIter->loopHelix().cy();
-    trkfitinfokk._cyerr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::cy_));
-    trkfitinfokk._t0 = ksegIter->loopHelix().ztime(ksegIter->position3().z());
-    trkfitinfokk._t0err = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::t0_));
-
-    trkfitinfokk._minr = std::sqrt(trkfitinfokk._cx*trkfitinfokk._cx + trkfitinfokk._cy*trkfitinfokk._cy) - trkfitinfokk._rad;
-    trkfitinfokk._maxr = std::sqrt(trkfitinfokk._cx*trkfitinfokk._cx + trkfitinfokk._cy*trkfitinfokk._cy) + trkfitinfokk._rad;
-    trkfitinfokk._pitch = std::atan2(trkfitinfokk._maxr, (0.5*trkfitinfokk._lam));
+    trkfitinfo._minr = std::sqrt(trkfitinfo._cx*trkfitinfo._cx + trkfitinfo._cy*trkfitinfo._cy) - trkfitinfo._rad;
+    trkfitinfo._maxr = std::sqrt(trkfitinfo._cx*trkfitinfo._cx + trkfitinfo._cy*trkfitinfo._cy) + trkfitinfo._rad;
+    trkfitinfo._pitch = std::atan2(trkfitinfo._maxr, (0.5*trkfitinfo._lam));
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {

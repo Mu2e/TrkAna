@@ -188,7 +188,6 @@ namespace mu2e {
     // track branches (outputs)
     std::vector<TrkInfo> _allTIs;
     std::vector<TrkFitInfo> _allEntTIs, _allMidTIs, _allXitTIs;
-    std::vector<TrkFitInfoKK> _allEntTIKKs, _allMidTIKKs, _allXitTIKKs;
     std::vector<TrkCaloHitInfo> _allTCHIs;
     // quality branches (inputs)
     std::vector<std::vector<art::Handle<RecoQualCollection> > > _allRQCHs; // outer vector is for each candidate/supplement, inner vector is all RecoQuals
@@ -284,11 +283,6 @@ namespace mu2e {
       _allMidTIs.push_back(mid);
       _allXitTIs.push_back(xit);
 
-      TrkFitInfoKK entkk, midkk, xitkk;
-      _allEntTIKKs.push_back(entkk);
-      _allMidTIKKs.push_back(midkk);
-      _allXitTIKKs.push_back(xitkk);
-
       TrkCaloHitInfo tchi;
       _allTCHIs.push_back(tchi);
 
@@ -350,9 +344,6 @@ namespace mu2e {
       _trkana->Branch((branch+"ent").c_str(),&_allEntTIs.at(i_branch),TrkFitInfo::leafnames().c_str());
       _trkana->Branch((branch+"mid").c_str(),&_allMidTIs.at(i_branch),TrkFitInfo::leafnames().c_str());
       _trkana->Branch((branch+"xit").c_str(),&_allXitTIs.at(i_branch),TrkFitInfo::leafnames().c_str());
-      _trkana->Branch((branch+"entkk").c_str(),&_allEntTIKKs.at(i_branch),TrkFitInfoKK::leafnames().c_str());
-      _trkana->Branch((branch+"midkk").c_str(),&_allMidTIKKs.at(i_branch),TrkFitInfoKK::leafnames().c_str());
-      _trkana->Branch((branch+"xitkk").c_str(),&_allXitTIKKs.at(i_branch),TrkFitInfoKK::leafnames().c_str());
       _trkana->Branch((branch+"tch").c_str(),&_allTCHIs.at(i_branch),TrkCaloHitInfo::leafnames().c_str());
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
         _trkana->Branch((branch+"trkqual").c_str(), &_allTQIs.at(i_branch), TrkQualInfo::leafnames().c_str());
@@ -711,9 +702,9 @@ namespace mu2e {
     const XYZVectorF& xitpos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_xitvids.begin())));
 
     _infoStructHelper.fillTrkInfo(kseed,_allTIs.at(i_branch));
-    _infoStructHelper.fillTrkFitInfo(kseed,_allEntTIs.at(i_branch),_allEntTIKKs.at(i_branch),entpos);
-    _infoStructHelper.fillTrkFitInfo(kseed,_allMidTIs.at(i_branch),_allMidTIKKs.at(i_branch),midpos);
-    _infoStructHelper.fillTrkFitInfo(kseed,_allXitTIs.at(i_branch),_allXitTIKKs.at(i_branch),xitpos);
+    _infoStructHelper.fillTrkFitInfo(kseed,_allEntTIs.at(i_branch),entpos);
+    _infoStructHelper.fillTrkFitInfo(kseed,_allMidTIs.at(i_branch),midpos);
+    _infoStructHelper.fillTrkFitInfo(kseed,_allXitTIs.at(i_branch),xitpos);
     //      _tcnt._overlaps[0] = _tcomp.nOverlap(kseed, kseed);
 
     if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){ // want hit level info
@@ -846,10 +837,6 @@ namespace mu2e {
       _allEntTIs.at(i_branch).reset();
       _allMidTIs.at(i_branch).reset();
       _allXitTIs.at(i_branch).reset();
-
-      _allEntTIKKs.at(i_branch).reset();
-      _allMidTIKKs.at(i_branch).reset();
-      _allXitTIKKs.at(i_branch).reset();
 
       _allTCHIs.at(i_branch).reset();
 
