@@ -6,6 +6,7 @@
 #include "Offline/RecoDataProducts/inc/TrkStrawHitSeed.hh"
 
 #include "Offline/TrackerGeom/inc/Tracker.hh"
+#include "KinKal/Trajectory/POCAUtil.hh"
 #include <cmath>
 
 namespace mu2e {
@@ -103,6 +104,18 @@ namespace mu2e {
     trkfitinfokk._momerr = std::sqrt(ksegIter->loopHelix().momentumVariance());
     trkfitinfokk._rad = ksegIter->loopHelix().rad();
     trkfitinfokk._raderr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::rad_));
+    trkfitinfokk._lam = ksegIter->loopHelix().lam();
+    trkfitinfokk._lamerr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::lam_));
+    trkfitinfokk._cx = ksegIter->loopHelix().cx();
+    trkfitinfokk._cxerr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::cx_));
+    trkfitinfokk._cy = ksegIter->loopHelix().cy();
+    trkfitinfokk._cyerr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::cy_));
+    trkfitinfokk._t0 = ksegIter->loopHelix().ztime(ksegIter->position3().z());
+    trkfitinfokk._t0err = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::t0_));
+
+    trkfitinfokk._minr = std::sqrt(trkfitinfokk._cx*trkfitinfokk._cx + trkfitinfokk._cy*trkfitinfokk._cy) - trkfitinfokk._rad;
+    trkfitinfokk._maxr = std::sqrt(trkfitinfokk._cx*trkfitinfokk._cx + trkfitinfokk._cy*trkfitinfokk._cy) + trkfitinfokk._rad;
+    trkfitinfokk._pitch = std::atan2(trkfitinfokk._maxr, (0.5*trkfitinfokk._lam));
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {

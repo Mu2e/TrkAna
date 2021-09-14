@@ -27,13 +27,20 @@ namespace mu2e
   };
 
   struct TrkFitInfoKK {
-    Float_t _mom, _momerr;
+    Float_t _mom, _momerr; // momentum and its uncertinaty [MeV/c]
+    Float_t _minr; // minimum radius of the helix [mm]
+    Float_t _maxr; // maximum radius of the helix [mm]
+    Float_t _pitch; // pitch angle [rad]
     Float_t _rad, _raderr;
+    Float_t _lam, _lamerr;
+    Float_t _cx, _cxerr;
+    Float_t _cy, _cyerr;
+    Float_t _t0, _t0err;
     TrkFitInfoKK() { reset(); }
-    void reset() { _mom=_momerr=-1000.0; _rad=_raderr=0; }
+    void reset() { _mom=_momerr=-1000.0; _minr=_maxr=_pitch=_rad=_raderr=_lam=_lamerr=_cx=_cxerr=_cy=_cyerr=_t0=_t0err=0; }
     static std::string leafnames() {
       static std::string leaves;
-      leaves = std::string("mom/F:momerr/F:rad/F:raderr/F");
+      leaves = std::string("mom/F:momerr/F:minr/F:maxr/F:pitch/F:rad/F:raderr/F:lam/F:lamerr/F:cx/F:cxerr/F:cy/F:cyerr/F:t0/F:t0err/F");
       return leaves;
     }
   };
