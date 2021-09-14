@@ -103,6 +103,8 @@ namespace mu2e {
     trkfitinfo._cxerr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::cx_));
     trkfitinfo._cy = ksegIter->loopHelix().cy();
     trkfitinfo._cyerr = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::cy_));
+    trkfitinfo._phi0 = ksegIter->loopHelix().phi0();
+    trkfitinfo._phi0err = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::phi0_));
     trkfitinfo._t0 = ksegIter->loopHelix().ztime(ksegIter->position3().z());
     trkfitinfo._t0err = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::t0_));
 

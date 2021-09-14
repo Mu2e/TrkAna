@@ -23,12 +23,13 @@ namespace mu2e
     Float_t _lam, _lamerr;
     Float_t _cx, _cxerr;
     Float_t _cy, _cyerr;
+    Float_t _phi0, _phi0err;
     Float_t _t0, _t0err;
     TrkFitInfo() { reset(); }
-    void reset() { _mom=_momerr=-1000.0; _minr=_maxr=_pitch=_rad=_raderr=_lam=_lamerr=_cx=_cxerr=_cy=_cyerr=_t0=_t0err=0; }
+    void reset() { _mom=_momerr=-1000.0; _minr=_maxr=_pitch=_rad=_raderr=_lam=_lamerr=_cx=_cxerr=_cy=_cyerr=_phi0=_phi0err=_t0=_t0err=0; }
     static std::string leafnames() {
       static std::string leaves;
-      leaves = std::string("mom/F:momerr/F:minr/F:maxr/F:pitch/F:rad/F:raderr/F:lam/F:lamerr/F:cx/F:cxerr/F:cy/F:cyerr/F:t0/F:t0err/F");
+      leaves = std::string("mom/F:momerr/F:minr/F:maxr/F:pitch/F:rad/F:raderr/F:lam/F:lamerr/F:cx/F:cxerr/F:cy/F:cyerr/F:phi0/F:phi0err/F:t0/F:t0err/F");
       return leaves;
     }
   };
