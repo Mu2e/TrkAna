@@ -47,8 +47,6 @@ namespace mu2e {
       trkinfo._alg = -1;
 
     trkinfo._pdg = kseed.particle();
-    trkinfo._t0 = kseed.t0().t0();
-    trkinfo._t0err = kseed.t0().t0Err();
 
     fillTrkInfoHits(kseed, trkinfo);
 
