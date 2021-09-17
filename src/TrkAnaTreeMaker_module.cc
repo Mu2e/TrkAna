@@ -701,7 +701,7 @@ namespace mu2e {
     const XYZVectorF& midpos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_midvids.begin())));
     const XYZVectorF& xitpos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_xitvids.begin())));
 
-    _infoStructHelper.fillTrkInfo(kseed,_allTIs.at(i_branch));
+    _infoStructHelper.fillTrkInfo(kseed,_allTIs.at(i_branch),entpos);// fill summary information defined at entrance
     _infoStructHelper.fillTrkFitInfo(kseed,_allEntTIs.at(i_branch),entpos);
     _infoStructHelper.fillTrkFitInfo(kseed,_allMidTIs.at(i_branch),midpos);
     _infoStructHelper.fillTrkFitInfo(kseed,_allXitTIs.at(i_branch),xitpos);

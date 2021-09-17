@@ -16,9 +16,6 @@ namespace mu2e
 // information about the track fit at a particular place
   struct TrkFitInfo {
     Float_t _mom, _momerr; // momentum and its uncertinaty [MeV/c]
-    Float_t _minr; // minimum radial position of the helix [mm]
-    Float_t _maxr; // maximum radial position of the helix [mm]
-    Float_t _pitch; // pitch angle [rad]
     Float_t _time; // time of helix at this segment [ns]
     Float_t _phi; // azimuthal angle of helix at this segment [rad]
 
@@ -30,10 +27,10 @@ namespace mu2e
     Float_t _phi0, _phi0err; // azimuthal angle of helix at z=0 [rad]
     Float_t _t0, _t0err; // time of helix at z=0 [ns]
     TrkFitInfo() { reset(); }
-    void reset() { _mom=_momerr=-1000.0; _minr=_maxr=_pitch=_time=_phi=_rad=_raderr=_lam=_lamerr=_cx=_cxerr=_cy=_cyerr=_phi0=_phi0err=_t0=_t0err=0; }
+    void reset() { _mom=_momerr=_time=_phi=-1000.0; _rad=_raderr=_lam=_lamerr=_cx=_cxerr=_cy=_cyerr=_phi0=_phi0err=_t0=_t0err=0; }
     static std::string leafnames() {
       static std::string leaves;
-      leaves = std::string("mom/F:momerr/F:minr/F:maxr/F:pitch/F:time/F:phi/F:rad/F:raderr/F:lam/F:lamerr/F:cx/F:cxerr/F:cy/F:cyerr/F:phi0/F:phi0err/F:t0/F:t0err/F");
+      leaves = std::string("mom/F:momerr/F:time/F:phi/F:rad/F:raderr/F:lam/F:lamerr/F:cx/F:cxerr/F:cy/F:cyerr/F:phi0/F:phi0err/F:t0/F:t0err/F");
       return leaves;
     }
   };
@@ -42,6 +39,13 @@ namespace mu2e
   struct TrkInfo {
     Int_t _status; // Kalman fit status
     Int_t _alg; // pat. rec. algorithm
+    Float_t _mom; // momentum of track [MeV/c] (at entrance)
+    Float_t _momerr; // error on momentum of track [MeV/c] (at entrance)
+    Float_t _minr; // minimum radial position of the helix [mm] (at entrance)
+    Float_t _maxr; // maximum radial position of the helix [mm] (at entrance)
+    Float_t _pitch; // pitch angle [rad] (at entrance)
+    Float_t _time; // time of helix at this segment [ns] (at entrance)
+    Float_t _phi; // azimuthal angle of helix at this segment [rad] (at entrance)
     Int_t _pdg;   // PDG code of particle assumed in fit
     Int_t _nhits;     // # hits associated to this track
     Int_t _ndof;      // number of degrees of freedom in the fit
@@ -60,6 +64,7 @@ namespace mu2e
     void reset() { 
       _status = -1000;
       _alg=0;
+      _mom = _momerr = _minr = _maxr = _pitch = _time = _phi = -1000.0;
       _pdg = 0;
       _nhits = _nactive = _ndouble = _ndactive = _nnullambig = _nmat = _nmatactive = _nseg = _ndof = -1;
       _chisq = _fitcon = _radlen = _firstflt = _lastflt = -1.0;
@@ -67,7 +72,7 @@ namespace mu2e
       _startvalid = _endvalid = -999999.0;
     }
     static std::string const& leafnames() { static const std::string leaves =
-    std::string("status/I:alg/I:pdg/I:nhits/I:ndof/I:nactive/I:ndouble/I:ndactive/I:nnullambig/I:nmat/I:nmatactive/I:nseg/I:chisq/F:fitcon/F:radlen/F:firstflt/F:lastflt/F:startvalid/F:endvalid/F");
+    std::string("status/I:alg/I:mom/F:momerr/F:minr/F:maxr/F:pitch/F:time/F:phi/F:pdg/I:nhits/I:ndof/I:nactive/I:ndouble/I:ndactive/I:nnullambig/I:nmat/I:nmatactive/I:nseg/I:chisq/F:fitcon/F:radlen/F:firstflt/F:lastflt/F:startvalid/F:endvalid/F");
      return leaves;
     }
   };

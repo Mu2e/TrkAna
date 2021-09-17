@@ -32,7 +32,7 @@ namespace mu2e {
     hitcount._ntpk = nrec._nshftpk;
   }
 
-  void InfoStructHelper::fillTrkInfo(const KalSeed& kseed,TrkInfo& trkinfo) {
+  void InfoStructHelper::fillTrkInfo(const KalSeed& kseed,TrkInfo& trkinfo, const XYZVectorF& pos) {
     if(kseed.status().hasAllProperties(TrkFitFlag::kalmanConverged))
       trkinfo._status = 1;
     else if(kseed.status().hasAllProperties(TrkFitFlag::kalmanOK))
@@ -78,6 +78,20 @@ namespace mu2e {
 	lastflt = kseg.globalFlt(kseg.fmax());
       }
     }
+
+    const auto& ksegIter = kseed.nearestSegment(pos);
+    double cx = ksegIter->loopHelix().cx();
+    double cy = ksegIter->loopHelix().cy();
+    double rad = ksegIter->loopHelix().rad();
+    double lam = ksegIter->loopHelix().lam();
+    trkinfo._mom = ksegIter->loopHelix().momentum();
+    trkinfo._momerr = std::sqrt(ksegIter->loopHelix().momentumVariance());
+    trkinfo._minr = std::sqrt(cx*cx + cy*cy) - rad;
+    trkinfo._maxr = std::sqrt(cx*cx + cy*cy) + rad;
+    trkinfo._pitch = std::atan2(trkinfo._maxr, lam);
+    trkinfo._time = ksegIter->loopHelix().ztime(ksegIter->position3().z());
+    trkinfo._phi = ksegIter->loopHelix().zphi(ksegIter->position3().z());
+
     trkinfo._startvalid = firstflt;
     trkinfo._endvalid = lastflt;
 
@@ -104,9 +118,6 @@ namespace mu2e {
     trkfitinfo._t0 = ksegIter->loopHelix().t0();
     trkfitinfo._t0err = std::sqrt(ksegIter->loopHelix().paramVar(KinKal::LoopHelix::ParamIndex::t0_));
 
-    trkfitinfo._minr = std::sqrt(trkfitinfo._cx*trkfitinfo._cx + trkfitinfo._cy*trkfitinfo._cy) - trkfitinfo._rad;
-    trkfitinfo._maxr = std::sqrt(trkfitinfo._cx*trkfitinfo._cx + trkfitinfo._cy*trkfitinfo._cy) + trkfitinfo._rad;
-    trkfitinfo._pitch = std::atan2(trkfitinfo._maxr, trkfitinfo._lam);
     trkfitinfo._time = ksegIter->loopHelix().ztime(ksegIter->position3().z());
     trkfitinfo._phi = ksegIter->loopHelix().zphi(ksegIter->position3().z());
   }

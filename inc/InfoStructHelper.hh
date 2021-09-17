@@ -45,7 +45,7 @@ namespace mu2e {
     void fillHitCount(const StrawHitFlagCollection& flags, HitCount& hitcount);
     void fillHitCount(RecoCount const& nrec, HitCount& hitcount);
 
-    void fillTrkInfo(const KalSeed& kseed,TrkInfo& trkinfo);
+    void fillTrkInfo(const KalSeed& kseed,TrkInfo& trkinfo, const XYZVectorF& pos);
     void fillTrkFitInfo(const KalSeed& kseed,TrkFitInfo& trkfitinfo, const XYZVectorF& pos);
     void fillTrkInfoHits(const KalSeed& kseed,TrkInfo& trkinfo);
     void fillTrkInfoStraws(const KalSeed& kseed,TrkInfo& trkinfo);
