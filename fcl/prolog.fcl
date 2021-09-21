@@ -43,8 +43,8 @@ BEGIN_PROLOG
 	HitSelectionBits	    : ["EnergySelection","TimeSelection","RadiusSelection"]
 	HitBackgroundBits	    : ["Background"]
 	TimeOffsets         :  { inputs : [ @sequence::DigiCompression.TimeMaps ] }
-        ClusterMVA : { MVAWeights : "TrkPatRec/test/TimeCluster.weights.xml" }
-        ClusterCaloMVA : { MVAWeights : "TrkPatRec/test/TimeClusterCalo.weights.xml" }
+        ClusterMVA : { MVAWeights : "Offline/TrkPatRec/test/TimeCluster.weights.xml" }
+        ClusterCaloMVA : { MVAWeights : "Offline/TrkPatRec/test/TimeClusterCalo.weights.xml" }
 	PlotTimeSpectra : false
 	VDStepPointMCCollection : "compressDigiMCs:virtualdetector"
         T0Calculator : { CaloT0Offset : @local::TrackCaloMatching.DtOffset }
@@ -156,7 +156,7 @@ BEGIN_PROLOG
     genParticleTag : "compressDigiMCs"
     genParticlePdgId : 11
     genParticleGenId : dioTail
-    spectrumFileName : "ConditionsService/data/czarnecki_szafron_Al_2016.tbl"
+    spectrumFileName : "Offline/ConditionsService/data/czarnecki_szafron_Al_2016.tbl"
     BinCenter : false
   }
   genCountLogger: { module_type: GenEventCountReader }

@@ -3,7 +3,7 @@
 // 
 #ifndef TrkPIDInfo_HH
 #define TrkPIDInfo_HH
-#include "RecoDataProducts/inc/TrkCaloHitPID.hh"
+#include "Offline/RecoDataProducts/inc/TrkCaloHitPID.hh"
 #include "Rtypes.h"
 namespace mu2e
 {

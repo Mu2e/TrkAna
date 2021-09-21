@@ -4,8 +4,8 @@
 #ifndef TrkStrawHitInfoMC_HH
 #define TrkStrawHitInfoMC_HH
 #include "Rtypes.h"
-#include "DataProducts/inc/GenVector.hh"
-#include "MCDataProducts/inc/MCRelationship.hh"
+#include "Offline/DataProducts/inc/GenVector.hh"
+#include "Offline/MCDataProducts/inc/MCRelationship.hh"
 namespace mu2e 
 {
    struct TrkStrawHitInfoMC {
