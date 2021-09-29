@@ -3,7 +3,7 @@
 // 
 #ifndef TrkQualInfo_HH
 #define TrkQualInfo_HH
-#include "RecoDataProducts/inc/TrkQual.hh"
+#include "Offline/RecoDataProducts/inc/TrkQual.hh"
 #include "Rtypes.h"
 namespace mu2e
 {

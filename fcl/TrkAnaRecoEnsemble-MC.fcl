@@ -1,4 +1,4 @@
-#include "TrkDiag/fcl/TrkAnaReco.fcl"
+#include "Offline/TrkDiag/fcl/TrkAnaReco.fcl"
 
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequenceNoMC ]
 
