@@ -112,6 +112,10 @@ namespace mu2e {
         trkprimary = trkprimary.parent()->originParticle();
       }
       else {
+        // clear the SimInfos for higher generations since they may have been filled with a previous track in this event
+        for (int j_generation = i_generation+1; j_generation < n_generations; ++j_generation) {
+          siminfos.at(j_generation).reset();
+        }
         break; // this particle doesn't have a parent
       }
     }
