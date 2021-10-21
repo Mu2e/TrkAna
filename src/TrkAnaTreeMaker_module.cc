@@ -241,7 +241,7 @@ namespace mu2e {
     // helper functions
     void fillEventInfo(const art::Event& event);
     void fillTriggerBits(const art::Event& event,std::string const& process);
-    void resetBranches();
+    void resetTrackBranches();
     size_t findSupplementTrack(KalSeedCollection const& kcol,KalSeed const& candidate, bool sameColl);
     void fillAllInfos(const art::Handle<KalSeedCollection>& ksch, size_t i_branch, size_t i_kseed);
 
@@ -513,7 +513,7 @@ namespace mu2e {
     _hinfo.reset();
     _wtinfo.reset();
     // reset
-    resetBranches();
+    resetTrackBranches();
     // fill track counts
     for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _tcnt._counts[i_branch] = (_allKSCHs.at(i_branch))->size();
@@ -527,6 +527,7 @@ namespace mu2e {
     const auto& candidateKSCH = _allKSCHs.at(_candidateIndex);
     const auto& candidateKSC = *candidateKSCH;
     for (size_t i_kseed = 0; i_kseed < candidateKSC.size(); ++i_kseed) {
+      resetTrackBranches(); // reset track branches here so that we don't get information from previous tracks in the next entry
 
       bool skip_kseed = false; // there may be a reason we don't want to write this KalSeed out
 
@@ -831,7 +832,7 @@ namespace mu2e {
     return outputHandles;
   }
 
-  void TrkAnaTreeMaker::resetBranches() {
+  void TrkAnaTreeMaker::resetTrackBranches() {
     for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _allTIs.at(i_branch).reset();
       _allEntTIs.at(i_branch).reset();
