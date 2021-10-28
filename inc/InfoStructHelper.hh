@@ -9,6 +9,7 @@
 #include "Offline/RecoDataProducts/inc/StrawHitFlag.hh"
 #include "Offline/RecoDataProducts/inc/TrkQual.hh"
 #include "Offline/RecoDataProducts/inc/RecoCount.hh"
+#include "Offline/RecoDataProducts/inc/HelixSeed.hh"
 
 #include "Offline/BFieldGeom/inc/BFieldManager.hh"
 #include "Offline/GeometryService/inc/DetectorSystem.hh"
