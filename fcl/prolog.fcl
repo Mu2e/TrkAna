@@ -2,272 +2,199 @@
 #include "Offline/Compression/fcl/prolog.fcl"
 #include "Offline/fcl/TrkCaloDt.fcl"
 BEGIN_PROLOG
-# Diagnostic modules    
-  BD : {
-	module_type : BkgDiag
-	StrawDigiMCCollection : "compressDigiMCs"
-	ComboHitCollection : "makePH"
-	StrawHitFlagCollection : "FlagBkgHits:ComboHits"
-        BackgroundHitClusterCollection:"FlagBkgHits"
-	UseFlagCollection : true
-	TimeOffsets : {
-	  inputs : [ @sequence::DigiCompression.TimeMaps ]
-	}
-  }
-  
-  TRD : {
-    module_type : TrkRecoDiag
-    StrawDigiMCCollection : "compressDigiMCs"
-    VDStepPointMCCollection : "compressDigiMCs:virtualdetector"
-    TimeOffsets : {
-      inputs : [ @sequence::DigiCompression.TimeMaps ]
-    }
-  }
+# Track quality module
+# Example of how to add a new training through fcl
+# -- trainName is the name of the training
+# -- xmlFileName is the name of the XML file
+#  YourNewTrkQualConfig : { trainName : "YourNewTrkQual"
+#    		       	      xmlFileName : "path/to/YourNewTrkQual.weights.xml"
+#		     	    }
+#  TrkQualCatalog.mvaConfigs : [ @sequence::TrkQualCatalog.mvaConfigs, @local::YourNewTrkQualConfig  ]
 
-  SHD : {
-	module_type : StrawHitDiag
-	StrawDigiMCCollection : "compressDigiMCs"
-	ComboHitFlag : false
-	StrawHitFlagCollection : "FlagBkgHits:StrawHits"
-	TimeOffsets : {
-	  inputs : [ @sequence::DigiCompression.TimeMaps ]
-	}
-  }
+TrkQual : {
+  module_type : TrackQuality
+}
+TrkQualNeg : @local::TrkQual
+TrkQualNeg.TrainingName : "TrkQualNeg"
+TrkQualPos : @local::TrkQual
+TrkQualPos.TrainingName : "TrkQualPos"
 
-  TCD : {
-	module_type : TimeClusterDiag
-	StrawDigiMCCollection : "compressDigiMCs"
-	ComboHitCollection : "makePH"
-	UseFlagCollection : true
-	StrawHitFlagCollection : "FlagBkgHits:ComboHits"
-	HitSelectionBits	    : ["EnergySelection","TimeSelection","RadiusSelection"]
-	HitBackgroundBits	    : ["Background"]
-	TimeOffsets         :  { inputs : [ @sequence::DigiCompression.TimeMaps ] }
-        ClusterMVA : { MVAWeights : "Offline/TrkPatRec/test/TimeCluster.weights.xml" }
-        ClusterCaloMVA : { MVAWeights : "Offline/TrkPatRec/test/TimeClusterCalo.weights.xml" }
-	PlotTimeSpectra : false
-	VDStepPointMCCollection : "compressDigiMCs:virtualdetector"
-        T0Calculator : { CaloT0Offset : @local::TrackCaloMatching.DtOffset }
-    }
-
-  HD : {
-	module_type : HelixDiag
-	StrawDigiMCCollection : "compressDigiMCs"
-	VDStepPointMCCollection : "compressDigiMCs:virtualdetector"
-	HelixSeedCollection : "MHDeM"
-	ComboHitCollection : "makePH"
-	UseFlagCollection : true
-	StrawHitFlagCollection : "FlagBkgHits:ComboHits"
-	PlotHelices : false
-	InclusivePlotFlagBits : ["HitsOK"]
-	TimeOffsets         :  { inputs : [ @sequence::DigiCompression.TimeMaps ] }
-  }
-
-  CHD : {
-	module_type : ComboHitDiag
-	StrawDigiMCCollection : "compressDigiMCs"
-	ComboHitCollection : "makePH"
-	UseFlagCollection : true
-	StrawHitFlagCollection : "FlagBkgHits:ComboHits"
-	TimeOffsets : {
-	  inputs : [ @sequence::DigiCompression.TimeMaps ]
-	}
-  }
-
-  # Track quality module
-  # Example of how to add a new training through fcl
-  # -- trainName is the name of the training
-  # -- xmlFileName is the name of the XML file
-  #  YourNewTrkQualConfig : { trainName : "YourNewTrkQual"
-  #    		       	      xmlFileName : "path/to/YourNewTrkQual.weights.xml"
-  #		     	    }
-  #  TrkQualCatalog.mvaConfigs : [ @sequence::TrkQualCatalog.mvaConfigs, @local::YourNewTrkQualConfig  ] 
-
-  TrkQual : {
-  	  module_type : TrackQuality
-  }
-  TrkQualNeg : @local::TrkQual
-  TrkQualNeg.TrainingName : "TrkQualNeg"
-  TrkQualPos : @local::TrkQual
-  TrkQualPos.TrainingName : "TrkQualPos"
-
-  TrkQualDeM		       : @local::TrkQualNeg
-  TrkQualDeM.KalSeedCollection : "KFFDeM"
-  TrkQualUeM		       : @local::TrkQualNeg
-  TrkQualUeM.KalSeedCollection : "KFFUeM"
-  TrkQualDmuM		       : @local::TrkQualNeg
-  TrkQualDmuM.KalSeedCollection : "KFFDmuM"
-  TrkQualUmuM		       : @local::TrkQualNeg
-  TrkQualUmuM.KalSeedCollection : "KFFUmuM"
-  TrkQualDeP		       : @local::TrkQualPos
-  TrkQualDeP.KalSeedCollection : "KFFDeP"
-  TrkQualUeP		       : @local::TrkQualPos
-  TrkQualUeP.KalSeedCollection : "KFFUeP"
-  TrkQualDmuP		       : @local::TrkQualPos
-  TrkQualDmuP.KalSeedCollection : "KFFDmuP"
-  TrkQualUmuP		       : @local::TrkQualPos
-  TrkQualUmuP.KalSeedCollection : "KFFUmuP"
-  # track PID module
-  TrkPID : {
-    module_type : TrackPID
-    MaxDE : 5.0 # MeV
-    DeltaTOffset : -1.15 # specific to MDC2018h
-    MVAConfig : { MVAWeights : "Offline/TrkDiag/data/TrkCaloHitPID.weights.xml"}
-  }
+TrkQualDeM		       : @local::TrkQualNeg
+TrkQualDeM.KalSeedCollection : "KFFDeM"
+TrkQualUeM		       : @local::TrkQualNeg
+TrkQualUeM.KalSeedCollection : "KFFUeM"
+TrkQualDmuM		       : @local::TrkQualNeg
+TrkQualDmuM.KalSeedCollection : "KFFDmuM"
+TrkQualUmuM		       : @local::TrkQualNeg
+TrkQualUmuM.KalSeedCollection : "KFFUmuM"
+TrkQualDeP		       : @local::TrkQualPos
+TrkQualDeP.KalSeedCollection : "KFFDeP"
+TrkQualUeP		       : @local::TrkQualPos
+TrkQualUeP.KalSeedCollection : "KFFUeP"
+TrkQualDmuP		       : @local::TrkQualPos
+TrkQualDmuP.KalSeedCollection : "KFFDmuP"
+TrkQualUmuP		       : @local::TrkQualPos
+TrkQualUmuP.KalSeedCollection : "KFFUmuP"
+# track PID module
+TrkPID : {
+  module_type : TrackPID
+  MaxDE : 5.0 # MeV
+  DeltaTOffset : -1.15 # specific to MDC2018h
+  MVAConfig : { MVAWeights : "Offline/TrkDiag/data/TrkCaloHitPID.weights.xml"}
+}
 # this module only makes sense for downstream electron fits
-  TrkPIDDeM		       : @local::TrkPID
-  TrkPIDDeM.KalSeedCollection : "KFFDeM"
-  TrkPIDDeP		       : @local::TrkPID
-  TrkPIDDeP.KalSeedCollection : "KFFDeP"
+TrkPIDDeM		       : @local::TrkPID
+TrkPIDDeM.KalSeedCollection : "KFFDeM"
+TrkPIDDeP		       : @local::TrkPID
+TrkPIDDeP.KalSeedCollection : "KFFDeP"
 
-  TrkDiag : {
-    analyzers : {
-      TCD : @local::TCD
-      CHD : @local::CHD
-      SHD : @local::SHD
-      HD : @local::HD
-      TRD : @local::TRD
-      BD : @local::BD
-    }
+TrkDiag : {
+  analyzers : {
+    TCD : @local::TCD
+    CHD : @local::CHD
+    SHD : @local::SHD
+    HD : @local::HD
+    TRD : @local::TRD
+    BD : @local::BD
   }
+}
 
 # DIO weighting for flat spectrum electrons
-  DIOWeight: {
-    module_type: DecayInOrbitWeight
-    weightingScheme : pol58
-    inputModule : compressDigiMCs
-    verbosityLevel: 1
-  }
+DIOWeight: {
+  module_type: DecayInOrbitWeight
+  weightingScheme : pol58
+  inputModule : compressDigiMCs
+  verbosityLevel: 1
+}
 # converts ProtonBunchIntensity object to EventWeight object
-  PBIWeight : { 
-    module_type : PBIWeight
-    PBITag : "PBISim"
-    meanPBITag : "PBISim:MeanIntensity"
-  }
+PBIWeight : {
+  module_type : PBIWeight
+  PBITag : "PBISim"
+  meanPBITag : "PBISim:MeanIntensity"
+}
 #Example configuration of RMCWeightModule
-  RMCWeight : { 
-    module_type : RMCWeight
-    kinematic_endpoint : 100
-    internalConversion : 1
-    verbosityLevel : 0
-  }
-  dioLLWeight : {
-    module_type : BinnedSpectrumWeight
-    genParticleTag : "compressDigiMCs"
-    genParticlePdgId : 11
-    genParticleGenId : dioTail
-    spectrumFileName : "Offline/ConditionsService/data/czarnecki_szafron_Al_2016.tbl"
-    BinCenter : false
-  }
-  genCountLogger: { module_type: GenEventCountReader }
+RMCWeight : {
+  module_type : RMCWeight
+  kinematic_endpoint : 100
+  internalConversion : 1
+  verbosityLevel : 0
+}
+dioLLWeight : {
+  module_type : BinnedSpectrumWeight
+  genParticleTag : "compressDigiMCs"
+  genParticlePdgId : 11
+  genParticleGenId : dioTail
+  spectrumFileName : "Offline/ConditionsService/data/czarnecki_szafron_Al_2016.tbl"
+  BinCenter : false
+}
+genCountLogger: { module_type: GenEventCountReader }
 
 # candidate configuration for TrkAna
-  AllOpt : { fillMC : true 
-	     trkqual : "TrkQual"
-	     fillTrkQual : true 
-	     trkpid : "TrkPID"
-	     fillTrkPID : true
-	     fillHits : true
-	     genealogyDepth : 5
+AllOpt : { fillMC : true
+  trkqual : "TrkQual"
+  fillTrkQual : true
+  trkpid : "TrkPID"
+  fillTrkPID : true
+  fillHits : true
+  genealogyDepth : 5
+}
+
+DeM : { input : "KFF"
+  branch : "de"
+  suffix : "DeM"
+}
+UeM : { input : "KFF"
+  branch : "ue"
+  suffix : "UeM"
+}
+DmuM : { input : "KFF"
+  branch : "dm"
+  suffix : "DmuM"
+}
+UmuM : { input : "KFF"
+  branch : "um"
+  suffix : "UmuM"
+}
+DeP : { input : "KFF"
+  branch : "de"
+  suffix : "DeP"
+}
+UeP : { input : "KFF"
+  branch : "ue"
+  suffix : "UeP"
+}
+DmuP : { input : "KFF"
+  branch : "dm"
+  suffix : "DmuP"
+}
+UmuP : { input : "KFF"
+  branch : "um"
+  suffix : "UmuP"
+}
+
+
+TrkAnaTreeMaker : {
+  module_type : TrkAnaTreeMaker
+  RecoCountTag : "SelectRecoMC"
+  PBITag : "PBISim"
+  CrvCoincidenceModuleLabel : "SelectRecoMC"
+  CrvCoincidenceMCModuleLabel : "compressRecoMCs"
+  CrvRecoPulseLabel : "SelectRecoMC"
+  CrvStepLabel : "compressRecoMCs"
+  SimParticleLabel : "compressRecoMCs"
+  MCTrajectoryLabel : "compressRecoMCs"
+  CrvWaveformsModuleLabel : "compressRecoMCs"
+  CrvDigiModuleLabel : "SelectRecoMC"
+  CrvPlaneY : 2653
+  FillMCInfo : true
+  FillTrkQualInfo : true
+  FillTrkPIDInfo : true
+  FillHitInfo : false
+  FillTriggerInfo : true
+  ProcessEmptyEvents : false
+  AnalyzeCRV : true
+  AnalyzeCRVPulses : false
+  PrimaryParticleTag : "compressRecoMCs"
+  KalSeedMCAssns : "SelectRecoMC"
+  CaloClusterMCTag : "compressRecoMCs"
+  InfoMCStructHelper : {
+    SimParticleCollectionTag : "compressRecoMCs"
+    MinGoodMomFraction : 0.9
+  }
+}
+
+TrkAnaReco : {
+
+  producers: {
+    PBIWeight : @local::PBIWeight
+    TrkQualDeM : @local::TrkQualDeM
+    TrkQualUeM : @local::TrkQualUeM
+    TrkQualDeP : @local::TrkQualDeP
+    TrkQualUeP : @local::TrkQualUeP
+    TrkQualDmuM : @local::TrkQualDmuM
+    TrkQualDmuP : @local::TrkQualDmuP
+    TrkQualUmuM : @local::TrkQualUmuM
+    TrkQualUmuP : @local::TrkQualUmuP
+    TrkPIDDeM : @local::TrkPIDDeM
+    TrkPIDDeP : @local::TrkPIDDeP
   }
 
-  DeM : { input : "KFF" 
-      	  branch : "de" 
-	  suffix : "DeM" 
-  }
-  UeM : { input : "KFF" 
-      	  branch : "ue" 
-	  suffix : "UeM" 
-  }
-  DmuM : { input : "KFF" 
-      	  branch : "dm" 
-	  suffix : "DmuM" 
-  }
-  UmuM : { input : "KFF" 
-      	  branch : "um" 
-	  suffix : "UmuM" 
-  }
-  DeP : { input : "KFF" 
-      	  branch : "de" 
-	  suffix : "DeP" 
-  }
-  UeP : { input : "KFF" 
-      	  branch : "ue" 
-	  suffix : "UeP" 
-  }
-  DmuP : { input : "KFF" 
-      	  branch : "dm" 
-	  suffix : "DmuP" 
-  }
-  UmuP : { input : "KFF" 
-      	  branch : "um" 
-	  suffix : "UmuP" 
-  }
-
-
-  TrkAnaTreeMaker : {
-    module_type : TrkAnaTreeMaker
-    RecoCountTag : "SelectRecoMC"
-    PBITag : "PBISim"
-    CrvCoincidenceModuleLabel : "SelectRecoMC"
-    CrvCoincidenceMCModuleLabel : "compressRecoMCs"
-    CrvRecoPulseLabel : "SelectRecoMC"
-    CrvStepLabel : "compressRecoMCs"
-    SimParticleLabel : "compressRecoMCs"
-    MCTrajectoryLabel : "compressRecoMCs"
-    CrvWaveformsModuleLabel : "compressRecoMCs"
-    CrvDigiModuleLabel : "SelectRecoMC"
-    CrvPlaneY : 2653
-    FillMCInfo : true
-    FillTrkQualInfo : true
-    FillTrkPIDInfo : true
-    FillHitInfo : false
-    FillTriggerInfo : true
-    ProcessEmptyEvents : false
-    AnalyzeCRV : true
-    AnalyzeCRVPulses : false
-    PrimaryParticleTag : "compressRecoMCs"
-    KalSeedMCAssns : "SelectRecoMC"
-    CaloClusterMCTag : "compressRecoMCs"
-    InfoMCStructHelper : {
-      SimParticleCollectionTag : "compressRecoMCs"
-      TimeMaps : [ @sequence::RecoCompression.TimeMaps ]
-      MinGoodMomFraction : 0.9
+  analyzers : {
+    TrkAnaNeg : { @table::TrkAnaTreeMaker
+      candidate : @local::DeM
+      supplements : [ @local::UeM, @local::DmuM ]
     }
+    TrkAnaPos : { @table::TrkAnaTreeMaker
+      candidate : @local::DeP
+      supplements : [ @local::UeP, @local::DmuP ]
+    }
+
+    genCountLogger : @local::genCountLogger
   }
 
-  TrkAnaReco : {
-
-   producers: {
-      PBIWeight : @local::PBIWeight
-      TrkQualDeM : @local::TrkQualDeM
-      TrkQualUeM : @local::TrkQualUeM
-      TrkQualDeP : @local::TrkQualDeP
-      TrkQualUeP : @local::TrkQualUeP
-      TrkQualDmuM : @local::TrkQualDmuM
-      TrkQualDmuP : @local::TrkQualDmuP
-      TrkQualUmuM : @local::TrkQualUmuM
-      TrkQualUmuP : @local::TrkQualUmuP
-      TrkPIDDeM : @local::TrkPIDDeM
-      TrkPIDDeP : @local::TrkPIDDeP
-   }
-
-   analyzers : {
-      TrkAnaNeg : { @table::TrkAnaTreeMaker 
-      		    candidate : @local::DeM
-		    supplements : [ @local::UeM, @local::DmuM ]
-		  }
-      TrkAnaPos : { @table::TrkAnaTreeMaker
-      		    candidate : @local::DeP
-		    supplements : [ @local::UeP, @local::DmuP ]
-		  }
-
-      genCountLogger : @local::genCountLogger
-   }
-
-   TrigSequence : [ PBIWeight, TrkQualDeM, TrkQualUeM, TrkQualDmuM, TrkQualDeP, TrkQualUeP, TrkQualDmuP, TrkQualUmuM, TrkQualUmuP, TrkPIDDeM, TrkPIDDeP ]
-   EndSequenceNoMC : [ TrkAnaNeg, TrkAnaPos ]
-   EndSequence : [ TrkAnaNeg, TrkAnaPos, genCountLogger ]
+  TrigSequence : [ PBIWeight, TrkQualDeM, TrkQualUeM, TrkQualDmuM, TrkQualDeP, TrkQualUeP, TrkQualDmuP, TrkQualUmuM, TrkQualUmuP, TrkPIDDeM, TrkPIDDeP ]
+  EndSequenceNoMC : [ TrkAnaNeg, TrkAnaPos ]
+  EndSequence : [ TrkAnaNeg, TrkAnaPos, genCountLogger ]
 }
 
 END_PROLOG
