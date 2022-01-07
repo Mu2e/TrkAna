@@ -12,7 +12,7 @@
 #include "BTrk/TrkBase/TrkHelixUtils.hh"
 
 #include "Offline/GlobalConstantsService/inc/GlobalConstantsHandle.hh"
-#include "Offline/GlobalConstantsService/inc/ParticleDataTable.hh"
+#include "Offline/GlobalConstantsService/inc/ParticleDataList.hh"
 #include "Offline/GeometryService/inc/GeomHandle.hh"
 #include "Offline/GeometryService/inc/DetectorSystem.hh"
 #include "Offline/BFieldGeom/inc/BFieldManager.hh"
@@ -163,7 +163,7 @@ namespace mu2e {
 
     GeomHandle<BFieldManager> bfmgr;
     GeomHandle<DetectorSystem> det;
-    GlobalConstantsHandle<ParticleDataTable> pdt;
+    GlobalConstantsHandle<ParticleDataList> pdt;
     static CLHEP::Hep3Vector vpoint_mu2e = det->toMu2e(CLHEP::Hep3Vector(0.0,0.0,0.0));
     static double bz = bfmgr->getBField(vpoint_mu2e).z();
 
@@ -187,7 +187,7 @@ namespace mu2e {
 	    double hflt(0.0);
 	    HepPoint ppos(trkinfomcstep._pos.x(), trkinfomcstep._pos.y(), trkinfomcstep._pos.z());
 	    CLHEP::Hep3Vector mom = GenVector::Hep3Vec(i_mcstep._mom);
-	    double charge = pdt->particle(kseedmc.simParticle()._pdg).ref().charge();
+	    double charge = pdt->particle(kseedmc.simParticle()._pdg).charge();
 	    TrkHelixUtils::helixFromMom( parvec, hflt,ppos, mom,charge,bz);
 	    trkinfomcstep._hpar = helixpar(parvec);
 	  }
