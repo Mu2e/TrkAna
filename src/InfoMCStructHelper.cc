@@ -169,7 +169,7 @@ namespace mu2e {
     static double bz = bfmgr->getBField(vpoint_mu2e).z();
 
     const auto& mcsteps = kseedmc._vdsteps;
-    double dmin = std::numeric_limts<double>::max();
+    double dmin = std::numeric_limits<double>::max();
     for (const auto& i_mcstep : mcsteps) {
       for(auto vid : vids) {
 	if (i_mcstep._vdid == vid) {
