@@ -18,6 +18,7 @@
 #include "Offline/BFieldGeom/inc/BFieldManager.hh"
 
 #include <map>
+#include <limits>
 
 namespace mu2e {
   void InfoMCStructHelper::fillTrkInfoMC(const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
@@ -168,7 +169,7 @@ namespace mu2e {
     static double bz = bfmgr->getBField(vpoint_mu2e).z();
 
     const auto& mcsteps = kseedmc._vdsteps;
-    double dmin = FLT_MAX;
+    double dmin = std::numeric_limts<double>::max();
     for (const auto& i_mcstep : mcsteps) {
       for(auto vid : vids) {
 	if (i_mcstep._vdid == vid) {
