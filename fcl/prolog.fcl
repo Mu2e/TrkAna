@@ -48,16 +48,6 @@ TrkPIDDeM.KalSeedCollection : "KFFDeM"
 TrkPIDDeP		       : @local::TrkPID
 TrkPIDDeP.KalSeedCollection : "KFFDeP"
 
-TrkDiag : {
-  analyzers : {
-    TCD : @local::TCD
-    CHD : @local::CHD
-    SHD : @local::SHD
-    HD : @local::HD
-    TRD : @local::TRD
-    BD : @local::BD
-  }
-}
 
 # DIO weighting for flat spectrum electrons
 DIOWeight: {
