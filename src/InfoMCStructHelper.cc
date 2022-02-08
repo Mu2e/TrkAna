@@ -56,22 +56,22 @@ namespace mu2e {
       const auto& tshmc = kseedmc._tshmcs.at(i_digi);
 
       if (kseedmc.simParticle(tshmc._spindex)._rel == MCRelationship::same) {
-	++trkinfomc._ndigi;
-	if(sqrt(tshmc.particleMomentum().mag2())/simmom > _mingood) {
-	  ++trkinfomc._ndigigood;
-	}
+        ++trkinfomc._ndigi;
+        if(sqrt(tshmc.particleMomentum().mag2())/simmom > _mingood) {
+          ++trkinfomc._ndigigood;
+        }
 
-	// easiest way to get MC ambiguity is through info object
-	TrkStrawHitInfoMC tshinfomc;
-	fillHitInfoMC(kseedmc,tshinfomc,tshmc);
-	// the MCDigi list can be longer than the # of TrkStrawHits in the seed:
-	/*	if(i_digi < kseed.hits().size()){
-	  const auto& ihit = kseed.hits().at(i_digi);
-	  if(ihit.ambig()*tshinfomc._ambig > 0) {
-	    ++trkinfomc._nambig; // TODO
-	  }
-	}
-	*/
+        // easiest way to get MC ambiguity is through info object
+        TrkStrawHitInfoMC tshinfomc;
+        fillHitInfoMC(kseedmc,tshinfomc,tshmc);
+        // the MCDigi list can be longer than the # of TrkStrawHits in the seed:
+        /*  if(i_digi < kseed.hits().size()){
+            const auto& ihit = kseed.hits().at(i_digi);
+            if(ihit.ambig()*tshinfomc._ambig > 0) {
+            ++trkinfomc._nambig; // TODO
+            }
+            }
+            */
       }
     }
   }
@@ -132,8 +132,8 @@ namespace mu2e {
     for(auto const& spp : primary.primarySimParticles()){
       MCRelationship mcrel(spp,trkprimary);
       if(mcrel > bestrel){
-	bestrel = mcrel;
-	bestprimarysp = spp;
+        bestrel = mcrel;
+        bestprimarysp = spp;
       }
     } // redundant: FIXME!
     fillSimInfo(bestprimarysp, priinfo);
@@ -160,7 +160,7 @@ namespace mu2e {
   }
 
   void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep,
-                                             std::vector<int> const& vids, double target_time) {
+      std::vector<int> const& vids, double target_time) {
 
     GeomHandle<BFieldManager> bfmgr;
     GeomHandle<DetectorSystem> det;
@@ -169,32 +169,32 @@ namespace mu2e {
     static double bz = bfmgr->getBField(vpoint_mu2e).z();
 
     const auto& mcsteps = kseedmc._vdsteps;
-    double dmin = std::numeric_limits<float>::max();
-    for (const auto& i_mcstep : mcsteps) {
-      for(auto vid : vids) {
-	if (i_mcstep._vdid == vid) {
-	  // take the VD step with the time closest to target_time
-	  // this is so that we can take the correct step when looking at upstream/downstream trachs
-	  double corrected_time = fmod(i_mcstep._time, 1695); // VDStep is created with the time offsets included
-	  if(fabs(target_time - corrected_time) < dmin){
-	    dmin = fabs(target_time - corrected_time);//i_mcstep._time;
-	    trkinfomcstep._time = i_mcstep._time;
-	    trkinfomcstep._mom = std::sqrt(i_mcstep._mom.mag2());
-	    trkinfomcstep._costh = std::cos(i_mcstep._mom.theta());
-	    trkinfomcstep._phi = i_mcstep._mom.phi();
-	    trkinfomcstep._pos = GenVector::Hep3Vec(i_mcstep._pos);
+    double dmin = std::numeric_limits<double>::max();
+      for (const auto& i_mcstep : mcsteps) {
+        for(auto vid : vids) {
+          if (i_mcstep._vdid == vid) {
+            // take the VD step with the time closest to target_time
+            // this is so that we can take the correct step when looking at upstream/downstream trachs
+            double corrected_time = fmod(i_mcstep._time, 1695); // VDStep is created with the time offsets included
+            if(fabs(target_time - corrected_time) < dmin){
+              dmin = fabs(target_time - corrected_time);//i_mcstep._time;
+              trkinfomcstep._time = i_mcstep._time;
+              trkinfomcstep._mom = std::sqrt(i_mcstep._mom.mag2());
+              trkinfomcstep._costh = std::cos(i_mcstep._mom.theta());
+              trkinfomcstep._phi = i_mcstep._mom.phi();
+              trkinfomcstep._pos = GenVector::Hep3Vec(i_mcstep._pos);
 
-	    CLHEP::HepVector parvec(5,0);
-	    double hflt(0.0);
-	    HepPoint ppos(trkinfomcstep._pos.x(), trkinfomcstep._pos.y(), trkinfomcstep._pos.z());
-	    CLHEP::Hep3Vector mom = GenVector::Hep3Vec(i_mcstep._mom);
-	    double charge = pdt->particle(kseedmc.simParticle()._pdg).charge();
-	    TrkHelixUtils::helixFromMom( parvec, hflt,ppos, mom,charge,bz);
-	    trkinfomcstep._hpar = helixpar(parvec);
-	  }
-	}
+              CLHEP::HepVector parvec(5,0);
+              double hflt(0.0);
+              HepPoint ppos(trkinfomcstep._pos.x(), trkinfomcstep._pos.y(), trkinfomcstep._pos.z());
+              CLHEP::Hep3Vector mom = GenVector::Hep3Vec(i_mcstep._mom);
+              double charge = pdt->particle(kseedmc.simParticle()._pdg).charge();
+              TrkHelixUtils::helixFromMom( parvec, hflt,ppos, mom,charge,bz);
+              trkinfomcstep._hpar = helixpar(parvec);
+            }
+          }
+        }
       }
-    }
   }
 
   void InfoMCStructHelper::fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs) {

@@ -22,7 +22,6 @@ mainlib = helper.make_mainlib ( [
     'art_Framework_Principal',
     'art_Framework_Services_Registry',
     'art_Utilities',
-    'HepPDT',
     'mu2e_GlobalConstantsService',
     'mu2e_Mu2eInterfaces',
     'mu2e_Mu2eUtilities',
