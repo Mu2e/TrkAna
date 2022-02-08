@@ -18,6 +18,7 @@
 #include "Offline/BFieldGeom/inc/BFieldManager.hh"
 
 #include <map>
+#include <limits>
 
 namespace mu2e {
   void InfoMCStructHelper::fillTrkInfoMC(const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
@@ -62,9 +63,9 @@ namespace mu2e {
 
 	// easiest way to get MC ambiguity is through info object
 	TrkStrawHitInfoMC tshinfomc;
-	fillHitInfoMC(kseedmc,tshinfomc,tshmc);  
+	fillHitInfoMC(kseedmc,tshinfomc,tshmc);
 	// the MCDigi list can be longer than the # of TrkStrawHits in the seed:
-	/*	if(i_digi < kseed.hits().size()){ 
+	/*	if(i_digi < kseed.hits().size()){
 	  const auto& ihit = kseed.hits().at(i_digi);
 	  if(ihit.ambig()*tshinfomc._ambig > 0) {
 	    ++trkinfomc._nambig; // TODO
@@ -86,8 +87,8 @@ namespace mu2e {
     tshinfomc._t0 = tshmc._time;
     tshinfomc._edep = tshmc._energySum;
     tshinfomc._mom = std::sqrt(tshmc._mom.mag2());
-    tshinfomc._cpos  = tshmc._cpos; 
-	
+    tshinfomc._cpos  = tshmc._cpos;
+
     // find the step midpoint
     const Straw& straw = tracker.getStraw(tshmc._strawId);
     CLHEP::Hep3Vector mcsep = GenVector::Hep3Vec(tshmc._cpos)-straw.getMidPoint();
@@ -138,7 +139,7 @@ namespace mu2e {
     fillSimInfo(bestprimarysp, priinfo);
   }
 
-  
+
   void InfoMCStructHelper::fillSimInfo(const art::Ptr<SimParticle>& sp, SimInfo& siminfo) {
     if(sp.isNonnull()){
       fillSimInfo(*sp, siminfo);
@@ -168,7 +169,7 @@ namespace mu2e {
     static double bz = bfmgr->getBField(vpoint_mu2e).z();
 
     const auto& mcsteps = kseedmc._vdsteps;
-    double dmin = FLT_MAX;
+    double dmin = std::numeric_limits<float>::max();
     for (const auto& i_mcstep : mcsteps) {
       for(auto vid : vids) {
 	if (i_mcstep._vdid == vid) {
