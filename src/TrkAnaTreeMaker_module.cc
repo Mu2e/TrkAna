@@ -144,6 +144,7 @@ namespace mu2e {
       fhicl::Atom<bool> filltrkqual{Name("FillTrkQualInfo"),false};
       fhicl::Atom<bool> filltrkpid{Name("FillTrkPIDInfo"),false};
       fhicl::Atom<bool> filltrig{Name("FillTriggerInfo"),false};
+      fhicl::Atom<std::string> trigProcessName{Name("TriggerProcessName"), Comment("Process name for Trigger")};
       fhicl::Atom<std::string> trigpathsuffix{Name("TriggerPathSuffix"), "_trigger"}; // all trigger paths have this in the name
       fhicl::Atom<int> diag{Name("diagLevel"),1};
       fhicl::Atom<bool> fillhits{Name("FillHitInfo"),Comment("Global switch to turn on/off hit-level info"), false};
@@ -430,7 +431,7 @@ namespace mu2e {
     std::vector<art::Handle<EventWeight> > eventWeightHandles;
     _wtHandles = createSpecialBranch(event, "evtwt", eventWeightHandles, _wtinfo);
 
-    std::string process = "MixPrimary"; // Digitization process is where the trigger is run
+    std::string process = _conf.trigProcessName();
     // Get the KalSeedCollections for both the candidate and all supplements
     _allKSCHs.clear();
     _allRQCHs.clear();
