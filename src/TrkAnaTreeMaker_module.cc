@@ -154,7 +154,7 @@ namespace mu2e {
       fhicl::Atom<bool> fillmcxtra{Name("FillExtraMCSteps"),false};
       fhicl::OptionalSequence<art::InputTag> mcxtratags{Name("ExtraMCStepCollectionTags"), Comment("Input tags for any other StepPointMCCollections you want written out")};
       fhicl::OptionalSequence<std::string> mcxtrasuffix{Name("ExtraMCStepBranchSuffix"), Comment("The suffix to the branch for the extra MC steps (e.g. putting \"ipa\" will give a branch \"demcipa\")")};
-      fhicl::Atom<int> splitlevel{Name("splitlevel"),0};
+      fhicl::Atom<int> splitlevel{Name("splitlevel"),99};
       fhicl::Atom<int> buffsize{Name("buffsize"),32000};
     };
     typedef art::EDAnalyzer::Table<Config> Parameters;
