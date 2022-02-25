@@ -326,7 +326,7 @@ namespace mu2e {
     _trkana=tfs->make<TTree>("trkana","track analysis");
     _tht=tfs->make<TProfile>("tht","Track Hit Time Profile",RecoCount::_nshtbins,-25.0,1725.0);
 // add event info branch
-    _trkana->Branch("evtinfo.",&_einfo,EventInfo::leafnames().c_str());
+    _trkana->Branch("evtinfo.",&_einfo);
 // hit counting branch
     _trkana->Branch("hcnt.",&_hcnt,HitCount::leafnames().c_str());
 // track counting branch
@@ -340,11 +340,11 @@ namespace mu2e {
     for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string branch = i_branchConfig.branch();
-      _trkana->Branch(branch.c_str(),&_allTIs.at(i_branch),TrkInfo::leafnames().c_str());
+      _trkana->Branch(branch.c_str(),&_allTIs.at(i_branch));
       _trkana->Branch((branch+"ent").c_str(),&_allEntTIs.at(i_branch),TrkFitInfo::leafnames().c_str());
       _trkana->Branch((branch+"mid").c_str(),&_allMidTIs.at(i_branch),TrkFitInfo::leafnames().c_str());
       _trkana->Branch((branch+"xit").c_str(),&_allXitTIs.at(i_branch),TrkFitInfo::leafnames().c_str());
-      _trkana->Branch((branch+"tch").c_str(),&_allTCHIs.at(i_branch),TrkCaloHitInfo::leafnames().c_str());
+      _trkana->Branch((branch+"tch").c_str(),&_allTCHIs.at(i_branch));
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
         _trkana->Branch((branch+"trkqual").c_str(), &_allTQIs.at(i_branch), TrkQualInfo::leafnames().c_str());
       }
@@ -359,7 +359,7 @@ namespace mu2e {
       }
       // optionall add MC branches
       if(_conf.fillmc() && i_branchConfig.options().fillmc()){
-        _trkana->Branch((branch+"mc").c_str(),&_allMCTIs.at(i_branch),TrkInfoMC::leafnames().c_str());
+        _trkana->Branch((branch+"mc").c_str(),&_allMCTIs.at(i_branch));
         std::string branch_suffix = "";
         for (int i_generation = 0; i_generation < i_branchConfig.options().genealogyDepth(); ++i_generation) {
           if (i_generation == 0) {
@@ -372,12 +372,12 @@ namespace mu2e {
             branch_suffix = "g" + branch_suffix;
           }
           std::string full_branchname = branch + "mc" + branch_suffix;
-          _trkana->Branch((full_branchname).c_str(),&_allMCSimTIs.at(i_branch).at(i_generation),SimInfo::leafnames().c_str());
+          _trkana->Branch((full_branchname).c_str(),&_allMCSimTIs.at(i_branch).at(i_generation));
         }
-        _trkana->Branch((branch+"mcpri").c_str(),&_allMCPriTIs.at(i_branch),SimInfo::leafnames().c_str());
-        _trkana->Branch((branch+"mcent").c_str(),&_allMCEntTIs.at(i_branch),TrkInfoMCStep::leafnames().c_str());
-        _trkana->Branch((branch+"mcmid").c_str(),&_allMCMidTIs.at(i_branch),TrkInfoMCStep::leafnames().c_str());
-        _trkana->Branch((branch+"mcxit").c_str(),&_allMCXitTIs.at(i_branch),TrkInfoMCStep::leafnames().c_str());
+        _trkana->Branch((branch+"mcpri").c_str(),&_allMCPriTIs.at(i_branch));
+        _trkana->Branch((branch+"mcent").c_str(),&_allMCEntTIs.at(i_branch));
+        _trkana->Branch((branch+"mcmid").c_str(),&_allMCMidTIs.at(i_branch));
+        _trkana->Branch((branch+"mcxit").c_str(),&_allMCXitTIs.at(i_branch));
         _trkana->Branch((branch+"tchmc").c_str(),&_allMCTCHIs.at(i_branch),CaloClusterInfoMC::leafnames().c_str());
         // at hit-level MC information
         // (for the time being diagLevel will still work, but I propose removing this at some point)
@@ -412,7 +412,7 @@ namespace mu2e {
       }
     }
 // helix info
-   if(_conf.helices()) _trkana->Branch("helixinfo",&_hinfo,HelixInfo::leafnames().c_str());
+   if(_conf.helices()) _trkana->Branch("helixinfo",&_hinfo);
   }
 
   void TrkAnaTreeMaker::beginSubRun(const art::SubRun & subrun ) {
@@ -624,13 +624,13 @@ namespace mu2e {
 
   void TrkAnaTreeMaker::fillEventInfo( const art::Event& event) {
     // fill basic event information
-    _einfo._eventid = event.event();
-    _einfo._runid = event.run();
-    _einfo._subrunid = event.subRun();
+    _einfo.eventid = event.event();
+    _einfo.runid = event.run();
+    _einfo.subrunid = event.subRun();
 
     auto PBIhandle = event.getValidHandle<mu2e::ProtonBunchIntensity>(_PBITag);
     auto PBI = *PBIhandle;
-    _einfo._nprotons = PBI.intensity();
+    _einfo.nprotons = PBI.intensity();
 
     // get event weight products
     std::vector<Float_t> weights;
@@ -765,7 +765,8 @@ namespace mu2e {
         //        std::cout << "KalSeed Ptr " << kptr << " match Ptr " << iksmca->first << std::endl;
         if(iksmca->first == kptr) {
           auto const& kseedmc = *(iksmca->second);
-          _infoMCStructHelper.fillTrkInfoMC(kseedmc, _allMCTIs.at(i_branch));
+          auto const& kseed = *kptr;
+          _infoMCStructHelper.fillTrkInfoMC(kseed, kseedmc, _allMCTIs.at(i_branch));
           double t0 = kseed.t0().t0();
           _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCEntTIs.at(i_branch), _entvids, t0);
           _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCMidTIs.at(i_branch), _midvids, t0);

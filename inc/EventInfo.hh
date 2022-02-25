@@ -9,16 +9,10 @@
 namespace mu2e
 {
   struct EventInfo {
-    Int_t _eventid, _runid, _subrunid; // run/event identification
-    Int_t _nprotons; // # of protons on target for this microbunch
-    static std::string const& leafnames() { 
-      static const std::string leaves =
-	std::string("eventid/I:runid/I:subrunid/I:") +
-	std::string("nprotons/I");
-	return leaves;
-    }
+    Int_t eventid, runid, subrunid; // run/event identification
+    Int_t nprotons; // # of protons on target for this microbunch
     void reset() {
-      _eventid = _runid = _subrunid = _nprotons = 0;
+      eventid = runid = subrunid = nprotons = 0;
     }
   };
 }

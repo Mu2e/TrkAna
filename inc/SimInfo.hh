@@ -14,18 +14,12 @@ namespace mu2e
 {
 // general info about the SimParticle which was simulated
   struct SimInfo {
-    Int_t _pdg, _gen; // true PDG code, generator code
-    Float_t _time;  // time of this step
-    Float_t _mom; // scalar momentum at the start of this step
-    Float_t _costh; // cos(theta), where theta is angle between particle's momentum and z-axis
-    Float_t _phi;   // azimuthal angle of particle's momentum vector
-    XYZVectorF _pos;  // particle position at the start of this step
+    Int_t pdg, gen; // true PDG code, generator code
+    Float_t time;  // time of this step
+    XYZVectorF mom;  // particle momentum at the start of this step
+    XYZVectorF pos;  // particle position at the start of this step
     SimInfo() { reset(); }
-    void reset() { _pdg = _gen = -1; _time = -1.0; _mom = 0; _costh = 0; _phi = 0; _pos = XYZVectorF(); }
-    static std::string leafnames() { static std::string leaves;
-      leaves = std::string("pdg/I:gen/I:t0/F:mom/F:costh/F:phi/F:") + Names::XYZnames("pos");
-      return leaves;
-    }
+    void reset() { pdg = gen = -1; time = -1.0; mom =XYZVectorF(); pos = XYZVectorF(); }
   };
 }
 #endif
