@@ -21,33 +21,31 @@
 #include <limits>
 
 namespace mu2e {
-  void InfoMCStructHelper::fillTrkInfoMC(const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
+  void InfoMCStructHelper::fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
     // use the primary match of the track
     // primary associated SimParticle
     auto trkprimary = kseedmc.simParticle().simParticle(_spcH);
     if(kseedmc.simParticles().size() > 0){
       auto const& simp = kseedmc.simParticles().front();
-      trkinfomc._gen = simp._gid.id();
-      trkinfomc._pdg = simp._pdg;
-      trkinfomc._proc = simp._proc;
-      trkinfomc._nhits = simp._nhits; // number of hits from the primary particle
-      trkinfomc._nactive = simp._nactive; // number of active hits from the primary particle
-      trkinfomc._prel = simp._rel; // relationship of the track primary to the event primary
+      trkinfomc.gen = simp._gid.id();
+      trkinfomc.pdg = simp._pdg;
+      trkinfomc.proc = simp._proc;
+      trkinfomc.nhits = simp._nhits; // number of hits from the primary particle
+      trkinfomc.nactive = simp._nactive; // number of active hits from the primary particle
+      trkinfomc.prel = simp._rel; // relationship of the track primary to the event primary
     }
 
-    fillTrkInfoMCDigis(kseedmc, trkinfomc);
+    fillTrkInfoMCDigis(kseed, kseedmc, trkinfomc);
 
     // fill the origin information of this SimParticle
     GeomHandle<DetectorSystem> det;
-    trkinfomc._otime = trkprimary->startGlobalTime() + _toff.totalTimeOffset(trkprimary);
-    trkinfomc._opos = XYZVectorF(det->toDetector(trkprimary->startPosition()));
-    trkinfomc._omom = trkprimary->startMomentum().vect().mag();
-    trkinfomc._ocosth = std::cos(trkprimary->startMomentum().vect().theta());
-    trkinfomc._ophi = trkprimary->startMomentum().vect().phi();
+    trkinfomc.otime = trkprimary->startGlobalTime() + _toff.totalTimeOffset(trkprimary);
+    trkinfomc.opos = XYZVectorF(det->toDetector(trkprimary->startPosition()));
+    trkinfomc.omom = XYZVectorF(trkprimary->startMomentum().vect());
   }
 
-  void InfoMCStructHelper::fillTrkInfoMCDigis(const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
-    trkinfomc._ndigi = 0; trkinfomc._ndigigood = 0, trkinfomc._nambig = 0;
+  void InfoMCStructHelper::fillTrkInfoMCDigis(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
+    trkinfomc.ndigi = 0; trkinfomc.ndigigood = 0, trkinfomc.nambig = 0;
     // find the first segment momentum as reference
     double simmom = 1.0;
     if(kseedmc.simParticles().size()>0)
@@ -56,22 +54,21 @@ namespace mu2e {
       const auto& tshmc = kseedmc._tshmcs.at(i_digi);
 
       if (kseedmc.simParticle(tshmc._spindex)._rel == MCRelationship::same) {
-	++trkinfomc._ndigi;
-	if(sqrt(tshmc.particleMomentum().mag2())/simmom > _mingood) {
-	  ++trkinfomc._ndigigood;
-	}
+        ++trkinfomc.ndigi;
+        if(sqrt(tshmc.particleMomentum().mag2())/simmom > _mingood) {
+          ++trkinfomc.ndigigood;
+        }
 
-	// easiest way to get MC ambiguity is through info object
-	TrkStrawHitInfoMC tshinfomc;
-	fillHitInfoMC(kseedmc,tshinfomc,tshmc);  
-	// the MCDigi list can be longer than the # of TrkStrawHits in the seed:
-	/*	if(i_digi < kseed.hits().size()){ 
-	  const auto& ihit = kseed.hits().at(i_digi);
-	  if(ihit.ambig()*tshinfomc._ambig > 0) {
-	    ++trkinfomc._nambig; // TODO
-	  }
-	}
-	*/
+        // easiest way to get MC ambiguity is through info object
+        TrkStrawHitInfoMC tshinfomc;
+        fillHitInfoMC(kseedmc,tshinfomc,tshmc);
+        // the MCDigi list can be longer than the # of TrkStrawHits in the seed:
+        if(i_digi < kseed.hits().size()){
+          const auto& ihit = kseed.hits().at(i_digi);
+          if(ihit.flag().hasAllProperties(StrawHitFlag::active) && ihit.ambig()*tshinfomc.ambig > 0) {
+            ++trkinfomc.nambig;
+          }
+        }
       }
     }
   }
@@ -80,28 +77,28 @@ namespace mu2e {
     const Tracker& tracker = *GeomHandle<Tracker>();
 
     const SimPartStub& simPart = kseedmc.simParticle(tshmc._spindex);
-    tshinfomc._pdg = simPart._pdg;
-    tshinfomc._proc = simPart._proc;
-    tshinfomc._gen = simPart._gid.id();
-    tshinfomc._rel = simPart._rel;
-    tshinfomc._t0 = tshmc._time;
-    tshinfomc._edep = tshmc._energySum;
-    tshinfomc._mom = std::sqrt(tshmc._mom.mag2());
-    tshinfomc._cpos  = tshmc._cpos; 
-	
+    tshinfomc.pdg = simPart._pdg;
+    tshinfomc.proc = simPart._proc;
+    tshinfomc.gen = simPart._gid.id();
+    tshinfomc.rel = simPart._rel;
+    tshinfomc.t0 = tshmc._time;
+    tshinfomc.edep = tshmc._energySum;
+    tshinfomc.mom = std::sqrt(tshmc._mom.mag2());
+    tshinfomc.cpos  = tshmc._cpos;
+
     // find the step midpoint
     const Straw& straw = tracker.getStraw(tshmc._strawId);
     CLHEP::Hep3Vector mcsep = GenVector::Hep3Vec(tshmc._cpos)-straw.getMidPoint();
-    tshinfomc._len = mcsep.dot(straw.getDirection());
+    tshinfomc.len = mcsep.dot(straw.getDirection());
     CLHEP::Hep3Vector mdir = GenVector::Hep3Vec(tshmc._mom.unit());
     CLHEP::Hep3Vector mcperp = (mdir.cross(straw.getDirection())).unit();
     double dperp = mcperp.dot(mcsep);
-    tshinfomc._twdot = mdir.dot(straw.getDirection());
-    tshinfomc._dist = fabs(dperp);
-    tshinfomc._ambig = dperp > 0 ? -1 : 1; // follow TrkPoca convention
+    tshinfomc.twdot = mdir.dot(straw.getDirection());
+    tshinfomc.dist = fabs(dperp);
+    tshinfomc.ambig = dperp > 0 ? -1 : 1; // follow TrkPoca convention
     // use 2-line POCA here
     TwoLinePCA pca(GenVector::Hep3Vec(tshmc._cpos),mdir,straw.getMidPoint(),straw.getDirection());
-    tshinfomc._doca = pca.dca();
+    tshinfomc.doca = pca.dca();
   }
 
   void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, std::vector<SimInfo>& siminfos, int n_generations) {
@@ -132,14 +129,14 @@ namespace mu2e {
     for(auto const& spp : primary.primarySimParticles()){
       MCRelationship mcrel(spp,trkprimary);
       if(mcrel > bestrel){
-	bestrel = mcrel;
-	bestprimarysp = spp;
+        bestrel = mcrel;
+        bestprimarysp = spp;
       }
     } // redundant: FIXME!
     fillSimInfo(bestprimarysp, priinfo);
   }
 
-  
+
   void InfoMCStructHelper::fillSimInfo(const art::Ptr<SimParticle>& sp, SimInfo& siminfo) {
     if(sp.isNonnull()){
       fillSimInfo(*sp, siminfo);
@@ -150,17 +147,15 @@ namespace mu2e {
 
     GeomHandle<DetectorSystem> det;
 
-    siminfo._pdg = sp.pdgId();
-    siminfo._gen = sp.creationCode();
-    siminfo._mom = sp.startMomentum().vect().mag();
-    siminfo._costh = std::cos(sp.startMomentum().vect().theta());
-    siminfo._phi = sp.startMomentum().vect().phi();
-    siminfo._pos = XYZVectorF(det->toDetector(sp.startPosition()));
-    siminfo._time = sp.startGlobalTime();
+    siminfo.pdg = sp.pdgId();
+    siminfo.gen = sp.creationCode();
+    siminfo.time = sp.startGlobalTime();
+    siminfo.mom = XYZVectorF(sp.startMomentum());
+    siminfo.pos = XYZVectorF(det->toDetector(sp.startPosition()));
   }
 
   void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep,
-                                             std::vector<int> const& vids, double target_time) {
+      std::vector<int> const& vids, double target_time) {
 
     GeomHandle<BFieldManager> bfmgr;
     GeomHandle<DetectorSystem> det;
@@ -172,27 +167,26 @@ namespace mu2e {
     double dmin = std::numeric_limits<double>::max();
     for (const auto& i_mcstep : mcsteps) {
       for(auto vid : vids) {
-	if (i_mcstep._vdid == vid) {
-	  // take the VD step with the time closest to target_time
-	  // this is so that we can take the correct step when looking at upstream/downstream trachs
-	  double corrected_time = fmod(i_mcstep._time, 1695); // VDStep is created with the time offsets included
-	  if(fabs(target_time - corrected_time) < dmin){
-	    dmin = fabs(target_time - corrected_time);//i_mcstep._time;
-	    trkinfomcstep._time = i_mcstep._time;
-	    trkinfomcstep._mom = std::sqrt(i_mcstep._mom.mag2());
-	    trkinfomcstep._costh = std::cos(i_mcstep._mom.theta());
-	    trkinfomcstep._phi = i_mcstep._mom.phi();
-	    trkinfomcstep._pos = GenVector::Hep3Vec(i_mcstep._pos);
+        if (i_mcstep._vdid == vid) {
+          // take the VD step with the time closest to target_time
+          // this is so that we can take the correct step when looking at upstream/downstream trachs
+          double corrected_time = fmod(i_mcstep._time, 1695); // VDStep is created with the time offsets included
+          if(fabs(target_time - corrected_time) < dmin){
+            dmin = fabs(target_time - corrected_time);//i_mcstep._time;
+            trkinfomcstep.time = i_mcstep._time;
+            trkinfomcstep.mom = XYZVectorF(i_mcstep._mom);
+            trkinfomcstep.pos = XYZVectorF(i_mcstep._pos);
 
-	    CLHEP::HepVector parvec(5,0);
-	    double hflt(0.0);
-	    HepPoint ppos(trkinfomcstep._pos.x(), trkinfomcstep._pos.y(), trkinfomcstep._pos.z());
-	    CLHEP::Hep3Vector mom = GenVector::Hep3Vec(i_mcstep._mom);
-	    double charge = pdt->particle(kseedmc.simParticle()._pdg).charge();
-	    TrkHelixUtils::helixFromMom( parvec, hflt,ppos, mom,charge,bz);
-	    trkinfomcstep._hpar = helixpar(parvec);
-	  }
-	}
+            // the following is obsolete and should be replaced or removed FIXME!
+            CLHEP::HepVector parvec(5,0);
+            double hflt(0.0);
+            HepPoint ppos(trkinfomcstep.pos.x(), trkinfomcstep.pos.y(), trkinfomcstep.pos.z());
+            CLHEP::Hep3Vector mom = GenVector::Hep3Vec(i_mcstep._mom);
+            double charge = pdt->particle(kseedmc.simParticle()._pdg).charge();
+            TrkHelixUtils::helixFromMom( parvec, hflt,ppos, mom,charge,bz);
+            trkinfomcstep.hpar = helixpar(parvec);
+          }
+        }
       }
     }
   }
@@ -209,14 +203,14 @@ namespace mu2e {
 
   void InfoMCStructHelper::fillCaloClusterInfoMC(CaloClusterMC const& ccmc, CaloClusterInfoMC& ccimc) {
     auto const& edeps = ccmc.energyDeposits();
-    ccimc._nsim = edeps.size();
-    ccimc._etot = ccmc.totalEnergyDep();
+    ccimc.nsim = edeps.size();
+    ccimc.etot = ccmc.totalEnergyDep();
     if(ccmc.energyDeposits().size() > 0){
       auto const& primary = edeps.front();
-      ccimc._eprimary = primary.energyDep();
-      ccimc._tavg = primary.time(); // this is unnecessary FIXMI
-      ccimc._tprimary = primary.time();
-      ccimc._prel = primary.rel();
+      ccimc.eprimary = primary.energyDep();
+      ccimc.tavg = primary.time(); // this is unnecessary FIXMI
+      ccimc.tprimary = primary.time();
+      ccimc.prel = primary.rel();
     }
   }
 }

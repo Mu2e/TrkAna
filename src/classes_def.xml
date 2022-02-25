@@ -9,8 +9,14 @@
   <class name="mu2e::HitCount" />
   <class name="mu2e::TrkCount" />
   <class name="mu2e::TrkInfo" />
+  <class name="mu2e::SimInfo" />
+  <class name="mu2e::HelixInfo" />
   <class name="mu2e::TrkCaloHitInfo" />
   <class name="std::vector<mu2e::TrkCaloHitInfo>" />
+  <class name="mu2e::CaloClusterInfoMC" />
+  <class name="std::vector<mu2e::CaloClusterInfoMC>" />
+  <class name="mu2e::TrkFitInfo" />
+  <class name="std::vector<mu2e::TrkFitInfo>" />
   <class name="mu2e::TrkInfoMC" />
   <class name="mu2e::TrkInfoMCStep" />
   <class name="mu2e::TrkQualInfo" />
