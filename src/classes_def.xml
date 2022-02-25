@@ -13,6 +13,8 @@
   <class name="mu2e::HelixInfo" />
   <class name="mu2e::TrkCaloHitInfo" />
   <class name="std::vector<mu2e::TrkCaloHitInfo>" />
+  <class name="mu2e::CaloClusterInfoMC" />
+  <class name="std::vector<mu2e::CaloClusterInfoMC>" />
   <class name="mu2e::TrkFitInfo" />
   <class name="std::vector<mu2e::TrkFitInfo>" />
   <class name="mu2e::TrkInfoMC" />

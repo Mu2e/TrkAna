@@ -8,7 +8,6 @@
 #define SimInfo_HH
 #include "Offline/DataProducts/inc/GenVector.hh"
 #include "TrkAna/inc/helixpar.hh"
-#include "TrkAna/inc/Names.hh"
 #include "Rtypes.h"
 namespace mu2e
 {

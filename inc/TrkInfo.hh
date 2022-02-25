@@ -12,7 +12,7 @@
 #include "Rtypes.h"
 namespace mu2e
 {
-  // information about the track fit at a particular place
+  // information about the track fit at a particular place.  This is largely redundenty with TrkInfoMCStep and maybe should be retired TODO
   struct TrkFitInfo {
     Float_t _fitmom,_fitmomerr;
     helixpar _fitpar;
@@ -27,37 +27,31 @@ namespace mu2e
 
   // general information about a track
   struct TrkInfo {
-    Int_t _status; // Kalman fit status
-    Int_t _alg; // pat. rec. algorithm
-    Int_t _pdg;   // PDG code of particle assumed in fit
-    Int_t _nhits;     // # hits associated to this track
-    Int_t _ndof;      // number of degrees of freedom in the fit
-    Int_t _nactive;   // number of active hits (actually used in the fit)
-    Int_t _ndouble,_ndactive; // number of double-hit panels, and active double-hit panels
-    Int_t _nnullambig;  // number of hits without any ambiguity assigned
-    Int_t _nmat, _nmatactive; // number materials (straw) assigned and used (active) to this fit
-    Int_t _nseg;     // number of trajectory segments
-    Float_t _t0;      // time this particle was estimated to cross z=0
-    Float_t _t0err;   // error on t0
-    Float_t _chisq;   // Kalman fit chisquared
-    Float_t _fitcon;  // Kalman fit chisqured consistency
-    Float_t _radlen;  // total radiation length of (active) material crossed by this particle inside the tracker
-    Float_t _firstflt, _lastflt;  // distance along the helix of the first and last hit
-    Float_t _startvalid, _endvalid; // distance along the helix for which the fit is accurate
-    Float_t _trkqual;  // track quality MVA output
+    Int_t status; // Kalman fit status
+    Int_t alg; // pat. rec. algorithm
+    Int_t pdg;   // PDG code of particle assumed in fit
+    Int_t nhits;     // # hits associated to this track
+    Int_t ndof;      // number of degrees of freedom in the fit
+    Int_t nactive;   // number of active hits (actually used in the fit)
+    Int_t ndouble,ndactive; // number of double-hit panels, and active double-hit panels
+    Int_t nnullambig;  // number of hits without any ambiguity assigned
+    Int_t nmat, nmatactive; // number materials (straw) assigned and used (active) to this fit
+    Int_t nseg;     // number of trajectory segments
+    Float_t t0;      // time this particle was estimated to cross z=0
+    Float_t t0err;   // error on t0
+    Float_t chisq;   // Kalman fit chisquared
+    Float_t fitcon;  // Kalman fit chisqured consistency
+    Float_t radlen;  // total radiation length of (active) material crossed by this particle inside the tracker
+    Float_t firstflt, lastflt;  // distance along the helix of the first and last hit
+    Float_t startvalid, endvalid; // distance along the helix for which the fit is accurate
     TrkInfo() { reset(); }
     void reset() {
-      _status = -1000;
-      _alg=0;
-      _pdg = 0;
-      _nhits = _nactive = _ndouble = _ndactive = _nnullambig = _nmat = _nmatactive = _nseg = _ndof = -1;
-      _t0 = _t0err = _chisq = _fitcon = _radlen = _firstflt = _lastflt = -1.0;
-      _trkqual=-1000.0;
-      _startvalid = _endvalid = -999999.0;
-    }
-    static std::string const& leafnames() { static const std::string leaves =
-      std::string("status/I:alg/I:pdg/I:nhits/I:ndof/I:nactive/I:ndouble/I:ndactive/I:nnullambig/I:nmat/I:nmatactive/I:nseg/I:t0/F:t0err/F:chisq/F:fitcon/F:radlen/F:firstflt/F:lastflt/F:startvalid/F:endvalid/F");
-      return leaves;
+      status = -1000;
+      alg=0;
+      pdg = 0;
+      nhits = nactive = ndouble = ndactive = nnullambig = nmat = nmatactive = nseg = ndof = -1;
+      t0 = t0err = chisq = fitcon = radlen = firstflt = lastflt = -1.0;
+      startvalid = endvalid = -999999.0;
     }
   };
 

@@ -154,6 +154,8 @@ namespace mu2e {
       fhicl::Atom<bool> fillmcxtra{Name("FillExtraMCSteps"),false};
       fhicl::OptionalSequence<art::InputTag> mcxtratags{Name("ExtraMCStepCollectionTags"), Comment("Input tags for any other StepPointMCCollections you want written out")};
       fhicl::OptionalSequence<std::string> mcxtrasuffix{Name("ExtraMCStepBranchSuffix"), Comment("The suffix to the branch for the extra MC steps (e.g. putting \"ipa\" will give a branch \"demcipa\")")};
+      fhicl::Atom<int> splitlevel{Name("splitlevel"),0};
+      fhicl::Atom<int> buffsize{Name("buffsize"),32000};
     };
     typedef art::EDAnalyzer::Table<Config> Parameters;
 
@@ -237,6 +239,8 @@ namespace mu2e {
     // struct helpers
     InfoStructHelper _infoStructHelper;
     InfoMCStructHelper _infoMCStructHelper;
+    // branch structure
+    Int_t _buffsize, _splitlevel;
 
     // helper functions
     void fillEventInfo(const art::Event& event);
@@ -256,7 +260,9 @@ namespace mu2e {
     _conf(conf()),
     _PBITag(conf().PBITag()),
     _trigbitsh(0),
-    _infoMCStructHelper(conf().infoMCStructHelper())
+    _infoMCStructHelper(conf().infoMCStructHelper()),
+    _buffsize(conf().buffsize()),
+    _splitlevel(conf().splitlevel())
   {
     _midvids.push_back(VirtualDetectorId::TT_Mid);
     _midvids.push_back(VirtualDetectorId::TT_MidInner);
@@ -326,7 +332,7 @@ namespace mu2e {
     _trkana=tfs->make<TTree>("trkana","track analysis");
     _tht=tfs->make<TProfile>("tht","Track Hit Time Profile",RecoCount::_nshtbins,-25.0,1725.0);
 // add event info branch
-    _trkana->Branch("evtinfo.",&_einfo);
+    _trkana->Branch("evtinfo.",&_einfo,_buffsize,_splitlevel);
 // hit counting branch
     _trkana->Branch("hcnt.",&_hcnt,HitCount::leafnames().c_str());
 // track counting branch
@@ -354,12 +360,12 @@ namespace mu2e {
       // optionally add hit-level branches
       // (for the time being diagLevel : 2 will still work, but I propose removing this at some point)
       if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){
-        _trkana->Branch((branch+"tsh").c_str(),&_allTSHIs.at(i_branch));
-        _trkana->Branch((branch+"tsm").c_str(),&_allTSMIs.at(i_branch));
+        _trkana->Branch((branch+"tsh").c_str(),&_allTSHIs.at(i_branch),_buffsize,_splitlevel);
+        _trkana->Branch((branch+"tsm").c_str(),&_allTSMIs.at(i_branch),_buffsize,_splitlevel);
       }
       // optionall add MC branches
       if(_conf.fillmc() && i_branchConfig.options().fillmc()){
-        _trkana->Branch((branch+"mc").c_str(),&_allMCTIs.at(i_branch));
+        _trkana->Branch((branch+"mc").c_str(),&_allMCTIs.at(i_branch),_buffsize,_splitlevel);
         std::string branch_suffix = "";
         for (int i_generation = 0; i_generation < i_branchConfig.options().genealogyDepth(); ++i_generation) {
           if (i_generation == 0) {
@@ -374,45 +380,45 @@ namespace mu2e {
           std::string full_branchname = branch + "mc" + branch_suffix;
           _trkana->Branch((full_branchname).c_str(),&_allMCSimTIs.at(i_branch).at(i_generation));
         }
-        _trkana->Branch((branch+"mcpri").c_str(),&_allMCPriTIs.at(i_branch));
-        _trkana->Branch((branch+"mcent").c_str(),&_allMCEntTIs.at(i_branch));
-        _trkana->Branch((branch+"mcmid").c_str(),&_allMCMidTIs.at(i_branch));
-        _trkana->Branch((branch+"mcxit").c_str(),&_allMCXitTIs.at(i_branch));
-        _trkana->Branch((branch+"tchmc").c_str(),&_allMCTCHIs.at(i_branch),CaloClusterInfoMC::leafnames().c_str());
+        _trkana->Branch((branch+"mcpri").c_str(),&_allMCPriTIs.at(i_branch),_buffsize,_splitlevel);
+        _trkana->Branch((branch+"mcent").c_str(),&_allMCEntTIs.at(i_branch),_buffsize,_splitlevel);
+        _trkana->Branch((branch+"mcmid").c_str(),&_allMCMidTIs.at(i_branch),_buffsize,_splitlevel);
+        _trkana->Branch((branch+"mcxit").c_str(),&_allMCXitTIs.at(i_branch),_buffsize,_splitlevel);
+        _trkana->Branch((branch+"tchmc").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
         // at hit-level MC information
         // (for the time being diagLevel will still work, but I propose removing this at some point)
         if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){
-          _trkana->Branch((branch+"tshmc").c_str(),&_allTSHIMCs.at(i_branch));
+          _trkana->Branch((branch+"tshmc").c_str(),&_allTSHIMCs.at(i_branch),_buffsize,_splitlevel);
         }
       }
     }
 // trigger info.  Actual names should come from the BeginRun object FIXME
     if(_conf.filltrig()) {
-      _trkana->Branch("trigbits",&_trigbits,"trigbits/i");
+      _trkana->Branch("trigbits",&_trigbits,_buffsize,_splitlevel);
     }
 // calorimeter information for the downstream electron track
 // CRV info
     if(_conf.crv()) {
-      _trkana->Branch("crvinfo",&_crvinfo);
-      _trkana->Branch("crvsummary",&_crvsummary);
-      _trkana->Branch("bestcrv",&_bestcrv,"bestcrv/I");
+      _trkana->Branch("crvinfo",&_crvinfo,_buffsize,_splitlevel);
+      _trkana->Branch("crvsummary",&_crvsummary,_buffsize,_splitlevel);
+      _trkana->Branch("bestcrv",&_bestcrv,_buffsize,_splitlevel);
       if(_conf.crvpulses()) {
-        _trkana->Branch("crvpulseinfo",&_crvpulseinfo);
-        _trkana->Branch("crvwaveforminfo",&_crvwaveforminfo);
+        _trkana->Branch("crvpulseinfo",&_crvpulseinfo,_buffsize,_splitlevel);
+        _trkana->Branch("crvwaveforminfo",&_crvwaveforminfo,_buffsize,_splitlevel);
       }
       if(_conf.fillmc()){
         if(_conf.crv())
         {
-          _trkana->Branch("crvinfomc",&_crvinfomc);
-          _trkana->Branch("crvsummarymc",&_crvsummarymc);
-          _trkana->Branch("crvinfomcplane",&_crvinfomcplane);
+          _trkana->Branch("crvinfomc",&_crvinfomc,_buffsize,_splitlevel);
+          _trkana->Branch("crvsummarymc",&_crvsummarymc,_buffsize,_splitlevel);
+          _trkana->Branch("crvinfomcplane",&_crvinfomcplane,_buffsize,_splitlevel);
           if(_conf.crvpulses())
-            _trkana->Branch("crvpulseinfomc",&_crvpulseinfomc);
+            _trkana->Branch("crvpulseinfomc",&_crvpulseinfomc,_buffsize,_splitlevel);
         }
       }
     }
 // helix info
-   if(_conf.helices()) _trkana->Branch("helixinfo",&_hinfo);
+   if(_conf.helices()) _trkana->Branch("helixinfo",&_hinfo,_buffsize,_splitlevel);
   }
 
   void TrkAnaTreeMaker::beginSubRun(const art::SubRun & subrun ) {

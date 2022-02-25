@@ -65,7 +65,7 @@ namespace mu2e {
         // the MCDigi list can be longer than the # of TrkStrawHits in the seed:
         if(i_digi < kseed.hits().size()){
           const auto& ihit = kseed.hits().at(i_digi);
-          if(ihit.ambig()*tshinfomc._ambig > 0) {
+          if(ihit.flag().hasAllProperties(StrawHitFlag::active) && ihit.ambig()*tshinfomc.ambig > 0) {
             ++trkinfomc.nambig;
           }
         }
@@ -77,28 +77,28 @@ namespace mu2e {
     const Tracker& tracker = *GeomHandle<Tracker>();
 
     const SimPartStub& simPart = kseedmc.simParticle(tshmc._spindex);
-    tshinfomc._pdg = simPart._pdg;
-    tshinfomc._proc = simPart._proc;
-    tshinfomc._gen = simPart._gid.id();
-    tshinfomc._rel = simPart._rel;
-    tshinfomc._t0 = tshmc._time;
-    tshinfomc._edep = tshmc._energySum;
-    tshinfomc._mom = std::sqrt(tshmc._mom.mag2());
-    tshinfomc._cpos  = tshmc._cpos;
+    tshinfomc.pdg = simPart._pdg;
+    tshinfomc.proc = simPart._proc;
+    tshinfomc.gen = simPart._gid.id();
+    tshinfomc.rel = simPart._rel;
+    tshinfomc.t0 = tshmc._time;
+    tshinfomc.edep = tshmc._energySum;
+    tshinfomc.mom = std::sqrt(tshmc._mom.mag2());
+    tshinfomc.cpos  = tshmc._cpos;
 
     // find the step midpoint
     const Straw& straw = tracker.getStraw(tshmc._strawId);
     CLHEP::Hep3Vector mcsep = GenVector::Hep3Vec(tshmc._cpos)-straw.getMidPoint();
-    tshinfomc._len = mcsep.dot(straw.getDirection());
+    tshinfomc.len = mcsep.dot(straw.getDirection());
     CLHEP::Hep3Vector mdir = GenVector::Hep3Vec(tshmc._mom.unit());
     CLHEP::Hep3Vector mcperp = (mdir.cross(straw.getDirection())).unit();
     double dperp = mcperp.dot(mcsep);
-    tshinfomc._twdot = mdir.dot(straw.getDirection());
-    tshinfomc._dist = fabs(dperp);
-    tshinfomc._ambig = dperp > 0 ? -1 : 1; // follow TrkPoca convention
+    tshinfomc.twdot = mdir.dot(straw.getDirection());
+    tshinfomc.dist = fabs(dperp);
+    tshinfomc.ambig = dperp > 0 ? -1 : 1; // follow TrkPoca convention
     // use 2-line POCA here
     TwoLinePCA pca(GenVector::Hep3Vec(tshmc._cpos),mdir,straw.getMidPoint(),straw.getDirection());
-    tshinfomc._doca = pca.dca();
+    tshinfomc.doca = pca.dca();
   }
 
   void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, std::vector<SimInfo>& siminfos, int n_generations) {
@@ -203,14 +203,14 @@ namespace mu2e {
 
   void InfoMCStructHelper::fillCaloClusterInfoMC(CaloClusterMC const& ccmc, CaloClusterInfoMC& ccimc) {
     auto const& edeps = ccmc.energyDeposits();
-    ccimc._nsim = edeps.size();
-    ccimc._etot = ccmc.totalEnergyDep();
+    ccimc.nsim = edeps.size();
+    ccimc.etot = ccmc.totalEnergyDep();
     if(ccmc.energyDeposits().size() > 0){
       auto const& primary = edeps.front();
-      ccimc._eprimary = primary.energyDep();
-      ccimc._tavg = primary.time(); // this is unnecessary FIXMI
-      ccimc._tprimary = primary.time();
-      ccimc._prel = primary.rel();
+      ccimc.eprimary = primary.energyDep();
+      ccimc.tavg = primary.time(); // this is unnecessary FIXMI
+      ccimc.tprimary = primary.time();
+      ccimc.prel = primary.rel();
     }
   }
 }

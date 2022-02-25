@@ -33,37 +33,37 @@ namespace mu2e {
 
   void InfoStructHelper::fillTrkInfo(const KalSeed& kseed,TrkInfo& trkinfo) {
     if(kseed.status().hasAllProperties(TrkFitFlag::kalmanConverged))
-      trkinfo._status = 1;
+      trkinfo.status = 1;
     else if(kseed.status().hasAllProperties(TrkFitFlag::kalmanOK))
-      trkinfo._status = 2;
+      trkinfo.status = 2;
     else
-      trkinfo._status = -1;
+      trkinfo.status = -1;
     if(kseed.status().hasAllProperties(TrkFitFlag::CPRHelix))
-      trkinfo._alg = 1;
+      trkinfo.alg = 1;
     else if(kseed.status().hasAllProperties(TrkFitFlag::TPRHelix))
-      trkinfo._alg = 0;
+      trkinfo.alg = 0;
     else
-      trkinfo._alg = -1;
+      trkinfo.alg = -1;
 
-    trkinfo._pdg = kseed.particle();
-    trkinfo._t0 = kseed.t0().t0();
-    trkinfo._t0err = kseed.t0().t0Err();
+    trkinfo.pdg = kseed.particle();
+    trkinfo.t0 = kseed.t0().t0();
+    trkinfo.t0err = kseed.t0().t0Err();
 
     fillTrkInfoHits(kseed, trkinfo);
 
-    trkinfo._chisq = kseed.chisquared();
-    trkinfo._fitcon = kseed.fitConsistency();
-    trkinfo._nseg = kseed.nTrajSegments();
+    trkinfo.chisq = kseed.chisquared();
+    trkinfo.fitcon = kseed.fitConsistency();
+    trkinfo.nseg = kseed.nTrajSegments();
 
     for(std::vector<TrkStrawHitSeed>::const_iterator ihit=kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
       if(ihit->flag().hasAllProperties(StrawHitFlag::active)) {
-        trkinfo._firstflt = ihit->trkLen();
+        trkinfo.firstflt = ihit->trkLen();
         break;
       }
     }
     for(std::vector<TrkStrawHitSeed>::const_reverse_iterator ihit=kseed.hits().rbegin(); ihit != kseed.hits().rend(); ++ihit) {
       if(ihit->flag().hasAllProperties(StrawHitFlag::active)) {
-        trkinfo._lastflt = ihit->trkLen();
+        trkinfo.lastflt = ihit->trkLen();
         break;
       }
     }
@@ -80,8 +80,8 @@ namespace mu2e {
         lastflt = kseg.globalFlt(kseg.fmax());
       }
     }
-    trkinfo._startvalid = firstflt;
-    trkinfo._endvalid = lastflt;
+    trkinfo.startvalid = firstflt;
+    trkinfo.endvalid = lastflt;
 
     fillTrkInfoStraws(kseed, trkinfo);
   }
@@ -100,37 +100,37 @@ namespace mu2e {
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
-    trkinfo._nhits = 0; trkinfo._nactive = 0; trkinfo._ndouble = 0; trkinfo._ndactive = 0; trkinfo._nnullambig = 0;
+    trkinfo.nhits = 0; trkinfo.nactive = 0; trkinfo.ndouble = 0; trkinfo.ndactive = 0; trkinfo.nnullambig = 0;
     static StrawHitFlag active(StrawHitFlag::active);
     for (auto ihit = kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
-      ++trkinfo._nhits;
+      ++trkinfo.nhits;
       if (ihit->flag().hasAllProperties(active)) {
-        ++trkinfo._nactive;
+        ++trkinfo.nactive;
         if (ihit->ambig()==0) {
-          ++trkinfo._nnullambig;
+          ++trkinfo.nnullambig;
         }
       }
       auto jhit = ihit; jhit++;
       if(jhit != kseed.hits().end() && ihit->strawId().uniquePanel() ==
           jhit->strawId().uniquePanel()){
-        ++trkinfo._ndouble;
-        if(ihit->flag().hasAllProperties(active)) { ++trkinfo._ndactive; }
+        ++trkinfo.ndouble;
+        if(ihit->flag().hasAllProperties(active)) { ++trkinfo.ndactive; }
       }
     }
 
-    trkinfo._ndof = trkinfo._nactive -5;
+    trkinfo.ndof = trkinfo.nactive -5; // this won't work with KinKal fits FIXME
     if (kseed.hasCaloCluster()) {
-      ++trkinfo._ndof;
+      ++trkinfo.ndof;
     }
   }
 
   void InfoStructHelper::fillTrkInfoStraws(const KalSeed& kseed, TrkInfo& trkinfo) {
-    trkinfo._nmat = 0; trkinfo._nmatactive = 0; trkinfo._radlen = 0.0;
+    trkinfo.nmat = 0; trkinfo.nmatactive = 0; trkinfo.radlen = 0.0;
     for (std::vector<TrkStraw>::const_iterator i_straw = kseed.straws().begin(); i_straw != kseed.straws().end(); ++i_straw) {
-      ++trkinfo._nmat;
+      ++trkinfo.nmat;
       if (i_straw->active()) {
-        ++trkinfo._nmatactive;
-        trkinfo._radlen += i_straw->radLen();
+        ++trkinfo.nmatactive;
+        trkinfo.radlen += i_straw->radLen();
       }
     }
   }
