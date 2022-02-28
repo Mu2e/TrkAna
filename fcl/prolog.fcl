@@ -141,6 +141,7 @@ TrkAnaTreeMaker : {
   FillTrkPIDInfo : true
   FillHitInfo : false
   FillTriggerInfo : true
+  TriggerProcessName : "Mix"
   ProcessEmptyEvents : false
   AnalyzeCRV : true
   AnalyzeCRVPulses : false
