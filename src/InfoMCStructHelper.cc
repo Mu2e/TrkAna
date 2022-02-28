@@ -39,7 +39,7 @@ namespace mu2e {
 
     // fill the origin information of this SimParticle
     GeomHandle<DetectorSystem> det;
-    trkinfomc.otime = trkprimary->startGlobalTime() + _toff.totalTimeOffset(trkprimary);
+    trkinfomc.otime = trkprimary->startGlobalTime();
     trkinfomc.opos = XYZVectorF(det->toDetector(trkprimary->startPosition()));
     trkinfomc.omom = XYZVectorF(trkprimary->startMomentum().vect());
   }

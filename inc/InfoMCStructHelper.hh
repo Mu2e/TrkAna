@@ -4,6 +4,7 @@
 //
 #ifndef TrkAna_InfoMCStructHelper_hh
 #define TrkAna_InfoMCStructHelper_hh
+#include "fhiclcpp/types/Atom.h"
 #include "Offline/RecoDataProducts/inc/StrawHitIndex.hh"
 #include "Offline/MCDataProducts/inc/StrawDigiMC.hh"
 #include "Offline/MCDataProducts/inc/StepPointMC.hh"
@@ -18,7 +19,6 @@
 #include "BTrk/BbrGeom/HepPoint.h"
 #include "Offline/MCDataProducts/inc/PrimaryParticle.hh"
 
-#include "Offline/Mu2eUtilities/inc/SimParticleTimeOffset.hh"
 
 #include <vector>
 #include <functional>
@@ -29,7 +29,6 @@ namespace mu2e {
     private:
       art::InputTag _spctag;
       art::Handle<SimParticleCollection> _spcH;
-      SimParticleTimeOffset _toff;
       double _mingood;
 
       void fillSimInfo(const art::Ptr<SimParticle>& sp, SimInfo& siminfo);
@@ -42,19 +41,16 @@ namespace mu2e {
         using Comment=fhicl::Comment;
 
         fhicl::Atom<art::InputTag> spctag{Name("SimParticleCollectionTag"), Comment("InputTag for the SimParticleCollection"), art::InputTag()};
-        fhicl::Sequence<art::InputTag> toff{Name("TimeMaps"), Comment("List of SimParticle time maps to use")};
         fhicl::Atom<double> mingood{Name("MinGoodMomFraction"), Comment("Minimum fraction of the true particle's momentum for a digi to be described as \"good\"")};
       };
 
       InfoMCStructHelper(const Config& conf) :
-        _spctag(conf.spctag()), _toff(conf.toff()), _mingood(conf.mingood()) {  };
+        _spctag(conf.spctag()), _mingood(conf.mingood()) {  };
 
       void updateEvent(const art::Event& event) {
         event.getByLabel(_spctag,_spcH);
-        _toff.updateMap(event);
       }
 
-      const SimParticleTimeOffset& getTimeMaps() const { return _toff; }
       void fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
       void fillTrkInfoMCDigis(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
       void fillHitInfoMC(const KalSeedMC& kseedmc, TrkStrawHitInfoMC& tshinfomc, const TrkStrawHitMC& tshmc);

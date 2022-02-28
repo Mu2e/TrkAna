@@ -51,7 +51,6 @@
 #include "BTrk/BbrGeom/BbrVectorErr.hh"
 #include "BTrk/TrkBase/TrkHelixUtils.hh"
 #include "Offline/Mu2eUtilities/inc/TriggerResultsNavigator.hh"
-#include "Offline/Mu2eUtilities/inc/SimParticleTimeOffset.hh"
 // mu2e tracking
 #include "Offline/RecoDataProducts/inc/TrkFitDirection.hh"
 #include "Offline/BTrkData/inc/TrkStrawHit.hh"
@@ -74,9 +73,9 @@
 #include "TrkAna/inc/InfoMCStructHelper.hh"
 #include "Offline/RecoDataProducts/inc/RecoQual.hh"
 #include "TrkAna/inc/RecoQualInfo.hh"
-// CRV info
+// CRV info; this still requires the obsolete time offsets FIXME
+#include "Offline/Mu2eUtilities/inc/SimParticleTimeOffset.hh"
 #include "Offline/CRVAnalysis/inc/CRVAnalysis.hh"
-#include "Offline/MCDataProducts/inc/SimParticleTimeMap.hh"
 
 // C++ includes.
 #include <iostream>
@@ -133,7 +132,6 @@ namespace mu2e {
       fhicl::Atom<std::string> simParticleLabel{Name("SimParticleLabel"), Comment("SimParticleLabel")};
       fhicl::Atom<std::string> mcTrajectoryLabel{Name("MCTrajectoryLabel"), Comment("MCTrajectoryLabel")};
       fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters
-      fhicl::Table<SimParticleTimeOffset::Config> timeOffsets{ Name("TimeOffsets"), Comment("Time maps") };
       fhicl::Atom<std::string> crvWaveformsModuleLabel{ Name("CrvWaveformsModuleLabel"), Comment("CrvWaveformsModuleLabel")};
       fhicl::Atom<std::string> crvDigiModuleLabel{ Name("CrvDigiModuleLabel"), Comment("CrvDigiModuleLabel")};
       fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
@@ -583,9 +581,13 @@ namespace mu2e {
         CRVAnalysis::FillCrvHitInfoCollections(_conf.crvCoincidenceModuleLabel(), _conf.crvCoincidenceMCModuleLabel(),
                                                _conf.crvRecoPulseLabel(), _conf.crvStepLabel(), _conf.simParticleLabel(), _conf.mcTrajectoryLabel(), event,
                                                _crvinfo, _crvinfomc, _crvsummary, _crvsummarymc, _crvinfomcplane, _conf.crvPlaneY());
-        if(_conf.crvpulses())
+        if(_conf.crvpulses()){
+          // temporary hack: FIXME
+          std::vector<art::InputTag> nulltags;
+          SimParticleTimeOffset nulloffset(nulltags);
           CRVAnalysis::FillCrvPulseInfoCollections(_conf.crvRecoPulseLabel(), _conf.crvWaveformsModuleLabel(), _conf.crvDigiModuleLabel(),
-                                                   _infoMCStructHelper.getTimeMaps(), event, _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
+                                                   nulloffset, event, _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
+        }
 
 //      find the best CRV match (closest in time)
         _bestcrv=-1;
