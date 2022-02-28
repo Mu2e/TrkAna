@@ -188,6 +188,7 @@ namespace mu2e {
           }
         }
       }
+    }
   }
 
   void InfoMCStructHelper::fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs) {

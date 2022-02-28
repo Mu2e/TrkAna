@@ -345,9 +345,9 @@ namespace mu2e {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string branch = i_branchConfig.branch();
       _trkana->Branch(branch.c_str(),&_allTIs.at(i_branch));
-      _trkana->Branch((branch+"ent").c_str(),&_allEntTIs.at(i_branch),TrkFitInfo::leafnames().c_str());
-      _trkana->Branch((branch+"mid").c_str(),&_allMidTIs.at(i_branch),TrkFitInfo::leafnames().c_str());
-      _trkana->Branch((branch+"xit").c_str(),&_allXitTIs.at(i_branch),TrkFitInfo::leafnames().c_str());
+      _trkana->Branch((branch+"ent").c_str(),&_allEntTIs.at(i_branch));
+      _trkana->Branch((branch+"mid").c_str(),&_allMidTIs.at(i_branch));
+      _trkana->Branch((branch+"xit").c_str(),&_allXitTIs.at(i_branch));
       _trkana->Branch((branch+"tch").c_str(),&_allTCHIs.at(i_branch));
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
         _trkana->Branch((branch+"trkqual").c_str(), &_allTQIs.at(i_branch), TrkQualInfo::leafnames().c_str());

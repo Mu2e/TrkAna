@@ -12,17 +12,16 @@
 #include "Rtypes.h"
 namespace mu2e
 {
-  // information about the track fit at a particular place.  This is largely redundenty with TrkInfoMCStep and maybe should be retired TODO
+  // information about the track fit at a particular place.
   struct TrkFitInfo {
-    Float_t _fitmom,_fitmomerr;
-    helixpar _fitpar;
-    helixpar _fitparerr;
+    XYZVectorF mom;
+    XYZVectorF pos;
+    Float_t momerr;
+    // helix parameters are deprecated FIXME!
+    helixpar fitpar;
+    helixpar fitparerr;
     TrkFitInfo() { reset(); }
-    void reset() { _fitmom=_fitmomerr=-1000.0; _fitpar.reset(); _fitparerr.reset(); }
-    static std::string leafnames() { static const std::string leaves =
-      std::string("mom/F:momerr/F:")+helixpar::leafnames()+std::string(":d0err/F:p0err/F:omerr/F:z0err/F:tderr/F");
-      return leaves;
-    }
+    void reset() {mom= XYZVectorF(); momerr=-1000.0; fitpar.reset(); fitparerr.reset(); }
   };
 
   // general information about a track
