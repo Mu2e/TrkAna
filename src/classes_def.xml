@@ -6,6 +6,7 @@
   <class name="mu2e::TrkStrawMatInfo" />
   <class name="std::vector<mu2e::TrkStrawMatInfo>" />
   <class name="mu2e::EventInfo" />
+  <class name="mu2e::helixpar" />
   <class name="mu2e::HitCount" />
   <class name="mu2e::TrkCount" />
   <class name="mu2e::TrkInfo" />
