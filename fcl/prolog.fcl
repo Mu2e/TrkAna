@@ -150,7 +150,6 @@ TrkAnaTreeMaker : {
   InfoMCStructHelper : {
     SimParticleCollectionTag : "compressRecoMCs"
     MinGoodMomFraction : 0.9
-    TimeMaps : [ ]
   }
 }
 
