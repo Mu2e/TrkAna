@@ -33,38 +33,38 @@ namespace mu2e {
 
   void InfoStructHelper::fillTrkInfo(const KalSeed& kseed,TrkInfo& trkinfo) {
     if(kseed.status().hasAllProperties(TrkFitFlag::kalmanConverged))
-      trkinfo._status = 1;
+      trkinfo.status = 1;
     else if(kseed.status().hasAllProperties(TrkFitFlag::kalmanOK))
-      trkinfo._status = 2;
+      trkinfo.status = 2;
     else
-      trkinfo._status = -1;
+      trkinfo.status = -1;
     if(kseed.status().hasAllProperties(TrkFitFlag::CPRHelix))
-      trkinfo._alg = 1;
+      trkinfo.alg = 1;
     else if(kseed.status().hasAllProperties(TrkFitFlag::TPRHelix))
-      trkinfo._alg = 0;
+      trkinfo.alg = 0;
     else
-      trkinfo._alg = -1;
+      trkinfo.alg = -1;
 
-    trkinfo._pdg = kseed.particle();
-    trkinfo._t0 = kseed.t0().t0();
-    trkinfo._t0err = kseed.t0().t0Err();
+    trkinfo.pdg = kseed.particle();
+    trkinfo.t0 = kseed.t0().t0();
+    trkinfo.t0err = kseed.t0().t0Err();
 
     fillTrkInfoHits(kseed, trkinfo);
 
-    trkinfo._chisq = kseed.chisquared();
-    trkinfo._fitcon = kseed.fitConsistency();
-    trkinfo._nseg = kseed.nTrajSegments();
+    trkinfo.chisq = kseed.chisquared();
+    trkinfo.fitcon = kseed.fitConsistency();
+    trkinfo.nseg = kseed.nTrajSegments();
 
     for(std::vector<TrkStrawHitSeed>::const_iterator ihit=kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
       if(ihit->flag().hasAllProperties(StrawHitFlag::active)) {
-	trkinfo._firstflt = ihit->trkLen();
-	break;
+        trkinfo.firstflt = ihit->trkLen();
+        break;
       }
     }
     for(std::vector<TrkStrawHitSeed>::const_reverse_iterator ihit=kseed.hits().rbegin(); ihit != kseed.hits().rend(); ++ihit) {
       if(ihit->flag().hasAllProperties(StrawHitFlag::active)) {
-	trkinfo._lastflt = ihit->trkLen();
-	break;
+        trkinfo.lastflt = ihit->trkLen();
+        break;
       }
     }
 
@@ -74,14 +74,14 @@ namespace mu2e {
     for (const auto& kseg : kseed.segments()) {
       //	std::cout << "AE: min = " << kseg.fmin() << ", max = " << kseg.fmax() << std::endl;
       if (kseg.globalFlt(kseg.fmin()) < firstflt) {
-	firstflt = kseg.globalFlt(kseg.fmin());
+        firstflt = kseg.globalFlt(kseg.fmin());
       }
       if (kseg.globalFlt(kseg.fmax()) > lastflt) {
-	lastflt = kseg.globalFlt(kseg.fmax());
+        lastflt = kseg.globalFlt(kseg.fmax());
       }
     }
-    trkinfo._startvalid = firstflt;
-    trkinfo._endvalid = lastflt;
+    trkinfo.startvalid = firstflt;
+    trkinfo.endvalid = lastflt;
 
     fillTrkInfoStraws(kseed, trkinfo);
   }
@@ -100,40 +100,40 @@ namespace mu2e {
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
-    trkinfo._nhits = 0; trkinfo._nactive = 0; trkinfo._ndouble = 0; trkinfo._ndactive = 0; trkinfo._nnullambig = 0;
+    trkinfo.nhits = 0; trkinfo.nactive = 0; trkinfo.ndouble = 0; trkinfo.ndactive = 0; trkinfo.nnullambig = 0;
     static StrawHitFlag active(StrawHitFlag::active);
     for (auto ihit = kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
-      ++trkinfo._nhits;
+      ++trkinfo.nhits;
       if (ihit->flag().hasAllProperties(active)) {
-	++trkinfo._nactive;
-	if (ihit->ambig()==0) {
-	  ++trkinfo._nnullambig;
-	}
+        ++trkinfo.nactive;
+        if (ihit->ambig()==0) {
+          ++trkinfo.nnullambig;
+        }
       }
       auto jhit = ihit; jhit++;
       if(jhit != kseed.hits().end() && ihit->strawId().uniquePanel() ==
-	 jhit->strawId().uniquePanel()){
-	++trkinfo._ndouble;
-	if(ihit->flag().hasAllProperties(active)) { ++trkinfo._ndactive; }
+          jhit->strawId().uniquePanel()){
+        ++trkinfo.ndouble;
+        if(ihit->flag().hasAllProperties(active)) { ++trkinfo.ndactive; }
       }
     }
 
-    trkinfo._ndof = trkinfo._nactive -5;
+    trkinfo.ndof = trkinfo.nactive -5; // this won't work with KinKal fits FIXME
     if (kseed.hasCaloCluster()) {
-      ++trkinfo._ndof;
+      ++trkinfo.ndof;
     }
   }
 
   void InfoStructHelper::fillTrkInfoStraws(const KalSeed& kseed, TrkInfo& trkinfo) {
-    trkinfo._nmat = 0; trkinfo._nmatactive = 0; trkinfo._radlen = 0.0;
+    trkinfo.nmat = 0; trkinfo.nmatactive = 0; trkinfo.radlen = 0.0;
     for (std::vector<TrkStraw>::const_iterator i_straw = kseed.straws().begin(); i_straw != kseed.straws().end(); ++i_straw) {
-      ++trkinfo._nmat;
+      ++trkinfo.nmat;
       if (i_straw->active()) {
-	++trkinfo._nmatactive;
-	trkinfo._radlen += i_straw->radLen();
+        ++trkinfo.nmatactive;
+        trkinfo.radlen += i_straw->radLen();
       }
     }
-  }    
+  }
 
   void InfoStructHelper::fillHitInfo(const KalSeed& kseed, std::vector<TrkStrawHitInfo>& tshinfos ) {
     tshinfos.clear();
@@ -154,10 +154,10 @@ namespace mu2e {
       // find nearest segment
       auto ikseg = kseed.nearestSegment(ihit->trkLen());
       if(ikseg != kseed.segments().end()){
-	XYZVectorF dir;
-	ikseg->helix().direction(ikseg->localFlt(ihit->trkLen()),dir);
-	auto tdir = GenVector::Hep3Vec(dir);
-	tshinfo._wdot = tdir.dot(straw.getDirection());
+        XYZVectorF dir;
+        ikseg->helix().direction(ikseg->localFlt(ihit->trkLen()),dir);
+        auto tdir = GenVector::Hep3Vec(dir);
+        tshinfo._wdot = tdir.dot(straw.getDirection());
       }
       tshinfo._residerr = ihit->radialErr();
       // note; the following is the BIASED residual FIXME!
@@ -167,7 +167,7 @@ namespace mu2e {
 
       double rstraw = tracker.strawOuterRadius();
       tshinfo._dx = std::sqrt(std::max(0.0,rstraw*rstraw-tshinfo._rdrift*tshinfo._rdrift));
-	
+
       tshinfo._trklen = ihit->trkLen();
       tshinfo._hlen = ihit->hitLen();
       tshinfo._t0 = ihit->t0().t0();
@@ -177,7 +177,7 @@ namespace mu2e {
       tshinfo._doca = ihit->wireDOCA();
       tshinfo._edep = ihit->energyDep();
       tshinfo._wdist = ihit->wireDist();
-      tshinfo._werr = ihit->wireRes();	
+      tshinfo._werr = ihit->wireRes();
       tshinfo._driftend = ihit->driftEnd();
       tshinfo._tdrift = ihit->hitTime() - ihit->signalTime() - ihit->t0().t0();
       auto const& wiredir = straw.getDirection();
@@ -187,14 +187,14 @@ namespace mu2e {
 
       // count correlations with other TSH
       for(std::vector<TrkStrawHitSeed>::const_iterator jhit=kseed.hits().begin(); jhit != ihit; ++jhit) {
-	if(tshinfo._plane ==  jhit->strawId().plane() &&
-	   tshinfo._panel == jhit->strawId().panel() ){
-	  tshinfo._dhit = true;
-	  if (jhit->flag().hasAllProperties(active)) {
-	    tshinfo._dactive = true;
-	    break;
-	  }
-	}
+        if(tshinfo._plane ==  jhit->strawId().plane() &&
+            tshinfo._panel == jhit->strawId().panel() ){
+          tshinfo._dhit = true;
+          if (jhit->flag().hasAllProperties(active)) {
+            tshinfo._dactive = true;
+            break;
+          }
+        }
       }
 
       tshinfos.push_back(tshinfo);
@@ -204,7 +204,7 @@ namespace mu2e {
   void InfoStructHelper::fillMatInfo(const KalSeed& kseed, std::vector<TrkStrawMatInfo>& tminfos ) {
     tminfos.clear();
     // loop over sites, pick out the materials
-      
+
     for(const auto& i_straw : kseed.straws()) {
       TrkStrawMatInfo tminfo;
 
@@ -228,35 +228,35 @@ namespace mu2e {
       auto const& tch = kseed.caloHit();
       auto const& cc = tch.caloCluster();
 
-      tchinfo._active = tch.flag().hasAllProperties(StrawHitFlag::active);
-      tchinfo._did = cc->diskID();
-      tchinfo._trklen = tch.trkLen();
-      tchinfo._clen = tch.hitLen();
-    
+      tchinfo.active = tch.flag().hasAllProperties(StrawHitFlag::active);
+      tchinfo.did = cc->diskID();
+      tchinfo.trklen = tch.trkLen();
+      tchinfo.clen = tch.hitLen();
+
       if(tch.flag().hasAllProperties(StrawHitFlag::doca)) {
-	tchinfo._doca = tch.clusterAxisDOCA();
+        tchinfo.doca = tch.clusterAxisDOCA();
       }
       else {
-	tchinfo._doca = -100.0;
+        tchinfo.doca = -100.0;
       }
       // add the propagation time offsetA
-      tchinfo._t0 = tch.t0().t0();
-      tchinfo._t0err = tch.t0().t0Err();
-      tchinfo._ct = tch.time(); // time used to constrain T0 by this hit: includes the 'propagation time' offset
-      tchinfo._cterr = tch.timeErr();
-      tchinfo._edep = cc->energyDep();
+      tchinfo.t0 = tch.t0().t0();
+      tchinfo.t0err = tch.t0().t0Err();
+      tchinfo.ct = tch.time(); // time used to constrain T0 by this hit: includes the 'propagation time' offset
+      tchinfo.cterr = tch.timeErr();
+      tchinfo.edep = cc->energyDep();
       // transform cog to tracker coordinates; requires 2 steps.  This is at the front
       // of the disk
       mu2e::GeomHandle<mu2e::Calorimeter> calo;
       XYZVectorF cpos = XYZVectorF(calo->geomUtil().mu2eToTracker(calo->geomUtil().diskToMu2e(cc->diskID(),cc->cog3Vector())));
-      // move to the front face and 
+      // move to the front face and
       // add the cluster length (relative to the front face).  crystal size should come from geom FIXME!
       cpos.SetZ(cpos.z() -200.0 + tch.hitLen());
-      tchinfo._poca = cpos;
+      tchinfo.poca = cpos;
       // find the nearest segment
       auto ikseg = kseed.nearestSegment(tch.trkLen());
       if(ikseg != kseed.segments().end()){
-	ikseg->mom(ikseg->localFlt(tch.trkLen()),tchinfo._mom);
+        ikseg->mom(ikseg->localFlt(tch.trkLen()),tchinfo.mom);
       }
     }
   }
@@ -276,23 +276,23 @@ namespace mu2e {
     if(hptr.isNonnull()){
       // count hits, active and not
       for(size_t ihit=0;ihit < hptr->hits().size(); ihit++){
-	auto const& hh = hptr->hits()[ihit];
-	hinfo._nch++;
-	hinfo._nsh += hh.nStrawHits();
-	if(!hh.flag().hasAnyProperty(StrawHitFlag::outlier)){
-	  hinfo._ncha++;
-	  hinfo._nsha += hh.nStrawHits();
-	}
-	if( hptr->status().hasAllProperties(TrkFitFlag::TPRHelix))
-	  hinfo._flag = 1;
-	else if( hptr->status().hasAllProperties(TrkFitFlag::CPRHelix))
-	  hinfo._flag = 2;
-	hinfo._t0err = hptr->t0().t0Err();
-	hinfo._mom = 0.299792*hptr->helix().momentum()*_bz0; //FIXME!
-	hinfo._chi2xy = hptr->helix().chi2dXY();
-	hinfo._chi2fz = hptr->helix().chi2dZPhi();
-	if(hptr->caloCluster().isNonnull())
-	  hinfo._ecalo  = hptr->caloCluster()->energyDep();
+        auto const& hh = hptr->hits()[ihit];
+        hinfo.nch++;
+        hinfo.nsh += hh.nStrawHits();
+        if(!hh.flag().hasAnyProperty(StrawHitFlag::outlier)){
+          hinfo.ncha++;
+          hinfo.nsha += hh.nStrawHits();
+        }
+        if( hptr->status().hasAllProperties(TrkFitFlag::TPRHelix))
+          hinfo.flag = 1;
+        else if( hptr->status().hasAllProperties(TrkFitFlag::CPRHelix))
+          hinfo.flag = 2;
+        hinfo.t0err = hptr->t0().t0Err();
+        hinfo.mom = 0.299792*hptr->helix().momentum()*_bz0; //FIXME!
+        hinfo.chi2xy = hptr->helix().chi2dXY();
+        hinfo.chi2fz = hptr->helix().chi2dZPhi();
+        if(hptr->caloCluster().isNonnull())
+          hinfo.ecalo  = hptr->caloCluster()->energyDep();
       }
     }
   }
@@ -316,9 +316,9 @@ namespace mu2e {
       float blen = trkhel.zFlight(ffpos.z()+207.5); // private communication B. Echenard FIXME!!!!
       XYZVectorF extpos;
       trkhel.position(flen,extpos);
-      trkpidInfo._diskfrad[idisk] = sqrt(extpos.Perp2());	
+      trkpidInfo._diskfrad[idisk] = sqrt(extpos.Perp2());
       trkhel.position(blen,extpos);
-      trkpidInfo._diskbrad[idisk] = sqrt(extpos.Perp2());	
+      trkpidInfo._diskbrad[idisk] = sqrt(extpos.Perp2());
     }
   }
 }

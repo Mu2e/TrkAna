@@ -13,24 +13,24 @@ namespace mu2e
     const std::string leafnames(std::vector<std::string> labels) {
       std::string leaves = "nwts/I:";
       for (std::vector<std::string>::const_iterator i_label = labels.begin(); i_label != labels.end(); ++i_label) {
-	leaves += *i_label + "/F";
-	if (i_label != labels.end()-1) {
-	  leaves += ":";
-	}
+        leaves += *i_label + "/F";
+        if (i_label != labels.end()-1) {
+          leaves += ":";
+        }
       }
       n_weights = labels.size();
       return leaves;
     }
 
-    void setWeights(const std::vector<Float_t>& weights) { 
+    void setWeights(const std::vector<Float_t>& weights) {
       for (unsigned int i_weight = 0; i_weight < weights.size(); ++i_weight) {
-	_weights[i_weight] = weights.at(i_weight);
+        _weights[i_weight] = weights.at(i_weight);
       }
     }
 
     void reset() {
       for (auto& i_weight : _weights) {
-	i_weight = -1.0;
+        i_weight = -1.0;
       }
     }
 
