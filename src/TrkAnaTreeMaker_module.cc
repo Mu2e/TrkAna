@@ -651,7 +651,7 @@ namespace mu2e {
     _einfo.pbtime = PBT.pbtime_;
     _einfo.pbterr = PBT.pbterr_;
 
-    auto PBTMChandle = event.getValidHandle<mu2e::ProtonBunchTime>(_PBTMCTag);
+    auto PBTMChandle = event.getValidHandle<mu2e::ProtonBunchTimeMC>(_PBTMCTag);
     auto PBTMC = *PBTMChandle;
     _einfomc.pbtime = PBTMC.pbtime_;
 
