@@ -17,10 +17,12 @@
 #include "Offline/MCDataProducts/inc/EventWeight.hh"
 #include "Offline/MCDataProducts/inc/KalSeedMC.hh"
 #include "Offline/MCDataProducts/inc/CaloClusterMC.hh"
+#include "Offline/MCDataProducts/inc/ProtonBunchTimeMC.hh"
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
 #include "Offline/RecoDataProducts/inc/KalSeedAssns.hh"
 #include "Offline/RecoDataProducts/inc/CaloHit.hh"
 #include "Offline/RecoDataProducts/inc/TrkCaloHitPID.hh"
+#include "Offline/RecoDataProducts/inc/ProtonBunchTime.hh"
 #include "Offline/TrkReco/inc/TrkUtilities.hh"
 #include "Offline/CalorimeterGeom/inc/DiskCalorimeter.hh"
 #include "Offline/GeometryService/inc/VirtualDetector.hh"
@@ -124,6 +126,8 @@ namespace mu2e {
       fhicl::OptionalSequence< fhicl::Table<BranchConfig> > supplements{Name("supplements"), Comment("Supplemental physics track info (TrkAna will find closest in time to candidate)")};
       fhicl::Atom<art::InputTag> rctag{Name("RecoCountTag"), Comment("RecoCount"), art::InputTag()};
       fhicl::Atom<art::InputTag> PBITag{Name("PBITag"), Comment("Tag for ProtonBunchIntensity object") ,art::InputTag()};
+      fhicl::Atom<art::InputTag> PBTTag{Name("PBTTag"), Comment("Tag for ProtonBunchTime object") ,art::InputTag()};
+      fhicl::Atom<art::InputTag> PBTMCTag{Name("PBTMCTag"), Comment("Tag for ProtonBunchTimeMC object") ,art::InputTag()};
       fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
       fhicl::Atom<std::string> crvCoincidenceModuleLabel{Name("CrvCoincidenceModuleLabel"), Comment("CrvCoincidenceModuleLabel")};
       fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
@@ -178,7 +182,8 @@ namespace mu2e {
     TProfile* _tht; // profile plot of track hit times: just an example
     // general event info branch
     EventInfo _einfo;
-    art::InputTag _PBITag;
+    EventInfoMC _einfomc;
+    art::InputTag _PBITag, _PBTTag, _PBTMCTag;
     // hit counting
     HitCount _hcnt;
     // track counting
@@ -257,6 +262,8 @@ namespace mu2e {
     art::EDAnalyzer(conf),
     _conf(conf()),
     _PBITag(conf().PBITag()),
+    _PBTTag(conf().PBTTag()),
+    _PBTMCTag(conf().PBTMCTag()),
     _trigbitsh(0),
     _infoMCStructHelper(conf().infoMCStructHelper()),
     _buffsize(conf().buffsize()),
@@ -331,6 +338,7 @@ namespace mu2e {
     _tht=tfs->make<TProfile>("tht","Track Hit Time Profile",RecoCount::_nshtbins,-25.0,1725.0);
 // add event info branch
     _trkana->Branch("evtinfo.",&_einfo,_buffsize,_splitlevel);
+    _trkana->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
 // hit counting branch
     _trkana->Branch("hcnt.",&_hcnt,HitCount::leafnames().c_str());
 // track counting branch
@@ -512,6 +520,7 @@ namespace mu2e {
     }
     // reset event level structs
     _einfo.reset();
+    _einfomc.reset();
     _hcnt.reset();
     _tcnt.reset();
     _hinfo.reset();
@@ -635,10 +644,20 @@ namespace mu2e {
     _einfo.eventid = event.event();
     _einfo.runid = event.run();
     _einfo.subrunid = event.subRun();
+    // currently no reco nproton estimate TODO
+
+    auto PBThandle = event.getValidHandle<mu2e::ProtonBunchTime>(_PBTTag);
+    auto PBT = *PBThandle;
+    _einfo.pbtime = PBT.pbtime_;
+    _einfo.pbterr = PBT.pbterr_;
+
+    auto PBTMChandle = event.getValidHandle<mu2e::ProtonBunchTime>(_PBTMCTag);
+    auto PBTMC = *PBTMChandle;
+    _einfomc.pbtime = PBTMC.pbtime_;
 
     auto PBIhandle = event.getValidHandle<mu2e::ProtonBunchIntensity>(_PBITag);
     auto PBI = *PBIhandle;
-    _einfo.nprotons = PBI.intensity();
+    _einfomc.nprotons = PBI.intensity();
 
     // get event weight products
     std::vector<Float_t> weights;

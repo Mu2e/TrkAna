@@ -127,6 +127,8 @@ TrkAnaTreeMaker : {
   module_type : TrkAnaTreeMaker
   RecoCountTag : "SelectRecoMC"
   PBITag : "PBISim"
+  PBTTag : "EWMProducer"
+  PBTMCTag : "EWMProducer"
   CrvCoincidenceModuleLabel : "SelectRecoMC"
   CrvCoincidenceMCModuleLabel : "compressRecoMCs"
   CrvRecoPulseLabel : "SelectRecoMC"
