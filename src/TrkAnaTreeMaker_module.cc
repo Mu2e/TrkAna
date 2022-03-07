@@ -17,10 +17,12 @@
 #include "Offline/MCDataProducts/inc/EventWeight.hh"
 #include "Offline/MCDataProducts/inc/KalSeedMC.hh"
 #include "Offline/MCDataProducts/inc/CaloClusterMC.hh"
+#include "Offline/MCDataProducts/inc/ProtonBunchTimeMC.hh"
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
 #include "Offline/RecoDataProducts/inc/KalSeedAssns.hh"
 #include "Offline/RecoDataProducts/inc/CaloHit.hh"
 #include "Offline/RecoDataProducts/inc/TrkCaloHitPID.hh"
+#include "Offline/RecoDataProducts/inc/ProtonBunchTime.hh"
 #include "Offline/TrkReco/inc/TrkUtilities.hh"
 #include "Offline/CalorimeterGeom/inc/DiskCalorimeter.hh"
 #include "Offline/GeometryService/inc/VirtualDetector.hh"
@@ -51,7 +53,6 @@
 #include "BTrk/BbrGeom/BbrVectorErr.hh"
 #include "BTrk/TrkBase/TrkHelixUtils.hh"
 #include "Offline/Mu2eUtilities/inc/TriggerResultsNavigator.hh"
-#include "Offline/Mu2eUtilities/inc/SimParticleTimeOffset.hh"
 // mu2e tracking
 #include "Offline/RecoDataProducts/inc/TrkFitDirection.hh"
 #include "Offline/BTrkData/inc/TrkStrawHit.hh"
@@ -74,9 +75,9 @@
 #include "TrkAna/inc/InfoMCStructHelper.hh"
 #include "Offline/RecoDataProducts/inc/RecoQual.hh"
 #include "TrkAna/inc/RecoQualInfo.hh"
-// CRV info
+// CRV info; this still requires the obsolete time offsets FIXME
+#include "Offline/Mu2eUtilities/inc/SimParticleTimeOffset.hh"
 #include "Offline/CRVAnalysis/inc/CRVAnalysis.hh"
-#include "Offline/MCDataProducts/inc/SimParticleTimeMap.hh"
 
 // C++ includes.
 #include <iostream>
@@ -125,6 +126,8 @@ namespace mu2e {
       fhicl::OptionalSequence< fhicl::Table<BranchConfig> > supplements{Name("supplements"), Comment("Supplemental physics track info (TrkAna will find closest in time to candidate)")};
       fhicl::Atom<art::InputTag> rctag{Name("RecoCountTag"), Comment("RecoCount"), art::InputTag()};
       fhicl::Atom<art::InputTag> PBITag{Name("PBITag"), Comment("Tag for ProtonBunchIntensity object") ,art::InputTag()};
+      fhicl::Atom<art::InputTag> PBTTag{Name("PBTTag"), Comment("Tag for ProtonBunchTime object") ,art::InputTag()};
+      fhicl::Atom<art::InputTag> PBTMCTag{Name("PBTMCTag"), Comment("Tag for ProtonBunchTimeMC object") ,art::InputTag()};
       fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
       fhicl::Atom<std::string> crvCoincidenceModuleLabel{Name("CrvCoincidenceModuleLabel"), Comment("CrvCoincidenceModuleLabel")};
       fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
@@ -133,7 +136,6 @@ namespace mu2e {
       fhicl::Atom<std::string> simParticleLabel{Name("SimParticleLabel"), Comment("SimParticleLabel")};
       fhicl::Atom<std::string> mcTrajectoryLabel{Name("MCTrajectoryLabel"), Comment("MCTrajectoryLabel")};
       fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters
-      fhicl::Table<SimParticleTimeOffset::Config> timeOffsets{ Name("TimeOffsets"), Comment("Time maps") };
       fhicl::Atom<std::string> crvWaveformsModuleLabel{ Name("CrvWaveformsModuleLabel"), Comment("CrvWaveformsModuleLabel")};
       fhicl::Atom<std::string> crvDigiModuleLabel{ Name("CrvDigiModuleLabel"), Comment("CrvDigiModuleLabel")};
       fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
@@ -181,7 +183,8 @@ namespace mu2e {
     TProfile* _tht; // profile plot of track hit times: just an example
     // general event info branch
     EventInfo _einfo;
-    art::InputTag _PBITag;
+    EventInfoMC _einfomc;
+    art::InputTag _PBITag, _PBTTag, _PBTMCTag;
     // hit counting
     HitCount _hcnt;
     // track counting
@@ -260,6 +263,8 @@ namespace mu2e {
     art::EDAnalyzer(conf),
     _conf(conf()),
     _PBITag(conf().PBITag()),
+    _PBTTag(conf().PBTTag()),
+    _PBTMCTag(conf().PBTMCTag()),
     _trigbitsh(0),
     _infoMCStructHelper(conf().infoMCStructHelper()),
     _buffsize(conf().buffsize()),
@@ -334,6 +339,7 @@ namespace mu2e {
     _tht=tfs->make<TProfile>("tht","Track Hit Time Profile",RecoCount::_nshtbins,-25.0,1725.0);
 // add event info branch
     _trkana->Branch("evtinfo.",&_einfo,_buffsize,_splitlevel);
+    _trkana->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
 // hit counting branch
     _trkana->Branch("hcnt.",&_hcnt,HitCount::leafnames().c_str());
 // track counting branch
@@ -348,9 +354,9 @@ namespace mu2e {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string branch = i_branchConfig.branch();
       _trkana->Branch(branch.c_str(),&_allTIs.at(i_branch));
-      _trkana->Branch((branch+"ent").c_str(),&_allEntTIs.at(i_branch),TrkFitInfo::leafnames().c_str());
-      _trkana->Branch((branch+"mid").c_str(),&_allMidTIs.at(i_branch),TrkFitInfo::leafnames().c_str());
-      _trkana->Branch((branch+"xit").c_str(),&_allXitTIs.at(i_branch),TrkFitInfo::leafnames().c_str());
+      _trkana->Branch((branch+"ent").c_str(),&_allEntTIs.at(i_branch));
+      _trkana->Branch((branch+"mid").c_str(),&_allMidTIs.at(i_branch));
+      _trkana->Branch((branch+"xit").c_str(),&_allXitTIs.at(i_branch));
       _trkana->Branch((branch+"tch").c_str(),&_allTCHIs.at(i_branch));
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
         _trkana->Branch((branch+"trkqual").c_str(), &_allTQIs.at(i_branch), TrkQualInfo::leafnames().c_str());
@@ -515,6 +521,7 @@ namespace mu2e {
     }
     // reset event level structs
     _einfo.reset();
+    _einfomc.reset();
     _hcnt.reset();
     _tcnt.reset();
     _hinfo.reset();
@@ -584,9 +591,13 @@ namespace mu2e {
         CRVAnalysis::FillCrvHitInfoCollections(_conf.crvCoincidenceModuleLabel(), _conf.crvCoincidenceMCModuleLabel(),
                                                _conf.crvRecoPulseLabel(), _conf.crvStepLabel(), _conf.simParticleLabel(), _conf.mcTrajectoryLabel(), event,
                                                _crvinfo, _crvinfomc, _crvsummary, _crvsummarymc, _crvinfomcplane, _conf.crvPlaneY());
-        if(_conf.crvpulses())
+        if(_conf.crvpulses()){
+          // temporary hack: FIXME
+          std::vector<art::InputTag> nulltags;
+          SimParticleTimeOffset nulloffset(nulltags);
           CRVAnalysis::FillCrvPulseInfoCollections(_conf.crvRecoPulseLabel(), _conf.crvWaveformsModuleLabel(), _conf.crvDigiModuleLabel(),
-                                                   _infoMCStructHelper.getTimeMaps(), event, _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
+                                                   nulloffset, event, _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
+        }
 
 //      find the best CRV match (closest in time)
         _bestcrv=-1;
@@ -634,10 +645,20 @@ namespace mu2e {
     _einfo.eventid = event.event();
     _einfo.runid = event.run();
     _einfo.subrunid = event.subRun();
+    // currently no reco nproton estimate TODO
+
+    auto PBThandle = event.getValidHandle<mu2e::ProtonBunchTime>(_PBTTag);
+    auto PBT = *PBThandle;
+    _einfo.pbtime = PBT.pbtime_;
+    _einfo.pbterr = PBT.pbterr_;
+
+    auto PBTMChandle = event.getValidHandle<mu2e::ProtonBunchTimeMC>(_PBTMCTag);
+    auto PBTMC = *PBTMChandle;
+    _einfomc.pbtime = PBTMC.pbtime_;
 
     auto PBIhandle = event.getValidHandle<mu2e::ProtonBunchIntensity>(_PBITag);
     auto PBI = *PBIhandle;
-    _einfo.nprotons = PBI.intensity();
+    _einfomc.nprotons = PBI.intensity();
 
     // get event weight products
     std::vector<Float_t> weights;

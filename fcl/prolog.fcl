@@ -127,6 +127,8 @@ TrkAnaTreeMaker : {
   module_type : TrkAnaTreeMaker
   RecoCountTag : "SelectRecoMC"
   PBITag : "PBISim"
+  PBTTag : "EWMProducer"
+  PBTMCTag : "EWMProducer"
   CrvCoincidenceModuleLabel : "SelectRecoMC"
   CrvCoincidenceMCModuleLabel : "compressRecoMCs"
   CrvRecoPulseLabel : "SelectRecoMC"
@@ -151,7 +153,6 @@ TrkAnaTreeMaker : {
   InfoMCStructHelper : {
     SimParticleCollectionTag : "compressRecoMCs"
     MinGoodMomFraction : 0.9
-    TimeMaps : [ ]
   }
 }
 

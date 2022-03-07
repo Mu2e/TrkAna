@@ -91,12 +91,13 @@ namespace mu2e {
     if (ksegIter == kseed.segments().end()) {
       cet::exception("InfoStructHelper") << "Couldn't find KalSegment that includes pos = " << pos;
     }
-    trkfitinfo._fitmom = ksegIter->mom();
-    trkfitinfo._fitmomerr = ksegIter->momerr();
-    trkfitinfo._fitpar = ksegIter->helix();
+    trkfitinfo.mom = ksegIter->momentum3();
+    trkfitinfo.pos = ksegIter->position3();
+    trkfitinfo.momerr = ksegIter->momerr();
+    trkfitinfo.fitpar = ksegIter->helix();
     CLHEP::HepSymMatrix pcov;
     ksegIter->covar().symMatrix(pcov);
-    trkfitinfo._fitparerr = helixpar(pcov);
+    trkfitinfo.fitparerr = helixpar(pcov);
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {

@@ -2,6 +2,7 @@
 #include "TrkAna/inc/TrkStrawHitInfo.hh"
 #include "TrkAna/inc/TrkStrawMatInfo.hh"
 #include "TrkAna/inc/EventInfo.hh"
+#include "TrkAna/inc/helixpar.hh"
 #include "TrkAna/inc/HelixInfo.hh"
 #include "TrkAna/inc/HitCount.hh"
 #include "TrkAna/inc/TrkCount.hh"
