@@ -7,7 +7,6 @@
 #ifndef TrkInfo_HH
 #define TrkInfo_HH
 #include "Offline/DataProducts/inc/GenVector.hh"
-#include "TrkAna/inc/helixpar.hh"
 #include "Offline/MCDataProducts/inc/MCRelationship.hh"
 #include "Rtypes.h"
 namespace mu2e
@@ -17,11 +16,8 @@ namespace mu2e
     XYZVectorF mom;
     XYZVectorF pos;
     Float_t momerr;
-    // helix parameters are deprecated FIXME!
-    helixpar fitpar;
-    helixpar fitparerr;
     TrkFitInfo() { reset(); }
-    void reset() {mom= XYZVectorF(); momerr=-1000.0; fitpar.reset(); fitparerr.reset(); }
+    void reset() {mom= XYZVectorF(); momerr=-1000.0; }
   };
 
   // general information about a track
@@ -76,11 +72,10 @@ namespace mu2e
   //  MC information about a particle for a specific point/time
   struct TrkInfoMCStep {
     Float_t time;  // time of this step
-    helixpar hpar; // helix parameters corresponding to the particle position and momentum assuming the nominal BField
     XYZVectorF mom; // particle momentum at the start of this step
     XYZVectorF pos;  // particle position at the start of this step
     TrkInfoMCStep() { reset(); }
-    void reset() { time = -1; mom = XYZVectorF(); pos = XYZVectorF(); hpar.reset(); }
+    void reset() { time = -1; mom = XYZVectorF(); pos = XYZVectorF(); }
   };
 
 }

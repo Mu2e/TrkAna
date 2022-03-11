@@ -94,10 +94,6 @@ namespace mu2e {
     trkfitinfo.mom = ksegIter->momentum3();
     trkfitinfo.pos = ksegIter->position3();
     trkfitinfo.momerr = ksegIter->momerr();
-    trkfitinfo.fitpar = ksegIter->helix();
-    CLHEP::HepSymMatrix pcov;
-    ksegIter->covar().symMatrix(pcov);
-    trkfitinfo.fitparerr = helixpar(pcov);
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
