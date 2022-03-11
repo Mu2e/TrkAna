@@ -236,8 +236,17 @@ namespace mu2e {
     std::vector<art::Handle<EventWeight> > _wtHandles;
     EventWeightInfo _wtinfo;
     // CRV
-    // CRV -- fhicl parameter
+    // CRV -- fhicl parameters
+    bool _crv;
     bool _crvexpert;
+    bool _crvpulses;
+    std::string _crvCoincidenceModuleLabel;
+    std::string _crvCoincidenceMCModuleLabel;
+    std::string _crvRecoPulseLabel;
+    std::string _crvStepLabel;
+    std::string _crvWaveformsModuleLabel;
+    std::string _crvDigiModuleLabel;
+    double _crvPlaneY;
     // CRV -- other
     std::vector<CrvHitInfoReco> _crvinfo;
     int _bestcrv;
@@ -277,7 +286,18 @@ namespace mu2e {
     _PBTTag(conf().PBTTag()),
     _PBTMCTag(conf().PBTMCTag()),
     _trigbitsh(0),
+    // CRV
+    _crv(conf().crv()),
     _crvexpert(conf().crvexpert()),
+    _crvpulses(conf().crvpulses()),
+    _crvCoincidenceModuleLabel(conf().crvCoincidenceModuleLabel()),
+    _crvCoincidenceMCModuleLabel(conf().crvCoincidenceMCModuleLabel()),
+    _crvRecoPulseLabel(conf().crvRecoPulseLabel()),
+    _crvStepLabel(conf().crvStepLabel()),
+    _crvWaveformsModuleLabel(conf().crvWaveformsModuleLabel()),
+    _crvDigiModuleLabel(conf().crvDigiModuleLabel()),
+    _crvPlaneY(conf().crvPlaneY()),
+
     _infoMCStructHelper(conf().infoMCStructHelper()),
     _buffsize(conf().buffsize()),
     _splitlevel(conf().splitlevel())
@@ -417,21 +437,21 @@ namespace mu2e {
     }
 // calorimeter information for the downstream electron track
 // CRV info
-    if(_conf.crv()) {
+    if(_crv) {
       _trkana->Branch("crvinfo",&_crvinfo,_buffsize,_splitlevel);
       _trkana->Branch("crvsummary",&_crvsummary,_buffsize,_splitlevel);
       _trkana->Branch("bestcrv",&_bestcrv,_buffsize,_splitlevel);
-      if(_conf.crvpulses()) {
+      if(_crvpulses) {
         _trkana->Branch("crvpulseinfo",&_crvpulseinfo,_buffsize,_splitlevel);
         _trkana->Branch("crvwaveforminfo",&_crvwaveforminfo,_buffsize,_splitlevel);
       }
       if(_conf.fillmc()){
-        if(_conf.crv())
+        if(_crv)
         {
           _trkana->Branch("crvinfomc",&_crvinfomc,_buffsize,_splitlevel);
           _trkana->Branch("crvsummarymc",&_crvsummarymc,_buffsize,_splitlevel);
           _trkana->Branch("crvinfomcplane",&_crvinfomcplane,_buffsize,_splitlevel);
-          if(_conf.crvpulses())
+          if(_crvpulses)
             _trkana->Branch("crvpulseinfomc",&_crvpulseinfomc,_buffsize,_splitlevel);
         }
       }
@@ -599,15 +619,15 @@ namespace mu2e {
 
       // TODO we want MC information when we don't have a track
       // fill CRV info
-      if(_conf.crv()){
-        CRVAnalysis::FillCrvHitInfoCollections(_conf.crvCoincidenceModuleLabel(), _conf.crvCoincidenceMCModuleLabel(),
-                                               _conf.crvRecoPulseLabel(), _conf.crvStepLabel(), _conf.simParticleLabel(), _conf.mcTrajectoryLabel(), event,
-                                               _crvinfo, _crvinfomc, _crvsummary, _crvsummarymc, _crvinfomcplane, _conf.crvPlaneY());
-        if(_conf.crvpulses()){
+      if(_crv){
+        CRVAnalysis::FillCrvHitInfoCollections(_crvCoincidenceModuleLabel, _crvCoincidenceMCModuleLabel,
+                                               _crvRecoPulseLabel, _crvStepLabel, _conf.simParticleLabel(), _conf.mcTrajectoryLabel(), event,
+                                               _crvinfo, _crvinfomc, _crvsummary, _crvsummarymc, _crvinfomcplane, _crvPlaneY);
+        if(_crvpulses){
           // temporary hack: FIXME
           std::vector<art::InputTag> nulltags;
           SimParticleTimeOffset nulloffset(nulltags);
-          CRVAnalysis::FillCrvPulseInfoCollections(_conf.crvRecoPulseLabel(), _conf.crvWaveformsModuleLabel(), _conf.crvDigiModuleLabel(),
+          CRVAnalysis::FillCrvPulseInfoCollections(_crvRecoPulseLabel, _crvWaveformsModuleLabel, _crvDigiModuleLabel,
                                                    nulloffset, event, _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
         }
 
