@@ -249,7 +249,7 @@ namespace mu2e {
     double _crvPlaneY;
     // CRV -- other
     std::vector<CrvHitInfoReco> _crvinfo;
-    int _bestcrv;
+    CrvHitInfoReco _bestcrv;
     std::vector<CrvHitInfoMC> _crvinfomc;
     CrvSummaryReco _crvsummary;
     CrvSummaryMC   _crvsummarymc;
@@ -634,7 +634,7 @@ namespace mu2e {
         }
 
 //      find the best CRV match (closest in time)
-        _bestcrv=-1;
+        int ibestcrv=-1;
         float mindt=1.0e9;
         float t0 = candidateKS.t0().t0();
         for(size_t icrv=0;icrv< _crvinfo.size(); ++icrv){
@@ -642,9 +642,12 @@ namespace mu2e {
           float dt = std::min(fabs(crvinfo._timeWindowStart-t0), fabs(crvinfo._timeWindowEnd-t0) );
           if(dt < mindt){
             mindt =dt;
-            _bestcrv = icrv;
+            ibestcrv = icrv;
           }
         }
+	if (ibestcrv>=0) {
+	  _bestcrv = _crvinfo.at(ibestcrv);
+	}
       }
       // fill this row in the TTree
       _trkana->Fill();
