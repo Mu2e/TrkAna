@@ -439,9 +439,9 @@ namespace mu2e {
 // calorimeter information for the downstream electron track
 // CRV info
     if(_crv) {
-      _trkana->Branch("crvsummary",&_crvsummary,_buffsize,_splitlevel);
       _trkana->Branch("bestcrv",&_bestcrv,_buffsize,_splitlevel);
       if (_crvexpert) {
+	_trkana->Branch("crvsummary",&_crvsummary,_buffsize,_splitlevel);
 	_trkana->Branch("crvinfo",&_crvinfo,_buffsize,_splitlevel);
 	if(_crvpulses) {
 	  _trkana->Branch("crvpulseinfo",&_crvpulseinfo,_buffsize,_splitlevel);
@@ -449,9 +449,9 @@ namespace mu2e {
 	}
       }
       if(_conf.fillmc()){
-	_trkana->Branch("crvsummarymc",&_crvsummarymc,_buffsize,_splitlevel);
 	_trkana->Branch("bestcrvmc",&_bestcrvmc,_buffsize,_splitlevel);
 	if (_crvexpert) {
+	  _trkana->Branch("crvsummarymc",&_crvsummarymc,_buffsize,_splitlevel);
 	  _trkana->Branch("crvinfomc",&_crvinfomc,_buffsize,_splitlevel);
 	  _trkana->Branch("crvinfomcplane",&_crvinfomcplane,_buffsize,_splitlevel);
 	  if(_crvpulses) {
