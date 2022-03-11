@@ -931,6 +931,8 @@ namespace mu2e {
       _allTSHIMCs.at(i_branch).clear();
     }
 // clear vectors
+    _bestcrv = CrvHitInfoReco();
+    _bestcrvmc = CrvHitInfoMC();
     _crvinfo.clear();
     _crvinfomc.clear();
     _crvinfomcplane.clear();
