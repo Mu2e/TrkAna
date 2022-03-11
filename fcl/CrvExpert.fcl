@@ -1,0 +1,7 @@
+#include "TrkAna/fcl/TrkAnaReco.fcl"
+
+physics.analyzers.TrkAnaNeg.AnalyzeCRVHits : true
+physics.analyzers.TrkAnaNeg.AnalyzeCRVPulses : false
+
+physics.analyzers.TrkAnaPos.AnalyzeCRVHits : true
+physics.analyzers.TrkAnaPos.AnalyzeCRVPulses : false
