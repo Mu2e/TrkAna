@@ -16,8 +16,11 @@ namespace mu2e
     XYZVectorF mom;
     XYZVectorF pos;
     Float_t momerr;
+    Float_t d0;
+    Float_t maxr;
+    Float_t td;
     TrkFitInfo() { reset(); }
-    void reset() {mom= XYZVectorF(); pos=XYZVectorF(); momerr=-1000.0; }
+    void reset() {mom= XYZVectorF(); pos=XYZVectorF(); momerr=-1000.0; d0=0.0; maxr=0.0; td = 0.0; }
   };
 
   // general information about a track
