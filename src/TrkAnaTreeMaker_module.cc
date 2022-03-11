@@ -129,19 +129,26 @@ namespace mu2e {
       fhicl::Atom<art::InputTag> PBTTag{Name("PBTTag"), Comment("Tag for ProtonBunchTime object") ,art::InputTag()};
       fhicl::Atom<art::InputTag> PBTMCTag{Name("PBTMCTag"), Comment("Tag for ProtonBunchTimeMC object") ,art::InputTag()};
       fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
+      fhicl::Atom<std::string> simParticleLabel{Name("SimParticleLabel"), Comment("SimParticleLabel")};
+      fhicl::Atom<std::string> mcTrajectoryLabel{Name("MCTrajectoryLabel"), Comment("MCTrajectoryLabel")};
+      fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
+      fhicl::Atom<bool> pempty{Name("ProcessEmptyEvents"),false};
+
+      // CRV -- flags
+      fhicl::Atom<bool> crv{Name("AnalyzeCRV"),false};
+      fhicl::Atom<bool> crvexpert{Name("crvexpert"), Comment("Flag for turning on branches for CRV experts"), false};
+      fhicl::Atom<bool> crvpulses{Name("AnalyzeCRVPulses"),false};
+      // CRV -- input tags
       fhicl::Atom<std::string> crvCoincidenceModuleLabel{Name("CrvCoincidenceModuleLabel"), Comment("CrvCoincidenceModuleLabel")};
       fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
       fhicl::Atom<std::string> crvRecoPulseLabel{Name("CrvRecoPulseLabel"), Comment("CrvRecoPulseLabel")};
       fhicl::Atom<std::string> crvStepLabel{Name("CrvStepLabel"), Comment("CrvStepLabel")};
-      fhicl::Atom<std::string> simParticleLabel{Name("SimParticleLabel"), Comment("SimParticleLabel")};
-      fhicl::Atom<std::string> mcTrajectoryLabel{Name("MCTrajectoryLabel"), Comment("MCTrajectoryLabel")};
-      fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters
       fhicl::Atom<std::string> crvWaveformsModuleLabel{ Name("CrvWaveformsModuleLabel"), Comment("CrvWaveformsModuleLabel")};
       fhicl::Atom<std::string> crvDigiModuleLabel{ Name("CrvDigiModuleLabel"), Comment("CrvDigiModuleLabel")};
-      fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
-      fhicl::Atom<bool> pempty{Name("ProcessEmptyEvents"),false};
-      fhicl::Atom<bool> crv{Name("AnalyzeCRV"),false};
-      fhicl::Atom<bool> crvpulses{Name("AnalyzeCRVPulses"),false};
+      // CRV -- other
+      fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters
+
+
       fhicl::Atom<bool> helices{Name("FillHelixInfo"),false};
       fhicl::Atom<bool> filltrkqual{Name("FillTrkQualInfo"),false};
       fhicl::Atom<bool> filltrkpid{Name("FillTrkPIDInfo"),false};
@@ -228,7 +235,10 @@ namespace mu2e {
     // event weights
     std::vector<art::Handle<EventWeight> > _wtHandles;
     EventWeightInfo _wtinfo;
-    // CRV info
+    // CRV
+    // CRV -- fhicl parameter
+    bool _crvexpert;
+    // CRV -- other
     std::vector<CrvHitInfoReco> _crvinfo;
     int _bestcrv;
     std::vector<CrvHitInfoMC> _crvinfomc;
@@ -238,6 +248,7 @@ namespace mu2e {
     std::vector<CrvPulseInfoReco> _crvpulseinfo;
     std::vector<CrvWaveformInfo> _crvwaveforminfo;
     std::vector<CrvHitInfoMC> _crvpulseinfomc;
+
     // helices
     HelixInfo _hinfo;
     // struct helpers
@@ -266,6 +277,7 @@ namespace mu2e {
     _PBTTag(conf().PBTTag()),
     _PBTMCTag(conf().PBTMCTag()),
     _trigbitsh(0),
+    _crvexpert(conf().crvexpert()),
     _infoMCStructHelper(conf().infoMCStructHelper()),
     _buffsize(conf().buffsize()),
     _splitlevel(conf().splitlevel())
