@@ -135,9 +135,9 @@ namespace mu2e {
       fhicl::Atom<bool> pempty{Name("ProcessEmptyEvents"),false};
 
       // CRV -- flags
-      fhicl::Atom<bool> crv{Name("AnalyzeCRV"),Comment("Flag for turning on bestcrv(mc) branches"), false};
-      fhicl::Atom<bool> crvhits{Name("AnalyzeCRVHits"), Comment("Flag for turning on crvinfo(mc), crvsummary(mc), and crvinfomcplane branches"), false};
-	fhicl::Atom<bool> crvpulses{Name("AnalyzeCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
+      fhicl::Atom<bool> crv{Name("FillCRV"),Comment("Flag for turning on bestcrv(mc) branches"), false};
+      fhicl::Atom<bool> crvhits{Name("FillCRVHits"), Comment("Flag for turning on crvinfo(mc), crvsummary(mc), and crvinfomcplane branches"), false};
+	fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
       // CRV -- input tags
       fhicl::Atom<std::string> crvCoincidenceModuleLabel{Name("CrvCoincidenceModuleLabel"), Comment("CrvCoincidenceModuleLabel")};
       fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
