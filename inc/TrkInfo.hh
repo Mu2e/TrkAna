@@ -17,7 +17,7 @@ namespace mu2e
     XYZVectorF pos;
     Float_t momerr;
     TrkFitInfo() { reset(); }
-    void reset() {mom= XYZVectorF(); momerr=-1000.0; }
+    void reset() {mom= XYZVectorF(); pos=XYZVectorF(); momerr=-1000.0; }
   };
 
   // general information about a track
