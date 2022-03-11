@@ -136,7 +136,7 @@ namespace mu2e {
 
       // CRV -- flags
       fhicl::Atom<bool> crv{Name("AnalyzeCRV"),false};
-      fhicl::Atom<bool> crvexpert{Name("crvexpert"), Comment("Flag for turning on branches for CRV experts"), false};
+      fhicl::Atom<bool> crvhits{Name("AnalyzeCRVHits"), Comment("Flag for turning on crvinfo branches"), false};
       fhicl::Atom<bool> crvpulses{Name("AnalyzeCRVPulses"),false};
       // CRV -- input tags
       fhicl::Atom<std::string> crvCoincidenceModuleLabel{Name("CrvCoincidenceModuleLabel"), Comment("CrvCoincidenceModuleLabel")};
@@ -238,7 +238,7 @@ namespace mu2e {
     // CRV
     // CRV -- fhicl parameters
     bool _crv;
-    bool _crvexpert;
+    bool _crvhits;
     bool _crvpulses;
     std::string _crvCoincidenceModuleLabel;
     std::string _crvCoincidenceMCModuleLabel;
@@ -289,7 +289,7 @@ namespace mu2e {
     _trigbitsh(0),
     // CRV
     _crv(conf().crv()),
-    _crvexpert(conf().crvexpert()),
+    _crvhits(conf().crvhits()),
     _crvpulses(conf().crvpulses()),
     _crvCoincidenceModuleLabel(conf().crvCoincidenceModuleLabel()),
     _crvCoincidenceMCModuleLabel(conf().crvCoincidenceMCModuleLabel()),
@@ -440,7 +440,7 @@ namespace mu2e {
 // CRV info
     if(_crv) {
       _trkana->Branch("bestcrv",&_bestcrv,_buffsize,_splitlevel);
-      if (_crvexpert) {
+      if (_crvhits) {
 	_trkana->Branch("crvsummary",&_crvsummary,_buffsize,_splitlevel);
 	_trkana->Branch("crvinfo",&_crvinfo,_buffsize,_splitlevel);
 	if(_crvpulses) {
@@ -450,7 +450,7 @@ namespace mu2e {
       }
       if(_conf.fillmc()){
 	_trkana->Branch("bestcrvmc",&_bestcrvmc,_buffsize,_splitlevel);
-	if (_crvexpert) {
+	if (_crvhits) {
 	  _trkana->Branch("crvsummarymc",&_crvsummarymc,_buffsize,_splitlevel);
 	  _trkana->Branch("crvinfomc",&_crvinfomc,_buffsize,_splitlevel);
 	  _trkana->Branch("crvinfomcplane",&_crvinfomcplane,_buffsize,_splitlevel);
