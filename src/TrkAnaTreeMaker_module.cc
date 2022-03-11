@@ -251,6 +251,7 @@ namespace mu2e {
     std::vector<CrvHitInfoReco> _crvinfo;
     CrvHitInfoReco _bestcrv;
     std::vector<CrvHitInfoMC> _crvinfomc;
+    CrvHitInfoMC _bestcrvmc;
     CrvSummaryReco _crvsummary;
     CrvSummaryMC   _crvsummarymc;
     std::vector<CrvPlaneInfoMC> _crvinfomcplane;
@@ -449,6 +450,7 @@ namespace mu2e {
       }
       if(_conf.fillmc()){
 	_trkana->Branch("crvsummarymc",&_crvsummarymc,_buffsize,_splitlevel);
+	_trkana->Branch("bestcrvmc",&_bestcrvmc,_buffsize,_splitlevel);
 	if (_crvexpert) {
 	  _trkana->Branch("crvinfomc",&_crvinfomc,_buffsize,_splitlevel);
 	  _trkana->Branch("crvinfomcplane",&_crvinfomcplane,_buffsize,_splitlevel);
@@ -647,6 +649,7 @@ namespace mu2e {
         }
 	if (ibestcrv>=0) {
 	  _bestcrv = _crvinfo.at(ibestcrv);
+	  _bestcrvmc = _crvinfomc.at(ibestcrv);
 	}
       }
       // fill this row in the TTree
