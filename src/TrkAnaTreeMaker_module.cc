@@ -129,19 +129,26 @@ namespace mu2e {
       fhicl::Atom<art::InputTag> PBTTag{Name("PBTTag"), Comment("Tag for ProtonBunchTime object") ,art::InputTag()};
       fhicl::Atom<art::InputTag> PBTMCTag{Name("PBTMCTag"), Comment("Tag for ProtonBunchTimeMC object") ,art::InputTag()};
       fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
+      fhicl::Atom<std::string> simParticleLabel{Name("SimParticleLabel"), Comment("SimParticleLabel")};
+      fhicl::Atom<std::string> mcTrajectoryLabel{Name("MCTrajectoryLabel"), Comment("MCTrajectoryLabel")};
+      fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
+      fhicl::Atom<bool> pempty{Name("ProcessEmptyEvents"),false};
+
+      // CRV -- flags
+      fhicl::Atom<bool> crv{Name("FillCRV"),Comment("Flag for turning on bestcrv(mc) branches"), false};
+      fhicl::Atom<bool> crvhits{Name("FillCRVHits"), Comment("Flag for turning on crvinfo(mc), crvsummary(mc), and crvinfomcplane branches"), false};
+	fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
+      // CRV -- input tags
       fhicl::Atom<std::string> crvCoincidenceModuleLabel{Name("CrvCoincidenceModuleLabel"), Comment("CrvCoincidenceModuleLabel")};
       fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
       fhicl::Atom<std::string> crvRecoPulseLabel{Name("CrvRecoPulseLabel"), Comment("CrvRecoPulseLabel")};
       fhicl::Atom<std::string> crvStepLabel{Name("CrvStepLabel"), Comment("CrvStepLabel")};
-      fhicl::Atom<std::string> simParticleLabel{Name("SimParticleLabel"), Comment("SimParticleLabel")};
-      fhicl::Atom<std::string> mcTrajectoryLabel{Name("MCTrajectoryLabel"), Comment("MCTrajectoryLabel")};
-      fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters
       fhicl::Atom<std::string> crvWaveformsModuleLabel{ Name("CrvWaveformsModuleLabel"), Comment("CrvWaveformsModuleLabel")};
       fhicl::Atom<std::string> crvDigiModuleLabel{ Name("CrvDigiModuleLabel"), Comment("CrvDigiModuleLabel")};
-      fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
-      fhicl::Atom<bool> pempty{Name("ProcessEmptyEvents"),false};
-      fhicl::Atom<bool> crv{Name("AnalyzeCRV"),false};
-      fhicl::Atom<bool> crvpulses{Name("AnalyzeCRVPulses"),false};
+      // CRV -- other
+      fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters
+
+
       fhicl::Atom<bool> helices{Name("FillHelixInfo"),false};
       fhicl::Atom<bool> filltrkqual{Name("FillTrkQualInfo"),false};
       fhicl::Atom<bool> filltrkpid{Name("FillTrkPIDInfo"),false};
@@ -228,16 +235,30 @@ namespace mu2e {
     // event weights
     std::vector<art::Handle<EventWeight> > _wtHandles;
     EventWeightInfo _wtinfo;
-    // CRV info
+    // CRV
+    // CRV -- fhicl parameters
+    bool _crv;
+    bool _crvhits;
+    bool _crvpulses;
+    std::string _crvCoincidenceModuleLabel;
+    std::string _crvCoincidenceMCModuleLabel;
+    std::string _crvRecoPulseLabel;
+    std::string _crvStepLabel;
+    std::string _crvWaveformsModuleLabel;
+    std::string _crvDigiModuleLabel;
+    double _crvPlaneY;
+    // CRV -- other
     std::vector<CrvHitInfoReco> _crvinfo;
-    int _bestcrv;
+    CrvHitInfoReco _bestcrv;
     std::vector<CrvHitInfoMC> _crvinfomc;
+    CrvHitInfoMC _bestcrvmc;
     CrvSummaryReco _crvsummary;
     CrvSummaryMC   _crvsummarymc;
     std::vector<CrvPlaneInfoMC> _crvinfomcplane;
     std::vector<CrvPulseInfoReco> _crvpulseinfo;
     std::vector<CrvWaveformInfo> _crvwaveforminfo;
     std::vector<CrvHitInfoMC> _crvpulseinfomc;
+
     // helices
     HelixInfo _hinfo;
     // struct helpers
@@ -266,6 +287,18 @@ namespace mu2e {
     _PBTTag(conf().PBTTag()),
     _PBTMCTag(conf().PBTMCTag()),
     _trigbitsh(0),
+    // CRV
+    _crv(conf().crv()),
+    _crvhits(conf().crvhits()),
+    _crvpulses(conf().crvpulses()),
+    _crvCoincidenceModuleLabel(conf().crvCoincidenceModuleLabel()),
+    _crvCoincidenceMCModuleLabel(conf().crvCoincidenceMCModuleLabel()),
+    _crvRecoPulseLabel(conf().crvRecoPulseLabel()),
+    _crvStepLabel(conf().crvStepLabel()),
+    _crvWaveformsModuleLabel(conf().crvWaveformsModuleLabel()),
+    _crvDigiModuleLabel(conf().crvDigiModuleLabel()),
+    _crvPlaneY(conf().crvPlaneY()),
+
     _infoMCStructHelper(conf().infoMCStructHelper()),
     _buffsize(conf().buffsize()),
     _splitlevel(conf().splitlevel())
@@ -405,23 +438,26 @@ namespace mu2e {
     }
 // calorimeter information for the downstream electron track
 // CRV info
-    if(_conf.crv()) {
-      _trkana->Branch("crvinfo",&_crvinfo,_buffsize,_splitlevel);
-      _trkana->Branch("crvsummary",&_crvsummary,_buffsize,_splitlevel);
+    if(_crv) {
       _trkana->Branch("bestcrv",&_bestcrv,_buffsize,_splitlevel);
-      if(_conf.crvpulses()) {
-        _trkana->Branch("crvpulseinfo",&_crvpulseinfo,_buffsize,_splitlevel);
-        _trkana->Branch("crvwaveforminfo",&_crvwaveforminfo,_buffsize,_splitlevel);
+      if (_crvhits) {
+	_trkana->Branch("crvsummary",&_crvsummary,_buffsize,_splitlevel);
+	_trkana->Branch("crvinfo",&_crvinfo,_buffsize,_splitlevel);
+	if(_crvpulses) {
+	  _trkana->Branch("crvpulseinfo",&_crvpulseinfo,_buffsize,_splitlevel);
+	  _trkana->Branch("crvwaveforminfo",&_crvwaveforminfo,_buffsize,_splitlevel);
+	}
       }
       if(_conf.fillmc()){
-        if(_conf.crv())
-        {
-          _trkana->Branch("crvinfomc",&_crvinfomc,_buffsize,_splitlevel);
-          _trkana->Branch("crvsummarymc",&_crvsummarymc,_buffsize,_splitlevel);
-          _trkana->Branch("crvinfomcplane",&_crvinfomcplane,_buffsize,_splitlevel);
-          if(_conf.crvpulses())
-            _trkana->Branch("crvpulseinfomc",&_crvpulseinfomc,_buffsize,_splitlevel);
-        }
+	_trkana->Branch("bestcrvmc",&_bestcrvmc,_buffsize,_splitlevel);
+	if (_crvhits) {
+	  _trkana->Branch("crvsummarymc",&_crvsummarymc,_buffsize,_splitlevel);
+	  _trkana->Branch("crvinfomc",&_crvinfomc,_buffsize,_splitlevel);
+	  _trkana->Branch("crvinfomcplane",&_crvinfomcplane,_buffsize,_splitlevel);
+	  if(_crvpulses) {
+	    _trkana->Branch("crvpulseinfomc",&_crvpulseinfomc,_buffsize,_splitlevel);
+	  }
+	}
       }
     }
 // helix info
@@ -587,20 +623,20 @@ namespace mu2e {
 
       // TODO we want MC information when we don't have a track
       // fill CRV info
-      if(_conf.crv()){
-        CRVAnalysis::FillCrvHitInfoCollections(_conf.crvCoincidenceModuleLabel(), _conf.crvCoincidenceMCModuleLabel(),
-                                               _conf.crvRecoPulseLabel(), _conf.crvStepLabel(), _conf.simParticleLabel(), _conf.mcTrajectoryLabel(), event,
-                                               _crvinfo, _crvinfomc, _crvsummary, _crvsummarymc, _crvinfomcplane, _conf.crvPlaneY());
-        if(_conf.crvpulses()){
+      if(_crv){
+        CRVAnalysis::FillCrvHitInfoCollections(_crvCoincidenceModuleLabel, _crvCoincidenceMCModuleLabel,
+                                               _crvRecoPulseLabel, _crvStepLabel, _conf.simParticleLabel(), _conf.mcTrajectoryLabel(), event,
+                                               _crvinfo, _crvinfomc, _crvsummary, _crvsummarymc, _crvinfomcplane, _crvPlaneY);
+        if(_crvpulses){
           // temporary hack: FIXME
           std::vector<art::InputTag> nulltags;
           SimParticleTimeOffset nulloffset(nulltags);
-          CRVAnalysis::FillCrvPulseInfoCollections(_conf.crvRecoPulseLabel(), _conf.crvWaveformsModuleLabel(), _conf.crvDigiModuleLabel(),
+          CRVAnalysis::FillCrvPulseInfoCollections(_crvRecoPulseLabel, _crvWaveformsModuleLabel, _crvDigiModuleLabel,
                                                    nulloffset, event, _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
         }
 
 //      find the best CRV match (closest in time)
-        _bestcrv=-1;
+        int ibestcrv=-1;
         float mindt=1.0e9;
         float t0 = candidateKS.t0().t0();
         for(size_t icrv=0;icrv< _crvinfo.size(); ++icrv){
@@ -608,9 +644,13 @@ namespace mu2e {
           float dt = std::min(fabs(crvinfo._timeWindowStart-t0), fabs(crvinfo._timeWindowEnd-t0) );
           if(dt < mindt){
             mindt =dt;
-            _bestcrv = icrv;
+            ibestcrv = icrv;
           }
         }
+	if (ibestcrv>=0) {
+	  _bestcrv = _crvinfo.at(ibestcrv);
+	  _bestcrvmc = _crvinfomc.at(ibestcrv);
+	}
       }
       // fill this row in the TTree
       _trkana->Fill();
@@ -891,6 +931,8 @@ namespace mu2e {
       _allTSHIMCs.at(i_branch).clear();
     }
 // clear vectors
+    _bestcrv = CrvHitInfoReco();
+    _bestcrvmc = CrvHitInfoMC();
     _crvinfo.clear();
     _crvinfomc.clear();
     _crvinfomcplane.clear();
