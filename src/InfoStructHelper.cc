@@ -4,7 +4,7 @@
 //
 #include "TrkAna/inc/InfoStructHelper.hh"
 #include "Offline/RecoDataProducts/inc/TrkStrawHitSeed.hh"
-
+#include "KinKal/Trajectory/CentralHelix.hh"
 #include "Offline/TrackerGeom/inc/Tracker.hh"
 #include <cmath>
 
@@ -94,10 +94,9 @@ namespace mu2e {
     trkfitinfo.mom = ksegIter->momentum3();
     trkfitinfo.pos = ksegIter->position3();
     trkfitinfo.momerr = ksegIter->momerr();
-    trkfitinfo.fitpar = ksegIter->helix();
-    CLHEP::HepSymMatrix pcov;
-    ksegIter->covar().symMatrix(pcov);
-    trkfitinfo.fitparerr = helixpar(pcov);
+    trkfitinfo.d0 = ksegIter->centralHelix().d0();
+    trkfitinfo.maxr = ksegIter->centralHelix().d0() + 2.0/ksegIter->centralHelix().omega();
+    trkfitinfo.td = ksegIter->centralHelix().tanDip();
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
