@@ -141,7 +141,7 @@ namespace mu2e {
       fhicl::Atom<bool> crvhits{Name("FillCRVHits"), Comment("Flag for turning on crvinfo(mc), crvsummary(mc), and crvinfomcplane branches"), false};
 	fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
       // CRV -- input tags
-      fhicl::Atom<art::InputTag> bestCrvTag{Name("BestCrvTag"), Comment("InputTag for BestCrv")};
+      fhicl::Atom<std::string> bestCrvTag{Name("BestCrvTag"), Comment("InputTag for BestCrv")};
       fhicl::Atom<std::string> crvCoincidenceModuleLabel{Name("CrvCoincidenceModuleLabel"), Comment("CrvCoincidenceModuleLabel")};
       fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
       fhicl::Atom<std::string> crvRecoPulseLabel{Name("CrvRecoPulseLabel"), Comment("CrvRecoPulseLabel")};
@@ -243,7 +243,7 @@ namespace mu2e {
     bool _crv;
     bool _crvhits;
     bool _crvpulses;
-    art::InputTag _bestCrvTag;
+    std::string _bestCrvTag;
     std::string _crvCoincidenceModuleLabel;
     std::string _crvCoincidenceMCModuleLabel;
     std::string _crvRecoPulseLabel;
@@ -628,7 +628,9 @@ namespace mu2e {
       // TODO we want MC information when we don't have a track
       // fill CRV info
       if(_crv){
-	auto hBestCrvAssns = event.getValidHandle<BestCrvAssns>(_bestCrvTag);
+	BranchConfig i_branchConfig = _allBranches.at(_candidateIndex);
+	art::InputTag bestCrvTag = _bestCrvTag + i_branchConfig.suffix();
+	auto hBestCrvAssns = event.getValidHandle<BestCrvAssns>(bestCrvTag);
 	if (hBestCrvAssns->size()>0) {
 	  auto bestCrvCoinc = hBestCrvAssns->at(i_kseed).second; 
 	  _infoStructHelper.fillCrvHitInfo(bestCrvCoinc, _bestcrv);

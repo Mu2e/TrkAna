@@ -48,6 +48,28 @@ TrkPIDDeM.KalSeedCollection : "KFFDeM"
 TrkPIDDeP		       : @local::TrkPID
 TrkPIDDeP.KalSeedCollection : "KFFDeP"
 
+BestCrv : {
+  module_type : BestCrvHitDeltaT
+  crvCoincidenceTag : "SelectRecoMC"
+}
+
+BestCrvDeM : @local::BestCrv
+BestCrvDeM.kalSeedTag : "KFFDeM"
+BestCrvUeM : @local::BestCrv
+BestCrvUeM.kalSeedTag : "KFFUeM"
+BestCrvDmuM : @local::BestCrv
+BestCrvDmuM.kalSeedTag : "KFFDmuM"
+BestCrvUmuM : @local::BestCrv
+BestCrvUmuM.kalSeedTag : "KFFUmuM"
+BestCrvDeP : @local::BestCrv
+BestCrvDeP.kalSeedTag : "KFFDeP"
+BestCrvUeP : @local::BestCrv
+BestCrvUeP.kalSeedTag : "KFFUeP"
+BestCrvDmuP : @local::BestCrv
+BestCrvDmuP.kalSeedTag : "KFFDmuP"
+BestCrvUmuP : @local::BestCrv
+BestCrvUmuP.kalSeedTag : "KFFUmuP"
+
 # DIO weighting for flat spectrum electrons
 DIOWeight: {
   module_type: DecayInOrbitWeight
@@ -171,7 +193,14 @@ TrkAnaReco : {
     TrkQualUmuP : @local::TrkQualUmuP
     TrkPIDDeM : @local::TrkPIDDeM
     TrkPIDDeP : @local::TrkPIDDeP
-    BestCrv : { module_type : BestCrvHitDeltaT kalSeedTag : "KFFDeM" crvCoincidenceTag : "SelectRecoMC" }
+    BestCrvDeM : @local::BestCrvDeM
+    BestCrvUeM : @local::BestCrvUeM
+    BestCrvDeP : @local::BestCrvDeP
+    BestCrvUeP : @local::BestCrvUeP
+    BestCrvDmuM : @local::BestCrvDmuM
+    BestCrvDmuP : @local::BestCrvDmuP
+    BestCrvUmuM : @local::BestCrvUmuM
+    BestCrvUmuP : @local::BestCrvUmuP
   }
 
   analyzers : {
@@ -187,7 +216,7 @@ TrkAnaReco : {
     genCountLogger : @local::genCountLogger
   }
 
-  TrigSequence : [ PBIWeight, TrkQualDeM, TrkQualUeM, TrkQualDmuM, TrkQualDeP, TrkQualUeP, TrkQualDmuP, TrkQualUmuM, TrkQualUmuP, TrkPIDDeM, TrkPIDDeP, BestCrv ]
+  TrigSequence : [ PBIWeight, TrkQualDeM, TrkQualUeM, TrkQualDmuM, TrkQualDeP, TrkQualUeP, TrkQualDmuP, TrkQualUmuM, TrkQualUmuP, TrkPIDDeM, TrkPIDDeP, BestCrvDeM, BestCrvUeM, BestCrvDmuM, BestCrvDeP, BestCrvUeP, BestCrvDmuP, BestCrvUmuM, BestCrvUmuP ]
   EndSequenceNoMC : [ TrkAnaNeg, TrkAnaPos ]
   EndSequence : [ TrkAnaNeg, TrkAnaPos, genCountLogger ]
 }
