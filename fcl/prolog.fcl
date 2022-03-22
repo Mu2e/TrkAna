@@ -48,7 +48,6 @@ TrkPIDDeM.KalSeedCollection : "KFFDeM"
 TrkPIDDeP		       : @local::TrkPID
 TrkPIDDeP.KalSeedCollection : "KFFDeP"
 
-
 # DIO weighting for flat spectrum electrons
 DIOWeight: {
   module_type: DecayInOrbitWeight
@@ -138,6 +137,7 @@ TrkAnaTreeMaker : {
   CrvWaveformsModuleLabel : "compressRecoMCs"
   CrvDigiModuleLabel : "SelectRecoMC"
   CrvPlaneY : 2653
+  BestCrvTag : "BestCrv"
   FillMCInfo : true
   FillTrkQualInfo : true
   FillTrkPIDInfo : true
@@ -171,6 +171,7 @@ TrkAnaReco : {
     TrkQualUmuP : @local::TrkQualUmuP
     TrkPIDDeM : @local::TrkPIDDeM
     TrkPIDDeP : @local::TrkPIDDeP
+    BestCrv : { module_type : BestCrvHitDeltaT kalSeedTag : "KFFDeM" crvCoincidenceTag : "SelectRecoMC" }
   }
 
   analyzers : {
@@ -186,7 +187,7 @@ TrkAnaReco : {
     genCountLogger : @local::genCountLogger
   }
 
-  TrigSequence : [ PBIWeight, TrkQualDeM, TrkQualUeM, TrkQualDmuM, TrkQualDeP, TrkQualUeP, TrkQualDmuP, TrkQualUmuM, TrkQualUmuP, TrkPIDDeM, TrkPIDDeP ]
+  TrigSequence : [ PBIWeight, TrkQualDeM, TrkQualUeM, TrkQualDmuM, TrkQualDeP, TrkQualUeP, TrkQualDmuP, TrkQualUmuM, TrkQualUmuP, TrkPIDDeM, TrkPIDDeP, BestCrv ]
   EndSequenceNoMC : [ TrkAnaNeg, TrkAnaPos ]
   EndSequence : [ TrkAnaNeg, TrkAnaPos, genCountLogger ]
 }

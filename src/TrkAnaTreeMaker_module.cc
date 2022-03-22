@@ -26,6 +26,7 @@
 #include "Offline/TrkReco/inc/TrkUtilities.hh"
 #include "Offline/CalorimeterGeom/inc/DiskCalorimeter.hh"
 #include "Offline/GeometryService/inc/VirtualDetector.hh"
+#include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
 // Framework includes.
 #include "art/Framework/Core/EDAnalyzer.h"
 #include "art/Framework/Principal/Event.h"
@@ -90,6 +91,7 @@ namespace mu2e {
 // Need this for the BaBar headers.
   using CLHEP::Hep3Vector;
   typedef KalSeedCollection::const_iterator KSCIter;
+  typedef art::Assns<mu2e::KalSeed, mu2e::CrvCoincidenceCluster> BestCrvAssns;
 
   class TrkAnaTreeMaker : public art::EDAnalyzer {
 
@@ -139,6 +141,7 @@ namespace mu2e {
       fhicl::Atom<bool> crvhits{Name("FillCRVHits"), Comment("Flag for turning on crvinfo(mc), crvsummary(mc), and crvinfomcplane branches"), false};
 	fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
       // CRV -- input tags
+      fhicl::Atom<art::InputTag> bestCrvTag{Name("BestCrvTag"), Comment("InputTag for BestCrv")};
       fhicl::Atom<std::string> crvCoincidenceModuleLabel{Name("CrvCoincidenceModuleLabel"), Comment("CrvCoincidenceModuleLabel")};
       fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
       fhicl::Atom<std::string> crvRecoPulseLabel{Name("CrvRecoPulseLabel"), Comment("CrvRecoPulseLabel")};
@@ -240,6 +243,7 @@ namespace mu2e {
     bool _crv;
     bool _crvhits;
     bool _crvpulses;
+    art::InputTag _bestCrvTag;
     std::string _crvCoincidenceModuleLabel;
     std::string _crvCoincidenceMCModuleLabel;
     std::string _crvRecoPulseLabel;
@@ -291,6 +295,7 @@ namespace mu2e {
     _crv(conf().crv()),
     _crvhits(conf().crvhits()),
     _crvpulses(conf().crvpulses()),
+    _bestCrvTag(conf().bestCrvTag()),
     _crvCoincidenceModuleLabel(conf().crvCoincidenceModuleLabel()),
     _crvCoincidenceMCModuleLabel(conf().crvCoincidenceMCModuleLabel()),
     _crvRecoPulseLabel(conf().crvRecoPulseLabel()),
@@ -298,7 +303,6 @@ namespace mu2e {
     _crvWaveformsModuleLabel(conf().crvWaveformsModuleLabel()),
     _crvDigiModuleLabel(conf().crvDigiModuleLabel()),
     _crvPlaneY(conf().crvPlaneY()),
-
     _infoMCStructHelper(conf().infoMCStructHelper()),
     _buffsize(conf().buffsize()),
     _splitlevel(conf().splitlevel())
@@ -624,6 +628,11 @@ namespace mu2e {
       // TODO we want MC information when we don't have a track
       // fill CRV info
       if(_crv){
+	auto hBestCrvAssns = event.getValidHandle<BestCrvAssns>(_bestCrvTag);
+	if (hBestCrvAssns->size()>0) {
+	  auto bestCrvCoinc = hBestCrvAssns->at(i_kseed).second; 
+	  _infoStructHelper.fillCrvHitInfo(bestCrvCoinc, _bestcrv);
+	}
         CRVAnalysis::FillCrvHitInfoCollections(_crvCoincidenceModuleLabel, _crvCoincidenceMCModuleLabel,
                                                _crvRecoPulseLabel, _crvStepLabel, _conf.simParticleLabel(), _conf.mcTrajectoryLabel(), event,
                                                _crvinfo, _crvinfomc, _crvsummary, _crvsummarymc, _crvinfomcplane, _crvPlaneY);
@@ -634,23 +643,6 @@ namespace mu2e {
           CRVAnalysis::FillCrvPulseInfoCollections(_crvRecoPulseLabel, _crvWaveformsModuleLabel, _crvDigiModuleLabel,
                                                    nulloffset, event, _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
         }
-
-//      find the best CRV match (closest in time)
-        int ibestcrv=-1;
-        float mindt=1.0e9;
-        float t0 = candidateKS.t0().t0();
-        for(size_t icrv=0;icrv< _crvinfo.size(); ++icrv){
-          auto const& crvinfo = _crvinfo[icrv];
-          float dt = std::min(fabs(crvinfo._timeWindowStart-t0), fabs(crvinfo._timeWindowEnd-t0) );
-          if(dt < mindt){
-            mindt =dt;
-            ibestcrv = icrv;
-          }
-        }
-	if (ibestcrv>=0) {
-	  _bestcrv = _crvinfo.at(ibestcrv);
-	  _bestcrvmc = _crvinfomc.at(ibestcrv);
-	}
       }
       // fill this row in the TTree
       _trkana->Fill();
