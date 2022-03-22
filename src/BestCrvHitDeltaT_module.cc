@@ -15,10 +15,8 @@
 #include "fhiclcpp/types/OptionalAtom.h"
 #include "fhiclcpp/types/Table.h"
 #include "fhiclcpp/types/OptionalSequence.h"
-#include "canvas/Persistency/Common/Assns.h"
 
-#include "Offline/RecoDataProducts/inc/KalSeed.hh"
-#include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
+#include "TrkAna/inc/BestCrvAssns.hh"
 
 // C++ includes.
 #include <iostream>
@@ -59,7 +57,7 @@ namespace mu2e {
     _kalSeedTag(conf().kalSeedTag()),
     _crvCoincidenceTag(conf().crvCoincidenceTag())
   {  
-    produces<art::Assns<mu2e::KalSeed, mu2e::CrvCoincidenceCluster>>();
+    produces<BestCrvAssns>();
   }
 
   void BestCrvHitDeltaT::beginJob( ){  }
@@ -68,7 +66,7 @@ namespace mu2e {
 
     const auto& kalSeedHandle = event.getValidHandle<KalSeedCollection>(_kalSeedTag);
     const auto& crvCoincidenceHandle = event.getValidHandle<CrvCoincidenceClusterCollection>(_crvCoincidenceTag);
-    auto outAssns = std::make_unique<art::Assns<mu2e::KalSeed, mu2e::CrvCoincidenceCluster>>();
+    auto outAssns = std::make_unique<BestCrvAssns>();
 
     for (size_t i_kalSeed = 0; i_kalSeed != kalSeedHandle->size(); ++i_kalSeed) {
       const auto& kalSeed = kalSeedHandle->at(i_kalSeed);

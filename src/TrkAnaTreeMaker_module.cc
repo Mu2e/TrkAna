@@ -76,6 +76,7 @@
 #include "TrkAna/inc/InfoMCStructHelper.hh"
 #include "Offline/RecoDataProducts/inc/RecoQual.hh"
 #include "TrkAna/inc/RecoQualInfo.hh"
+#include "TrkAna/inc/BestCrvAssns.hh"
 // CRV info; this still requires the obsolete time offsets FIXME
 #include "Offline/Mu2eUtilities/inc/SimParticleTimeOffset.hh"
 #include "Offline/CRVAnalysis/inc/CRVAnalysis.hh"
@@ -91,7 +92,6 @@ namespace mu2e {
 // Need this for the BaBar headers.
   using CLHEP::Hep3Vector;
   typedef KalSeedCollection::const_iterator KSCIter;
-  typedef art::Assns<mu2e::KalSeed, mu2e::CrvCoincidenceCluster> BestCrvAssns;
 
   class TrkAnaTreeMaker : public art::EDAnalyzer {
 

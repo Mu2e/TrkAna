@@ -13,6 +13,4 @@
 #include "TrkAna/inc/EventWeightInfo.hh"
 #include "TrkAna/inc/RecoQualInfo.hh"
 #include "TrkAna/inc/CaloClusterInfoMC.hh"
-
-#include "Offline/RecoDataProducts/inc/KalSeed.hh"
-#include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
+#include "TrkAna/inc/BestCrvAssns.hh"
