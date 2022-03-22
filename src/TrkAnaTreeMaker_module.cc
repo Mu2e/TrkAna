@@ -27,6 +27,7 @@
 #include "Offline/CalorimeterGeom/inc/DiskCalorimeter.hh"
 #include "Offline/GeometryService/inc/VirtualDetector.hh"
 #include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
+#include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMC.hh"
 // Framework includes.
 #include "art/Framework/Core/EDAnalyzer.h"
 #include "art/Framework/Principal/Event.h"
@@ -634,6 +635,11 @@ namespace mu2e {
 	if (hBestCrvAssns->size()>0) {
 	  auto bestCrvCoinc = hBestCrvAssns->at(i_kseed).second; 
 	  _infoStructHelper.fillCrvHitInfo(bestCrvCoinc, _bestcrv);
+	  if (_conf.fillmc()) {
+	    auto hCrvCoincMCs = event.getValidHandle<CrvCoincidenceClusterMCCollection>(_crvCoincidenceMCModuleLabel);
+	    auto bestCrvCoincMC = art::Ptr<CrvCoincidenceClusterMC>(hCrvCoincMCs, bestCrvCoinc.key());
+	    _infoMCStructHelper.fillCrvHitInfoMC(bestCrvCoincMC, _bestcrvmc);
+	  }
 	}
         CRVAnalysis::FillCrvHitInfoCollections(_crvCoincidenceModuleLabel, _crvCoincidenceMCModuleLabel,
                                                _crvRecoPulseLabel, _crvStepLabel, _conf.simParticleLabel(), _conf.mcTrajectoryLabel(), event,
