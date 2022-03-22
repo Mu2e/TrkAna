@@ -218,6 +218,8 @@ namespace mu2e {
     unsigned _trigbits;
     TH1F* _trigbitsh; // plot of trigger bits: just an example
     std::map<size_t,unsigned> _tmap; // map between path and trigger ID.  ID should come from trigger itself FIXME!
+    // MC truth (fcl parameters)
+    bool _fillmc;
     // MC truth branches (inputs)
     art::Handle<PrimaryParticle> _pph;
     art::Handle<KalSeedMCAssns> _ksmcah;
@@ -292,6 +294,7 @@ namespace mu2e {
     _PBTTag(conf().PBTTag()),
     _PBTMCTag(conf().PBTMCTag()),
     _trigbitsh(0),
+    _fillmc(conf().fillmc()),
     // CRV
     _crv(conf().crv()),
     _crvhits(conf().crvhits()),
@@ -409,7 +412,7 @@ namespace mu2e {
         _trkana->Branch((branch+"tsm").c_str(),&_allTSMIs.at(i_branch),_buffsize,_splitlevel);
       }
       // optionall add MC branches
-      if(_conf.fillmc() && i_branchConfig.options().fillmc()){
+      if(_fillmc && i_branchConfig.options().fillmc()){
         _trkana->Branch((branch+"mc").c_str(),&_allMCTIs.at(i_branch),_buffsize,_splitlevel);
         std::string branch_suffix = "";
         for (int i_generation = 0; i_generation < i_branchConfig.options().genealogyDepth(); ++i_generation) {
@@ -453,7 +456,7 @@ namespace mu2e {
 	  _trkana->Branch("crvwaveforminfo",&_crvwaveforminfo,_buffsize,_splitlevel);
 	}
       }
-      if(_conf.fillmc()){
+      if(_fillmc){
 	_trkana->Branch("bestcrvmc",&_bestcrvmc,_buffsize,_splitlevel);
 	if (_crvhits) {
 	  _trkana->Branch("crvsummarymc",&_crvsummarymc,_buffsize,_splitlevel);
@@ -476,7 +479,7 @@ namespace mu2e {
 
   void TrkAnaTreeMaker::analyze(const art::Event& event) {
     // update timing maps for MC
-    if(_conf.fillmc()){
+    if(_fillmc){
       _infoMCStructHelper.updateEvent(event);
     }
 
@@ -555,7 +558,7 @@ namespace mu2e {
       fillTriggerBits(event,process);
     }
     // MC data
-    if(_conf.fillmc()) { // get MC product collections
+    if(_fillmc) { // get MC product collections
       event.getByLabel(_conf.primaryParticleTag(),_pph);
       event.getByLabel(_conf.kalSeedMCTag(),_ksmcah);
       event.getByLabel(_conf.caloClusterMCTag(),_ccmcch);
@@ -635,7 +638,7 @@ namespace mu2e {
 	if (hBestCrvAssns->size()>0) {
 	  auto bestCrvCoinc = hBestCrvAssns->at(i_kseed).second; 
 	  _infoStructHelper.fillCrvHitInfo(bestCrvCoinc, _bestcrv);
-	  if (_conf.fillmc()) {
+	  if (_fillmc) {
 	    auto hCrvCoincMCs = event.getValidHandle<CrvCoincidenceClusterMCCollection>(_crvCoincidenceMCModuleLabel);
 	    auto bestCrvCoincMC = art::Ptr<CrvCoincidenceClusterMC>(hCrvCoincMCs, bestCrvCoinc.key());
 	    _infoMCStructHelper.fillCrvHitInfoMC(bestCrvCoincMC, _bestcrvmc);
@@ -827,7 +830,7 @@ namespace mu2e {
       }
     }
 // fill MC info associated with this track
-    if(_conf.fillmc() && branchConfig.options().fillmc()) {
+    if(_fillmc && branchConfig.options().fillmc()) {
       const PrimaryParticle& primary = *_pph;
       // use Assns interface to find the associated KalSeedMC; this uses ptrs
       auto kptr = art::Ptr<KalSeed>(ksch,i_kseed);
