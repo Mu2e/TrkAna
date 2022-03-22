@@ -641,9 +641,12 @@ namespace mu2e {
 	    _infoMCStructHelper.fillCrvHitInfoMC(bestCrvCoincMC, _bestcrvmc);
 	  }
 	}
-        CRVAnalysis::FillCrvHitInfoCollections(_crvCoincidenceModuleLabel, _crvCoincidenceMCModuleLabel,
-                                               _crvRecoPulseLabel, _crvStepLabel, _conf.simParticleLabel(), _conf.mcTrajectoryLabel(), event,
-                                               _crvinfo, _crvinfomc, _crvsummary, _crvsummarymc, _crvinfomcplane, _crvPlaneY);
+	if (_crvhits) {
+	  CRVAnalysis::FillCrvHitInfoCollections(_crvCoincidenceModuleLabel, _crvCoincidenceMCModuleLabel,
+						 _crvRecoPulseLabel, _crvStepLabel, _conf.simParticleLabel(),
+						 _conf.mcTrajectoryLabel(), event, _crvinfo, _crvinfomc, 
+						 _crvsummary, _crvsummarymc, _crvinfomcplane, _crvPlaneY);
+	}
         if(_crvpulses){
           // temporary hack: FIXME
           std::vector<art::InputTag> nulltags;
