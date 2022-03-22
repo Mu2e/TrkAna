@@ -140,6 +140,8 @@ AllOpt : { fillMC : true
   fillTrkPID : true
   fillHits : true
   genealogyDepth : 5
+  bestcrv : "BestCrv"
+  fillBestCrv : true
 }
 
 DeM : { input : "KFF"
@@ -191,7 +193,6 @@ TrkAnaTreeMaker : {
   CrvWaveformsModuleLabel : "compressRecoMCs"
   CrvDigiModuleLabel : "SelectRecoMC"
   CrvPlaneY : 2653
-  BestCrvTag : "BestCrv"
   FillMCInfo : true
   FillTrkQualInfo : true
   FillTrkPIDInfo : true
