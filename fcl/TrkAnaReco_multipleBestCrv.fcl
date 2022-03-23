@@ -1,0 +1,5 @@
+#include "TrkAna/fcl/TrkAnaReco.fcl"
+
+physics.analyzers.TrkAnaNeg.candidate.options.bestCrvModules : [ "BestCrv", "BestCrv" ]
+physics.analyzers.TrkAnaNeg.candidate.options.bestCrvInstances : [ "first", "second" ]
+physics.analyzers.TrkAnaNeg.candidate.options.bestCrvBranches : [ "bestcrv", "secondbestcrv" ]
