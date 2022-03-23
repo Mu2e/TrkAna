@@ -1,5 +1,38 @@
+// This fcl file gives an example of how an analyzer
+// can write out a TrkAna tree with multiple "bestcrv" branches.
+//
+// This is useful if an analyzer wants to compare two different algorithms,
+// or compare best and second-best crv hits
+//
+// In this example, we will write branches for the first and second-best crv hits, 
+// as defined by the BestCrvHitDeltaT module. This module creates a separate BestCrvAssns
+// for the best and second-best crv hits. These will be written to the branches
+// "debestcrv" and "desecondbestcrv", respectively
+//
+// In TrkAnaReco.fcl, we run this module multiple times with different track collections
+// (e.g. downstream e-minus (DeM), upstream e-minus (UeM)). The labels for these modules
+// are e.g. BestCrvDeM, BestCrvUeM, and each one produces two BestCrvAssns with instance names "first"
+// and "second". So the art::InputTag ("moduleLabel:instanceName") for these would be 
+// e.g. "BestCrvDeM:first", "BestCrvUeM:second".
+//
+
+// This example builds on TrkAnaReco.fcl
 #include "TrkAna/fcl/TrkAnaReco.fcl"
 
+// The commented-out lines below are already defined in TrkAnaReco.fcl,
+// but are included here for a later explanation
+# physics.analyzers.TrkAnaNeg.candidate.options.suffix : "DeM"
+# physics.analyzers.TrkAnaNeg.candidate.options.branch : "de"
+
+// We will add bestcrv branches for the candidate track. First, make a list of the module labels
+// for the BestCrvAssns we will read in. Note that we do not need the "DeM" suffix of the module label 
+// because we have already defined it (see the commented-out lines above)
 physics.analyzers.TrkAnaNeg.candidate.options.bestCrvModules : [ "BestCrv", "BestCrv" ]
+
+// Next we need to list the instance names of the Assns we will be reading in. 
+// Note that these can be empty strings (i.e. "")
 physics.analyzers.TrkAnaNeg.candidate.options.bestCrvInstances : [ "first", "second" ]
+
+// Finally, we define what we want to name these branches. Note that TrkAna will add the "de" to the
+// start of each branch name to differentiate between candidates and supplements
 physics.analyzers.TrkAnaNeg.candidate.options.bestCrvBranches : [ "bestcrv", "secondbestcrv" ]
