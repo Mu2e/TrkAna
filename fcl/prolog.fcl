@@ -140,8 +140,9 @@ AllOpt : { fillMC : true
   fillTrkPID : true
   fillHits : true
   genealogyDepth : 5
-  bestcrv : "BestCrv"
   fillBestCrv : true
+  bestCrvModules : [ "BestCrv" ]
+  bestCrvBranches : [ "bestcrv" ]
 }
 
 DeM : { input : "KFF"

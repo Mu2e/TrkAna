@@ -93,6 +93,7 @@ namespace mu2e {
 // Need this for the BaBar headers.
   using CLHEP::Hep3Vector;
   typedef KalSeedCollection::const_iterator KSCIter;
+  typedef size_t BranchIndex;
 
   class TrkAnaTreeMaker : public art::EDAnalyzer {
 
@@ -103,13 +104,14 @@ namespace mu2e {
       using Comment=fhicl::Comment;
       fhicl::Atom<bool> fillmc{Name("fillMC"), Comment("Switch to turn on filling of MC information for this set of tracks"), false};
       fhicl::Atom<bool> fillhits{Name("fillHits"), Comment("Switch to turn on filling of hit-level information for this set of tracks"), false};
-      fhicl::OptionalAtom<std::string> trkqual{Name("trkqual"), Comment("TrkQualCollection input tag to be written out (use prefix if fcl parameter suffix is defined)")};
+      fhicl::OptionalAtom<std::string> trkqual{Name("trkqual"), Comment("TrkQualCollection input tag to be written out (use prefix if fcl parameter suffix (e.g. DeM) is defined)")};
       fhicl::Atom<bool> filltrkqual{Name("fillTrkQual"), Comment("Switch to turn on filling of the full TrkQualInfo for this set of tracks"), false};
-      fhicl::OptionalAtom<std::string> trkpid{Name("trkpid"), Comment("TrkCaloHitPIDCollection input tag to be written out (use prefix if fcl parameter suffix is defined)")};
+      fhicl::OptionalAtom<std::string> trkpid{Name("trkpid"), Comment("TrkCaloHitPIDCollection input tag to be written out (use prefix if fcl parameter suffix (e.g. DeM) is defined)")};
       fhicl::Atom<bool> filltrkpid{Name("fillTrkPID"), Comment("Switch to turn on filling of the full TrkPIDInfo for this set of tracks"), false};
       fhicl::Atom<bool> required{Name("required"), Comment("True/false if you require this type of track in the event"), false};
       fhicl::Atom<int> genealogyDepth{Name("genealogyDepth"), Comment("The depth of the genealogy information you want to keep"), 1};
-      fhicl::OptionalAtom<std::string> bestcrv{Name("bestcrv"), Comment("BestCrvAssns input tag to be written out (use prefix if fcl parameter suffix is defined)")};
+      fhicl::OptionalSequence<std::string> bestCrvModules{Name("bestCrvModules"), Comment("Sequence of module labels that create the BestCrvAssns you want written out (use prefix if fcl parameter suffix (e.g. DeM) is defined)")};
+      fhicl::OptionalSequence<std::string> bestCrvBranches{Name("bestCrvBranches"), Comment("Sequence of branch names that will be created to store the bestcrv information")};
       fhicl::Atom<bool> fillbestcrv{Name("fillBestCrv"), Comment("Switch to turn on filling of the bestcrv branch for this set of tracks"), false};
     };
 
@@ -185,7 +187,7 @@ namespace mu2e {
 
     Config _conf;
     std::vector<BranchConfig> _allBranches; // candidates + supplements
-    size_t _candidateIndex; // location in above vector that contains the candidate
+    BranchIndex _candidateIndex; // location in above vector that contains the candidate
 
     // track comparator
     TrkComp _tcomp;
@@ -255,13 +257,13 @@ namespace mu2e {
     std::string _crvDigiModuleLabel;
     double _crvPlaneY;
     // CRV (inputs)
-    std::vector<art::Handle<BestCrvAssns>> _allBestCrvAssns;
+    std::map<BranchIndex, std::vector<art::Handle<BestCrvAssns>>> _allBestCrvAssns;
     art::Handle<CrvCoincidenceClusterMCCollection> _crvCoincidenceMCCollHandle;
     // CRV (output)
     std::vector<CrvHitInfoReco> _crvinfo;
-    std::vector<CrvHitInfoReco> _allBestCrvs; // there will be one of these per candidate/supplement
+    std::map<BranchIndex, std::vector<CrvHitInfoReco>> _allBestCrvs; // there can be more than one of these per candidate/supplement
     std::vector<CrvHitInfoMC> _crvinfomc;
-    std::vector<CrvHitInfoMC> _allBestCrvMCs;
+    std::map<BranchIndex, std::vector<CrvHitInfoMC>> _allBestCrvMCs;
     CrvSummaryReco _crvsummary;
     CrvSummaryMC   _crvsummarymc;
     std::vector<CrvPlaneInfoMC> _crvinfomcplane;
@@ -281,7 +283,7 @@ namespace mu2e {
     void fillTriggerBits(const art::Event& event,std::string const& process);
     void resetTrackBranches();
     size_t findSupplementTrack(KalSeedCollection const& kcol,KalSeed const& candidate, bool sameColl);
-    void fillAllInfos(const art::Handle<KalSeedCollection>& ksch, size_t i_branch, size_t i_kseed);
+    void fillAllInfos(const art::Handle<KalSeedCollection>& ksch, BranchIndex i_branch, size_t i_kseed);
 
     template <typename T, typename TI>
     std::vector<art::Handle<T> > createSpecialBranch(const art::Event& event, const std::string& branchname,
@@ -329,7 +331,9 @@ namespace mu2e {
     }
 
     // Create all the info structs
-    for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+    for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+      auto i_branchConfig = _allBranches.at(i_branch);
+
       TrkInfo ti;
       _allTIs.push_back(ti);
       TrkFitInfo ent, mid, xit;
@@ -372,10 +376,19 @@ namespace mu2e {
       std::vector<TrkStrawHitInfoMC> tshimc;
       _allTSHIMCs.push_back(tshimc);
 
-      CrvHitInfoReco bestcrv;
-      _allBestCrvs.push_back(bestcrv);
-      CrvHitInfoMC bestcrvmc;
-      _allBestCrvMCs.push_back(bestcrvmc);
+      if(_crv && i_branchConfig.options().fillbestcrv()) { // if we are filling in bestcrv information
+	std::vector<CrvHitInfoReco> bestcrv;
+	std::vector<CrvHitInfoMC> bestcrvmc;
+	std::vector<std::string> bestCrvBranchNames; // need to know how many bestcrv branches there will be per candidate/supplement
+	if (i_branchConfig.options().bestCrvBranches(bestCrvBranchNames)) {
+	  for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < bestCrvBranchNames.size(); ++i_bestCrvBranch) {
+	    bestcrv.push_back(CrvHitInfoReco()); // add empty structs to the vector so that ROOT can be given a location to find it
+	    bestcrvmc.push_back(CrvHitInfoMC());
+	  }
+	  _allBestCrvs[i_branch] = bestcrv;
+	  _allBestCrvMCs[i_branch] = bestcrvmc;
+	}
+      }
     }
   }
 
@@ -397,7 +410,7 @@ namespace mu2e {
     _trkana->Branch("tcnt",&_tcnt,_tcnt.leafnames(trkcntleaves).c_str());
 
 // create all candidate and supplement branches
-    for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+    for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string branch = i_branchConfig.branch();
       _trkana->Branch(branch.c_str(),&_allTIs.at(i_branch));
@@ -417,11 +430,17 @@ namespace mu2e {
         _trkana->Branch((branch+"tsh").c_str(),&_allTSHIs.at(i_branch),_buffsize,_splitlevel);
         _trkana->Branch((branch+"tsm").c_str(),&_allTSMIs.at(i_branch),_buffsize,_splitlevel);
       }
-      // want to be able to have a bestcrv branch for each candidate/supplement
+      // want to be able to have more than one bestcrv branch for each candidate/supplement
       if(_crv && i_branchConfig.options().fillbestcrv()) {
-	_trkana->Branch((branch+"bestcrv").c_str(),&_allBestCrvs.at(i_branch),_buffsize,_splitlevel);
-	if (_fillmc) {
-	  _trkana->Branch((branch+"bestcrvmc").c_str(),&_allBestCrvMCs.at(i_branch),_buffsize,_splitlevel);
+	std::vector<std::string> bestCrvBranchNames;
+	if (i_branchConfig.options().bestCrvBranches(bestCrvBranchNames)) {
+	  for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < bestCrvBranchNames.size(); ++i_bestCrvBranch) {
+	    std::string bestCrvBranchName = bestCrvBranchNames.at(i_bestCrvBranch);
+	    _trkana->Branch((branch+bestCrvBranchName).c_str(),&_allBestCrvs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
+	    if (_fillmc) {
+	      _trkana->Branch((branch+bestCrvBranchName+"mc").c_str(),&_allBestCrvMCs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
+	    }
+	  }
 	}
       }
 
@@ -514,7 +533,7 @@ namespace mu2e {
       event.getByLabel(kalSeedInputTag,khaH);
     }
 
-    for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+    for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       art::Handle<KalSeedCollection> kalSeedCollHandle;
       art::InputTag kalSeedInputTag = i_branchConfig.input() + i_branchConfig.suffix();
@@ -557,15 +576,22 @@ namespace mu2e {
       _allTCHPCHs.push_back(trkpidCollHandle);
 
       // BestCrv
-      std::string i_bestcrv_tag;
-      art::Handle<BestCrvAssns> bestCrvAssnsHandle;
-      if (i_branchConfig.options().bestcrv(i_bestcrv_tag) && i_branchConfig.options().fillbestcrv() && _crv) {
-        art::InputTag bestCrvInputTag = i_bestcrv_tag + i_branchConfig.suffix();
-        event.getByLabel(bestCrvInputTag,bestCrvAssnsHandle);
-      }
-      _allBestCrvAssns.push_back(bestCrvAssnsHandle);
-      if (_fillmc) {
-	event.getByLabel(_crvCoincidenceMCModuleLabel, _crvCoincidenceMCCollHandle);
+      if (i_branchConfig.options().fillbestcrv() && _crv) { // if we are filling in bestcrv information
+	std::vector<std::string> i_bestcrv_tags;
+	std::vector<art::Handle<BestCrvAssns>> bestCrvAssnsHandles;
+	if (i_branchConfig.options().bestCrvModules(i_bestcrv_tags)) { 	// get the module labels
+	  // loop htrough the module lables
+	  art::Handle<BestCrvAssns> bestCrvAssnsHandle;
+	  for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < i_bestcrv_tags.size(); ++i_bestCrvBranch) {
+	    art::InputTag bestCrvInputTag = i_bestcrv_tags.at(i_bestCrvBranch) + i_branchConfig.suffix();
+	    event.getByLabel(bestCrvInputTag,bestCrvAssnsHandle); // get the Assns for this module and this candidate/supplement
+	    bestCrvAssnsHandles.push_back(bestCrvAssnsHandle); // add this handle to the vector of handles for this candidate/supplement
+	  }
+	}
+	_allBestCrvAssns[i_branch] = bestCrvAssnsHandles;
+	if (_fillmc) {
+	  event.getByLabel(_crvCoincidenceMCModuleLabel, _crvCoincidenceMCCollHandle);
+	}
       }
     }
 
@@ -598,7 +624,7 @@ namespace mu2e {
     // reset
     resetTrackBranches();
     // fill track counts
-    for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+    for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _tcnt._counts[i_branch] = (_allKSCHs.at(i_branch))->size();
     }
 
@@ -625,7 +651,7 @@ namespace mu2e {
 
 
       // Now loop through all the branches (both candidate + supplements)...
-      for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+      for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
         if (i_branch == _candidateIndex) { // ...but actually ignore candidate
           continue;
         }
@@ -777,7 +803,7 @@ namespace mu2e {
     }
   }
 
-  void TrkAnaTreeMaker::fillAllInfos(const art::Handle<KalSeedCollection>& ksch, size_t i_branch, size_t i_kseed) {
+  void TrkAnaTreeMaker::fillAllInfos(const art::Handle<KalSeedCollection>& ksch, BranchIndex i_branch, size_t i_kseed) {
 
     const auto& kseed = ksch->at(i_kseed);
     BranchConfig branchConfig = _allBranches.at(i_branch);
@@ -815,13 +841,19 @@ namespace mu2e {
 
     // BestCrv branches
     if (_crv && branchConfig.options().fillbestcrv()) {
-      auto hBestCrvAssns = _allBestCrvAssns.at(i_branch);
-      if (hBestCrvAssns->size()>0) {
-	auto bestCrvCoinc = hBestCrvAssns->at(i_kseed).second; 
-	_infoStructHelper.fillCrvHitInfo(bestCrvCoinc, _allBestCrvs.at(i_branch));
-	if (_fillmc) {
-	  auto bestCrvCoincMC = art::Ptr<CrvCoincidenceClusterMC>(_crvCoincidenceMCCollHandle, bestCrvCoinc.key());
-	  _infoMCStructHelper.fillCrvHitInfoMC(bestCrvCoincMC, _allBestCrvMCs.at(i_branch));
+      // get the list of bestcrv modules
+      std::vector<std::string> i_bestcrv_tags;
+      if (branchConfig.options().bestCrvModules(i_bestcrv_tags)) { 	// get the module labels
+	for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < i_bestcrv_tags.size(); ++i_bestCrvBranch) {
+	  auto hBestCrvAssns = _allBestCrvAssns.at(i_branch).at(i_bestCrvBranch);
+	  if (hBestCrvAssns->size()>0) {
+	    auto bestCrvCoinc = hBestCrvAssns->at(i_kseed).second;
+	    _infoStructHelper.fillCrvHitInfo(bestCrvCoinc, _allBestCrvs.at(i_branch).at(i_bestCrvBranch));
+	    if (_fillmc) {
+	      auto bestCrvCoincMC = art::Ptr<CrvCoincidenceClusterMC>(_crvCoincidenceMCCollHandle, bestCrvCoinc.key());
+	      _infoMCStructHelper.fillCrvHitInfoMC(bestCrvCoincMC, _allBestCrvMCs.at(i_branch).at(i_bestCrvBranch));
+	    }
+	  }
 	}
       }
     }
@@ -935,7 +967,7 @@ namespace mu2e {
   }
 
   void TrkAnaTreeMaker::resetTrackBranches() {
-    for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+    for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _allTIs.at(i_branch).reset();
       _allEntTIs.at(i_branch).reset();
       _allMidTIs.at(i_branch).reset();
@@ -963,8 +995,11 @@ namespace mu2e {
       _allTSMIs.at(i_branch).clear();
       _allTSHIMCs.at(i_branch).clear();
 
-      _allBestCrvs.at(i_branch) = CrvHitInfoReco();
-      _allBestCrvMCs.at(i_branch) = CrvHitInfoMC();
+      if (_allBranches.at(i_branch).options().fillbestcrv()) { // only clear the vectors if they exist
+	// we don't want to remove elements so use assign instead of clear
+	_allBestCrvs.at(i_branch).assign(_allBestCrvs.at(i_branch).size(), CrvHitInfoReco());
+	_allBestCrvMCs.at(i_branch).assign(_allBestCrvMCs.at(i_branch).size(), CrvHitInfoMC());
+      }
     }
 // clear vectors
     _crvinfo.clear();
