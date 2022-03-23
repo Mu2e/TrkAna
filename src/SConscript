@@ -44,6 +44,7 @@ helper.make_plugins( [
     'art_Persistency_Provenance',
     'art_root_io_TFileService',
     'art_root_io_tfile_support',
+    'cetlib',
     'cetlib_except',
     'fhiclcpp',
     'fhiclcpp_types',
