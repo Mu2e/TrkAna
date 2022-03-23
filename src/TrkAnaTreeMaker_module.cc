@@ -111,6 +111,7 @@ namespace mu2e {
       fhicl::Atom<bool> required{Name("required"), Comment("True/false if you require this type of track in the event"), false};
       fhicl::Atom<int> genealogyDepth{Name("genealogyDepth"), Comment("The depth of the genealogy information you want to keep"), 1};
       fhicl::OptionalSequence<std::string> bestCrvModules{Name("bestCrvModules"), Comment("Sequence of module labels that create the BestCrvAssns you want written out (use prefix if fcl parameter suffix (e.g. DeM) is defined)")};
+      fhicl::OptionalSequence<std::string> bestCrvInstances{Name("bestCrvInstances"), Comment("Sequence of instance names for modules that create multiple BestCrvAssns")};
       fhicl::OptionalSequence<std::string> bestCrvBranches{Name("bestCrvBranches"), Comment("Sequence of branch names that will be created to store the bestcrv information")};
       fhicl::Atom<bool> fillbestcrv{Name("fillBestCrv"), Comment("Switch to turn on filling of the bestcrv branch for this set of tracks"), false};
     };
@@ -578,12 +579,13 @@ namespace mu2e {
       // BestCrv
       if (i_branchConfig.options().fillbestcrv() && _crv) { // if we are filling in bestcrv information
 	std::vector<std::string> i_bestcrv_tags;
+	std::vector<std::string> i_bestcrv_instances;
 	std::vector<art::Handle<BestCrvAssns>> bestCrvAssnsHandles;
-	if (i_branchConfig.options().bestCrvModules(i_bestcrv_tags)) { 	// get the module labels
+	if (i_branchConfig.options().bestCrvModules(i_bestcrv_tags) && i_branchConfig.options().bestCrvInstances(i_bestcrv_instances)) { // get the module labels and instances names
 	  // loop htrough the module lables
 	  art::Handle<BestCrvAssns> bestCrvAssnsHandle;
 	  for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < i_bestcrv_tags.size(); ++i_bestCrvBranch) {
-	    art::InputTag bestCrvInputTag = i_bestcrv_tags.at(i_bestCrvBranch) + i_branchConfig.suffix();
+	    art::InputTag bestCrvInputTag = i_bestcrv_tags.at(i_bestCrvBranch) + i_branchConfig.suffix() + ":" + i_bestcrv_instances.at(i_bestCrvBranch);
 	    event.getByLabel(bestCrvInputTag,bestCrvAssnsHandle); // get the Assns for this module and this candidate/supplement
 	    bestCrvAssnsHandles.push_back(bestCrvAssnsHandle); // add this handle to the vector of handles for this candidate/supplement
 	  }
@@ -843,7 +845,7 @@ namespace mu2e {
     if (_crv && branchConfig.options().fillbestcrv()) {
       // get the list of bestcrv modules
       std::vector<std::string> i_bestcrv_tags;
-      if (branchConfig.options().bestCrvModules(i_bestcrv_tags)) { 	// get the module labels
+      if (branchConfig.options().bestCrvModules(i_bestcrv_tags)) { // get the module labels
 	for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < i_bestcrv_tags.size(); ++i_bestCrvBranch) {
 	  auto hBestCrvAssns = _allBestCrvAssns.at(i_branch).at(i_bestCrvBranch);
 	  if (hBestCrvAssns->size()>0) {

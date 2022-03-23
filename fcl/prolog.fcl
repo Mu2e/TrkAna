@@ -142,6 +142,7 @@ AllOpt : { fillMC : true
   genealogyDepth : 5
   fillBestCrv : true
   bestCrvModules : [ "BestCrv" ]
+  bestCrvInstances : [ "first" ]
   bestCrvBranches : [ "bestcrv" ]
 }
 

@@ -57,7 +57,8 @@ namespace mu2e {
     _kalSeedTag(conf().kalSeedTag()),
     _crvCoincidenceTag(conf().crvCoincidenceTag())
   {  
-    produces<BestCrvAssns>();
+    produces<BestCrvAssns>("first");
+    produces<BestCrvAssns>("second");
   }
 
   void BestCrvHitDeltaT::beginJob( ){  }
@@ -66,30 +67,44 @@ namespace mu2e {
 
     const auto& kalSeedHandle = event.getValidHandle<KalSeedCollection>(_kalSeedTag);
     const auto& crvCoincidenceHandle = event.getValidHandle<CrvCoincidenceClusterCollection>(_crvCoincidenceTag);
-    auto outAssns = std::make_unique<BestCrvAssns>();
+    auto firstAssns = std::make_unique<BestCrvAssns>();
+    auto secondAssns = std::make_unique<BestCrvAssns>();
 
     for (size_t i_kalSeed = 0; i_kalSeed != kalSeedHandle->size(); ++i_kalSeed) {
       const auto& kalSeed = kalSeedHandle->at(i_kalSeed);
-      size_t i_bestCrvCoinc = -1;
+      size_t nCrvCoincidences = crvCoincidenceHandle->size();
+      size_t i_bestCrvCoinc = nCrvCoincidences;
+      size_t i_secondBestCrvCoinc = nCrvCoincidences;
       float mindt=1.0e9;
+      float min2dt=1.0e9;
       float t0 = kalSeed.t0().t0();
-      for(size_t i_crvCoinc = 0; i_crvCoinc != crvCoincidenceHandle->size(); ++i_crvCoinc) {
+      for(size_t i_crvCoinc = 0; i_crvCoinc != nCrvCoincidences; ++i_crvCoinc) {
 	const auto& crvCoinc = crvCoincidenceHandle->at(i_crvCoinc);
 	auto const& crvStartTime = crvCoinc.GetStartTime();
 	auto const& crvEndTime = crvCoinc.GetEndTime();
 	float dt = std::min(fabs(crvStartTime-t0), fabs(crvEndTime-t0) );
 	if(dt < mindt){
-	  mindt =dt;
+	  mindt = dt;
 	  i_bestCrvCoinc = i_crvCoinc;
 	}
+	else if (dt < min2dt) {
+	  min2dt = dt;
+	  i_secondBestCrvCoinc = i_crvCoinc;
+	}
       }
-      if (i_bestCrvCoinc>=0) {
+      if (i_bestCrvCoinc!=nCrvCoincidences) {
 	auto kalSeedPtr = art::Ptr<KalSeed>(kalSeedHandle, i_kalSeed);
 	auto crvCoincPtr = art::Ptr<CrvCoincidenceCluster>(crvCoincidenceHandle, i_bestCrvCoinc);
-	outAssns->addSingle(kalSeedPtr, crvCoincPtr);
+	firstAssns->addSingle(kalSeedPtr, crvCoincPtr);
+      }
+      if (i_secondBestCrvCoinc!=nCrvCoincidences) {
+	auto kalSeedPtr = art::Ptr<KalSeed>(kalSeedHandle, i_kalSeed);
+	auto crvCoincPtr = art::Ptr<CrvCoincidenceCluster>(crvCoincidenceHandle, i_secondBestCrvCoinc);
+	secondAssns->addSingle(kalSeedPtr, crvCoincPtr);
       }
     }
-    event.put(std::move(outAssns));
+    event.put(std::move(firstAssns), "first");
+    event.put(std::move(secondAssns), "second");
   }
 }  // end namespace mu2e
 
