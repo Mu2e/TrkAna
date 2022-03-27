@@ -380,32 +380,32 @@ namespace mu2e {
     for (const auto& i_branchConfig : _allBranches) {
       trkcntleaves.push_back(i_branchConfig.branch());
     }
-    _trkana->Branch("tcnt",&_tcnt,_tcnt.leafnames(trkcntleaves).c_str());
+    _trkana->Branch("tcnt.",&_tcnt,_tcnt.leafnames(trkcntleaves).c_str());
 
 // create all candidate and supplement branches
     for (size_t i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string branch = i_branchConfig.branch();
-      _trkana->Branch(branch.c_str(),&_allTIs.at(i_branch));
-      _trkana->Branch((branch+"ent").c_str(),&_allEntTIs.at(i_branch));
-      _trkana->Branch((branch+"mid").c_str(),&_allMidTIs.at(i_branch));
-      _trkana->Branch((branch+"xit").c_str(),&_allXitTIs.at(i_branch));
-      _trkana->Branch((branch+"tch").c_str(),&_allTCHIs.at(i_branch));
+      _trkana->Branch((branch+".").c_str(),&_allTIs.at(i_branch));
+      _trkana->Branch((branch+"ent.").c_str(),&_allEntTIs.at(i_branch));
+      _trkana->Branch((branch+"mid.").c_str(),&_allMidTIs.at(i_branch));
+      _trkana->Branch((branch+"xit.").c_str(),&_allXitTIs.at(i_branch));
+      _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
-        _trkana->Branch((branch+"trkqual").c_str(), &_allTQIs.at(i_branch), TrkQualInfo::leafnames().c_str());
+        _trkana->Branch((branch+"trkqual.").c_str(), &_allTQIs.at(i_branch), TrkQualInfo::leafnames().c_str());
       }
       if (_conf.filltrkpid() && i_branchConfig.options().filltrkpid()) {
-        _trkana->Branch((branch+"trkpid").c_str(), &_allTPIs.at(i_branch), TrkPIDInfo::leafnames().c_str());
+        _trkana->Branch((branch+"trkpid.").c_str(), &_allTPIs.at(i_branch), TrkPIDInfo::leafnames().c_str());
       }
       // optionally add hit-level branches
       // (for the time being diagLevel : 2 will still work, but I propose removing this at some point)
       if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){
-        _trkana->Branch((branch+"tsh").c_str(),&_allTSHIs.at(i_branch),_buffsize,_splitlevel);
-        _trkana->Branch((branch+"tsm").c_str(),&_allTSMIs.at(i_branch),_buffsize,_splitlevel);
+        _trkana->Branch((branch+"tsh.").c_str(),&_allTSHIs.at(i_branch),_buffsize,_splitlevel);
+        _trkana->Branch((branch+"tsm.").c_str(),&_allTSMIs.at(i_branch),_buffsize,_splitlevel);
       }
       // optionall add MC branches
       if(_conf.fillmc() && i_branchConfig.options().fillmc()){
-        _trkana->Branch((branch+"mc").c_str(),&_allMCTIs.at(i_branch),_buffsize,_splitlevel);
+        _trkana->Branch((branch+"mc.").c_str(),&_allMCTIs.at(i_branch),_buffsize,_splitlevel);
         std::string branch_suffix = "";
         for (int i_generation = 0; i_generation < i_branchConfig.options().genealogyDepth(); ++i_generation) {
           if (i_generation == 0) {
@@ -417,18 +417,18 @@ namespace mu2e {
           else {
             branch_suffix = "g" + branch_suffix;
           }
-          std::string full_branchname = branch + "mc" + branch_suffix;
+          std::string full_branchname = branch + "mc" + branch_suffix + ".";
           _trkana->Branch((full_branchname).c_str(),&_allMCSimTIs.at(i_branch).at(i_generation));
         }
-        _trkana->Branch((branch+"mcpri").c_str(),&_allMCPriTIs.at(i_branch),_buffsize,_splitlevel);
-        _trkana->Branch((branch+"mcent").c_str(),&_allMCEntTIs.at(i_branch),_buffsize,_splitlevel);
-        _trkana->Branch((branch+"mcmid").c_str(),&_allMCMidTIs.at(i_branch),_buffsize,_splitlevel);
-        _trkana->Branch((branch+"mcxit").c_str(),&_allMCXitTIs.at(i_branch),_buffsize,_splitlevel);
-        _trkana->Branch((branch+"tchmc").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
+        _trkana->Branch((branch+"mcpri.").c_str(),&_allMCPriTIs.at(i_branch),_buffsize,_splitlevel);
+        _trkana->Branch((branch+"mcent.").c_str(),&_allMCEntTIs.at(i_branch),_buffsize,_splitlevel);
+        _trkana->Branch((branch+"mcmid.").c_str(),&_allMCMidTIs.at(i_branch),_buffsize,_splitlevel);
+        _trkana->Branch((branch+"mcxit.").c_str(),&_allMCXitTIs.at(i_branch),_buffsize,_splitlevel);
+        _trkana->Branch((branch+"tchmc.").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
         // at hit-level MC information
         // (for the time being diagLevel will still work, but I propose removing this at some point)
         if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){
-          _trkana->Branch((branch+"tshmc").c_str(),&_allTSHIMCs.at(i_branch),_buffsize,_splitlevel);
+          _trkana->Branch((branch+"tshmc.").c_str(),&_allTSHIMCs.at(i_branch),_buffsize,_splitlevel);
         }
       }
     }
@@ -439,29 +439,29 @@ namespace mu2e {
 // calorimeter information for the downstream electron track
 // CRV info
     if(_crv) {
-      _trkana->Branch("bestcrv",&_bestcrv,_buffsize,_splitlevel);
+      _trkana->Branch("bestcrv.",&_bestcrv,_buffsize,_splitlevel);
       if (_crvhits) {
-	_trkana->Branch("crvsummary",&_crvsummary,_buffsize,_splitlevel);
-	_trkana->Branch("crvinfo",&_crvinfo,_buffsize,_splitlevel);
+	_trkana->Branch("crvsummary.",&_crvsummary,_buffsize,_splitlevel);
+	_trkana->Branch("crvinfo.",&_crvinfo,_buffsize,_splitlevel);
 	if(_crvpulses) {
-	  _trkana->Branch("crvpulseinfo",&_crvpulseinfo,_buffsize,_splitlevel);
-	  _trkana->Branch("crvwaveforminfo",&_crvwaveforminfo,_buffsize,_splitlevel);
+	  _trkana->Branch("crvpulseinfo.",&_crvpulseinfo,_buffsize,_splitlevel);
+	  _trkana->Branch("crvwaveforminfo.",&_crvwaveforminfo,_buffsize,_splitlevel);
 	}
       }
       if(_conf.fillmc()){
-	_trkana->Branch("bestcrvmc",&_bestcrvmc,_buffsize,_splitlevel);
+	_trkana->Branch("bestcrvmc.",&_bestcrvmc,_buffsize,_splitlevel);
 	if (_crvhits) {
-	  _trkana->Branch("crvsummarymc",&_crvsummarymc,_buffsize,_splitlevel);
-	  _trkana->Branch("crvinfomc",&_crvinfomc,_buffsize,_splitlevel);
-	  _trkana->Branch("crvinfomcplane",&_crvinfomcplane,_buffsize,_splitlevel);
+	  _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
+	  _trkana->Branch("crvinfomc.",&_crvinfomc,_buffsize,_splitlevel);
+	  _trkana->Branch("crvinfomcplane.",&_crvinfomcplane,_buffsize,_splitlevel);
 	  if(_crvpulses) {
-	    _trkana->Branch("crvpulseinfomc",&_crvpulseinfomc,_buffsize,_splitlevel);
+	    _trkana->Branch("crvpulseinfomc.",&_crvpulseinfomc,_buffsize,_splitlevel);
 	  }
 	}
       }
     }
 // helix info
-   if(_conf.helices()) _trkana->Branch("helixinfo",&_hinfo,_buffsize,_splitlevel);
+   if(_conf.helices()) _trkana->Branch("helixinfo.",&_hinfo,_buffsize,_splitlevel);
   }
 
   void TrkAnaTreeMaker::beginSubRun(const art::SubRun & subrun ) {
@@ -503,7 +503,7 @@ namespace mu2e {
       // also create the reco qual branches
       std::vector<art::Handle<RecoQualCollection> > recoQualCollHandles;
       std::vector<art::Handle<RecoQualCollection> > selectedRQCHs;
-      selectedRQCHs = createSpecialBranch(event, i_branchConfig.branch()+"qual", recoQualCollHandles, _allRQIs.at(i_branch), i_branchConfig.suffix());
+      selectedRQCHs = createSpecialBranch(event, i_branchConfig.branch()+"qual.", recoQualCollHandles, _allRQIs.at(i_branch), i_branchConfig.suffix());
       for (const auto& i_selectedRQCH : selectedRQCHs) {
         if (i_selectedRQCH->size() != kalSeedCollHandle->size()) {
           throw cet::exception("TrkAna") << "Sizes of KalSeedCollection and this RecoQualCollection are inconsistent (" << kalSeedCollHandle->size() << " and " << i_selectedRQCH->size() << " respectively)";
