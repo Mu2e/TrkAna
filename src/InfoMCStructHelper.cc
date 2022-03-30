@@ -15,7 +15,6 @@
 #include "Offline/GlobalConstantsService/inc/ParticleDataList.hh"
 #include "Offline/GeometryService/inc/GeomHandle.hh"
 #include "Offline/GeometryService/inc/DetectorSystem.hh"
-#include "Offline/BFieldGeom/inc/BFieldManager.hh"
 
 #include <map>
 #include <limits>
@@ -157,11 +156,9 @@ namespace mu2e {
   void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep,
       std::vector<int> const& vids, double target_time) {
 
-    GeomHandle<BFieldManager> bfmgr;
     GeomHandle<DetectorSystem> det;
     GlobalConstantsHandle<ParticleDataList> pdt;
     static CLHEP::Hep3Vector vpoint_mu2e = det->toMu2e(CLHEP::Hep3Vector(0.0,0.0,0.0));
-    static double bz = bfmgr->getBField(vpoint_mu2e).z();
 
     const auto& mcsteps = kseedmc._vdsteps;
     double dmin = std::numeric_limits<double>::max();
@@ -176,15 +173,6 @@ namespace mu2e {
             trkinfomcstep.time = i_mcstep._time;
             trkinfomcstep.mom = XYZVectorF(i_mcstep._mom);
             trkinfomcstep.pos = XYZVectorF(i_mcstep._pos);
-
-            // the following is obsolete and should be replaced or removed FIXME!
-            CLHEP::HepVector parvec(5,0);
-            double hflt(0.0);
-            HepPoint ppos(trkinfomcstep.pos.x(), trkinfomcstep.pos.y(), trkinfomcstep.pos.z());
-            CLHEP::Hep3Vector mom = GenVector::Hep3Vec(i_mcstep._mom);
-            double charge = pdt->particle(kseedmc.simParticle()._pdg).charge();
-            TrkHelixUtils::helixFromMom( parvec, hflt,ppos, mom,charge,bz);
-            trkinfomcstep.hpar = helixpar(parvec);
           }
         }
       }
