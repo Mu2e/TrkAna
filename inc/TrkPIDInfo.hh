@@ -1,6 +1,6 @@
 //
 // struct to place variables that are used for TrkPID calculation
-// 
+//
 #ifndef TrkPIDInfo_HH
 #define TrkPIDInfo_HH
 #include "Offline/RecoDataProducts/inc/TrkCaloHitPID.hh"
@@ -22,22 +22,22 @@ namespace mu2e
     void reset() {
       int n_tchp_vars = TrkCaloHitPID::n_vars;
       for (int ivar = 0; ivar < n_tchp_vars; ++ivar) {
-	_tchpvars[ivar] = -1000.0;
+        _tchpvars[ivar] = -1000.0;
       }
       _mvaout = -1000.0;
       _mvastat = -1;
       for(size_t idisk=0;idisk<2;idisk++){
-	_diskfrad[idisk]=-1000.0;
-	_diskbrad[idisk]=-1000.0;
+        _diskfrad[idisk]=-1000.0;
+        _diskbrad[idisk]=-1000.0;
       }
     }
 
-    static std::string const leafnames() { 
+    static std::string const leafnames() {
       std::string leaves = "";
       for (int ivar = 0; ivar < TrkCaloHitPID::n_vars; ++ivar) {
-	TrkCaloHitPID::MVA_varindex index =TrkCaloHitPID::MVA_varindex(ivar);
-	std::string varname = TrkCaloHitPID::varName(index);
-	leaves += varname + "/F:";
+        TrkCaloHitPID::MVA_varindex index =TrkCaloHitPID::MVA_varindex(ivar);
+        std::string varname = TrkCaloHitPID::varName(index);
+        leaves += varname + "/F:";
       }
       leaves += "mvaout/F:mvastat/I:disk0frad/F:disk1frad/F:disk0brad/F:disk1brad/F";
       return leaves;
@@ -45,4 +45,3 @@ namespace mu2e
   };
 }
 #endif
-

@@ -72,7 +72,7 @@ namespace mu2e {
     double firstflt = 9999999;
     double lastflt = -9999999;
     for (const auto& kseg : kseed.segments()) {
-      //	std::cout << "AE: min = " << kseg.fmin() << ", max = " << kseg.fmax() << std::endl;
+      //std::cout << "AE: min = " << kseg.fmin() << ", max = " << kseg.fmax() << std::endl;
       if (kseg.globalFlt(kseg.fmin()) < firstflt) {
         firstflt = kseg.globalFlt(kseg.fmin());
       }

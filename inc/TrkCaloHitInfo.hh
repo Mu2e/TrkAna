@@ -13,9 +13,9 @@ namespace mu2e
     Int_t did; // disk ID
     XYZVectorF poca; // Position of Point Of Closest Approach (POCA)
     XYZVectorF mom; // Track momentum vector at Point Of Closest Approach (POCA)
-    Float_t trklen;	// distance along the helix of the POCA for this hit
+    Float_t trklen; // distance along the helix of the POCA for this hit
     Float_t clen;    // length along the crystal from the front face
-    Float_t doca;	// DOCA of this hit
+    Float_t doca; // DOCA of this hit
     Float_t t0, t0err;  // Estimated time the particle passed the POCA of this hit (and error).  Note this is mass hypothesis dependent
     Float_t ct, cterr;    // reconstructed time (including propagation time)
     Float_t edep;    // reconstructed crystal energy deposition
