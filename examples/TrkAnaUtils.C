@@ -3,11 +3,11 @@
 //  a muse directory with TrkAna included:
 //  > root -l
 //  root> #include TrkAna/examples/TrkAnaUtils.C
-//  root> TrkAnaUtils tau("MyTrkAnaFile.cc");
-//  root> tau.ListTrees(); // lists available TrkAna tree (TDirectories)
+//  root> TrkAnaUtils tau("MyTrkAnaFile.root");
+//  root> tau.ListTrees(); // lists available TrkAna trees (TDirectories)
 //  root> tau.UseTree("TrkAnaNeg"); // use the tree based on downstream negative electron tracks
 //  root> tau.ListBranches(); // list the available branches
-//  root> tau.ListSubbranches("deent"); // list sub-branches for the downstream negative elecgtron branch
+//  root> tau.ListSubbranches("deent"); // list sub-branches for the downstream negative electron branch
 //  root> tau.ListLeaves("hcnt."); // list leaves in the hitcount branch
 //  root> tau.Draw("deent.mom.Theta():deent.pos.Y()","hcnt.nbkg<400","colorz"); // Draw a plot
 //
