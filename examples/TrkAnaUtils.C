@@ -17,7 +17,8 @@
 #include <string>
 class TrkAnaUtils {
   public:
-    TrkAnaUtils(const char* filename);
+    TrkAnaUtils(TFile* myfile,const char* treename="TrkAnaNeg");
+    TrkAnaUtils(const char* filename,const char* treename="TrkAnaNeg");
     ~TrkAnaUtils() { delete myfile_; }
     TFile const& File() const { return *myfile_; }
     void ListTrees() const;
@@ -26,17 +27,23 @@ class TrkAnaUtils {
     void treeName() { if(mytree_)return mytree_->GetName(); else std::cout << "No current tree" << std::endl; }
     TFile* file() { return myfile_;}
     TTree* tree() { return mytree_;}
-    void ListBranches() const;
-    void ListSubbranches(const char* branch) const;
+    void ListBranches(int maxdepth=0) const;
+    void ListBranch(const char* bname, int maxdepth=1) const;
     void ListLeaves(const char* branch) const;
     void Draw(const char* lname,const char* cut="", const char* gopt="") const;
   private:
+    void ListBranch(TBranch* branch, int idepth, int maxdepth) const;
     TFile* myfile_;
     TTree* mytree_;
 };
 
-TrkAnaUtils::TrkAnaUtils(const char* filename) :  mytree_(0) {
+TrkAnaUtils::TrkAnaUtils(TFile* myfile,const char* treename) : myfile_(myfile) {
+  UseTree(treename);
+}
+
+TrkAnaUtils::TrkAnaUtils(const char* filename,const char* treename) :  mytree_(0) {
   myfile_ = new TFile(filename);
+  UseTree(treename);
 }
 
 void TrkAnaUtils::ListTrees() const {
@@ -60,44 +67,54 @@ void TrkAnaUtils::UseTree( const char* treename) {
       auto td = (TDirectory*)myfile_->GetDirectory(treename);
       if(td){
         mytree_ = (TTree*)td->Get("trkana");
-          if(!mytree_)
-            std::cout <<"Error: can't find TrkAna tree in TDirectory " << treename << std::endl;
+        if(!mytree_)
+          std::cout <<"Error: can't find TrkAna tree in TDirectory " << treename << std::endl;
       } else
         std::cout <<"Error: can't find TDirectory " << treename << std::endl;
     }
   }
 }
 
-void TrkAnaUtils::ListBranches() const {
+void TrkAnaUtils::ListBranches(int maxdepth) const {
+  int idepth(0);
   if(mytree_){
-    auto blist = mytree_->GetListOfBranches();
-    int nbs = blist->GetEntries();
+    auto tlist = mytree_->GetListOfBranches();
+    int nbs = tlist->GetEntries();
     for(int ib=0;ib<nbs;++ib){
-      auto b = blist->At(ib);
-      std::cout << b->GetName() << std::endl;
+      auto branch = (TBranch*)tlist->At(ib);
+      ListBranch(branch,idepth,maxdepth);
     }
   } else {
     std::cout << "No current tree; call UseTree to set current tree" << std::endl;
   }
 }
 
-void TrkAnaUtils::ListSubbranches(const char* branch) const {
+void TrkAnaUtils::ListBranch(const char* bname, int maxdepth) const {
   if(mytree_){
-    auto bran = mytree_->GetBranch(branch);
-    if(bran){
-      auto blist = bran->GetListOfBranches();
-      int nbs = blist->GetEntries();
-      for(int ib=0;ib<nbs;++ib){
-        auto b = blist->At(ib);
-        std::cout << b->GetName() << std::endl;
-      }
+    auto branch = mytree_->GetBranch(bname);
+    if(branch){
+      ListBranch(branch,0,maxdepth);
     } else {
-      std::cout << "Current tree has no branch" << branch << std::endl;
+      std::cout << "No branch " << bname << " in current tree" << std::endl;
     }
   } else {
     std::cout << "No current tree; call UseTree to set current tree" << std::endl;
   }
 }
+
+void TrkAnaUtils::ListBranch(TBranch* branch, int idepth, int maxdepth) const {
+  std::cout << branch->GetName() << std::endl;
+  if(idepth < maxdepth){
+    auto blist = branch->GetListOfBranches();
+    int nbs = blist->GetEntries();
+    for(int ib=0;ib<nbs;++ib){
+      auto subbranch = (TBranch*)blist->At(ib);
+      ListBranch(subbranch,idepth++,maxdepth);
+    }
+  }
+}
+
+
 
 void TrkAnaUtils::ListLeaves(const char* branch) const {
   if(mytree_){
