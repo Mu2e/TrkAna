@@ -4,10 +4,10 @@
 #ifndef TrkStrawMatInfo_HH
 #define TrkStrawMatInfo_HH
 #include "Rtypes.h"
-namespace mu2e 
+namespace mu2e
 {
   struct TrkStrawMatInfo {
-    Bool_t _active;	    // was this material was used in the Kalman fit or not
+    Bool_t _active;    // was this material was used in the Kalman fit or not
     Int_t _plane, _panel, _layer, _straw; // StrawId fields of the straw
     Float_t _doca;    // DOCA between the track fit and the wire
     Float_t _tlen;   // length along the helix of the POCA

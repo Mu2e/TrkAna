@@ -137,7 +137,7 @@ namespace mu2e {
       // CRV -- flags
       fhicl::Atom<bool> crv{Name("FillCRV"),Comment("Flag for turning on bestcrv(mc) branches"), false};
       fhicl::Atom<bool> crvhits{Name("FillCRVHits"), Comment("Flag for turning on crvinfo(mc), crvsummary(mc), and crvinfomcplane branches"), false};
-	fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
+      fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
       // CRV -- input tags
       fhicl::Atom<std::string> crvCoincidenceModuleLabel{Name("CrvCoincidenceModuleLabel"), Comment("CrvCoincidenceModuleLabel")};
       fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
@@ -441,23 +441,23 @@ namespace mu2e {
     if(_crv) {
       _trkana->Branch("bestcrv.",&_bestcrv,_buffsize,_splitlevel);
       if (_crvhits) {
-	_trkana->Branch("crvsummary.",&_crvsummary,_buffsize,_splitlevel);
-	_trkana->Branch("crvinfo.",&_crvinfo,_buffsize,_splitlevel);
-	if(_crvpulses) {
-	  _trkana->Branch("crvpulseinfo.",&_crvpulseinfo,_buffsize,_splitlevel);
-	  _trkana->Branch("crvwaveforminfo.",&_crvwaveforminfo,_buffsize,_splitlevel);
-	}
+        _trkana->Branch("crvsummary.",&_crvsummary,_buffsize,_splitlevel);
+        _trkana->Branch("crvinfo.",&_crvinfo,_buffsize,_splitlevel);
+        if(_crvpulses) {
+          _trkana->Branch("crvpulseinfo.",&_crvpulseinfo,_buffsize,_splitlevel);
+          _trkana->Branch("crvwaveforminfo.",&_crvwaveforminfo,_buffsize,_splitlevel);
+        }
       }
       if(_conf.fillmc()){
-	_trkana->Branch("bestcrvmc.",&_bestcrvmc,_buffsize,_splitlevel);
-	if (_crvhits) {
-	  _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
-	  _trkana->Branch("crvinfomc.",&_crvinfomc,_buffsize,_splitlevel);
-	  _trkana->Branch("crvinfomcplane.",&_crvinfomcplane,_buffsize,_splitlevel);
-	  if(_crvpulses) {
-	    _trkana->Branch("crvpulseinfomc.",&_crvpulseinfomc,_buffsize,_splitlevel);
-	  }
-	}
+        _trkana->Branch("bestcrvmc.",&_bestcrvmc,_buffsize,_splitlevel);
+        if (_crvhits) {
+          _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
+          _trkana->Branch("crvinfomc.",&_crvinfomc,_buffsize,_splitlevel);
+          _trkana->Branch("crvinfomcplane.",&_crvinfomcplane,_buffsize,_splitlevel);
+          if(_crvpulses) {
+            _trkana->Branch("crvpulseinfomc.",&_crvpulseinfomc,_buffsize,_splitlevel);
+          }
+        }
       }
     }
 // helix info
@@ -647,10 +647,10 @@ namespace mu2e {
             ibestcrv = icrv;
           }
         }
-	if (ibestcrv>=0) {
-	  _bestcrv = _crvinfo.at(ibestcrv);
-	  _bestcrvmc = _crvinfomc.at(ibestcrv);
-	}
+        if (ibestcrv>=0) {
+          _bestcrv = _crvinfo.at(ibestcrv);
+          _bestcrvmc = _crvinfomc.at(ibestcrv);
+        }
       }
       // fill this row in the TTree
       _trkana->Fill();
