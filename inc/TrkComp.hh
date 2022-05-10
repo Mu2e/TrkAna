@@ -1,6 +1,6 @@
 #ifndef TrkComp_HH
 #define TrkComp_HH
-// root 
+// root
 #include "Rtypes.h"
 class KalRep;
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
@@ -10,7 +10,7 @@ class KalRep;
 namespace mu2e {
   class TrkComp {
   public:
-  // compute the number of active TrStrawHits using the same StrawHit in common between 2 tracks.  
+  // compute the number of active TrStrawHits using the same StrawHit in common between 2 tracks.
     unsigned nOverlap(const KalRep* k1, const KalRep* k2);
     unsigned nOverlap(const KalSeed& k1, const KalSeed& k2);
 //    void fillOverlaps(KalRepPtrCollection const& trks,std::vector<TrkOverlap>& overlaps);
