@@ -6,13 +6,16 @@
 //  root> TrkAnaUtils tau("MyTrkAnaFile.root");
 //  root> tau.ListTrees(); // lists available TrkAna trees (TDirectories)
 //  root> tau.UseTree("TrkAnaNeg"); // use the tree based on downstream negative electron tracks
-//  root> tau.ListBranches(); // list the available branches
+//  root> tau.ListBmeranches(); // list the available branches
 //  root> tau.ListSubbranches("deent"); // list sub-branches for the downstream negative electron branch
 //  root> tau.ListLeaves("hcnt."); // list leaves in the hitcount branch
 //  root> tau.Draw("deent.mom.Theta():deent.pos.Y()","hcnt.nbkg<400","colorz"); // Draw a plot
 //
 //  Original author: Dave Brown (LBNL)
 //
+#include "TFile.h"
+#include "TTree.h"
+#include "TCanvas.h"
 #include <iostream>
 #include <string>
 class TrkAnaUtils {
@@ -27,21 +30,26 @@ class TrkAnaUtils {
     void treeName() { if(mytree_)return mytree_->GetName(); else std::cout << "No current tree" << std::endl; }
     TFile* file() { return myfile_;}
     TTree* tree() { return mytree_;}
+    TCanvas* can() const { return mycan_; }
     void ListBranches(int maxdepth=0) const;
     void ListBranch(const char* bname, int maxdepth=1) const;
     void ListLeaves(const char* branch) const;
     void Draw(const char* lname,const char* cut="", const char* gopt="") const;
+    void Project(const char* pname, const char* lname, const char* cut="") const;
+    void Scan(const char* lname,const char* cut="") const;
   private:
     void ListBranch(TBranch* branch, int idepth, int maxdepth) const;
-    TFile* myfile_;
-    TTree* mytree_;
+    mutable TFile* myfile_;
+    mutable TTree* mytree_;
+    mutable TCanvas* mycan_;
 };
 
-TrkAnaUtils::TrkAnaUtils(TFile* myfile,const char* treename) : myfile_(myfile) {
+
+TrkAnaUtils::TrkAnaUtils(TFile* myfile,const char* treename) : myfile_(myfile), mycan_(0) {
   UseTree(treename);
 }
 
-TrkAnaUtils::TrkAnaUtils(const char* filename,const char* treename) :  mytree_(0) {
+TrkAnaUtils::TrkAnaUtils(const char* filename,const char* treename) :  mytree_(0), mycan_(0) {
   myfile_ = new TFile(filename);
   UseTree(treename);
 }
@@ -95,7 +103,14 @@ void TrkAnaUtils::ListBranch(const char* bname, int maxdepth) const {
     if(branch){
       ListBranch(branch,0,maxdepth);
     } else {
-      std::cout << "No branch " << bname << " in current tree" << std::endl;
+      // try with a dot
+      std::string bstr = std::string(bname) + ".";
+      branch = mytree_->GetBranch(bstr.c_str());
+      if(branch){
+        ListBranch(branch,0,maxdepth);
+      } else {
+        std::cout << "No branch " << bname << " in current tree" << std::endl;
+      }
     }
   } else {
     std::cout << "No current tree; call UseTree to set current tree" << std::endl;
@@ -137,6 +152,22 @@ void TrkAnaUtils::ListLeaves(const char* branch) const {
 void TrkAnaUtils::Draw(const char* lname,const char* cut="", const char* gopt="") const {
   if(mytree_){
     mytree_->Draw(lname,cut,gopt);
+  } else {
+    std::cout << "No current tree; call UseTree to set current tree" << std::endl;
+  }
+}
+
+void TrkAnaUtils::Project(const char* pname,const char* lname,const char* cut="") const {
+  if(mytree_){
+    mytree_->Draw(pname,lname,cut);
+  } else {
+    std::cout << "No current tree; call UseTree to set current tree" << std::endl;
+  }
+}
+
+void TrkAnaUtils::Scan(const char* lname,const char* cut="") const {
+  if(mytree_){
+    mytree_->Scan(lname,cut);
   } else {
     std::cout << "No current tree; call UseTree to set current tree" << std::endl;
   }
