@@ -131,9 +131,9 @@ void TrkAnaUtils::ListBranch(TBranch* branch, int idepth, int maxdepth) const {
 
 
 
-void TrkAnaUtils::ListLeaves(const char* branch) const {
+void TrkAnaUtils::ListLeaves(const char* bname) const {
   if(mytree_){
-    auto bran = mytree_->GetBranch(branch);
+    auto bran = mytree_->GetBranch(bname);
     if(bran){
       auto blist = bran->GetListOfLeaves();
       int nbs = blist->GetEntries();
@@ -142,7 +142,19 @@ void TrkAnaUtils::ListLeaves(const char* branch) const {
         std::cout << b->GetName() << std::endl;
       }
     } else {
-      std::cout << "Current tree has no branch" << branch << std::endl;
+       // try with a dot
+      std::string bstr = std::string(bname) + ".";
+      bran = mytree_->GetBranch(bstr.c_str());
+      if(bran){
+        auto blist = bran->GetListOfLeaves();
+        int nbs = blist->GetEntries();
+        for(int ib=0;ib<nbs;++ib){
+          auto b = blist->At(ib);
+          std::cout << b->GetName() << std::endl;
+        }
+      } else {
+        std::cout << "No branch " << bname << " in current tree" << std::endl;
+      }
     }
   } else {
     std::cout << "No current tree; call UseTree to set current tree" << std::endl;
