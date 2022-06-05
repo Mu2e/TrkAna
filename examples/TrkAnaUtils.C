@@ -14,7 +14,10 @@
 //  Original author: Dave Brown (LBNL)
 //
 #include <iostream>
+#include <fstream>
 #include <string>
+#include "TChain.h"
+using namespace std;
 class TrkAnaUtils {
   public:
     TrkAnaUtils(TFile* myfile,const char* treename="TrkAnaNeg");
@@ -31,19 +34,43 @@ class TrkAnaUtils {
     void ListBranch(const char* bname, int maxdepth=1) const;
     void ListLeaves(const char* branch) const;
     void Draw(const char* lname,const char* cut="", const char* gopt="") const;
+    void Scan(const char* lname,const char* cut="") const;
   private:
     void ListBranch(TBranch* branch, int idepth, int maxdepth) const;
     TFile* myfile_;
     TTree* mytree_;
+    TChain* mychain_;
 };
 
-TrkAnaUtils::TrkAnaUtils(TFile* myfile,const char* treename) : myfile_(myfile) {
+TrkAnaUtils::TrkAnaUtils(TFile* myfile,const char* treename) : myfile_(myfile), mytree_(0), mychain_(0) {
   UseTree(treename);
 }
 
-TrkAnaUtils::TrkAnaUtils(const char* filename,const char* treename) :  mytree_(0) {
-  myfile_ = new TFile(filename);
-  UseTree(treename);
+TrkAnaUtils::TrkAnaUtils(const char* filename,const char* treename) :  mytree_(0) ,mychain_(0) {
+  // get the suffix
+  std::string sfn(filename);
+  auto idx = sfn.rfind('.')+1;
+  if(sfn.compare(idx,4,"root") == 0){
+    myfile_ = new TFile(filename);
+    UseTree(treename);
+  } else if(sfn.compare(idx,3,"txt") == 0){
+    // interpret as a list of files
+    ifstream ifs(filename);
+    if(ifs.is_open()){
+      string stn = string(treename) + string("/trkana");
+      mychain_ = new TChain(stn.c_str());
+      string file;
+      while(getline(ifs,file)){
+        cout << "adding file " << file << " to chain " << endl;
+        mychain_->Add(file.c_str());
+      }
+      ifs.close();
+      mytree_  = mychain_;
+    } else
+      cout << "File " << filename << " can't be opened, aborting" << endl;
+  } else {
+    cout << "Unknown file type" << sfn.substr(idx) << endl;
+  }
 }
 
 void TrkAnaUtils::ListTrees() const {
@@ -137,6 +164,14 @@ void TrkAnaUtils::ListLeaves(const char* branch) const {
 void TrkAnaUtils::Draw(const char* lname,const char* cut="", const char* gopt="") const {
   if(mytree_){
     mytree_->Draw(lname,cut,gopt);
+  } else {
+    std::cout << "No current tree; call UseTree to set current tree" << std::endl;
+  }
+}
+
+void TrkAnaUtils::Scan(const char* lname,const char* cut="") const {
+  if(mytree_){
+    mytree_->Scan(lname,cut);
   } else {
     std::cout << "No current tree; call UseTree to set current tree" << std::endl;
   }
