@@ -17,7 +17,10 @@
 #include "TTree.h"
 #include "TCanvas.h"
 #include <iostream>
+#include <fstream>
 #include <string>
+#include "TChain.h"
+using namespace std;
 class TrkAnaUtils {
   public:
     TrkAnaUtils(TFile* myfile,const char* treename="TrkAnaNeg");
@@ -42,16 +45,38 @@ class TrkAnaUtils {
     mutable TFile* myfile_;
     mutable TTree* mytree_;
     mutable TCanvas* mycan_;
+    TChain* mychain_;
 };
 
-
-TrkAnaUtils::TrkAnaUtils(TFile* myfile,const char* treename) : myfile_(myfile), mycan_(0) {
+TrkAnaUtils::TrkAnaUtils(TFile* myfile,const char* treename) : myfile_(myfile), mytree_(0), mychain_(0) {
   UseTree(treename);
 }
 
-TrkAnaUtils::TrkAnaUtils(const char* filename,const char* treename) :  mytree_(0), mycan_(0) {
-  myfile_ = new TFile(filename);
-  UseTree(treename);
+TrkAnaUtils::TrkAnaUtils(const char* filename,const char* treename) :  mytree_(0) ,mychain_(0) {
+  // get the suffix
+  std::string sfn(filename);
+  auto idx = sfn.rfind('.')+1;
+  if(sfn.compare(idx,4,"root") == 0){
+    myfile_ = new TFile(filename);
+    UseTree(treename);
+  } else if(sfn.compare(idx,3,"txt") == 0){
+    // interpret as a list of files
+    ifstream ifs(filename);
+    if(ifs.is_open()){
+      string stn = string(treename) + string("/trkana");
+      mychain_ = new TChain(stn.c_str());
+      string file;
+      while(getline(ifs,file)){
+        cout << "adding file " << file << " to chain " << endl;
+        mychain_->Add(file.c_str());
+      }
+      ifs.close();
+      mytree_  = mychain_;
+    } else
+      cout << "File " << filename << " can't be opened, aborting" << endl;
+  } else {
+    cout << "Unknown file type" << sfn.substr(idx) << endl;
+  }
 }
 
 void TrkAnaUtils::ListTrees() const {
