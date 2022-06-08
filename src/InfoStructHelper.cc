@@ -186,9 +186,9 @@ namespace mu2e {
       tshinfo._poca = XYZVectorF(hpos);
 
       // count correlations with other TSH
-      for(std::vector<TrkStrawHitSeed>::const_iterator jhit=kseed.hits().begin(); jhit != ihit; ++jhit) {
-        if(tshinfo._plane ==  jhit->strawId().plane() &&
-            tshinfo._panel == jhit->strawId().panel() ){
+      for(std::vector<TrkStrawHitSeed>::const_iterator jhit=kseed.hits().begin(); jhit != kseed.hits().end(); ++jhit) {
+        if(jhit != ihit && ihit->strawId().plane() ==  jhit->strawId().plane() &&
+            ihit->strawId().panel() == jhit->strawId().panel() ){
           tshinfo._dhit = true;
           if (jhit->flag().hasAllProperties(active)) {
             tshinfo._dactive = true;
