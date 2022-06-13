@@ -100,12 +100,17 @@ namespace mu2e {
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
-    trkinfo.nhits = 0; trkinfo.nactive = 0; trkinfo.ndouble = 0; trkinfo.ndactive = 0; trkinfo.nnullambig = 0;
+    trkinfo.nhits = trkinfo.nactive = trkinfo.ndouble = trkinfo.ndactive = trkinfo.nplanes = trkinfo.planespan = trkinfo.nnullambig = 0;
     static StrawHitFlag active(StrawHitFlag::active);
+    std::set<unsigned> planes;
+    uint16_t minplane(0), maxplane(0);
     for (auto ihit = kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
       ++trkinfo.nhits;
       if (ihit->flag().hasAllProperties(active)) {
         ++trkinfo.nactive;
+        planes.insert(ihit->strawId().plane());
+        minplane = std::min(minplane, ihit->strawId().plane());
+        maxplane = std::max(maxplane, ihit->strawId().plane());
         if (ihit->ambig()==0) {
           ++trkinfo.nnullambig;
         }
@@ -116,6 +121,8 @@ namespace mu2e {
         ++trkinfo.ndouble;
         if(ihit->flag().hasAllProperties(active)) { ++trkinfo.ndactive; }
       }
+      trkinfo.nplanes = planes.size();
+      trkinfo.planespan = abs(maxplane-minplane);
     }
 
     trkinfo.ndof = trkinfo.nactive -5; // this won't work with KinKal fits FIXME
