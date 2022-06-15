@@ -32,6 +32,8 @@ namespace mu2e
     Int_t ndof;      // number of degrees of freedom in the fit
     Int_t nactive;   // number of active hits (actually used in the fit)
     Int_t ndouble,ndactive; // number of double-hit panels, and active double-hit panels
+    Int_t nplanes; // number of planes hit
+    Int_t planespan; // span between first and last plane
     Int_t nnullambig;  // number of hits without any ambiguity assigned
     Int_t nmat, nmatactive; // number materials (straw) assigned and used (active) to this fit
     Int_t nseg;     // number of trajectory segments
@@ -47,7 +49,7 @@ namespace mu2e
       status = -1000;
       alg=0;
       pdg = 0;
-      nhits = nactive = ndouble = ndactive = nnullambig = nmat = nmatactive = nseg = ndof = -1;
+      nhits = nactive = ndouble = ndactive = nplanes = planespan = nnullambig = nmat = nmatactive = nseg = ndof = -1;
       t0 = t0err = chisq = fitcon = radlen = firstflt = lastflt = -1.0;
       startvalid = endvalid = -999999.0;
     }
