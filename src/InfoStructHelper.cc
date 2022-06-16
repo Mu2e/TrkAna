@@ -4,7 +4,7 @@
 //
 #include "TrkAna/inc/InfoStructHelper.hh"
 #include "Offline/RecoDataProducts/inc/TrkStrawHitSeed.hh"
-
+#include "KinKal/Trajectory/CentralHelix.hh"
 #include "Offline/TrackerGeom/inc/Tracker.hh"
 #include <cmath>
 
@@ -72,7 +72,7 @@ namespace mu2e {
     double firstflt = 9999999;
     double lastflt = -9999999;
     for (const auto& kseg : kseed.segments()) {
-      //	std::cout << "AE: min = " << kseg.fmin() << ", max = " << kseg.fmax() << std::endl;
+      //std::cout << "AE: min = " << kseg.fmin() << ", max = " << kseg.fmax() << std::endl;
       if (kseg.globalFlt(kseg.fmin()) < firstflt) {
         firstflt = kseg.globalFlt(kseg.fmin());
       }
@@ -94,19 +94,23 @@ namespace mu2e {
     trkfitinfo.mom = ksegIter->momentum3();
     trkfitinfo.pos = ksegIter->position3();
     trkfitinfo.momerr = ksegIter->momerr();
-    trkfitinfo.fitpar = ksegIter->helix();
-    CLHEP::HepSymMatrix pcov;
-    ksegIter->covar().symMatrix(pcov);
-    trkfitinfo.fitparerr = helixpar(pcov);
+    trkfitinfo.d0 = ksegIter->centralHelix().d0();
+    trkfitinfo.maxr = ksegIter->centralHelix().d0() + 2.0/ksegIter->centralHelix().omega();
+    trkfitinfo.td = ksegIter->centralHelix().tanDip();
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
-    trkinfo.nhits = 0; trkinfo.nactive = 0; trkinfo.ndouble = 0; trkinfo.ndactive = 0; trkinfo.nnullambig = 0;
+    trkinfo.nhits = trkinfo.nactive = trkinfo.ndouble = trkinfo.ndactive = trkinfo.nplanes = trkinfo.planespan = trkinfo.nnullambig = 0;
     static StrawHitFlag active(StrawHitFlag::active);
+    std::set<unsigned> planes;
+    uint16_t minplane(0), maxplane(0);
     for (auto ihit = kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
       ++trkinfo.nhits;
       if (ihit->flag().hasAllProperties(active)) {
         ++trkinfo.nactive;
+        planes.insert(ihit->strawId().plane());
+        minplane = std::min(minplane, ihit->strawId().plane());
+        maxplane = std::max(maxplane, ihit->strawId().plane());
         if (ihit->ambig()==0) {
           ++trkinfo.nnullambig;
         }
@@ -117,6 +121,8 @@ namespace mu2e {
         ++trkinfo.ndouble;
         if(ihit->flag().hasAllProperties(active)) { ++trkinfo.ndactive; }
       }
+      trkinfo.nplanes = planes.size();
+      trkinfo.planespan = abs(maxplane-minplane);
     }
 
     trkinfo.ndof = trkinfo.nactive -5; // this won't work with KinKal fits FIXME
@@ -187,9 +193,9 @@ namespace mu2e {
       tshinfo._poca = XYZVectorF(hpos);
 
       // count correlations with other TSH
-      for(std::vector<TrkStrawHitSeed>::const_iterator jhit=kseed.hits().begin(); jhit != ihit; ++jhit) {
-        if(tshinfo._plane ==  jhit->strawId().plane() &&
-            tshinfo._panel == jhit->strawId().panel() ){
+      for(std::vector<TrkStrawHitSeed>::const_iterator jhit=kseed.hits().begin(); jhit != kseed.hits().end(); ++jhit) {
+        if(jhit != ihit && ihit->strawId().plane() ==  jhit->strawId().plane() &&
+            ihit->strawId().panel() == jhit->strawId().panel() ){
           tshinfo._dhit = true;
           if (jhit->flag().hasAllProperties(active)) {
             tshinfo._dactive = true;

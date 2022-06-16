@@ -13,12 +13,13 @@ namespace mu2e
 {
 // general info about the SimParticle which was simulated
   struct SimInfo {
+    bool valid; // true/false as to whether the data is valid
     Int_t pdg, gen; // true PDG code, generator code
     Float_t time;  // time of this step
     XYZVectorF mom;  // particle momentum at the start of this step
     XYZVectorF pos;  // particle position at the start of this step
     SimInfo() { reset(); }
-    void reset() { pdg = gen = -1; time = -1.0; mom =XYZVectorF(); pos = XYZVectorF(); }
+    void reset() { valid = false; pdg = gen = -1; time = -1.0; mom =XYZVectorF(); pos = XYZVectorF(); }
   };
 }
 #endif
