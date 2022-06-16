@@ -491,7 +491,7 @@ namespace mu2e {
         }
       }
 
-      if(_fillmc()){
+      if(_fillmc){
         if (_crvhits) {
           _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
           _trkana->Branch("crvinfomc.",&_crvinfomc,_buffsize,_splitlevel);
