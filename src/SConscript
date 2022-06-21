@@ -30,8 +30,8 @@ mainlib = helper.make_mainlib ( [
     'mu2e_MCDataProducts',
     'mu2e_RecoDataProducts',
     'mu2e_CalorimeterGeom',
-    'General',
-    'Trajectory'
+    'KinKal_General',
+    'KinKal_Trajectory'
 ] )
 
 # Fixme: split into link lists for each module.
