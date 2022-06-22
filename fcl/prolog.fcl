@@ -35,6 +35,20 @@ TrkQualDmuP		       : @local::TrkQualPos
 TrkQualDmuP.KalSeedCollection : "KFFDmuP"
 TrkQualUmuP		       : @local::TrkQualPos
 TrkQualUmuP.KalSeedCollection : "KFFUmuP"
+
+TrkQualProducers : {
+    TrkQualDeM : @local::TrkQualDeM
+    TrkQualUeM : @local::TrkQualUeM
+    TrkQualDeP : @local::TrkQualDeP
+    TrkQualUeP : @local::TrkQualUeP
+    TrkQualDmuM : @local::TrkQualDmuM
+    TrkQualDmuP : @local::TrkQualDmuP
+    TrkQualUmuM : @local::TrkQualUmuM
+    TrkQualUmuP : @local::TrkQualUmuP
+}
+TrkQualProducersPath : [ TrkQualDeM, TrkQualUeM, TrkQualDmuM, TrkQualDeP, TrkQualUeP, TrkQualDmuP, TrkQualUmuM, TrkQualUmuP ]
+
+
 # track PID module
 TrkPID : {
   module_type : TrackPID
@@ -47,7 +61,46 @@ TrkPIDDeM		       : @local::TrkPID
 TrkPIDDeM.KalSeedCollection : "KFFDeM"
 TrkPIDDeP		       : @local::TrkPID
 TrkPIDDeP.KalSeedCollection : "KFFDeP"
+TrkPIDProducers : {
+    TrkPIDDeM : @local::TrkPIDDeM
+    TrkPIDDeP : @local::TrkPIDDeP
+}
+TrkPIDProducersPath : [ TrkPIDDeM, TrkPIDDeP ]
 
+
+BestCrv : {
+  module_type : BestCrvHitDeltaT
+  crvCoincidenceTag : "SelectRecoMC"
+}
+
+BestCrvDeM : @local::BestCrv
+BestCrvDeM.kalSeedTag : "KFFDeM"
+BestCrvUeM : @local::BestCrv
+BestCrvUeM.kalSeedTag : "KFFUeM"
+BestCrvDmuM : @local::BestCrv
+BestCrvDmuM.kalSeedTag : "KFFDmuM"
+BestCrvUmuM : @local::BestCrv
+BestCrvUmuM.kalSeedTag : "KFFUmuM"
+BestCrvDeP : @local::BestCrv
+BestCrvDeP.kalSeedTag : "KFFDeP"
+BestCrvUeP : @local::BestCrv
+BestCrvUeP.kalSeedTag : "KFFUeP"
+BestCrvDmuP : @local::BestCrv
+BestCrvDmuP.kalSeedTag : "KFFDmuP"
+BestCrvUmuP : @local::BestCrv
+BestCrvUmuP.kalSeedTag : "KFFUmuP"
+
+BestCrvProducers : {
+  BestCrvDeM : @local::BestCrvDeM
+  BestCrvUeM : @local::BestCrvUeM
+  BestCrvDeP : @local::BestCrvDeP
+  BestCrvUeP : @local::BestCrvUeP
+  BestCrvDmuM : @local::BestCrvDmuM
+  BestCrvDmuP : @local::BestCrvDmuP
+  BestCrvUmuM : @local::BestCrvUmuM
+  BestCrvUmuP : @local::BestCrvUmuP
+}
+BestCrvProducersPath : [ BestCrvDeM, BestCrvUeM, BestCrvDmuM, BestCrvDeP, BestCrvUeP, BestCrvDmuP, BestCrvUmuM, BestCrvUmuP ]
 
 # DIO weighting for flat spectrum electrons
 DIOWeight: {
@@ -87,6 +140,10 @@ AllOpt : { fillMC : true
   fillTrkPID : true
   fillHits : true
   genealogyDepth : 5
+  fillBestCrv : true
+  bestCrvModules : [ "BestCrv" ]
+  bestCrvInstances : [ "first" ]
+  bestCrvBranches : [ "bestcrv" ]
 }
 
 DeM : { input : "KFF"
@@ -161,16 +218,9 @@ TrkAnaReco : {
 
   producers: {
     PBIWeight : @local::PBIWeight
-    TrkQualDeM : @local::TrkQualDeM
-    TrkQualUeM : @local::TrkQualUeM
-    TrkQualDeP : @local::TrkQualDeP
-    TrkQualUeP : @local::TrkQualUeP
-    TrkQualDmuM : @local::TrkQualDmuM
-    TrkQualDmuP : @local::TrkQualDmuP
-    TrkQualUmuM : @local::TrkQualUmuM
-    TrkQualUmuP : @local::TrkQualUmuP
-    TrkPIDDeM : @local::TrkPIDDeM
-    TrkPIDDeP : @local::TrkPIDDeP
+    @table::TrkQualProducers
+    @table::TrkPIDProducers
+    @table::BestCrvProducers
   }
 
   analyzers : {
@@ -186,7 +236,7 @@ TrkAnaReco : {
     genCountLogger : @local::genCountLogger
   }
 
-  TrigSequence : [ PBIWeight, TrkQualDeM, TrkQualUeM, TrkQualDmuM, TrkQualDeP, TrkQualUeP, TrkQualDmuP, TrkQualUmuM, TrkQualUmuP, TrkPIDDeM, TrkPIDDeP ]
+  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath, @sequence::BestCrvProducersPath ]
   EndSequenceNoMC : [ TrkAnaNeg, TrkAnaPos ]
   EndSequence : [ TrkAnaNeg, TrkAnaPos, genCountLogger ]
 }

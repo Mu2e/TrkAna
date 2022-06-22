@@ -13,3 +13,4 @@
 #include "TrkAna/inc/EventWeightInfo.hh"
 #include "TrkAna/inc/RecoQualInfo.hh"
 #include "TrkAna/inc/CaloClusterInfoMC.hh"
+#include "TrkAna/inc/BestCrvAssns.hh"

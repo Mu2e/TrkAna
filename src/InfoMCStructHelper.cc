@@ -207,4 +207,47 @@ namespace mu2e {
       ccimc.prel = primary.rel();
     }
   }
+
+  void InfoMCStructHelper::fillCrvHitInfoMC(art::Ptr<CrvCoincidenceClusterMC> const& crvCoincMC, CrvHitInfoMC& crvHitInfoMC) {
+    if(crvCoincMC->HasMCInfo()) {
+      const art::Ptr<SimParticle> &simParticle = crvCoincMC->GetMostLikelySimParticle();
+      art::Ptr<SimParticle> primaryParticle = simParticle;
+      art::Ptr<SimParticle> parentParticle = simParticle;
+      art::Ptr<SimParticle> gparentParticle = simParticle;
+      int i_gen = 0;
+      while (primaryParticle->hasParent()) {
+	primaryParticle = primaryParticle->parent();
+	if (i_gen ==0) {
+	  parentParticle = primaryParticle;
+	  gparentParticle = primaryParticle;
+	}
+	else if (i_gen == 1) {
+	  gparentParticle = primaryParticle;
+	}
+	++i_gen;
+      }
+      crvHitInfoMC._valid = true;
+      crvHitInfoMC._pdgId = simParticle->pdgId();
+      crvHitInfoMC._primaryPdgId = primaryParticle->pdgId();
+      crvHitInfoMC._primaryE = primaryParticle->startMomentum().e() - primaryParticle->startMomentum().m();
+      crvHitInfoMC._primaryX = primaryParticle->startPosition().x();
+      crvHitInfoMC._primaryY = primaryParticle->startPosition().y();
+      crvHitInfoMC._primaryZ = primaryParticle->startPosition().z();
+      crvHitInfoMC._parentPdgId = parentParticle->pdgId();
+      crvHitInfoMC._parentE = parentParticle->startMomentum().e()  - parentParticle->startMomentum().m();
+      crvHitInfoMC._parentX = parentParticle->startPosition().x();
+      crvHitInfoMC._parentY = parentParticle->startPosition().y();
+      crvHitInfoMC._parentZ = parentParticle->startPosition().z();
+      crvHitInfoMC._gparentPdgId = gparentParticle->pdgId();
+      crvHitInfoMC._gparentE = gparentParticle->startMomentum().e() - gparentParticle->startMomentum().m();
+      crvHitInfoMC._gparentX = gparentParticle->startPosition().x();
+      crvHitInfoMC._gparentY = gparentParticle->startPosition().y();
+      crvHitInfoMC._gparentZ = gparentParticle->startPosition().z();
+      crvHitInfoMC._x = crvCoincMC->GetEarliestHitPos().x();
+      crvHitInfoMC._y = crvCoincMC->GetEarliestHitPos().y();
+      crvHitInfoMC._z = crvCoincMC->GetEarliestHitPos().z();
+      crvHitInfoMC._time = crvCoincMC->GetEarliestHitTime();
+      crvHitInfoMC._depositedEnergy = crvCoincMC->GetTotalEnergyDeposited();
+    }
+  }
 }

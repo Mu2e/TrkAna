@@ -24,4 +24,8 @@
   <class name="mu2e::TrkQualInfo" />
   <class name="mu2e::EventWeightInfo" />
   <class name="mu2e::RecoQualInfo" />
+  <class name="art::Assns<mu2e::CrvCoincidenceCluster,mu2e::KalSeed,void>" />
+  <class name="art::Assns<mu2e::KalSeed,mu2e::CrvCoincidenceCluster,void>" />
+  <class name="art::Wrapper<art::Assns<mu2e::CrvCoincidenceCluster,mu2e::KalSeed,void> >" />
+  <class name="art::Wrapper<art::Assns<mu2e::KalSeed,mu2e::CrvCoincidenceCluster,void> >" />
 </lcgdict>

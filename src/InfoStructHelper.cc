@@ -328,4 +328,15 @@ namespace mu2e {
       trkpidInfo._diskbrad[idisk] = sqrt(extpos.Perp2());
     }
   }
+
+  void InfoStructHelper::fillCrvHitInfo(art::Ptr<CrvCoincidenceCluster> const& crvCoinc, CrvHitInfoReco& crvHitInfo) {
+    crvHitInfo._crvSectorType = crvCoinc->GetCrvSectorType();
+    crvHitInfo._x = crvCoinc->GetAvgCounterPos().x();
+    crvHitInfo._y = crvCoinc->GetAvgCounterPos().y();
+    crvHitInfo._z = crvCoinc->GetAvgCounterPos().z();
+    crvHitInfo._timeWindowStart = crvCoinc->GetStartTime();
+    crvHitInfo._timeWindowEnd = crvCoinc->GetEndTime();
+    crvHitInfo._PEs = crvCoinc->GetPEs();
+    crvHitInfo._nCoincidenceHits = crvCoinc->GetCrvRecoPulses().size();
+  }
 }

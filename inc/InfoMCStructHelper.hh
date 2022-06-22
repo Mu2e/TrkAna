@@ -8,6 +8,7 @@
 #include "Offline/RecoDataProducts/inc/StrawHitIndex.hh"
 #include "Offline/MCDataProducts/inc/StrawDigiMC.hh"
 #include "Offline/MCDataProducts/inc/StepPointMC.hh"
+#include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMC.hh"
 
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
 #include "TrkAna/inc/TrkInfo.hh"
@@ -18,7 +19,7 @@
 #include "Offline/MCDataProducts/inc/KalSeedMC.hh"
 #include "BTrk/BbrGeom/HepPoint.h"
 #include "Offline/MCDataProducts/inc/PrimaryParticle.hh"
-
+#include "Offline/CRVAnalysis/inc/CrvHitInfoMC.hh"
 
 #include <vector>
 #include <functional>
@@ -60,6 +61,7 @@ namespace mu2e {
 
       void fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs);
       void fillCaloClusterInfoMC(CaloClusterMC const& ccmc, CaloClusterInfoMC& ccimc);
+      void fillCrvHitInfoMC(art::Ptr<CrvCoincidenceClusterMC> const& crvCoincMC, CrvHitInfoMC& crvHitInfoMC);
   };
 }
 
