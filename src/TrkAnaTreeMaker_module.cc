@@ -378,17 +378,17 @@ namespace mu2e {
       _allTSHIMCs.push_back(tshimc);
 
       if(_crv && i_branchConfig.options().fillbestcrv()) { // if we are filling in bestcrv information
-	std::vector<CrvHitInfoReco> bestcrv;
-	std::vector<CrvHitInfoMC> bestcrvmc;
-	std::vector<std::string> bestCrvBranchNames; // need to know how many bestcrv branches there will be per candidate/supplement
-	if (i_branchConfig.options().bestCrvBranches(bestCrvBranchNames)) {
-	  for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < bestCrvBranchNames.size(); ++i_bestCrvBranch) {
-	    bestcrv.push_back(CrvHitInfoReco()); // add empty structs to the vector so that ROOT can be given a location to find it
-	    bestcrvmc.push_back(CrvHitInfoMC());
-	  }
-	  _allBestCrvs[i_branch] = bestcrv;
-	  _allBestCrvMCs[i_branch] = bestcrvmc;
-	}
+        std::vector<CrvHitInfoReco> bestcrv;
+        std::vector<CrvHitInfoMC> bestcrvmc;
+        std::vector<std::string> bestCrvBranchNames; // need to know how many bestcrv branches there will be per candidate/supplement
+        if (i_branchConfig.options().bestCrvBranches(bestCrvBranchNames)) {
+          for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < bestCrvBranchNames.size(); ++i_bestCrvBranch) {
+            bestcrv.push_back(CrvHitInfoReco()); // add empty structs to the vector so that ROOT can be given a location to find it
+            bestcrvmc.push_back(CrvHitInfoMC());
+          }
+          _allBestCrvs[i_branch] = bestcrv;
+          _allBestCrvMCs[i_branch] = bestcrvmc;
+        }
       }
     }
   }
@@ -433,16 +433,16 @@ namespace mu2e {
       }
       // want to be able to have more than one bestcrv branch for each candidate/supplement
       if(_crv && i_branchConfig.options().fillbestcrv()) {
-	std::vector<std::string> bestCrvBranchNames;
-	if (i_branchConfig.options().bestCrvBranches(bestCrvBranchNames)) {
-	  for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < bestCrvBranchNames.size(); ++i_bestCrvBranch) {
-	    std::string bestCrvBranchName = bestCrvBranchNames.at(i_bestCrvBranch);
-	    _trkana->Branch((branch+bestCrvBranchName).c_str(),&_allBestCrvs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
-	    if (_fillmc) {
-	      _trkana->Branch((branch+bestCrvBranchName+"mc").c_str(),&_allBestCrvMCs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
-	    }
-	  }
-	}
+        std::vector<std::string> bestCrvBranchNames;
+        if (i_branchConfig.options().bestCrvBranches(bestCrvBranchNames)) {
+          for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < bestCrvBranchNames.size(); ++i_bestCrvBranch) {
+            std::string bestCrvBranchName = bestCrvBranchNames.at(i_bestCrvBranch);
+            _trkana->Branch((branch+bestCrvBranchName).c_str(),&_allBestCrvs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
+            if (_fillmc) {
+              _trkana->Branch((branch+bestCrvBranchName+"mc").c_str(),&_allBestCrvMCs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
+            }
+          }
+        }
       }
 
       // optionall add MC branches
@@ -580,22 +580,22 @@ namespace mu2e {
 
       // BestCrv
       if (i_branchConfig.options().fillbestcrv() && _crv) { // if we are filling in bestcrv information
-	std::vector<std::string> i_bestcrv_tags;
-	std::vector<std::string> i_bestcrv_instances;
-	std::vector<art::Handle<BestCrvAssns>> bestCrvAssnsHandles;
-	if (i_branchConfig.options().bestCrvModules(i_bestcrv_tags) && i_branchConfig.options().bestCrvInstances(i_bestcrv_instances)) { // get the module labels and instances names
-	  // loop htrough the module lables
-	  art::Handle<BestCrvAssns> bestCrvAssnsHandle;
-	  for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < i_bestcrv_tags.size(); ++i_bestCrvBranch) {
-	    art::InputTag bestCrvInputTag = i_bestcrv_tags.at(i_bestCrvBranch) + i_branchConfig.suffix() + ":" + i_bestcrv_instances.at(i_bestCrvBranch);
-	    event.getByLabel(bestCrvInputTag,bestCrvAssnsHandle); // get the Assns for this module and this candidate/supplement
-	    bestCrvAssnsHandles.push_back(bestCrvAssnsHandle); // add this handle to the vector of handles for this candidate/supplement
-	  }
-	}
-	_allBestCrvAssns[i_branch] = bestCrvAssnsHandles;
-	if (_fillmc) {
-	  event.getByLabel(_crvCoincidenceMCModuleLabel, _crvCoincidenceMCCollHandle);
-	}
+        std::vector<std::string> i_bestcrv_tags;
+        std::vector<std::string> i_bestcrv_instances;
+        std::vector<art::Handle<BestCrvAssns>> bestCrvAssnsHandles;
+        if (i_branchConfig.options().bestCrvModules(i_bestcrv_tags) && i_branchConfig.options().bestCrvInstances(i_bestcrv_instances)) { // get the module labels and instances names
+          // loop htrough the module lables
+          art::Handle<BestCrvAssns> bestCrvAssnsHandle;
+          for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < i_bestcrv_tags.size(); ++i_bestCrvBranch) {
+            art::InputTag bestCrvInputTag = i_bestcrv_tags.at(i_bestCrvBranch) + i_branchConfig.suffix() + ":" + i_bestcrv_instances.at(i_bestCrvBranch);
+            event.getByLabel(bestCrvInputTag,bestCrvAssnsHandle); // get the Assns for this module and this candidate/supplement
+            bestCrvAssnsHandles.push_back(bestCrvAssnsHandle); // add this handle to the vector of handles for this candidate/supplement
+          }
+        }
+        _allBestCrvAssns[i_branch] = bestCrvAssnsHandles;
+        if (_fillmc) {
+          event.getByLabel(_crvCoincidenceMCModuleLabel, _crvCoincidenceMCCollHandle);
+        }
       }
     }
 
@@ -687,12 +687,12 @@ namespace mu2e {
       // TODO we want MC information when we don't have a track
       // fill general CRV info
       if(_crv){
-	if (_crvhits) {
-	  CRVAnalysis::FillCrvHitInfoCollections(_crvCoincidenceModuleLabel, _crvCoincidenceMCModuleLabel,
-						 _crvRecoPulseLabel, _crvStepLabel, _conf.simParticleLabel(),
-						 _conf.mcTrajectoryLabel(), event, _crvinfo, _crvinfomc, 
-						 _crvsummary, _crvsummarymc, _crvinfomcplane, _crvPlaneY);
-	}
+        if (_crvhits) {
+          CRVAnalysis::FillCrvHitInfoCollections(_crvCoincidenceModuleLabel, _crvCoincidenceMCModuleLabel,
+                                                 _crvRecoPulseLabel, _crvStepLabel, _conf.simParticleLabel(),
+                                                 _conf.mcTrajectoryLabel(), event, _crvinfo, _crvinfomc,
+                                                 _crvsummary, _crvsummarymc, _crvinfomcplane, _crvPlaneY);
+        }
         if(_crvpulses){
           // temporary hack: FIXME
           std::vector<art::InputTag> nulltags;
@@ -848,17 +848,17 @@ namespace mu2e {
       // get the list of bestcrv modules
       std::vector<std::string> i_bestcrv_tags;
       if (branchConfig.options().bestCrvModules(i_bestcrv_tags)) { // get the module labels
-	for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < i_bestcrv_tags.size(); ++i_bestCrvBranch) {
-	  auto hBestCrvAssns = _allBestCrvAssns.at(i_branch).at(i_bestCrvBranch);
-	  if (hBestCrvAssns->size()>0) {
-	    auto bestCrvCoinc = hBestCrvAssns->at(i_kseed).second;
-	    _infoStructHelper.fillCrvHitInfo(bestCrvCoinc, _allBestCrvs.at(i_branch).at(i_bestCrvBranch));
-	    if (_fillmc) {
-	      auto bestCrvCoincMC = art::Ptr<CrvCoincidenceClusterMC>(_crvCoincidenceMCCollHandle, bestCrvCoinc.key());
-	      _infoMCStructHelper.fillCrvHitInfoMC(bestCrvCoincMC, _allBestCrvMCs.at(i_branch).at(i_bestCrvBranch));
-	    }
-	  }
-	}
+        for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < i_bestcrv_tags.size(); ++i_bestCrvBranch) {
+          auto hBestCrvAssns = _allBestCrvAssns.at(i_branch).at(i_bestCrvBranch);
+          if (hBestCrvAssns->size()>0) {
+            auto bestCrvCoinc = hBestCrvAssns->at(i_kseed).second;
+            _infoStructHelper.fillCrvHitInfo(bestCrvCoinc, _allBestCrvs.at(i_branch).at(i_bestCrvBranch));
+            if (_fillmc) {
+              auto bestCrvCoincMC = art::Ptr<CrvCoincidenceClusterMC>(_crvCoincidenceMCCollHandle, bestCrvCoinc.key());
+              _infoMCStructHelper.fillCrvHitInfoMC(bestCrvCoincMC, _allBestCrvMCs.at(i_branch).at(i_bestCrvBranch));
+            }
+          }
+        }
       }
     }
 
@@ -1000,9 +1000,9 @@ namespace mu2e {
       _allTSHIMCs.at(i_branch).clear();
 
       if (_allBranches.at(i_branch).options().fillbestcrv()) { // only clear the vectors if they exist
-	// we don't want to remove elements so use assign instead of clear
-	_allBestCrvs.at(i_branch).assign(_allBestCrvs.at(i_branch).size(), CrvHitInfoReco());
-	_allBestCrvMCs.at(i_branch).assign(_allBestCrvMCs.at(i_branch).size(), CrvHitInfoMC());
+        // we don't want to remove elements so use assign instead of clear
+        _allBestCrvs.at(i_branch).assign(_allBestCrvs.at(i_branch).size(), CrvHitInfoReco());
+        _allBestCrvMCs.at(i_branch).assign(_allBestCrvMCs.at(i_branch).size(), CrvHitInfoMC());
       }
     }
 // clear vectors
