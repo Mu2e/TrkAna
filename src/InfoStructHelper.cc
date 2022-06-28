@@ -10,25 +10,25 @@
 
 namespace mu2e {
   void InfoStructHelper::fillHitCount(StrawHitFlagCollection const& shfC, HitCount& hitcount) {
-    hitcount._nsd = shfC.size();
+    hitcount.nsd = shfC.size();
     for(const auto& shf : shfC) {
-      if(shf.hasAllProperties(StrawHitFlag::energysel))++hitcount._nesel;
-      if(shf.hasAllProperties(StrawHitFlag::radsel))++hitcount._nrsel;
-      if(shf.hasAllProperties(StrawHitFlag::timesel))++hitcount._ntsel;
-      if(shf.hasAllProperties(StrawHitFlag::bkg))++hitcount._nbkg;
-      if(shf.hasAllProperties(StrawHitFlag::trksel))++hitcount._ntpk;
+      if(shf.hasAllProperties(StrawHitFlag::energysel))++hitcount.nesel;
+      if(shf.hasAllProperties(StrawHitFlag::radsel))++hitcount.nrsel;
+      if(shf.hasAllProperties(StrawHitFlag::timesel))++hitcount.ntsel;
+      if(shf.hasAllProperties(StrawHitFlag::bkg))++hitcount.nbkg;
+      if(shf.hasAllProperties(StrawHitFlag::trksel))++hitcount.ntpk;
     }
   }
 
   void InfoStructHelper::fillHitCount(RecoCount const& nrec, HitCount& hitcount) {
-    hitcount._nsd = nrec._nstrawdigi;
-    hitcount._ncd = nrec._ncalodigi;
-    hitcount._ncrvd = nrec._ncrvdigi;
-    hitcount._nesel = nrec._nshfesel;
-    hitcount._nrsel = nrec._nshfrsel;
-    hitcount._ntsel = nrec._nshftsel;
-    hitcount._nbkg = nrec._nshfbkg;
-    hitcount._ntpk = nrec._nshftpk;
+    hitcount.nsd = nrec._nstrawdigi;
+    hitcount.ncd = nrec._ncalodigi;
+    hitcount.ncrvd = nrec._ncrvdigi;
+    hitcount.nesel = nrec._nshfesel;
+    hitcount.nrsel = nrec._nshfrsel;
+    hitcount.ntsel = nrec._nshftsel;
+    hitcount.nbkg = nrec._nshfbkg;
+    hitcount.ntpk = nrec._nshftpk;
   }
 
   void InfoStructHelper::fillTrkInfo(const KalSeed& kseed,TrkInfo& trkinfo) {
@@ -38,12 +38,25 @@ namespace mu2e {
       trkinfo.status = 2;
     else
       trkinfo.status = -1;
+
+    if(kseed.status().hasAllProperties(TrkFitFlag::FitOK)){
+      trkinfo.goodfit = 1;
+    } else
+      trkinfo.goodfit = 0;
+
     if(kseed.status().hasAllProperties(TrkFitFlag::CPRHelix))
-      trkinfo.alg = 1;
+      trkinfo.seedalg = 1;
     else if(kseed.status().hasAllProperties(TrkFitFlag::TPRHelix))
-      trkinfo.alg = 0;
+      trkinfo.seedalg = 0;
+
+    if(kseed.status().hasAllProperties(TrkFitFlag::KKLoopHelix))
+      trkinfo.fitalg =1;
+    else if(kseed.status().hasAllProperties(TrkFitFlag::KKCentralHelix))
+      trkinfo.fitalg = 2;
+    else if(kseed.status().hasAllProperties(TrkFitFlag::KKLine))
+      trkinfo.fitalg = 3;
     else
-      trkinfo.alg = -1;
+      trkinfo.fitalg = 0;
 
     trkinfo.pdg = kseed.particle();
     trkinfo.t0 = kseed.t0().t0();
@@ -145,11 +158,11 @@ namespace mu2e {
       TrkStrawHitInfo tshinfo;
       auto const& straw = tracker.getStraw(ihit->strawId());
 
-      tshinfo._active = ihit->flag().hasAllProperties(active);
-      tshinfo._plane = ihit->strawId().plane();
-      tshinfo._panel = ihit->strawId().panel();
-      tshinfo._layer = ihit->strawId().layer();
-      tshinfo._straw = ihit->strawId().straw();
+      tshinfo.active = ihit->flag().hasAllProperties(active);
+      tshinfo.plane = ihit->strawId().plane();
+      tshinfo.panel = ihit->strawId().panel();
+      tshinfo.layer = ihit->strawId().layer();
+      tshinfo.straw = ihit->strawId().straw();
 
       // find nearest segment
       auto ikseg = kseed.nearestSegment(ihit->trkLen());
@@ -157,41 +170,39 @@ namespace mu2e {
         XYZVectorF dir;
         ikseg->helix().direction(ikseg->localFlt(ihit->trkLen()),dir);
         auto tdir = GenVector::Hep3Vec(dir);
-        tshinfo._wdot = tdir.dot(straw.getDirection());
+        tshinfo.wdot = tdir.dot(straw.getDirection());
       }
-      tshinfo._residerr = ihit->radialErr();
-      // note; the following is the BIASED residual FIXME!
-      tshinfo._resid = ihit->wireDOCA() -ihit->driftRadius()*ihit->ambig();
-      tshinfo._rdrift = ihit->driftRadius();
-      tshinfo._rdrifterr = ihit->radialErr();
+      tshinfo.residerr = ihit->radialErr();
+      tshinfo.resid = ihit->driftRadius();
+      tshinfo.rdrift = 0.0; // No longer relevant FIXME
+      tshinfo.rdrifterr = ihit->radialErr();
 
-      double rstraw = tracker.strawOuterRadius();
-      tshinfo._dx = std::sqrt(std::max(0.0,rstraw*rstraw-tshinfo._rdrift*tshinfo._rdrift));
+      tshinfo.dx = 0.0; // No longer relevant FIXME
 
-      tshinfo._trklen = ihit->trkLen();
-      tshinfo._hlen = ihit->hitLen();
-      tshinfo._t0 = ihit->t0().t0();
-      tshinfo._t0err = ihit->t0().t0Err();
-      tshinfo._ht = ihit->hitTime();
-      tshinfo._ambig = ihit->ambig();
-      tshinfo._doca = ihit->wireDOCA();
-      tshinfo._edep = ihit->energyDep();
-      tshinfo._wdist = ihit->wireDist();
-      tshinfo._werr = ihit->wireRes();
-      tshinfo._driftend = ihit->driftEnd();
-      tshinfo._tdrift = ihit->hitTime() - ihit->signalTime() - ihit->t0().t0();
+      tshinfo.trklen = ihit->trkLen();
+      tshinfo.hlen = ihit->hitLen();
+      tshinfo.t0 = ihit->t0().t0();
+      tshinfo.t0err = ihit->t0().t0Err();
+      tshinfo.ht = ihit->hitTime();
+      tshinfo.ambig = ihit->ambig();
+      tshinfo.doca = ihit->wireDOCA();
+      tshinfo.edep = ihit->energyDep();
+      tshinfo.wdist = ihit->wireDist();
+      tshinfo.werr = ihit->wireRes();
+      tshinfo.driftend = int(rint(2*(ihit->driftEnd()-0.5)));
+      tshinfo.tdrift = ihit->signalTime();
       auto const& wiredir = straw.getDirection();
       auto const& mid = straw.getMidPoint();
       CLHEP::Hep3Vector hpos = mid + wiredir*ihit->hitLen();
-      tshinfo._poca = XYZVectorF(hpos);
+      tshinfo.poca = XYZVectorF(hpos);
 
       // count correlations with other TSH
       for(std::vector<TrkStrawHitSeed>::const_iterator jhit=kseed.hits().begin(); jhit != kseed.hits().end(); ++jhit) {
         if(jhit != ihit && ihit->strawId().plane() ==  jhit->strawId().plane() &&
             ihit->strawId().panel() == jhit->strawId().panel() ){
-          tshinfo._dhit = true;
+          tshinfo.dhit = true;
           if (jhit->flag().hasAllProperties(active)) {
-            tshinfo._dactive = true;
+            tshinfo.dactive = true;
             break;
           }
         }
@@ -208,16 +219,16 @@ namespace mu2e {
     for(const auto& i_straw : kseed.straws()) {
       TrkStrawMatInfo tminfo;
 
-      tminfo._plane = i_straw.straw().getPlane();
-      tminfo._panel = i_straw.straw().getPanel();
-      tminfo._layer = i_straw.straw().getLayer();
-      tminfo._straw = i_straw.straw().getStraw();
+      tminfo.plane = i_straw.straw().getPlane();
+      tminfo.panel = i_straw.straw().getPanel();
+      tminfo.layer = i_straw.straw().getLayer();
+      tminfo.straw = i_straw.straw().getStraw();
 
-      tminfo._active = i_straw.active();
-      tminfo._dp = i_straw.pfrac();
-      tminfo._radlen = i_straw.radLen();
-      tminfo._doca = i_straw.doca();
-      tminfo._tlen = i_straw.trkLen();
+      tminfo.active = i_straw.active();
+      tminfo.dp = i_straw.pfrac();
+      tminfo.radlen = i_straw.radLen();
+      tminfo.doca = i_straw.doca();
+      tminfo.tlen = i_straw.trkLen();
 
       tminfos.push_back(tminfo);
     }
@@ -265,10 +276,10 @@ namespace mu2e {
     int n_trkqual_vars = TrkQual::n_vars;
     for (int i_trkqual_var = 0; i_trkqual_var < n_trkqual_vars; ++i_trkqual_var) {
       TrkQual::MVA_varindex i_index = TrkQual::MVA_varindex(i_trkqual_var);
-      trkqualInfo._trkqualvars[i_trkqual_var] = tqual[i_index];
+      trkqualInfo.trkqualvars[i_trkqual_var] = tqual[i_index];
     }
-    trkqualInfo._mvaout = tqual.MVAOutput();
-    trkqualInfo._mvastat = tqual.status();
+    trkqualInfo.mvaout = tqual.MVAOutput();
+    trkqualInfo.mvastat = tqual.status();
   }
 
 
