@@ -6,6 +6,7 @@
 #include "Offline/RecoDataProducts/inc/TrkStrawHitSeed.hh"
 #include "KinKal/Trajectory/CentralHelix.hh"
 #include "Offline/TrackerGeom/inc/Tracker.hh"
+#include "Offline/Mu2eKinKal/inc/WireHitState.hh"
 #include <cmath>
 
 namespace mu2e {
@@ -117,17 +118,16 @@ namespace mu2e {
     static StrawHitFlag active(StrawHitFlag::active);
     for (auto ihit = kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
       ++trkinfo.nhits;
-      if (ihit->flag().hasAllProperties(active)) {
+      if (ihit->strawHitState()>WireHitState::inactive) {
         ++trkinfo.nactive;
-        if (ihit->ambig()==0) {
+        if (ihit->strawHitState()==WireHitState::null) {
           ++trkinfo.nnullambig;
         }
-      }
-      auto jhit = ihit; jhit++;
-      if(jhit != kseed.hits().end() && ihit->strawId().uniquePanel() ==
-          jhit->strawId().uniquePanel()){
-        ++trkinfo.ndouble;
-        if(ihit->flag().hasAllProperties(active)) { ++trkinfo.ndactive; }
+        auto jhit = ihit; jhit++;
+        if(jhit != kseed.hits().end() && ihit->strawId().uniquePanel() == jhit->strawId().uniquePanel()){
+          ++trkinfo.ndouble;
+          if(jhit->strawHitState()>WireHitState::inactive) { ++trkinfo.ndactive; }
+        }
       }
     }
 
@@ -158,11 +158,34 @@ namespace mu2e {
       TrkStrawHitInfo tshinfo;
       auto const& straw = tracker.getStraw(ihit->strawId());
 
-      tshinfo.active = ihit->flag().hasAllProperties(active);
+      tshinfo.state = ihit->_ambig;
+      tshinfo.algo = ihit->_algo;
+      tshinfo.driftend   = ihit->_end.end();
       tshinfo.plane = ihit->strawId().plane();
       tshinfo.panel = ihit->strawId().panel();
       tshinfo.layer = ihit->strawId().layer();
       tshinfo.straw = ihit->strawId().straw();
+
+      tshinfo.edep   = ihit->_edep;
+      tshinfo.htime   = ihit->_htime;
+      tshinfo.wdist   = ihit->_wdist;
+      tshinfo.werr   = ihit->_werr;
+      tshinfo.ptoca   = ihit->_ptoca;
+      tshinfo.wdoca   = ihit->_wdoca;
+      tshinfo.wdocavar   = ihit->_wdocavar;
+      tshinfo.wdt   = ihit->_wdt;
+      tshinfo.wtocavar   = ihit->_wtocavar;
+      tshinfo.doca   = ihit->_doca;
+      tshinfo.docavar   = ihit->_docavar;
+      tshinfo.dt   = ihit->_dt;
+      tshinfo.tocavar   = ihit->_tocavar;
+      tshinfo.upos   = ihit->_upos;
+      tshinfo.tresid   = ihit->_tresid;
+      tshinfo.tresidmvar   = ihit->_tresidmvar;
+      tshinfo.tresidpvar   = ihit->_tresidpvar;
+      tshinfo.dresid   = ihit->_dresid;
+      tshinfo.dresidmvar   = ihit->_dresidmvar;
+      tshinfo.dresidpvar   = ihit->_dresidpvar;
 
       // find nearest segment
       auto ikseg = kseed.nearestSegment(ihit->trkLen());
@@ -172,41 +195,23 @@ namespace mu2e {
         auto tdir = GenVector::Hep3Vec(dir);
         tshinfo.wdot = tdir.dot(straw.getDirection());
       }
-      tshinfo.residerr = ihit->radialErr();
-      tshinfo.resid = ihit->driftRadius();
-      tshinfo.rdrift = 0.0; // No longer relevant FIXME
-      tshinfo.rdrifterr = ihit->radialErr();
-
-      tshinfo.dx = 0.0; // No longer relevant FIXME
-
-      tshinfo.trklen = ihit->trkLen();
-      tshinfo.hlen = ihit->hitLen();
-      tshinfo.t0 = ihit->t0().t0();
-      tshinfo.t0err = ihit->t0().t0Err();
-      tshinfo.ht = ihit->hitTime();
-      tshinfo.ambig = ihit->ambig();
-      tshinfo.doca = ihit->wireDOCA();
-      tshinfo.edep = ihit->energyDep();
-      tshinfo.wdist = ihit->wireDist();
-      tshinfo.werr = ihit->wireRes();
-      tshinfo.driftend = int(rint(2*(ihit->driftEnd()-0.5)));
-      tshinfo.tdrift = ihit->signalTime();
       auto const& wiredir = straw.getDirection();
       auto const& mid = straw.getMidPoint();
       CLHEP::Hep3Vector hpos = mid + wiredir*ihit->hitLen();
       tshinfo.poca = XYZVectorF(hpos);
 
       // count correlations with other TSH
-      for(std::vector<TrkStrawHitSeed>::const_iterator jhit=kseed.hits().begin(); jhit != kseed.hits().end(); ++jhit) {
-        if(jhit != ihit && ihit->strawId().plane() ==  jhit->strawId().plane() &&
-            ihit->strawId().panel() == jhit->strawId().panel() ){
-          tshinfo.dhit = true;
-          if (jhit->flag().hasAllProperties(active)) {
-            tshinfo.dactive = true;
-            break;
-          }
-        }
-      }
+      // OBSOLETE: replace this with a test of StrawHitClusters
+//      for(std::vector<TrkStrawHitSeed>::const_iterator jhit=kseed.hits().begin(); jhit != kseed.hits().end(); ++jhit) {
+//        if(jhit != ihit && ihit->strawId().plane() ==  jhit->strawId().plane() &&
+//            ihit->strawId().panel() == jhit->strawId().panel() ){
+//          tshinfo.dhit = true;
+//          if (jhit->flag().hasAllProperties(active)) {
+//            tshinfo.dactive = true;
+//            break;
+//          }
+//        }
+//      }
 
       tshinfos.push_back(tshinfo);
     }
