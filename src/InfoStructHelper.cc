@@ -114,12 +114,17 @@ namespace mu2e {
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
-    trkinfo.nhits = 0; trkinfo.nactive = 0; trkinfo.ndouble = 0; trkinfo.ndactive = 0; trkinfo.nnullambig = 0;
+    trkinfo.nhits = trkinfo.nactive = trkinfo.ndouble = trkinfo.ndactive = trkinfo.nplanes = trkinfo.planespan = trkinfo.nnullambig = 0;
     static StrawHitFlag active(StrawHitFlag::active);
+    std::set<unsigned> planes;
+    uint16_t minplane(0), maxplane(0);
     for (auto ihit = kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
       ++trkinfo.nhits;
       if (ihit->strawHitState()>WireHitState::inactive) {
         ++trkinfo.nactive;
+        planes.insert(ihit->strawId().plane());
+        minplane = std::min(minplane, ihit->strawId().plane());
+        maxplane = std::max(maxplane, ihit->strawId().plane());
         if (ihit->strawHitState()==WireHitState::null) {
           ++trkinfo.nnullambig;
         }
@@ -129,6 +134,8 @@ namespace mu2e {
           if(jhit->strawHitState()>WireHitState::inactive) { ++trkinfo.ndactive; }
         }
       }
+      trkinfo.nplanes = planes.size();
+      trkinfo.planespan = abs(maxplane-minplane);
     }
 
     trkinfo.ndof = trkinfo.nactive -5; // this won't work with KinKal fits FIXME
@@ -246,34 +253,17 @@ namespace mu2e {
 
       tchinfo.active = tch.flag().hasAllProperties(StrawHitFlag::active);
       tchinfo.did = cc->diskID();
-      tchinfo.trklen = tch.trkLen();
-      tchinfo.clen = tch.hitLen();
-
-      if(tch.flag().hasAllProperties(StrawHitFlag::doca)) {
-        tchinfo.doca = tch.clusterAxisDOCA();
-      }
-      else {
-        tchinfo.doca = -100.0;
-      }
-      // add the propagation time offsetA
-      tchinfo.t0 = tch.t0().t0();
-      tchinfo.t0err = tch.t0().t0Err();
-      tchinfo.ct = tch.time(); // time used to constrain T0 by this hit: includes the 'propagation time' offset
-      tchinfo.cterr = tch.timeErr();
+      tchinfo.poca = tch.clusterPosition();
+      tchinfo.mom = tch.trackMomentum();
+      tchinfo.cdepth = tch.clusterDepth();
+      tchinfo.doca = tch.clusterAxisDOCA();
+      tchinfo.dt = tch.clusterAxisPOCADeltaT();
+      tchinfo.toca = tch.clusterAxisTOCA();
+      tchinfo.tocavar = tch.clusterAxisTOCAVar();
+      tchinfo.tresid   = tch._tresid;
+      tchinfo.tresidmvar   = tch._tresidmvar;
+      tchinfo.tresidpvar   = tch._tresidpvar;
       tchinfo.edep = cc->energyDep();
-      // transform cog to tracker coordinates; requires 2 steps.  This is at the front
-      // of the disk
-      mu2e::GeomHandle<mu2e::Calorimeter> calo;
-      XYZVectorF cpos = XYZVectorF(calo->geomUtil().mu2eToTracker(calo->geomUtil().diskToMu2e(cc->diskID(),cc->cog3Vector())));
-      // move to the front face and
-      // add the cluster length (relative to the front face).  crystal size should come from geom FIXME!
-      cpos.SetZ(cpos.z() -200.0 + tch.hitLen());
-      tchinfo.poca = cpos;
-      // find the nearest segment
-      auto ikseg = kseed.nearestSegment(tch.trkLen());
-      if(ikseg != kseed.segments().end()){
-        ikseg->mom(ikseg->localFlt(tch.trkLen()),tchinfo.mom);
-      }
     }
   }
 
@@ -336,5 +326,16 @@ namespace mu2e {
       trkhel.position(blen,extpos);
       trkpidInfo._diskbrad[idisk] = sqrt(extpos.Perp2());
     }
+  }
+
+  void InfoStructHelper::fillCrvHitInfo(art::Ptr<CrvCoincidenceCluster> const& crvCoinc, CrvHitInfoReco& crvHitInfo) {
+    crvHitInfo._crvSectorType = crvCoinc->GetCrvSectorType();
+    crvHitInfo._x = crvCoinc->GetAvgCounterPos().x();
+    crvHitInfo._y = crvCoinc->GetAvgCounterPos().y();
+    crvHitInfo._z = crvCoinc->GetAvgCounterPos().z();
+    crvHitInfo._timeWindowStart = crvCoinc->GetStartTime();
+    crvHitInfo._timeWindowEnd = crvCoinc->GetEndTime();
+    crvHitInfo._PEs = crvCoinc->GetPEs();
+    crvHitInfo._nCoincidenceHits = crvCoinc->GetCrvRecoPulses().size();
   }
 }

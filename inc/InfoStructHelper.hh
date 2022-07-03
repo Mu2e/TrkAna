@@ -10,6 +10,7 @@
 #include "Offline/RecoDataProducts/inc/TrkQual.hh"
 #include "Offline/RecoDataProducts/inc/RecoCount.hh"
 #include "Offline/RecoDataProducts/inc/HelixSeed.hh"
+#include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
 
 #include "Offline/BFieldGeom/inc/BFieldManager.hh"
 #include "Offline/GeometryService/inc/DetectorSystem.hh"
@@ -24,6 +25,7 @@
 #include "TrkAna/inc/TrkQualInfo.hh"
 #include "TrkAna/inc/TrkPIDInfo.hh"
 #include "TrkAna/inc/HelixInfo.hh"
+#include "Offline/CRVAnalysis/inc/CrvHitInfoReco.hh"
 
 #include <vector>
 #include <functional>
@@ -57,6 +59,7 @@ namespace mu2e {
     void fillTrkQualInfo(const TrkQual& tqual, TrkQualInfo& trkqualInfo);
     void fillTrkPIDInfo(const TrkCaloHitPID& tchp, const KalSeed& kseed, TrkPIDInfo& trkpidInfo);
     void fillHelixInfo(art::Ptr<HelixSeed> const& hptr, HelixInfo& hinfo);
+    void fillCrvHitInfo(art::Ptr<CrvCoincidenceCluster> const& crvCoinc, CrvHitInfoReco& crvHitInfo);
   };
 }
 
