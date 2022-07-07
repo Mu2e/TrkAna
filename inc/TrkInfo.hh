@@ -25,10 +25,10 @@ namespace mu2e
 
   // general information about a track
   struct TrkInfo {
-    uint8_t    status; // Kalman fit status
-    uint8_t    goodfit; // fit is geometrically consistent
-    uint8_t    seedalg; // pat. rec. algorithm
-    uint8_t    fitalg; // final fit algorithm
+    Int_t    status; // Kalman fit status
+    Int_t    goodfit; // fit is geometrically consistent
+    Int_t    seedalg; // pat. rec. algorithm
+    Int_t    fitalg; // final fit algorithm
     Int_t pdg;   // PDG code of particle assumed in fit
     Int_t nhits;     // # hits associated to this track
     Int_t ndof;      // number of degrees of freedom in the fit

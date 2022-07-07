@@ -82,20 +82,9 @@ namespace mu2e {
       }
     }
 
-    // Loop through the KalSegments
-    double firstflt = 9999999;
-    double lastflt = -9999999;
-    for (const auto& kseg : kseed.segments()) {
-      //std::cout << "AE: min = " << kseg.fmin() << ", max = " << kseg.fmax() << std::endl;
-      if (kseg.globalFlt(kseg.fmin()) < firstflt) {
-        firstflt = kseg.globalFlt(kseg.fmin());
-      }
-      if (kseg.globalFlt(kseg.fmax()) > lastflt) {
-        lastflt = kseg.globalFlt(kseg.fmax());
-      }
-    }
-    trkinfo.startvalid = firstflt;
-    trkinfo.endvalid = lastflt;
+    // Legacy data: 'flight range'
+    trkinfo.startvalid = kseed.segments().front().tmin();
+    trkinfo.endvalid = kseed.segments().back().tmax();
 
     fillTrkInfoStraws(kseed, trkinfo);
   }
@@ -195,7 +184,7 @@ namespace mu2e {
       tshinfo.dresidpvar   = ihit->_dresidpvar;
 
       // find nearest segment
-      auto ikseg = kseed.nearestSegment(ihit->trkLen());
+      auto ikseg = kseed.nearestSegment(ihit->_ptoca);
       if(ikseg != kseed.segments().end()){
         XYZVectorF dir;
         ikseg->helix().direction(ikseg->localFlt(ihit->trkLen()),dir);
