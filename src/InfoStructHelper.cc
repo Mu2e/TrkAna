@@ -197,18 +197,17 @@ namespace mu2e {
       tshinfo.poca = XYZVectorF(hpos);
 
       // count correlations with other TSH
-      // OBSOLETE: replace this with a test of StrawHitClusters
-//      for(std::vector<TrkStrawHitSeed>::const_iterator jhit=kseed.hits().begin(); jhit != kseed.hits().end(); ++jhit) {
-//        if(jhit != ihit && ihit->strawId().plane() ==  jhit->strawId().plane() &&
-//            ihit->strawId().panel() == jhit->strawId().panel() ){
-//          tshinfo.dhit = true;
-//          if (jhit->flag().hasAllProperties(active)) {
-//            tshinfo.dactive = true;
-//            break;
-//          }
-//        }
-//      }
-
+      // OBSOLETE: replace this with a test for KinKal StrawHitClusters
+      for(std::vector<TrkStrawHitSeed>::const_iterator jhit=kseed.hits().begin(); jhit != kseed.hits().end(); ++jhit) {
+        if(jhit != ihit && ihit->strawId().plane() ==  jhit->strawId().plane() &&
+            ihit->strawId().panel() == jhit->strawId().panel() ){
+          tshinfo.dhit = true;
+          if (jhit->flag().hasAllProperties(active)) {
+            tshinfo.dactive = true;
+            break;
+          }
+        }
+      }
       tshinfos.push_back(tshinfo);
     }
   }

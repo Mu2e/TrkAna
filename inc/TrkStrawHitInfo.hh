@@ -27,6 +27,7 @@ namespace mu2e
     // not sure if we still want these
     Float_t wdot;
     XYZVectorF poca;
+    bool dhit, dactive;
 
     TrkStrawHitInfo() : plane(-1), panel(-1), layer(-1), straw(-1), state(-10),driftend(-1),
     wdoca(0), wdocavar(0), wdt(0), wtocavar(0),
@@ -34,7 +35,7 @@ namespace mu2e
     upos(0),
     tresid(0), tresidmvar(0), tresidpvar(0),
     dresid(0), dresidmvar(0), dresidpvar(0),
-    wdot(0) {}
+    wdot(0), dhit(false), dactive(false) {}
   };
 }
 #endif
