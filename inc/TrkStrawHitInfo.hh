@@ -16,7 +16,8 @@ namespace mu2e
     Float_t htime;   // raw hit time
     Float_t wdist;       // raw hit U position
     Float_t werr;    // raw hit U position error estimate
-    Float_t ptoca;    // reference particle time of closest approach (TOCA)
+    Float_t totdrift; // TOT expressed as drift time
+    Float_t ptoca, stoca;    // reference particle (sensor) time of closest approach (TOCA)
     Float_t wdoca, wdocavar;   // reference (biased) DOCA from the track to the wire, signed by the angular momentum WRT the wire and the measurement end (and variance)
     Float_t wdt, wtocavar;   // reference (biased) time difference (and variance) at POCA
     Float_t doca, docavar; // unbiaed DOCA (and variance)
@@ -30,6 +31,8 @@ namespace mu2e
     bool dhit, dactive;
 
     TrkStrawHitInfo() : plane(-1), panel(-1), layer(-1), straw(-1), state(-10),driftend(-1),
+    edep(0), htime(0), wdist(0), werr(0),totdrift(0),
+    ptoca(0), stoca(0),
     wdoca(0), wdocavar(0), wdt(0), wtocavar(0),
     doca(0.0), docavar(0), dt(0), tocavar(0),
     upos(0),

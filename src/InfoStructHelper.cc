@@ -166,7 +166,9 @@ namespace mu2e {
       tshinfo.htime   = ihit->_htime;
       tshinfo.wdist   = ihit->_wdist;
       tshinfo.werr   = ihit->_werr;
+      tshinfo.totdrift = ihit->_dtime;
       tshinfo.ptoca   = ihit->_ptoca;
+      tshinfo.stoca   = ihit->_stoca;
       tshinfo.wdoca   = ihit->_wdoca;
       tshinfo.wdocavar   = ihit->_wdocavar;
       tshinfo.wdt   = ihit->_wdt;
