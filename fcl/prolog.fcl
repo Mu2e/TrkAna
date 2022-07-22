@@ -7,8 +7,8 @@ BEGIN_PROLOG
 # -- trainName is the name of the training
 # -- xmlFileName is the name of the XML file
 #  YourNewTrkQualConfig : { trainName : "YourNewTrkQual"
-#    		       	      xmlFileName : "path/to/YourNewTrkQual.weights.xml"
-#		     	    }
+#                     xmlFileName : "path/to/YourNewTrkQual.weights.xml"
+#             }
 #  TrkQualCatalog.mvaConfigs : [ @sequence::TrkQualCatalog.mvaConfigs, @local::YourNewTrkQualConfig  ]
 
 TrkQual : {
@@ -19,32 +19,32 @@ TrkQualNeg.TrainingName : "TrkQualNeg"
 TrkQualPos : @local::TrkQual
 TrkQualPos.TrainingName : "TrkQualPos"
 
-TrkQualDeM		       : @local::TrkQualNeg
+TrkQualDeM           : @local::TrkQualNeg
 TrkQualDeM.KalSeedCollection : "KFFDeM"
-TrkQualUeM		       : @local::TrkQualNeg
+TrkQualUeM           : @local::TrkQualNeg
 TrkQualUeM.KalSeedCollection : "KFFUeM"
-TrkQualDmuM		       : @local::TrkQualNeg
+TrkQualDmuM          : @local::TrkQualNeg
 TrkQualDmuM.KalSeedCollection : "KFFDmuM"
-TrkQualUmuM		       : @local::TrkQualNeg
+TrkQualUmuM          : @local::TrkQualNeg
 TrkQualUmuM.KalSeedCollection : "KFFUmuM"
-TrkQualDeP		       : @local::TrkQualPos
+TrkQualDeP           : @local::TrkQualPos
 TrkQualDeP.KalSeedCollection : "KFFDeP"
-TrkQualUeP		       : @local::TrkQualPos
+TrkQualUeP           : @local::TrkQualPos
 TrkQualUeP.KalSeedCollection : "KFFUeP"
-TrkQualDmuP		       : @local::TrkQualPos
+TrkQualDmuP          : @local::TrkQualPos
 TrkQualDmuP.KalSeedCollection : "KFFDmuP"
-TrkQualUmuP		       : @local::TrkQualPos
+TrkQualUmuP          : @local::TrkQualPos
 TrkQualUmuP.KalSeedCollection : "KFFUmuP"
 
 TrkQualProducers : {
-    TrkQualDeM : @local::TrkQualDeM
-    TrkQualUeM : @local::TrkQualUeM
-    TrkQualDeP : @local::TrkQualDeP
-    TrkQualUeP : @local::TrkQualUeP
-    TrkQualDmuM : @local::TrkQualDmuM
-    TrkQualDmuP : @local::TrkQualDmuP
-    TrkQualUmuM : @local::TrkQualUmuM
-    TrkQualUmuP : @local::TrkQualUmuP
+  TrkQualDeM : @local::TrkQualDeM
+  TrkQualUeM : @local::TrkQualUeM
+  TrkQualDeP : @local::TrkQualDeP
+  TrkQualUeP : @local::TrkQualUeP
+  TrkQualDmuM : @local::TrkQualDmuM
+  TrkQualDmuP : @local::TrkQualDmuP
+  TrkQualUmuM : @local::TrkQualUmuM
+  TrkQualUmuP : @local::TrkQualUmuP
 }
 TrkQualProducersPath : [ TrkQualDeM, TrkQualUeM, TrkQualDmuM, TrkQualDeP, TrkQualUeP, TrkQualDmuP, TrkQualUmuM, TrkQualUmuP ]
 
@@ -57,13 +57,13 @@ TrkPID : {
   MVAConfig : { MVAWeights : "Offline/TrkDiag/data/TrkCaloHitPID.weights.xml"}
 }
 # this module only makes sense for downstream electron fits
-TrkPIDDeM		       : @local::TrkPID
+TrkPIDDeM          : @local::TrkPID
 TrkPIDDeM.KalSeedCollection : "KFFDeM"
-TrkPIDDeP		       : @local::TrkPID
+TrkPIDDeP          : @local::TrkPID
 TrkPIDDeP.KalSeedCollection : "KFFDeP"
 TrkPIDProducers : {
-    TrkPIDDeM : @local::TrkPIDDeM
-    TrkPIDDeP : @local::TrkPIDDeP
+  TrkPIDDeM : @local::TrkPIDDeM
+  TrkPIDDeP : @local::TrkPIDDeP
 }
 TrkPIDProducersPath : [ TrkPIDDeM, TrkPIDDeP ]
 

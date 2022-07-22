@@ -25,8 +25,10 @@ namespace mu2e
 
   // general information about a track
   struct TrkInfo {
-    Int_t status; // Kalman fit status
-    Int_t alg; // pat. rec. algorithm
+    Int_t    status; // Kalman fit status
+    Int_t    goodfit; // fit is geometrically consistent
+    Int_t    seedalg; // pat. rec. algorithm
+    Int_t    fitalg; // final fit algorithm
     Int_t pdg;   // PDG code of particle assumed in fit
     Int_t nhits;     // # hits associated to this track
     Int_t ndof;      // number of degrees of freedom in the fit
@@ -46,8 +48,7 @@ namespace mu2e
     Float_t startvalid, endvalid; // distance along the helix for which the fit is accurate
     TrkInfo() { reset(); }
     void reset() {
-      status = -1000;
-      alg=0;
+      status = goodfit = seedalg = fitalg  = -100;
       pdg = 0;
       nhits = nactive = ndouble = ndactive = nplanes = planespan = nnullambig = nmat = nmatactive = nseg = ndof = -1;
       t0 = t0err = chisq = fitcon = radlen = firstflt = lastflt = -1.0;

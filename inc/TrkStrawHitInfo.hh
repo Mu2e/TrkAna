@@ -1,42 +1,44 @@
 //
 // Struct describing a single straw hit assigned to a track, for use in TTree diagnostics
 //
-#ifndef TrkStrawHitInfo_HH
-#define TrkStrawHitInfo_HH
+#ifndef TrkStrawHitInfoHH
+#define TrkStrawHitInfoHH
 #include "Rtypes.h"
 #include "Offline/DataProducts/inc/GenVector.hh"
 namespace mu2e
 {
   struct TrkStrawHitInfo {
-    Bool_t _active;   // is this hit used in the track?
-    Bool_t _dhit;     // is this hit one of a pair in a panel?
-    Bool_t _dactive;  // is this hit one of a panel pair that are both used in the track
-    Int_t _plane, _panel, _layer, _straw;  // StrawId fields for the straw hit
-    Int_t _ambig;     // left-right amibiguity.  This signes the angular momentum of the track WRT the wire
-    Int_t _driftend; // which end(s) was used in computing the drift
-    Float_t _tdrift; // drift time
-    XYZVectorF _poca; // Position of Point Of Closest Approach (POCA)
-    Float_t _resid;  // residual = Distance Of Closest Approach (DOCA) between the drift cylinder and the track, signed by the track angular momentum WRT the wire
-    Float_t _residerr;  // error on the residual, including components from the hit, the track, and potentially other effects
-    Float_t _rdrift, _rdrifterr;  // drift radius and error of this hit
-    Float_t _wdist, _werr; // TD- valuedistance along straw from center and error on that
-    Float_t _trklen;// distance along the helix of the POCA for this hit
-    Float_t _doca;// DOCA of this hit
-    Float_t _t0, _t0err;  // Estimated time the particle passed the POCA of this hit (and error).  Note this is mass hypothesis dependent
-    Float_t _ht;    // reconstructed time (including drift time) of this hit
-    Float_t _hlen;    // length along the straw from the straw center of the POCA
-    Float_t _wdot;    // dot-product of the track direction at POCA with the wire direction
-    Float_t _edep;    // reconstructed energy deposition from ADC measurement
-    Float_t _dx;      // estimated distance through the straw gas traversed by this particle, given the DOCA and track parameters
-    TrkStrawHitInfo() : _active(false), _dhit(false), _dactive(false),
-    _plane(-1), _panel(-1), _layer(-1), _straw(-1), _ambig(-1),_driftend(-1),
-    _tdrift(-1000.0),
-    _resid(-1000.0), _residerr(-1000.0), _rdrift(-1000.0), _rdrifterr(-1000.0),
-    _wdist(-1000.0), _werr(-1000.0),
-    _trklen(-1000.0),
-    _doca(-1000.0), _t0(-1000.0), _t0err(-1000.0),
-    _ht(-1000.0),  _hlen(-1000.0), _wdot(-1000.0),
-    _edep(-1000.0), _dx(-1000.0)  {}
+    Int_t plane, panel, layer, straw;  // StrawId fields for the straw hit
+    Int_t state;     // hit state, including activity and left-right ambiguity
+    Int_t algo; // updater algorithm last used on this hit
+    Int_t driftend; // which end(s) was used in computing the drift
+    Float_t edep;        // reco energy deposition
+    Float_t htime;   // raw hit time
+    Float_t wdist;       // raw hit U position
+    Float_t werr;    // raw hit U position error estimate
+    Float_t totdrift; // TOT expressed as drift time
+    Float_t ptoca, stoca;    // reference particle (sensor) time of closest approach (TOCA)
+    Float_t wdoca, wdocavar;   // reference (biased) DOCA from the track to the wire, signed by the angular momentum WRT the wire and the measurement end (and variance)
+    Float_t wdt, wtocavar;   // reference (biased) time difference (and variance) at POCA
+    Float_t doca, docavar; // unbiaed DOCA (and variance)
+    Float_t dt, tocavar;   // fit (unbiased) dt and variance
+    Float_t upos; // POCA position along the straw WRT the straw middle
+    Float_t tresid, tresidmvar, tresidpvar; // unbiased time residual and associated measurement and parameter variances
+    Float_t dresid, dresidmvar, dresidpvar; // unbiased distance residual and associated measurement and parameter variances
+    // not sure if we still want these
+    Float_t wdot;
+    XYZVectorF poca;
+    bool dhit, dactive;
+
+    TrkStrawHitInfo() : plane(-1), panel(-1), layer(-1), straw(-1), state(-10),driftend(-1),
+    edep(0), htime(0), wdist(0), werr(0),totdrift(0),
+    ptoca(0), stoca(0),
+    wdoca(0), wdocavar(0), wdt(0), wtocavar(0),
+    doca(0.0), docavar(0), dt(0), tocavar(0),
+    upos(0),
+    tresid(0), tresidmvar(0), tresidpvar(0),
+    dresid(0), dresidmvar(0), dresidpvar(0),
+    wdot(0), dhit(false), dactive(false) {}
   };
 }
 #endif
