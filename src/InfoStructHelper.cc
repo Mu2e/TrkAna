@@ -178,12 +178,22 @@ namespace mu2e {
       tshinfo.dt   = ihit->_dt;
       tshinfo.tocavar   = ihit->_tocavar;
       tshinfo.upos   = ihit->_upos;
-      tshinfo.tresid   = ihit->_tresid;
-      tshinfo.tresidmvar   = ihit->_tresidmvar;
-      tshinfo.tresidpvar   = ihit->_tresidpvar;
-      tshinfo.dresid   = ihit->_dresid;
-      tshinfo.dresidmvar   = ihit->_dresidmvar;
-      tshinfo.dresidpvar   = ihit->_dresidpvar;
+      tshinfo.rdrift   = ihit->_rdrift;
+      tshinfo.rerr   = ihit->_rerr;
+      tshinfo.dvel   = ihit->_dvel;
+      tshinfo.lang   = ihit->_lang;
+      tshinfo.utresid   = ihit->_utresid;
+      tshinfo.utresidmvar   = ihit->_utresidmvar;
+      tshinfo.utresidpvar   = ihit->_utresidpvar;
+      tshinfo.udresid   = ihit->_udresid;
+      tshinfo.udresidmvar   = ihit->_udresidmvar;
+      tshinfo.udresidpvar   = ihit->_udresidpvar;
+      tshinfo.rtresid   = ihit->_rtresid;
+      tshinfo.rtresidmvar   = ihit->_rtresidmvar;
+      tshinfo.rtresidpvar   = ihit->_rtresidpvar;
+      tshinfo.rdresid   = ihit->_rdresid;
+      tshinfo.rdresidmvar   = ihit->_rdresidmvar;
+      tshinfo.rdresidpvar   = ihit->_rdresidpvar;
 
       // find nearest segment
       auto ikseg = kseed.nearestSegment(ihit->_ptoca);
