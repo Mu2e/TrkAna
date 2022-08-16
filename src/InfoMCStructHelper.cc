@@ -81,7 +81,10 @@ namespace mu2e {
     tshinfomc.proc = simPart._proc;
     tshinfomc.gen = simPart._gid.id();
     tshinfomc.rel = simPart._rel;
+    tshinfomc.earlyend = tshmc._earlyend._end;
     tshinfomc.t0 = tshmc._time;
+    tshinfomc.tdrift = tshmc._tdrift;
+    tshinfomc.tprop = tshmc._tprop;
     tshinfomc.edep = tshmc._energySum;
     tshinfomc.mom = std::sqrt(tshmc._mom.mag2());
     tshinfomc.cpos  = tshmc._cpos;

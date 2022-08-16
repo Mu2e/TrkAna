@@ -44,15 +44,13 @@ namespace mu2e
     Float_t chisq;   // Kalman fit chisquared
     Float_t fitcon;  // Kalman fit chisqured consistency
     Float_t radlen;  // total radiation length of (active) material crossed by this particle inside the tracker
-    Float_t firstflt, lastflt;  // distance along the helix of the first and last hit
-    Float_t startvalid, endvalid; // distance along the helix for which the fit is accurate
+    Float_t firsthit, lasthit;  // first and last hit (time or distance)
     TrkInfo() { reset(); }
     void reset() {
       status = goodfit = seedalg = fitalg  = -100;
       pdg = 0;
       nhits = nactive = ndouble = ndactive = nplanes = planespan = nnullambig = nmat = nmatactive = nseg = ndof = -1;
-      t0 = t0err = chisq = fitcon = radlen = firstflt = lastflt = -1.0;
-      startvalid = endvalid = -999999.0;
+      t0 = t0err = chisq = fitcon = radlen = firsthit = lasthit = -1.0;
     }
   };
 

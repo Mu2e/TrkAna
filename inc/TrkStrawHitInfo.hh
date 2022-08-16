@@ -11,6 +11,7 @@ namespace mu2e
     Int_t plane, panel, layer, straw;  // StrawId fields for the straw hit
     Int_t state;     // hit state, including activity and left-right ambiguity
     Int_t algo; // updater algorithm last used on this hit
+    Bool_t frozen; // was state frozen?
     Int_t driftend; // which end(s) was used in computing the drift
     Float_t edep;        // reco energy deposition
     Float_t htime;   // raw hit time

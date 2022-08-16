@@ -69,22 +69,14 @@ namespace mu2e {
     trkinfo.fitcon = kseed.fitConsistency();
     trkinfo.nseg = kseed.nTrajSegments();
 
-    for(std::vector<TrkStrawHitSeed>::const_iterator ihit=kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
-      if(ihit->flag().hasAllProperties(StrawHitFlag::active)) {
-        trkinfo.firstflt = ihit->trkLen();
-        break;
+    trkinfo.firsthit = kseed.hits().back()._ptoca;
+    trkinfo.lasthit = kseed.hits().front()._ptoca;
+    for(auto const& hit : kseed.hits()) {
+      if(hit.flag().hasAllProperties(StrawHitFlag::active)){
+        if( trkinfo.firsthit > hit._ptoca)trkinfo.firsthit = hit._ptoca;
+        if( trkinfo.lasthit < hit._ptoca)trkinfo.lasthit = hit._ptoca;
       }
     }
-    for(std::vector<TrkStrawHitSeed>::const_reverse_iterator ihit=kseed.hits().rbegin(); ihit != kseed.hits().rend(); ++ihit) {
-      if(ihit->flag().hasAllProperties(StrawHitFlag::active)) {
-        trkinfo.lastflt = ihit->trkLen();
-        break;
-      }
-    }
-
-    // Legacy data: 'flight range'
-    trkinfo.startvalid = kseed.segments().front().tmin();
-    trkinfo.endvalid = kseed.segments().back().tmax();
 
     fillTrkInfoStraws(kseed, trkinfo);
   }
@@ -156,6 +148,7 @@ namespace mu2e {
 
       tshinfo.state = ihit->_ambig;
       tshinfo.algo = ihit->_algo;
+      tshinfo.frozen = ihit->_frozen;
       tshinfo.driftend   = ihit->_end.end();
       tshinfo.plane = ihit->strawId().plane();
       tshinfo.panel = ihit->strawId().panel();
