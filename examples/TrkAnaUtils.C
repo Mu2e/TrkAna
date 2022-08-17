@@ -200,7 +200,7 @@ void TrkAnaUtils::Draw(const char* lname,const char* cut="", const char* gopt=""
 
 void TrkAnaUtils::Project(const char* pname,const char* lname,const char* cut="") const {
   if(mytree_){
-    mytree_->Draw(pname,lname,cut);
+    mytree_->Project(pname,lname,cut);
   } else {
     std::cout << "No current tree; call UseTree to set current tree" << std::endl;
   }
