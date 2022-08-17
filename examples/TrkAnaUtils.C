@@ -24,7 +24,8 @@ using namespace std;
 class TrkAnaUtils {
   public:
     TrkAnaUtils(TFile* myfile,const char* treename="TrkAnaNeg");
-    TrkAnaUtils(const char* filename,const char* treename="TrkAnaNeg");
+    TrkAnaUtils(const char* filename,const char* treename);
+    TrkAnaUtils(const char* treename="TrkAnaNeg");
     ~TrkAnaUtils() { delete myfile_; }
     TFile const& File() const { return *myfile_; }
     void ListTrees() const;
@@ -48,6 +49,9 @@ class TrkAnaUtils {
     TChain* mychain_;
 };
 
+TrkAnaUtils::TrkAnaUtils(const char* treename) : myfile_(_file0), mytree_(0), mychain_(0) {
+  UseTree(treename);
+}
 TrkAnaUtils::TrkAnaUtils(TFile* myfile,const char* treename) : myfile_(myfile), mytree_(0), mychain_(0) {
   UseTree(treename);
 }
