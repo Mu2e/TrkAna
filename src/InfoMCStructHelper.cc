@@ -84,6 +84,7 @@ namespace mu2e {
     tshinfomc.earlyend = tshmc._earlyend._end;
     tshinfomc.t0 = tshmc._time;
     tshinfomc.tdrift = tshmc._tdrift;
+    tshinfomc.rdrift = tshmc._rdrift;
     tshinfomc.tprop = tshmc._tprop;
     tshinfomc.edep = tshmc._energySum;
     tshinfomc.mom = std::sqrt(tshmc._mom.mag2());

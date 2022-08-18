@@ -13,6 +13,7 @@ namespace mu2e
     MCRelationship rel; // relationship (same, mother, daughter, sibling, unrelated) of this particle to the particle generating most of the hits on this track
     Float_t t0;  // true time this particle passed closest to this wire
     Float_t tdrift;  // true drift time
+    Float_t rdrift;  // true drift time
     Float_t tprop;  // true signal propagation time
     Float_t dist;  // true transverse distance between the cluster and the wire
     Float_t doca;  // true transverse distance at POCA of the particle to the wire
