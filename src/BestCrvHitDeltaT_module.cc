@@ -82,7 +82,7 @@ namespace mu2e {
         const auto& crvCoinc = crvCoincidenceHandle->at(i_crvCoinc);
         auto const& crvStartTime = crvCoinc.GetStartTime();
         auto const& crvEndTime = crvCoinc.GetEndTime();
-        float dt = std::min(fabs(crvStartTime-t0), fabs(crvEndTime-t0) );
+        float dt = fabs(crvStartTime-t0);
         if(dt < mindt){
           mindt = dt;
           i_bestCrvCoinc = i_crvCoinc;
