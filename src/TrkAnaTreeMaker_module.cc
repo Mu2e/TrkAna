@@ -437,9 +437,9 @@ namespace mu2e {
         if (i_branchConfig.options().bestCrvBranches(bestCrvBranchNames)) {
           for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < bestCrvBranchNames.size(); ++i_bestCrvBranch) {
             std::string bestCrvBranchName = bestCrvBranchNames.at(i_bestCrvBranch);
-            _trkana->Branch((branch+bestCrvBranchName).c_str(),&_allBestCrvs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
+            _trkana->Branch((branch+bestCrvBranchName+".").c_str(),&_allBestCrvs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
             if (_fillmc) {
-              _trkana->Branch((branch+bestCrvBranchName+"mc").c_str(),&_allBestCrvMCs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
+              _trkana->Branch((branch+bestCrvBranchName+"mc.").c_str(),&_allBestCrvMCs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
             }
           }
         }
