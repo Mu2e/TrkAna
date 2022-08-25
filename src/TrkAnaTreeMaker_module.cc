@@ -964,7 +964,7 @@ namespace mu2e {
         labels.push_back(branchname);
       }
       if (!_trkana->GetBranch(branchname.c_str())) {  // only want to create the branch once
-        _trkana->Branch(branchname.c_str(), &infostruct, infostruct.leafnames(labels).c_str());
+        _trkana->Branch((branchname+".").c_str(), &infostruct, infostruct.leafnames(labels).c_str());
       }
     }
     return outputHandles;
