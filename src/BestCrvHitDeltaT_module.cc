@@ -81,7 +81,6 @@ namespace mu2e {
       for(size_t i_crvCoinc = 0; i_crvCoinc != nCrvCoincidences; ++i_crvCoinc) {
         const auto& crvCoinc = crvCoincidenceHandle->at(i_crvCoinc);
         auto const& crvStartTime = crvCoinc.GetStartTime();
-        auto const& crvEndTime = crvCoinc.GetEndTime();
         float dt = fabs(crvStartTime-t0);
         if(dt < mindt){
           mindt = dt;
