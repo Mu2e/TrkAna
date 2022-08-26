@@ -286,9 +286,9 @@ namespace mu2e {
     size_t findSupplementTrack(KalSeedCollection const& kcol,KalSeed const& candidate, bool sameColl);
     void fillAllInfos(const art::Handle<KalSeedCollection>& ksch, BranchIndex i_branch, size_t i_kseed);
 
-    template <typename T, typename TI>
+    template <typename T, typename TI, typename TIA>
     std::vector<art::Handle<T> > createSpecialBranch(const art::Event& event, const std::string& branchname,
-                                                     std::vector<art::Handle<T> >& handles, TI& infostruct, const std::string& selection = "");
+                                                     std::vector<art::Handle<T> >& handles, TI& infostruct, TIA& array, const std::string& selection = "");
 
 };
 
@@ -537,7 +537,7 @@ namespace mu2e {
 
     // need to create and define the event weight branch here because we only now know the EventWeight creating modules that have been run through the Event
     std::vector<art::Handle<EventWeight> > eventWeightHandles;
-    _wtHandles = createSpecialBranch(event, "evtwt", eventWeightHandles, _wtinfo);
+    _wtHandles = createSpecialBranch(event, "evtwt", eventWeightHandles, _wtinfo, _wtinfo._weights);
 
     std::string process = _conf.trigProcessName();
     // Get the KalSeedCollections for both the candidate and all supplements
@@ -564,7 +564,7 @@ namespace mu2e {
       // also create the reco qual branches
       std::vector<art::Handle<RecoQualCollection> > recoQualCollHandles;
       std::vector<art::Handle<RecoQualCollection> > selectedRQCHs;
-      selectedRQCHs = createSpecialBranch(event, i_branchConfig.branch()+"qual.", recoQualCollHandles, _allRQIs.at(i_branch), i_branchConfig.suffix());
+      selectedRQCHs = createSpecialBranch(event, i_branchConfig.branch()+"qual", recoQualCollHandles, _allRQIs.at(i_branch), _allRQIs.at(i_branch)._qualsAndCalibs, i_branchConfig.suffix());
       for (const auto& i_selectedRQCH : selectedRQCHs) {
         if (i_selectedRQCH->size() != kalSeedCollHandle->size()) {
           throw cet::exception("TrkAna") << "Sizes of KalSeedCollection and this RecoQualCollection are inconsistent (" << kalSeedCollHandle->size() << " and " << i_selectedRQCH->size() << " respectively)";
@@ -946,10 +946,11 @@ namespace mu2e {
   }
 
   // some branches can't be made until the analyze() function because we want to write out all data products of a certain type
-  template <typename T, typename TI>
+  // these all have an underlying array where we want to name the individual elements in the array with different leaf names
+  template <typename T, typename TI, typename TIA>
   std::vector<art::Handle<T> >  TrkAnaTreeMaker::createSpecialBranch(const art::Event& event, const std::string& branchname,
                                                                      std::vector<art::Handle<T> >& handles, // this parameter is only needed so that the template parameter T can be deduced. There is probably a better way to do this FIXME
-                                                                     TI& infostruct, const std::string& selection) {
+                                                                     TI& infostruct, TIA& array, const std::string& selection) {
     std::vector<art::Handle<T> > outputHandles;
     std::vector<art::Handle<T> > inputHandles = event.getMany<T>();
     if (inputHandles.size()>0) {
@@ -981,8 +982,13 @@ namespace mu2e {
         outputHandles.push_back(i_handle);
         labels.push_back(branchname);
       }
-      if (!_trkana->GetBranch(branchname.c_str())) {  // only want to create the branch once
-        _trkana->Branch((branchname+".").c_str(), &infostruct, infostruct.leafnames(labels).c_str());
+      const auto& leafnames = infostruct.leafnames(labels);
+      int n_leaves = leafnames.size();
+      for (int i_leaf = 0; i_leaf < n_leaves; ++i_leaf) {
+        std::string thisbranchname = (branchname+"."+leafnames.at(i_leaf));
+        if (!_trkana->GetBranch(thisbranchname.c_str())) {  // only want to create the branch once
+          _trkana->Branch(thisbranchname.c_str(), &array[i_leaf]);
+        }
       }
     }
     return outputHandles;
