@@ -430,7 +430,18 @@ namespace mu2e {
         _trkana->Branch((branch+"trkqual.mvastat").c_str(), &_allTQIs.at(i_branch)._mvastat);
       }
       if (_conf.filltrkpid() && i_branchConfig.options().filltrkpid()) {
-        _trkana->Branch((branch+"trkpid.").c_str(), &_allTPIs.at(i_branch), TrkPIDInfo::leafnames().c_str());
+        int n_trkpid_vars = TrkCaloHitPID::n_vars;
+        for (int i_trkpid_var = 0; i_trkpid_var < n_trkpid_vars; ++i_trkpid_var) {
+          TrkCaloHitPID::MVA_varindex i_index =TrkCaloHitPID::MVA_varindex(i_trkpid_var);
+          std::string varname = TrkCaloHitPID::varName(i_index);
+          _trkana->Branch((branch+"trkpid."+varname).c_str(), &_allTPIs.at(i_branch)._tchpvars[i_index]);
+        }
+        _trkana->Branch((branch+"trkpid.mvaout").c_str(), &_allTPIs.at(i_branch)._mvaout);
+        _trkana->Branch((branch+"trkpid.mvastat").c_str(), &_allTPIs.at(i_branch)._mvastat);
+        _trkana->Branch((branch+"trkpid.disk0frad").c_str(), &_allTPIs.at(i_branch)._diskfrad[0]);
+        _trkana->Branch((branch+"trkpid.disk1frad").c_str(), &_allTPIs.at(i_branch)._diskfrad[1]);
+        _trkana->Branch((branch+"trkpid.disk0brad").c_str(), &_allTPIs.at(i_branch)._diskbrad[0]);
+        _trkana->Branch((branch+"trkpid.disk1brad").c_str(), &_allTPIs.at(i_branch)._diskbrad[1]);
       }
       // optionally add hit-level branches
       // (for the time being diagLevel : 2 will still work, but I propose removing this at some point)
