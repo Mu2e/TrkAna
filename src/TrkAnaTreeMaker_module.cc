@@ -402,7 +402,7 @@ namespace mu2e {
     _trkana->Branch("evtinfo.",&_einfo,_buffsize,_splitlevel);
     _trkana->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
 // hit counting branch
-    _trkana->Branch("hcnt.",&_hcnt,HitCount::leafnames().c_str());
+    _trkana->Branch("hcnt.",&_hcnt);
 // track counting branch
     std::vector<std::string> trkcntleaves;
     for (const auto& i_branchConfig : _allBranches) {
