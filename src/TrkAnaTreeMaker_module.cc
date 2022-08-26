@@ -403,12 +403,12 @@ namespace mu2e {
     _trkana->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
 // hit counting branch
     _trkana->Branch("hcnt.",&_hcnt);
-// track counting branch
-    std::vector<std::string> trkcntleaves;
-    for (const auto& i_branchConfig : _allBranches) {
-      trkcntleaves.push_back(i_branchConfig.branch());
+// track counting branches
+    for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+      BranchConfig i_branchConfig = _allBranches.at(i_branch);
+      std::string leafname = i_branchConfig.branch();
+      _trkana->Branch(("tcnt.n"+leafname).c_str(),&_tcnt._counts[i_branch]);
     }
-    _trkana->Branch("tcnt.",&_tcnt,_tcnt.leafnames(trkcntleaves).c_str());
 
 // create all candidate and supplement branches
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
