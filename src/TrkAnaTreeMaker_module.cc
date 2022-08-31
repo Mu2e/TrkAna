@@ -286,9 +286,9 @@ namespace mu2e {
     size_t findSupplementTrack(KalSeedCollection const& kcol,KalSeed const& candidate, bool sameColl);
     void fillAllInfos(const art::Handle<KalSeedCollection>& ksch, BranchIndex i_branch, size_t i_kseed);
 
-    template <typename T, typename TI>
+    template <typename T, typename TI, typename TIA>
     std::vector<art::Handle<T> > createSpecialBranch(const art::Event& event, const std::string& branchname,
-                                                     std::vector<art::Handle<T> >& handles, TI& infostruct, const std::string& selection = "");
+                                                     std::vector<art::Handle<T> >& handles, TI& infostruct, TIA& array, bool make_individual_branches = false, const std::string& selection = "");
 
 };
 
@@ -402,13 +402,13 @@ namespace mu2e {
     _trkana->Branch("evtinfo.",&_einfo,_buffsize,_splitlevel);
     _trkana->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
 // hit counting branch
-    _trkana->Branch("hcnt.",&_hcnt,HitCount::leafnames().c_str());
-// track counting branch
-    std::vector<std::string> trkcntleaves;
-    for (const auto& i_branchConfig : _allBranches) {
-      trkcntleaves.push_back(i_branchConfig.branch());
+    _trkana->Branch("hcnt.",&_hcnt);
+// track counting branches
+    for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+      BranchConfig i_branchConfig = _allBranches.at(i_branch);
+      std::string leafname = i_branchConfig.branch();
+      _trkana->Branch(("tcnt.n"+leafname).c_str(),&_tcnt._counts[i_branch]);
     }
-    _trkana->Branch("tcnt.",&_tcnt,_tcnt.leafnames(trkcntleaves).c_str());
 
 // create all candidate and supplement branches
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
@@ -420,10 +420,28 @@ namespace mu2e {
       _trkana->Branch((branch+"xit.").c_str(),&_allXitTIs.at(i_branch));
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
-        _trkana->Branch((branch+"trkqual.").c_str(), &_allTQIs.at(i_branch), TrkQualInfo::leafnames().c_str());
+        int n_trkqual_vars = TrkQual::n_vars;
+        for (int i_trkqual_var = 0; i_trkqual_var < n_trkqual_vars; ++i_trkqual_var) {
+          TrkQual::MVA_varindex i_index =TrkQual::MVA_varindex(i_trkqual_var);
+          std::string varname = TrkQual::varName(i_index);
+          _trkana->Branch((branch+"trkqual."+varname).c_str(), &_allTQIs.at(i_branch)._trkqualvars[i_index]);
+        }
+        _trkana->Branch((branch+"trkqual.mvaout").c_str(), &_allTQIs.at(i_branch)._mvaout);
+        _trkana->Branch((branch+"trkqual.mvastat").c_str(), &_allTQIs.at(i_branch)._mvastat);
       }
       if (_conf.filltrkpid() && i_branchConfig.options().filltrkpid()) {
-        _trkana->Branch((branch+"trkpid.").c_str(), &_allTPIs.at(i_branch), TrkPIDInfo::leafnames().c_str());
+        int n_trkpid_vars = TrkCaloHitPID::n_vars;
+        for (int i_trkpid_var = 0; i_trkpid_var < n_trkpid_vars; ++i_trkpid_var) {
+          TrkCaloHitPID::MVA_varindex i_index =TrkCaloHitPID::MVA_varindex(i_trkpid_var);
+          std::string varname = TrkCaloHitPID::varName(i_index);
+          _trkana->Branch((branch+"trkpid."+varname).c_str(), &_allTPIs.at(i_branch)._tchpvars[i_index]);
+        }
+        _trkana->Branch((branch+"trkpid.mvaout").c_str(), &_allTPIs.at(i_branch)._mvaout);
+        _trkana->Branch((branch+"trkpid.mvastat").c_str(), &_allTPIs.at(i_branch)._mvastat);
+        _trkana->Branch((branch+"trkpid.disk0frad").c_str(), &_allTPIs.at(i_branch)._diskfrad[0]);
+        _trkana->Branch((branch+"trkpid.disk1frad").c_str(), &_allTPIs.at(i_branch)._diskfrad[1]);
+        _trkana->Branch((branch+"trkpid.disk0brad").c_str(), &_allTPIs.at(i_branch)._diskbrad[0]);
+        _trkana->Branch((branch+"trkpid.disk1brad").c_str(), &_allTPIs.at(i_branch)._diskbrad[1]);
       }
       // optionally add hit-level branches
       // (for the time being diagLevel : 2 will still work, but I propose removing this at some point)
@@ -437,9 +455,9 @@ namespace mu2e {
         if (i_branchConfig.options().bestCrvBranches(bestCrvBranchNames)) {
           for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < bestCrvBranchNames.size(); ++i_bestCrvBranch) {
             std::string bestCrvBranchName = bestCrvBranchNames.at(i_bestCrvBranch);
-            _trkana->Branch((branch+bestCrvBranchName).c_str(),&_allBestCrvs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
+            _trkana->Branch((branch+bestCrvBranchName+".").c_str(),&_allBestCrvs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
             if (_fillmc) {
-              _trkana->Branch((branch+bestCrvBranchName+"mc").c_str(),&_allBestCrvMCs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
+              _trkana->Branch((branch+bestCrvBranchName+"mc.").c_str(),&_allBestCrvMCs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
             }
           }
         }
@@ -519,7 +537,7 @@ namespace mu2e {
 
     // need to create and define the event weight branch here because we only now know the EventWeight creating modules that have been run through the Event
     std::vector<art::Handle<EventWeight> > eventWeightHandles;
-    _wtHandles = createSpecialBranch(event, "evtwt", eventWeightHandles, _wtinfo);
+    _wtHandles = createSpecialBranch(event, "evtwt", eventWeightHandles, _wtinfo, _wtinfo._weights, false);
 
     std::string process = _conf.trigProcessName();
     // Get the KalSeedCollections for both the candidate and all supplements
@@ -546,7 +564,7 @@ namespace mu2e {
       // also create the reco qual branches
       std::vector<art::Handle<RecoQualCollection> > recoQualCollHandles;
       std::vector<art::Handle<RecoQualCollection> > selectedRQCHs;
-      selectedRQCHs = createSpecialBranch(event, i_branchConfig.branch()+"qual.", recoQualCollHandles, _allRQIs.at(i_branch), i_branchConfig.suffix());
+      selectedRQCHs = createSpecialBranch(event, i_branchConfig.branch()+"qual", recoQualCollHandles, _allRQIs.at(i_branch), _allRQIs.at(i_branch)._qualsAndCalibs, true, i_branchConfig.suffix());
       for (const auto& i_selectedRQCH : selectedRQCHs) {
         if (i_selectedRQCH->size() != kalSeedCollHandle->size()) {
           throw cet::exception("TrkAna") << "Sizes of KalSeedCollection and this RecoQualCollection are inconsistent (" << kalSeedCollHandle->size() << " and " << i_selectedRQCH->size() << " respectively)";
@@ -928,10 +946,11 @@ namespace mu2e {
   }
 
   // some branches can't be made until the analyze() function because we want to write out all data products of a certain type
-  template <typename T, typename TI>
+  // these all have an underlying array where we want to name the individual elements in the array with different leaf names
+  template <typename T, typename TI, typename TIA>
   std::vector<art::Handle<T> >  TrkAnaTreeMaker::createSpecialBranch(const art::Event& event, const std::string& branchname,
                                                                      std::vector<art::Handle<T> >& handles, // this parameter is only needed so that the template parameter T can be deduced. There is probably a better way to do this FIXME
-                                                                     TI& infostruct, const std::string& selection) {
+                                                                     TI& infostruct, TIA& array, bool make_individual_branches, const std::string& selection) {
     std::vector<art::Handle<T> > outputHandles;
     std::vector<art::Handle<T> > inputHandles = event.getMany<T>();
     if (inputHandles.size()>0) {
@@ -963,8 +982,20 @@ namespace mu2e {
         outputHandles.push_back(i_handle);
         labels.push_back(branchname);
       }
-      if (!_trkana->GetBranch(branchname.c_str())) {  // only want to create the branch once
-        _trkana->Branch(branchname.c_str(), &infostruct, infostruct.leafnames(labels).c_str());
+      if (make_individual_branches) { // if we want to make individual branches per leaf (e.g. to avoid branch ambiguities in python such as detrkqual.NActiveHits vs uetrkqual.NActiveHits)
+        const std::vector<std::string>& leafnames = infostruct.leafnames(labels);
+        int n_leaves = leafnames.size();
+        for (int i_leaf = 0; i_leaf < n_leaves; ++i_leaf) {
+          std::string thisbranchname = (branchname+"."+leafnames.at(i_leaf));
+          if (!_trkana->GetBranch(thisbranchname.c_str())) {  // only want to create the branch once
+            _trkana->Branch(thisbranchname.c_str(), &array[i_leaf]);
+          }
+        }
+      }
+      else {
+        if (!_trkana->GetBranch((branchname+".").c_str())) {  // only want to create the branch once
+          _trkana->Branch((branchname+".").c_str(), &infostruct, infostruct.leafname(labels).c_str());
+        }
       }
     }
     return outputHandles;
