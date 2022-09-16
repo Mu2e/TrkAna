@@ -81,7 +81,11 @@ namespace mu2e {
     tshinfomc.proc = simPart._proc;
     tshinfomc.gen = simPart._gid.id();
     tshinfomc.rel = simPart._rel;
+    tshinfomc.earlyend = tshmc._earlyend._end;
     tshinfomc.t0 = tshmc._time;
+    tshinfomc.tdrift = tshmc._tdrift;
+    tshinfomc.rdrift = tshmc._rdrift;
+    tshinfomc.tprop = tshmc._tprop;
     tshinfomc.edep = tshmc._energySum;
     tshinfomc.mom = std::sqrt(tshmc._mom.mag2());
     tshinfomc.cpos  = tshmc._cpos;
@@ -98,7 +102,8 @@ namespace mu2e {
     tshinfomc.ambig = dperp > 0 ? -1 : 1; // follow TrkPoca convention
     // use 2-line POCA here
     TwoLinePCA pca(GenVector::Hep3Vec(tshmc._cpos),mdir,straw.getMidPoint(),straw.getDirection());
-    tshinfomc.doca = pca.dca();
+    // sign doca by the angular momentum
+    tshinfomc.doca = pca.dca()*tshinfomc.ambig;
   }
 
   void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, std::vector<SimInfo>& siminfos, int n_generations) {
