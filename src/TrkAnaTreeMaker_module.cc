@@ -424,10 +424,10 @@ namespace mu2e {
         for (int i_trkqual_var = 0; i_trkqual_var < n_trkqual_vars; ++i_trkqual_var) {
           TrkQual::MVA_varindex i_index =TrkQual::MVA_varindex(i_trkqual_var);
           std::string varname = TrkQual::varName(i_index);
-          _trkana->Branch((branch+"trkqual."+varname).c_str(), &_allTQIs.at(i_branch)._trkqualvars[i_index]);
+          _trkana->Branch((branch+"trkqual."+varname).c_str(), &_allTQIs.at(i_branch).trkqualvars[i_index]);
         }
-        _trkana->Branch((branch+"trkqual.mvaout").c_str(), &_allTQIs.at(i_branch)._mvaout);
-        _trkana->Branch((branch+"trkqual.mvastat").c_str(), &_allTQIs.at(i_branch)._mvastat);
+        _trkana->Branch((branch+"trkqual.mvaout").c_str(), &_allTQIs.at(i_branch).mvaout);
+        _trkana->Branch((branch+"trkqual.mvastat").c_str(), &_allTQIs.at(i_branch).mvastat);
       }
       if (_conf.filltrkpid() && i_branchConfig.options().filltrkpid()) {
         int n_trkpid_vars = TrkCaloHitPID::n_vars;
