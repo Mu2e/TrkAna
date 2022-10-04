@@ -149,6 +149,7 @@ namespace mu2e {
       tshinfo.state = ihit->_ambig;
       tshinfo.algo = ihit->_algo;
       tshinfo.frozen = ihit->_frozen;
+      tshinfo.quality = ihit->_quality;
       tshinfo.driftend   = ihit->_end.end();
       tshinfo.plane = ihit->strawId().plane();
       tshinfo.panel = ihit->strawId().panel();
@@ -245,19 +246,23 @@ namespace mu2e {
       auto const& tch = kseed.caloHit();
       auto const& cc = tch.caloCluster();
 
-      tchinfo.active = tch.flag().hasAllProperties(StrawHitFlag::active);
+      tchinfo.active = tch._flag.hasAllProperties(StrawHitFlag::active);
       tchinfo.did = cc->diskID();
-      tchinfo.poca = tch.clusterPosition();
-      tchinfo.mom = tch.trackMomentum();
-      tchinfo.cdepth = tch.clusterDepth();
-      tchinfo.doca = tch.clusterAxisDOCA();
-      tchinfo.dt = tch.clusterAxisPOCADeltaT();
-      tchinfo.toca = tch.clusterAxisTOCA();
-      tchinfo.tocavar = tch.clusterAxisTOCAVar();
+      tchinfo.poca = tch._cpos;
+      tchinfo.mom = tch._tmom;
+      tchinfo.cdepth = tch._cdepth;
+      tchinfo.doca = tch._udoca;
+      tchinfo.dt = tch._udt;
+      tchinfo.ptoca = tch._uptoca;
+      tchinfo.tocavar = tch._utocavar;
       tchinfo.tresid   = tch._tresid;
       tchinfo.tresidmvar   = tch._tresidmvar;
       tchinfo.tresidpvar   = tch._tresidpvar;
+      tchinfo.ctime = cc->time();
+      tchinfo.ctimeerr = cc->timeErr();
+      tchinfo.csize = cc->size();
       tchinfo.edep = cc->energyDep();
+      tchinfo.edeperr = cc->energyDepErr();
     }
   }
 
