@@ -19,8 +19,14 @@ namespace mu2e
     Float_t d0;
     Float_t maxr;
     Float_t td;
+    // loop helix parameters
+    Float_t Rad, Lambda, Cx, Cy, phi0, t0;
     TrkFitInfo() { reset(); }
-    void reset() {mom= XYZVectorF(); pos=XYZVectorF(); momerr=-1000.0; d0=0.0; maxr=0.0; td = 0.0; }
+    void reset() {
+      mom= XYZVectorF(); pos=XYZVectorF();
+      momerr=-1000.0; d0=0.0; maxr=0.0; td = 0.0;
+      Rad = Lambda = Cx = Cy = phi0 = t0 = 0.0;
+    }
   };
 
   // general information about a track
