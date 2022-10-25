@@ -5,6 +5,7 @@
 #define TrkStrawHitInfoHH
 #include "Rtypes.h"
 #include "Offline/DataProducts/inc/GenVector.hh"
+#include "Offline/DataProducts/inc/TrkTypes.hh"
 namespace mu2e
 {
   struct TrkStrawHitInfo {
@@ -19,6 +20,7 @@ namespace mu2e
     Float_t wdist;       // raw hit U position
     Float_t werr;    // raw hit U position error estimate
     Float_t tottdrift; // TOT expressed as drift time
+    TrkTypes::TOTTimes  tot;   // TOT times in ns from each end
     Float_t ptoca, stoca;    // reference particle (sensor) time of closest approach (TOCA)
     Float_t rdoca, rdocavar;   // reference (biased) DOCA from the track to the wire, signed by the angular momentum WRT the wire and the measurement end (and variance)
     Float_t rdt, rtocavar;   // reference (biased) time difference (and variance) at POCA
@@ -36,7 +38,7 @@ namespace mu2e
     bool dhit, dactive;
 
     TrkStrawHitInfo() : plane(-1), panel(-1), layer(-1), straw(-1), state(-10),driftend(-1),
-    edep(0), htime(0), wdist(0), werr(0),tottdrift(0),
+    edep(0), htime(0), wdist(0), werr(0),tottdrift(0), tot{0.0,0.0},
     ptoca(0), stoca(0),
     rdoca(0), rdocavar(0), rdt(0), rtocavar(0),
     udoca(0.0), udocavar(0), udt(0), utocavar(0),

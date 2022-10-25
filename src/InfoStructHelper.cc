@@ -169,6 +169,8 @@ namespace mu2e {
       tshinfo.wdist   = ihit->_wdist;
       tshinfo.werr   = ihit->_werr;
       tshinfo.tottdrift = ihit->_tottdrift;
+      tshinfo.tot[0] = ihit->_tot[0];
+      tshinfo.tot[1] = ihit->_tot[1];
       tshinfo.ptoca   = ihit->_ptoca;
       tshinfo.stoca   = ihit->_stoca;
       tshinfo.rdoca   = ihit->_rdoca;
