@@ -68,6 +68,8 @@ namespace mu2e {
     trkinfo.chisq = kseed.chisquared();
     trkinfo.fitcon = kseed.fitConsistency();
     trkinfo.nseg = kseed.nTrajSegments();
+    trkinfo.maxgap = kseed._maxgap;
+    trkinfo.avggap = kseed._avggap;
 
     trkinfo.firsthit = kseed.hits().back()._ptoca;
     trkinfo.lasthit = kseed.hits().front()._ptoca;
@@ -89,17 +91,20 @@ namespace mu2e {
     trkfitinfo.mom = ksegIter->momentum3();
     trkfitinfo.pos = ksegIter->position3();
     trkfitinfo.momerr = ksegIter->momerr();
-    auto ltraj = ksegIter->loopHelix();
-    trkfitinfo.Rad = ltraj.rad();
-    trkfitinfo.Lambda = ltraj.lam();
-    trkfitinfo.Cx = ltraj.cx();
-    trkfitinfo.Cy = ltraj.cy();
-    trkfitinfo.phi0 = ltraj.phi0();
-    trkfitinfo.t0 = ltraj.t0();
-    // legacy
-    trkfitinfo.d0 = ltraj.impactParam();
-    trkfitinfo.maxr = ltraj.maxRadius();
-    trkfitinfo.td = ltraj.tanDip();
+    // this should be conditional on the trajectory type: maybe removed?
+    if(!kseed.status().hasAllProperties(TrkFitFlag::KKLine)){
+      auto ltraj = ksegIter->loopHelix();
+      trkfitinfo.Rad = ltraj.rad();
+      trkfitinfo.Lambda = ltraj.lam();
+      trkfitinfo.Cx = ltraj.cx();
+      trkfitinfo.Cy = ltraj.cy();
+      trkfitinfo.phi0 = ltraj.phi0();
+      trkfitinfo.t0 = ltraj.t0();
+      // legacy
+      trkfitinfo.d0 = ltraj.impactParam();
+      trkfitinfo.maxr = ltraj.maxRadius();
+      trkfitinfo.td = ltraj.tanDip();
+    }
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
