@@ -618,12 +618,15 @@ namespace mu2e {
     }
 
     // general reco counts
-    auto rch = event.getValidHandle<RecoCount>(_conf.rctag());
-    auto const& rc = *rch;
-    for(size_t ibin=0;ibin < rc._nshtbins; ++ibin){
-      float time = rc._shthist.binMid(ibin);
-      float count  = rc._shthist.binContents(ibin);
-      _tht->Fill(time,count);
+    if( !_conf.rctag().empty() ){
+      auto rch = event.getValidHandle<RecoCount>(_conf.rctag());
+      auto const& rc = *rch;
+      _infoStructHelper.fillHitCount(rc, _hcnt);
+      for(size_t ibin=0;ibin < rc._nshtbins; ++ibin){
+        float time = rc._shthist.binMid(ibin);
+        float count  = rc._shthist.binContents(ibin);
+        _tht->Fill(time,count);
+      }
     }
 
     // trigger information
@@ -652,7 +655,6 @@ namespace mu2e {
 
     // fill event level info
     fillEventInfo(event);
-    _infoStructHelper.fillHitCount(rc, _hcnt);
 
     // loop through all candidate tracks
     const auto& candidateKSCH = _allKSCHs.at(_candidateIndex);

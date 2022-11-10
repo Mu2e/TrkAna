@@ -50,9 +50,9 @@ namespace mu2e {
     else if(kseed.status().hasAllProperties(TrkFitFlag::TPRHelix))
       trkinfo.seedalg = 0;
 
-    if(kseed.status().hasAllProperties(TrkFitFlag::KKLoopHelix))
+    if(kseed.status().hasAllProperties(TrkFitFlag::KKLoopHelix)){
       trkinfo.fitalg =1;
-    else if(kseed.status().hasAllProperties(TrkFitFlag::KKCentralHelix))
+    } else if(kseed.status().hasAllProperties(TrkFitFlag::KKCentralHelix))
       trkinfo.fitalg = 2;
     else if(kseed.status().hasAllProperties(TrkFitFlag::KKLine))
       trkinfo.fitalg = 3;
