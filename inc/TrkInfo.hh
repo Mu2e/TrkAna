@@ -19,8 +19,14 @@ namespace mu2e
     Float_t d0;
     Float_t maxr;
     Float_t td;
+    // loop helix parameters
+    Float_t Rad, Lambda, Cx, Cy, phi0, t0;
     TrkFitInfo() { reset(); }
-    void reset() {mom= XYZVectorF(); pos=XYZVectorF(); momerr=-1000.0; d0=0.0; maxr=0.0; td = 0.0; }
+    void reset() {
+      mom= XYZVectorF(); pos=XYZVectorF();
+      momerr=-1000.0; d0=0.0; maxr=0.0; td = 0.0;
+      Rad = Lambda = Cx = Cy = phi0 = t0 = 0.0;
+    }
   };
 
   // general information about a track
@@ -45,12 +51,14 @@ namespace mu2e
     Float_t fitcon;  // Kalman fit chisqured consistency
     Float_t radlen;  // total radiation length of (active) material crossed by this particle inside the tracker
     Float_t firsthit, lasthit;  // first and last hit (time or distance)
+    Float_t maxgap, avggap; // fit trajectory gaps
+
     TrkInfo() { reset(); }
     void reset() {
       status = goodfit = seedalg = fitalg  = -100;
       pdg = 0;
       nhits = nactive = ndouble = ndactive = nplanes = planespan = nnullambig = nmat = nmatactive = nseg = ndof = -1;
-      t0 = t0err = chisq = fitcon = radlen = firsthit = lasthit = -1.0;
+      t0 = t0err = chisq = fitcon = radlen = firsthit = lasthit = maxgap = avggap = -1.0;
     }
   };
 

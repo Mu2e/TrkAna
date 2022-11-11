@@ -50,9 +50,9 @@ namespace mu2e {
     else if(kseed.status().hasAllProperties(TrkFitFlag::TPRHelix))
       trkinfo.seedalg = 0;
 
-    if(kseed.status().hasAllProperties(TrkFitFlag::KKLoopHelix))
+    if(kseed.status().hasAllProperties(TrkFitFlag::KKLoopHelix)){
       trkinfo.fitalg =1;
-    else if(kseed.status().hasAllProperties(TrkFitFlag::KKCentralHelix))
+    } else if(kseed.status().hasAllProperties(TrkFitFlag::KKCentralHelix))
       trkinfo.fitalg = 2;
     else if(kseed.status().hasAllProperties(TrkFitFlag::KKLine))
       trkinfo.fitalg = 3;
@@ -68,6 +68,8 @@ namespace mu2e {
     trkinfo.chisq = kseed.chisquared();
     trkinfo.fitcon = kseed.fitConsistency();
     trkinfo.nseg = kseed.nTrajSegments();
+    trkinfo.maxgap = kseed._maxgap;
+    trkinfo.avggap = kseed._avggap;
 
     trkinfo.firsthit = kseed.hits().back()._ptoca;
     trkinfo.lasthit = kseed.hits().front()._ptoca;
@@ -89,9 +91,20 @@ namespace mu2e {
     trkfitinfo.mom = ksegIter->momentum3();
     trkfitinfo.pos = ksegIter->position3();
     trkfitinfo.momerr = ksegIter->momerr();
-    trkfitinfo.d0 = ksegIter->centralHelix().d0();
-    trkfitinfo.maxr = ksegIter->centralHelix().d0() + 2.0/ksegIter->centralHelix().omega();
-    trkfitinfo.td = ksegIter->centralHelix().tanDip();
+    // this should be conditional on the trajectory type: maybe removed?
+    if(!kseed.status().hasAllProperties(TrkFitFlag::KKLine)){
+      auto ltraj = ksegIter->loopHelix();
+      trkfitinfo.Rad = ltraj.rad();
+      trkfitinfo.Lambda = ltraj.lam();
+      trkfitinfo.Cx = ltraj.cx();
+      trkfitinfo.Cy = ltraj.cy();
+      trkfitinfo.phi0 = ltraj.phi0();
+      trkfitinfo.t0 = ltraj.t0();
+      // legacy
+      trkfitinfo.d0 = ltraj.impactParam();
+      trkfitinfo.maxr = ltraj.maxRadius();
+      trkfitinfo.td = ltraj.tanDip();
+    }
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
@@ -161,6 +174,8 @@ namespace mu2e {
       tshinfo.wdist   = ihit->_wdist;
       tshinfo.werr   = ihit->_werr;
       tshinfo.tottdrift = ihit->_tottdrift;
+      tshinfo.tot[0] = ihit->_tot[0];
+      tshinfo.tot[1] = ihit->_tot[1];
       tshinfo.ptoca   = ihit->_ptoca;
       tshinfo.stoca   = ihit->_stoca;
       tshinfo.rdoca   = ihit->_rdoca;
