@@ -1,4 +1,4 @@
-#include "Offline/TrkDiag/fcl/TrkAnaReco.fcl"
+#include "TrkAna/fcl/TrkAnaReco.fcl"
 
 process_name : TrkAnaRecoUpstream
 
@@ -7,4 +7,4 @@ physics.analyzers.TrkAnaNeg.supplements : [ @local::DeM, @local::UmuM ]
 physics.analyzers.TrkAnaPos.candidate : @local::UeP
 physics.analyzers.TrkAnaPos.supplements : [ @local::DeP, @local::UmuP ]
 
-services.TFileService.fileName: "nts.owner.trkana-reco.version.sequencer.root"
+services.TFileService.fileName: "nts.owner.trkana-reco-upstream.version.sequencer.root"
