@@ -1,0 +1,4 @@
+#include "TrkAna/fcl/TrkAnaReco.fcl"
+
+physics.analyzers.TrkAnaNeg.supplements[0].options : @local::AllOpt
+physics.analyzers.TrkAnaNeg.supplements[0].options.fillTrkPID : false

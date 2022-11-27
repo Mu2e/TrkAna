@@ -1,4 +1,4 @@
-#include "Offline/TrkDiag/fcl/TrkAnaReco.fcl"
+#include "TrkAna/fcl/TrkAnaReco.fcl"
 
 physics.analyzers.TrkAnaNeg.FillMCInfo : false
 physics.analyzers.TrkAnaPos.FillMCInfo : false
