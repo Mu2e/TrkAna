@@ -189,6 +189,7 @@ namespace mu2e {
       tshinfo.rupos   = ihit->_rupos;
       tshinfo.uupos   = ihit->_uupos;
       tshinfo.rdrift   = ihit->_rdrift;
+      tshinfo.cdrift   = ihit->_cdrift;
       tshinfo.rerr   = ihit->_rerr;
       tshinfo.dvel   = ihit->_dvel;
       tshinfo.lang   = ihit->_lang;
