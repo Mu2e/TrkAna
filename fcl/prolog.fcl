@@ -89,6 +89,8 @@ BestCrvDmuP : @local::BestCrv
 BestCrvDmuP.kalSeedTag : "KFFDmuP"
 BestCrvUmuP : @local::BestCrv
 BestCrvUmuP.kalSeedTag : "KFFUmuP"
+BestCrvLine : @local::BestCrv
+BestCrvLine.kalSeedTag : "KKLine"
 
 BestCrvProducers : {
   BestCrvDeM : @local::BestCrvDeM
@@ -99,6 +101,7 @@ BestCrvProducers : {
   BestCrvDmuP : @local::BestCrvDmuP
   BestCrvUmuM : @local::BestCrvUmuM
   BestCrvUmuP : @local::BestCrvUmuP
+  BestCrvLine : @local::BestCrvLine
 }
 BestCrvProducersPath : [ BestCrvDeM, BestCrvUeM, BestCrvDmuM, BestCrvDeP, BestCrvUeP, BestCrvDmuP, BestCrvUmuM, BestCrvUmuP ]
 
@@ -178,6 +181,10 @@ UmuP : { input : "KFF"
   branch : "um"
   suffix : "UmuP"
 }
+Ext : { input : "KK"
+  branch : "kl"
+  suffix : "Line"
+}
 
 
 TrkAnaTreeMaker : {
@@ -231,6 +238,10 @@ TrkAnaReco : {
     TrkAnaPos : { @table::TrkAnaTreeMaker
       candidate : @local::DeP
       supplements : [ @local::UeP, @local::DmuP ]
+    }
+    TrkAnaExt : { @table::TrkAnaTreeMaker
+      candidate : @local::Ext
+      supplements : [ ]
     }
 
     genCountLogger : @local::genCountLogger
