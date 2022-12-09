@@ -1,0 +1,32 @@
+#include "Offline/fcl/minimalMessageService.fcl"
+#include "Offline/fcl/standardProducers.fcl"
+#include "Offline/fcl/standardServices.fcl"
+#include "TrkAna/fcl/prolog.fcl"
+
+process_name : TrkAnaReco
+
+source : { module_type : RootInput }
+
+services : @local::Services.Reco
+
+physics :
+{
+  producers : { @table::TrkAnaReco.producers }
+  analyzers : { @table::TrkAnaReco.analyzers }
+}
+
+physics.TrkAnaTrigPath : [ BestCrvLine ]
+physics.TrkAnaEndPath : [ TrkAnaExt ]
+
+# Include more information (MC, full TrkQual and TrkPID branches)
+physics.analyzers.TrkAnaExt.candidate.options : @local::AllOpt
+physics.analyzers.TrkAnaExt.candidate.options.fillTrkQual : false
+physics.analyzers.TrkAnaExt.candidate.options.fillTrkPID : false
+physics.analyzers.TrkAnaExt.FillTriggerInfo : false
+
+# for hit level diagnostics, set diagLevel to 2
+physics.analyzers.TrkAnaExt.diagLevel : 2
+physics.analyzers.TrkAnaExt.FillMCInfo : true
+physics.analyzers.TrkAnaExt.FillCRV : true
+
+services.TFileService.fileName: "nts.owner.trkana-reco.version.sequencer.root"
