@@ -164,7 +164,7 @@ namespace mu2e {
   }
 
   void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep,
-      std::vector<int> const& vids, double target_time) {
+      std::vector<VirtualDetectorId> const& vids, double target_time) {
 
     GeomHandle<DetectorSystem> det;
     GlobalConstantsHandle<ParticleDataList> pdt;
