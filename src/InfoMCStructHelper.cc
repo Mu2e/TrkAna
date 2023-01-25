@@ -92,18 +92,19 @@ namespace mu2e {
 
     // find the step midpoint
     const Straw& straw = tracker.getStraw(tshmc._strawId);
-    CLHEP::Hep3Vector mcsep = GenVector::Hep3Vec(tshmc._cpos)-straw.getMidPoint();
-    tshinfomc.len = mcsep.dot(straw.getDirection());
-    CLHEP::Hep3Vector mdir = GenVector::Hep3Vec(tshmc._mom.unit());
-    CLHEP::Hep3Vector mcperp = (mdir.cross(straw.getDirection())).unit();
-    double dperp = mcperp.dot(mcsep);
-    tshinfomc.twdot = mdir.dot(straw.getDirection());
+    auto mcsep = tshmc._cpos-XYZVectorF(straw.getMidPoint());
+    auto wdir = XYZVectorF(straw.getDirection());
+    tshinfomc.len = mcsep.Dot(wdir);
+    auto mdir = tshmc._mom.Unit();
+    auto mcperp = mdir.Cross(wdir).Unit();
+    double dperp = mcperp.Dot(mcsep);
+    tshinfomc.twdot = mdir.Dot(wdir);
     tshinfomc.dist = fabs(dperp);
+    auto wperp = wdir.Cross(mcperp);
+    tshinfomc.tau = mcsep.Dot(wperp);
+    tshinfomc.cdist = sqrt(tshinfomc.dist*tshinfomc.dist+tshinfomc.tau*tshinfomc.tau);
     tshinfomc.ambig = dperp > 0 ? -1 : 1; // follow TrkPoca convention
-    // use 2-line POCA here
-    TwoLinePCA pca(GenVector::Hep3Vec(tshmc._cpos),mdir,straw.getMidPoint(),straw.getDirection());
-    // sign doca by the angular momentum
-    tshinfomc.doca = pca.dca()*tshinfomc.ambig;
+    tshinfomc.doca = -1*dperp;
   }
 
   void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, std::vector<SimInfo>& siminfos, int n_generations) {

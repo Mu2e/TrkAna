@@ -162,7 +162,10 @@ namespace mu2e {
       tshinfo.state = ihit->_ambig;
       tshinfo.algo = ihit->_algo;
       tshinfo.frozen = ihit->_frozen;
-      tshinfo.quality = ihit->_quality;
+      tshinfo.bkgqual = ihit->_bkgqual;
+      tshinfo.signqual = ihit->_signqual;
+      tshinfo.driftqual = ihit->_driftqual;
+      tshinfo.chi2qual = ihit->_chi2qual;
       tshinfo.driftend   = ihit->_end.end();
       tshinfo.plane = ihit->strawId().plane();
       tshinfo.panel = ihit->strawId().panel();
@@ -190,7 +193,8 @@ namespace mu2e {
       tshinfo.uupos   = ihit->_uupos;
       tshinfo.rdrift   = ihit->_rdrift;
       tshinfo.cdrift   = ihit->_cdrift;
-      tshinfo.rerr   = ihit->_rerr;
+      tshinfo.sderr   = ihit->_sderr;
+      tshinfo.uderr   = ihit->_uderr;
       tshinfo.dvel   = ihit->_dvel;
       tshinfo.lang   = ihit->_lang;
       tshinfo.utresid   = ihit->_utresid;

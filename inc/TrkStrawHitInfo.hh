@@ -13,7 +13,7 @@ namespace mu2e
     Int_t state;     // hit state, including activity and left-right ambiguity
     Int_t algo; // updater algorithm last used on this hit
     Bool_t frozen; // was state frozen?
-    Float_t quality; // hit state assignment quality
+    Float_t bkgqual, signqual, driftqual, chi2qual; // hit state assignment quality
     Int_t driftend; // which end(s) was used in computing the drift
     Float_t edep;        // reco energy deposition
     Float_t htime;   // raw hit time
@@ -27,7 +27,7 @@ namespace mu2e
     Float_t udoca, udocavar; // unbiaed DOCA (and variance)
     Float_t udt, utocavar;   // unbiased dt and variance
     Float_t rupos, uupos; // POCA position along the straw WRT the straw middle
-    Float_t rdrift,cdrift,rerr,dvel,lang; // drift information
+    Float_t rdrift,cdrift,sderr,uderr,dvel,lang; // drift information
     Float_t utresid, utresidmvar, utresidpvar; // unbiased time residual and associated measurement and parameter variances
     Float_t udresid, udresidmvar, udresidpvar; // unbiased distance residual and associated measurement and parameter variances
     Float_t rtresid, rtresidmvar, rtresidpvar; // reference time residual and associated measurement and parameter variances
@@ -42,7 +42,7 @@ namespace mu2e
     ptoca(0), stoca(0),
     rdoca(0), rdocavar(0), rdt(0), rtocavar(0),
     udoca(0.0), udocavar(0), udt(0), utocavar(0),
-    rupos(0),uupos(0), rdrift(0), cdrift(0), rerr(0), dvel(0), lang(0),
+    rupos(0),uupos(0), rdrift(0), cdrift(0), sderr(0), uderr(0), dvel(0), lang(0),
     utresid(0), utresidmvar(0), utresidpvar(0),
     udresid(0), udresidmvar(0), udresidpvar(0),
     rtresid(0), rtresidmvar(0), rtresidpvar(0),
