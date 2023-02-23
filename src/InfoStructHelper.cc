@@ -100,10 +100,11 @@ namespace mu2e {
       trkfitinfo.Cy = ltraj.cy();
       trkfitinfo.phi0 = ltraj.phi0();
       trkfitinfo.t0 = ltraj.t0();
-      // legacy
-      trkfitinfo.d0 = ltraj.impactParam();
-      trkfitinfo.maxr = ltraj.maxRadius();
-      trkfitinfo.td = ltraj.tanDip();
+      // legacy; these follow the BTrk (CentralHelix) convention
+      double rc = sqrt(ltraj.cx()*ltraj.cx()+ltraj.cy()*ltraj.cy());
+      trkfitinfo.d0 = -ltraj.sign()*( rc - fabs(ltraj.rad()));
+      trkfitinfo.maxr = rc + fabs(ltraj.rad());
+      trkfitinfo.td = trkfitinfo.mom.Z()/trkfitinfo.mom.Rho();
     }
   }
 

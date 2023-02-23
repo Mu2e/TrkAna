@@ -165,7 +165,7 @@ namespace mu2e {
   }
 
   void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep,
-      std::vector<int> const& vids, double target_time) {
+      std::vector<VirtualDetectorId> const& vids, double target_time) {
 
     GeomHandle<DetectorSystem> det;
     GlobalConstantsHandle<ParticleDataList> pdt;
@@ -222,15 +222,15 @@ namespace mu2e {
       art::Ptr<SimParticle> gparentParticle = simParticle;
       int i_gen = 0;
       while (primaryParticle->hasParent()) {
-	primaryParticle = primaryParticle->parent();
-	if (i_gen ==0) {
-	  parentParticle = primaryParticle;
-	  gparentParticle = primaryParticle;
-	}
-	else if (i_gen == 1) {
-	  gparentParticle = primaryParticle;
-	}
-	++i_gen;
+        primaryParticle = primaryParticle->parent();
+        if (i_gen ==0) {
+          parentParticle = primaryParticle;
+          gparentParticle = primaryParticle;
+        }
+        else if (i_gen == 1) {
+          gparentParticle = primaryParticle;
+        }
+        ++i_gen;
       }
       crvHitInfoMC._valid = true;
       crvHitInfoMC._pdgId = simParticle->pdgId();

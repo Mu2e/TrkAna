@@ -136,6 +136,11 @@ dioLLWeight : {
 genCountLogger: { module_type: GenEventCountReader }
 
 # candidate configuration for TrkAna
+StdSegments : {
+  segmentSuffixes : [ "ent", "mid", "xit" ]
+  segmentVIDs : [ [ "TT_FrontHollow", "TT_FrontPA"], [ "TT_Mid", "TT_MidInner"], ["TT_Back"] ]
+}
+
 AllOpt : { fillMC : true
   trkqual : "TrkQual"
   fillTrkQual : true
@@ -144,6 +149,7 @@ AllOpt : { fillMC : true
   fillHits : true
   genealogyDepth : 5
   fillBestCrv : true
+
   bestCrvModules : [ "BestCrv" ]
   bestCrvInstances : [ "first" ]
   bestCrvBranches : [ "bestcrv" ]
@@ -152,34 +158,42 @@ AllOpt : { fillMC : true
 DeM : { input : "KFF"
   branch : "de"
   suffix : "DeM"
+  @table::StdSegments
 }
 UeM : { input : "KFF"
   branch : "ue"
   suffix : "UeM"
+  @table::StdSegments
 }
 DmuM : { input : "KFF"
   branch : "dm"
   suffix : "DmuM"
+  @table::StdSegments
 }
 UmuM : { input : "KFF"
   branch : "um"
   suffix : "UmuM"
+  @table::StdSegments
 }
 DeP : { input : "KFF"
   branch : "de"
   suffix : "DeP"
+  @table::StdSegments
 }
 UeP : { input : "KFF"
   branch : "ue"
   suffix : "UeP"
+  @table::StdSegments
 }
 DmuP : { input : "KFF"
   branch : "dm"
   suffix : "DmuP"
+  @table::StdSegments
 }
 UmuP : { input : "KFF"
   branch : "um"
   suffix : "UmuP"
+  @table::StdSegments
 }
 Ext : { input : "KK"
   branch : "kl"

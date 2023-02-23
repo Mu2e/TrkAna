@@ -28,6 +28,7 @@
 #include "Offline/GeometryService/inc/VirtualDetector.hh"
 #include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
 #include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMC.hh"
+#include "Offline/Mu2eUtilities/inc/fromStrings.hh"
 // Framework includes.
 #include "art/Framework/Core/EDAnalyzer.h"
 #include "art/Framework/Principal/Event.h"
@@ -123,6 +124,8 @@ namespace mu2e {
       fhicl::Atom<std::string> input{Name("input"), Comment("KalSeedCollection input tag (use prefix if fcl parameter suffix is defined)")};
       fhicl::Atom<std::string> branch{Name("branch"), Comment("Name of output branch")};
       fhicl::Atom<std::string> suffix{Name("suffix"), Comment("Fit suffix (e.g. DeM)"), ""};
+      fhicl::Sequence<std::string> segmentSuffixes{Name("segmentSuffixes"), Comment("The suffix to the branch for this segment (e.g. putting \"ent\" will give a branch \"deent\", and if fillMC = true, \"demcent\")")};
+      fhicl::Sequence<fhicl::Sequence<std::string>> segmentVIDs{Name("segmentVIDs"), Comment("The VirtualDetectorId that this segment should find tits position from")};
       fhicl::Table<BranchOptConfig> options{Name("options"), Comment("Optional arguments for a branch")};
     };
 
@@ -208,7 +211,9 @@ namespace mu2e {
     std::vector<art::Handle<KalSeedCollection> > _allKSCHs;
     // track branches (outputs)
     std::vector<TrkInfo> _allTIs;
-    std::vector<TrkFitInfo> _allEntTIs, _allMidTIs, _allXitTIs;
+    //    std::vector<TrkFitInfo> _allEntTIs, _allMidTIs, _allXitTIs;
+    std::map<BranchIndex, std::vector<TrkFitInfo>> _allSegmentTIs;
+
     std::vector<TrkCaloHitInfo> _allTCHIs;
     // quality branches (inputs)
     std::vector<std::vector<art::Handle<RecoQualCollection> > > _allRQCHs; // outer vector is for each candidate/supplement, inner vector is all RecoQuals
@@ -229,12 +234,12 @@ namespace mu2e {
     art::Handle<KalSeedMCAssns> _ksmcah;
     art::Handle<CaloClusterMCCollection> _ccmcch;
     art::InputTag _primaryParticleTag;
-    std::vector<int> _entvids, _midvids, _xitvids;
+    std::map<BranchIndex, std::vector<std::vector<VirtualDetectorId>>> _allSegmentVIDs;
     // MC truth branches (outputs)
     std::vector<TrkInfoMC> _allMCTIs;
     std::vector<std::vector<SimInfo>> _allMCSimTIs;
     std::vector<SimInfo> _allMCPriTIs;
-    std::vector<TrkInfoMCStep> _allMCEntTIs, _allMCMidTIs, _allMCXitTIs;
+    std::map<BranchIndex, std::vector<TrkInfoMCStep>> _allMCSegmentTIs;
     std::vector<CaloClusterInfoMC> _allMCTCHIs;
 
     // hit level info branches
@@ -315,12 +320,6 @@ namespace mu2e {
     _buffsize(conf().buffsize()),
     _splitlevel(conf().splitlevel())
   {
-    _midvids.push_back(VirtualDetectorId::TT_Mid);
-    _midvids.push_back(VirtualDetectorId::TT_MidInner);
-    _entvids.push_back(VirtualDetectorId::TT_FrontHollow);
-    _entvids.push_back(VirtualDetectorId::TT_FrontPA);
-    _xitvids.push_back(VirtualDetectorId::TT_Back);
-
     // collect both candidate and supplement branches into one place
     _allBranches.push_back(_conf.candidate());
     _candidateIndex = 0;
@@ -337,10 +336,24 @@ namespace mu2e {
 
       TrkInfo ti;
       _allTIs.push_back(ti);
-      TrkFitInfo ent, mid, xit;
-      _allEntTIs.push_back(ent);
-      _allMidTIs.push_back(mid);
-      _allXitTIs.push_back(xit);
+      std::vector<TrkFitInfo> allSegments;
+      std::vector<TrkInfoMCStep> allMCSegments;
+      const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
+      for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
+        allSegments.push_back(TrkFitInfo()); // add empty structs to the vector so that ROOT can be given a location to find it
+        allMCSegments.push_back(TrkInfoMCStep());
+      }
+      _allSegmentTIs[i_branch] = allSegments;
+      _allMCSegmentTIs[i_branch] = allMCSegments;
+
+      const std::vector<std::vector<std::string>>& segmentVIDs = i_branchConfig.segmentVIDs();
+      std::vector<std::vector<VirtualDetectorId>> allSegmentVIDs;
+      for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
+        std::vector<VirtualDetectorId> thisSegmentVIDs = fromStrings<VirtualDetectorId>(segmentVIDs.at(i_segment));
+        allSegmentVIDs.push_back(thisSegmentVIDs);
+      }
+      _allSegmentVIDs[i_branch] = allSegmentVIDs;
+
 
       TrkCaloHitInfo tchi;
       _allTCHIs.push_back(tchi);
@@ -355,10 +368,6 @@ namespace mu2e {
       _allMCSimTIs.push_back(tempMCSimTIs);
       SimInfo mcpri;
       _allMCPriTIs.push_back(mcpri);
-      TrkInfoMCStep mcent, mcmid, mcxit;
-      _allMCEntTIs.push_back(mcent);
-      _allMCMidTIs.push_back(mcmid);
-      _allMCXitTIs.push_back(mcxit);
 
       CaloClusterInfoMC mctchi;
       _allMCTCHIs.push_back(mctchi);
@@ -415,9 +424,12 @@ namespace mu2e {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string branch = i_branchConfig.branch();
       _trkana->Branch((branch+".").c_str(),&_allTIs.at(i_branch));
-      _trkana->Branch((branch+"ent.").c_str(),&_allEntTIs.at(i_branch));
-      _trkana->Branch((branch+"mid.").c_str(),&_allMidTIs.at(i_branch));
-      _trkana->Branch((branch+"xit.").c_str(),&_allXitTIs.at(i_branch));
+
+      const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
+      for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
+        std::string segmentSuffix = segmentSuffixes.at(i_segment);
+        _trkana->Branch((branch+segmentSuffix+".").c_str(),&_allSegmentTIs.at(i_branch).at(i_segment));
+      }
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
         int n_trkqual_vars = TrkQual::n_vars;
@@ -482,9 +494,11 @@ namespace mu2e {
           _trkana->Branch((full_branchname).c_str(),&_allMCSimTIs.at(i_branch).at(i_generation));
         }
         _trkana->Branch((branch+"mcpri.").c_str(),&_allMCPriTIs.at(i_branch),_buffsize,_splitlevel);
-        _trkana->Branch((branch+"mcent.").c_str(),&_allMCEntTIs.at(i_branch),_buffsize,_splitlevel);
-        _trkana->Branch((branch+"mcmid.").c_str(),&_allMCMidTIs.at(i_branch),_buffsize,_splitlevel);
-        _trkana->Branch((branch+"mcxit.").c_str(),&_allMCXitTIs.at(i_branch),_buffsize,_splitlevel);
+        const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
+        for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
+          std::string segmentSuffix = segmentSuffixes.at(i_segment);
+          _trkana->Branch((branch+"mc"+segmentSuffix+".").c_str(),&_allMCSegmentTIs.at(i_branch).at(i_segment));
+        }
         _trkana->Branch((branch+"tchmc.").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
         // at hit-level MC information
         // (for the time being diagLevel will still work, but I propose removing this at some point)
@@ -835,14 +849,16 @@ namespace mu2e {
     // get VD positions
     mu2e::GeomHandle<VirtualDetector> vdHandle;
     mu2e::GeomHandle<DetectorSystem> det;
-    const XYZVectorF& entpos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_entvids.begin())));
-    const XYZVectorF& midpos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_midvids.begin())));
-    const XYZVectorF& xitpos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_xitvids.begin())));
+//    const XYZVectorF& entpos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_entvids.begin())));
+//    const XYZVectorF& midpos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_midvids.begin())));
+//    const XYZVectorF& xitpos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_xitvids.begin())));
 
     _infoStructHelper.fillTrkInfo(kseed,_allTIs.at(i_branch));
-    _infoStructHelper.fillTrkFitInfo(kseed,_allEntTIs.at(i_branch),entpos);
-    _infoStructHelper.fillTrkFitInfo(kseed,_allMidTIs.at(i_branch),midpos);
-    _infoStructHelper.fillTrkFitInfo(kseed,_allXitTIs.at(i_branch),xitpos);
+    const std::vector<std::string>& segmentSuffixes = branchConfig.segmentSuffixes();
+    for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
+      const XYZVectorF& pos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_allSegmentVIDs.at(i_branch).at(i_segment).begin())));
+      _infoStructHelper.fillTrkFitInfo(kseed,_allSegmentTIs.at(i_branch).at(i_segment),pos);
+    }
     //      _tcnt._overlaps[0] = _tcomp.nOverlap(kseed, kseed);
 
     if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){ // want hit level info
@@ -925,9 +941,10 @@ namespace mu2e {
           auto const& kseed = *kptr;
           _infoMCStructHelper.fillTrkInfoMC(kseed, kseedmc, _allMCTIs.at(i_branch));
           double t0 = kseed.t0().t0();
-          _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCEntTIs.at(i_branch), _entvids, t0);
-          _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCMidTIs.at(i_branch), _midvids, t0);
-          _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCXitTIs.at(i_branch), _xitvids, t0);
+          const std::vector<std::string>& segmentSuffixes = branchConfig.segmentSuffixes();
+          for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
+            _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCSegmentTIs.at(i_branch).at(i_segment), _allSegmentVIDs.at(i_branch).at(i_segment), t0);
+          }
           _infoMCStructHelper.fillPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch));
           _infoMCStructHelper.fillAllSimInfos(kseedmc, _allMCSimTIs.at(i_branch), branchConfig.options().genealogyDepth());
 
@@ -1006,9 +1023,7 @@ namespace mu2e {
   void TrkAnaTreeMaker::resetTrackBranches() {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _allTIs.at(i_branch).reset();
-      _allEntTIs.at(i_branch).reset();
-      _allMidTIs.at(i_branch).reset();
-      _allXitTIs.at(i_branch).reset();
+      _allSegmentTIs.at(i_branch).assign(_allSegmentTIs.at(i_branch).size(), TrkFitInfo());       // we don't want to remove elements so use assign instead of clear
 
       _allTCHIs.at(i_branch).reset();
 
@@ -1018,9 +1033,7 @@ namespace mu2e {
       }
       _allMCPriTIs.at(i_branch).reset();
 
-      _allMCEntTIs.at(i_branch).reset();
-      _allMCMidTIs.at(i_branch).reset();
-      _allMCXitTIs.at(i_branch).reset();
+      _allMCSegmentTIs.at(i_branch).assign(_allMCSegmentTIs.at(i_branch).size(), TrkInfoMCStep());
       _allMCTCHIs.at(i_branch).reset();
 
       _allRQIs.at(i_branch).reset();
