@@ -13,6 +13,7 @@ namespace mu2e
     Int_t state;     // hit state, including activity and left-right ambiguity
     Int_t algo; // updater algorithm last used on this hit
     Bool_t frozen; // was state frozen?
+    Bool_t usetot, usedriftdt, useabsdt, usendvar; // flags
     Float_t bkgqual, signqual, driftqual, chi2qual; // hit state assignment quality
     Int_t driftend; // which end(s) was used in computing the drift
     Float_t edep;        // reco energy deposition

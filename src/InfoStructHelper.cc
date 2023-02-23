@@ -114,7 +114,7 @@ namespace mu2e {
     uint16_t minplane(0), maxplane(0);
     for (auto ihit = kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
       ++trkinfo.nhits;
-      if (ihit->strawHitState()>WireHitState::inactive) {
+      if (ihit->strawHitState() > WireHitState::inactive){
         ++trkinfo.nactive;
         planes.insert(ihit->strawId().plane());
         minplane = std::min(minplane, ihit->strawId().plane());
@@ -160,6 +160,10 @@ namespace mu2e {
       auto const& straw = tracker.getStraw(ihit->strawId());
 
       tshinfo.state = ihit->_ambig;
+      tshinfo.usetot = ihit->_kkshflag.hasAnyProperty(KKSHFlag::tot);
+      tshinfo.usedriftdt = ihit->_kkshflag.hasAnyProperty(KKSHFlag::driftdt);
+      tshinfo.useabsdt = ihit->_kkshflag.hasAnyProperty(KKSHFlag::absdrift);
+      tshinfo.usendvar = ihit->_kkshflag.hasAnyProperty(KKSHFlag::nhdrift);
       tshinfo.algo = ihit->_algo;
       tshinfo.frozen = ihit->_frozen;
       tshinfo.bkgqual = ihit->_bkgqual;
@@ -265,7 +269,6 @@ namespace mu2e {
     if (kseed.hasCaloCluster()) {
       auto const& tch = kseed.caloHit();
       auto const& cc = tch.caloCluster();
-
       tchinfo.active = tch._flag.hasAllProperties(StrawHitFlag::active);
       tchinfo.did = cc->diskID();
       tchinfo.poca = tch._cpos;
