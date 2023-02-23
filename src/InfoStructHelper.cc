@@ -218,14 +218,12 @@ namespace mu2e {
       // find nearest segment
       auto ikseg = kseed.nearestSegment(ihit->_ptoca);
       if(ikseg != kseed.segments().end()){
-        XYZVectorF dir;
-        ikseg->helix().direction(ikseg->localFlt(ihit->trkLen()),dir);
-        auto tdir = GenVector::Hep3Vec(dir);
-        tshinfo.wdot = tdir.dot(straw.getDirection());
+        auto tdir(ikseg->momentum3().Unit());
+        tshinfo.wdot = tdir.Dot(straw.getDirection());
       }
       auto const& wiredir = straw.getDirection();
       auto const& mid = straw.getMidPoint();
-      CLHEP::Hep3Vector hpos = mid + wiredir*ihit->hitLen();
+      auto hpos = mid + wiredir*ihit->_wdist;
       tshinfo.poca = XYZVectorF(hpos);
 
       // count correlations with other TSH
@@ -326,6 +324,7 @@ namespace mu2e {
     }
   }
 
+  // this function won't work with KinKal fits and needs to be rewritten from scratch //FIXME
   void InfoStructHelper::fillTrkPIDInfo(const TrkCaloHitPID& tchp, const KalSeed& kseed, TrkPIDInfo& trkpidInfo) {
     mu2e::GeomHandle<mu2e::Calorimeter> calo;
     int n_trktchpid_vars = TrkCaloHitPID::n_vars;
