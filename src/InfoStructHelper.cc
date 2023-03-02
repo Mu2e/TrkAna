@@ -171,19 +171,18 @@ namespace mu2e {
       tshinfo.signqual = ihit->_signqual;
       tshinfo.driftqual = ihit->_driftqual;
       tshinfo.chi2qual = ihit->_chi2qual;
-      tshinfo.driftend   = ihit->_end.end();
+      tshinfo.earlyend   = ihit->_eend.end();
       tshinfo.plane = ihit->strawId().plane();
       tshinfo.panel = ihit->strawId().panel();
       tshinfo.layer = ihit->strawId().layer();
       tshinfo.straw = ihit->strawId().straw();
 
       tshinfo.edep   = ihit->_edep;
-      tshinfo.htime   = ihit->_htime;
+      tshinfo.etime   = ihit->_etime;
       tshinfo.wdist   = ihit->_wdist;
       tshinfo.werr   = ihit->_werr;
       tshinfo.tottdrift = ihit->_tottdrift;
-      tshinfo.tot[0] = ihit->_tot[0];
-      tshinfo.tot[1] = ihit->_tot[1];
+      tshinfo.tot = ihit->_tot;
       tshinfo.ptoca   = ihit->_ptoca;
       tshinfo.stoca   = ihit->_stoca;
       tshinfo.rdoca   = ihit->_rdoca;
