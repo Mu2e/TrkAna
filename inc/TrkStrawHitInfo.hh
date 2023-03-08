@@ -11,7 +11,8 @@ namespace mu2e
     int plane = 0, panel = 0, layer = 0, straw = 0;  // StrawId fields for the straw hit
     int state = 0;     // hit state, including activity and left-right ambiguity
     int algo = 0; // updater algorithm last used on this hit
-    Bool_t frozen = false; // was state frozen?
+    bool frozen = false; // was state frozen?
+    bool usetot, usedriftdt, useabsdt, usendvar; // flags
     float bkgqual = -1.0, signqual = -1.0, driftqual = -1.0, chi2qual = -1.0; // hit state assignment quality
     int earlyend = 0; // which end had the early TDC
     float edep = -1.0 ;        // reco energy deposition

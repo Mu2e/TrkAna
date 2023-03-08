@@ -115,7 +115,7 @@ namespace mu2e {
     uint16_t minplane(0), maxplane(0);
     for (auto ihit = kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
       ++trkinfo.nhits;
-      if (ihit->strawHitState()>WireHitState::inactive) {
+      if (ihit->strawHitState() > WireHitState::inactive){
         ++trkinfo.nactive;
         planes.insert(ihit->strawId().plane());
         minplane = std::min(minplane, ihit->strawId().plane());
@@ -161,6 +161,10 @@ namespace mu2e {
       auto const& straw = tracker.getStraw(ihit->strawId());
 
       tshinfo.state = ihit->_ambig;
+      tshinfo.usetot = ihit->_kkshflag.hasAnyProperty(KKSHFlag::tot);
+      tshinfo.usedriftdt = ihit->_kkshflag.hasAnyProperty(KKSHFlag::driftdt);
+      tshinfo.useabsdt = ihit->_kkshflag.hasAnyProperty(KKSHFlag::absdrift);
+      tshinfo.usendvar = ihit->_kkshflag.hasAnyProperty(KKSHFlag::nhdrift);
       tshinfo.algo = ihit->_algo;
       tshinfo.frozen = ihit->_frozen;
       tshinfo.bkgqual = ihit->_bkgqual;
@@ -213,14 +217,12 @@ namespace mu2e {
       // find nearest segment
       auto ikseg = kseed.nearestSegment(ihit->_ptoca);
       if(ikseg != kseed.segments().end()){
-        XYZVectorF dir;
-        ikseg->helix().direction(ikseg->localFlt(ihit->trkLen()),dir);
-        auto tdir = GenVector::Hep3Vec(dir);
-        tshinfo.wdot = tdir.dot(straw.getDirection());
+        auto tdir(ikseg->momentum3().Unit());
+        tshinfo.wdot = tdir.Dot(straw.getDirection());
       }
       auto const& wiredir = straw.getDirection();
       auto const& mid = straw.getMidPoint();
-      CLHEP::Hep3Vector hpos = mid + wiredir*ihit->hitLen();
+      auto hpos = mid + wiredir*ihit->_wdist;
       tshinfo.poca = XYZVectorF(hpos);
 
       // count correlations with other TSH
@@ -265,7 +267,6 @@ namespace mu2e {
     if (kseed.hasCaloCluster()) {
       auto const& tch = kseed.caloHit();
       auto const& cc = tch.caloCluster();
-
       tchinfo.active = tch._flag.hasAllProperties(StrawHitFlag::active);
       tchinfo.did = cc->diskID();
       tchinfo.poca = tch._cpos;
@@ -322,6 +323,7 @@ namespace mu2e {
     }
   }
 
+  // this function won't work with KinKal fits and needs to be rewritten from scratch //FIXME
   void InfoStructHelper::fillTrkPIDInfo(const TrkCaloHitPID& tchp, const KalSeed& kseed, TrkPIDInfo& trkpidInfo) {
     mu2e::GeomHandle<mu2e::Calorimeter> calo;
     int n_trktchpid_vars = TrkCaloHitPID::n_vars;
