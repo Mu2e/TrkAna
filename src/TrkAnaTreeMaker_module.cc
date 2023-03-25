@@ -419,6 +419,14 @@ namespace mu2e {
       _trkana->Branch(("tcnt.n"+leafname).c_str(),&_tcnt._counts[i_branch]);
     }
 
+    // pre-set all the storage used by branches so it doesn't move
+    if(_conf.extraMCStepTags(_extraMCStepTags)){
+      for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+        _extraMCStepInfos.push_back(std::vector<MCStepInfos>(_extraMCStepTags.size()));
+        _extraMCStepSummaryInfos.push_back(std::vector<MCStepSummaryInfo>(_extraMCStepTags.size()));
+      }
+    }
+
     // create all candidate and supplement branches
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
@@ -507,14 +515,9 @@ namespace mu2e {
         }
         // configure extra MCStep branches for this candidate
         if(_conf.extraMCStepTags(_extraMCStepTags)){
-          _extraMCStepInfos.push_back(std::vector<MCStepInfos>());
-          _extraMCStepSummaryInfos.push_back(std::vector<MCStepSumaryInfo>());
-          auto& mciscs = _extraMCStepInfos.at(i_branch);
+          auto& mcsics = _extraMCStepInfos.at(i_branch);
           auto& mcssis = _extraMCStepSummaryInfos.at(i_branch);
           for(size_t ixtra=0;ixtra < _extraMCStepTags.size(); ++ixtra) {
-            // first, create the storage for this branch
-            mcsics.push_back(MCStepInfos());
-            mcssis.push_back(MCStepSummaryInfo());
             auto& mcsic = mcsics.at(ixtra);
             auto& mcssi = mcssis.at(ixtra);
             auto const& tag = _extraMCStepTags[ixtra];
@@ -522,7 +525,7 @@ namespace mu2e {
             auto ifind = label.find_last_of(":");
             if(ifind != string::npos)
               label = label.substr(ifind);
-            std::string  mcsiname = branch +"mcsci_" + label;
+            std::string  mcsiname = branch +"mcsic_" + label;
             std::string  mcssiname = branch + "mcssi_" + label;
             _trkana->Branch(mcsiname.c_str(),&mcsic,_buffsize,_splitlevel);
             _trkana->Branch(mcssiname.c_str(),&mcssi,_buffsize,_splitlevel);
