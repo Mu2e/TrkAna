@@ -300,7 +300,7 @@ namespace mu2e {
         mcssi.ftime = std::min(mcssi.ftime,mcsi.time);
         mcssi.ltime = std::max(mcssi.ltime,mcsi.time);
         mcsi.de = mcstep.totalEDep();
-        mcsi.dp = (mcstep.postMomentum() - mcstep.momentum()).mag();
+        mcsi.dp = mcstep.postMomentum().mag() - mcstep.momentum().mag();
         mcssi.de += mcsi.de;
         mcssi.dp += mcsi.dp;
         auto ddir = mcstep.postMomentum().unit() - mcstep.momentum().unit();
