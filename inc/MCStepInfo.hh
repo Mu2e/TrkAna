@@ -7,7 +7,8 @@
 namespace mu2e {
   struct MCStepInfo {
     float time = 0;  // time of this step WRT MC primary proton (ns)
-    float de = 0; // energy change through this step (MeV)
+    float de = 0; // energy deposit through this step (MeV)
+    float dp = 0; // momentum magnitude change throw this step (MeV/c)
     float ddir = 0; // momentum direction change through this step (radians)
     XYZVectorF mom; // particle momentum at the start of this step
     XYZVectorF pos;  // particle position at the start of this step
@@ -17,7 +18,8 @@ namespace mu2e {
     int nsteps = 0; // number of indivdual steps
     float ftime = 1e15;  // time of the first step WRT MC primary proton (ns)
     float ltime = -1e15;  // time of the last step WRT MC primary proton (ns)
-    float de = 0; // sum energy change through these steps (MeV)
+    float de = 0; // sum energy deposit through these steps (MeV)
+    float dp = 0; // sum momentum magnitude change through this step (MeV/c)
     float ddir = 0; // sum momentum direction change through this step (radians)
     void reset() {*this = MCStepSummaryInfo(); }
   };

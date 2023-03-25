@@ -283,16 +283,26 @@ namespace mu2e {
     mcsic.clear();
     CLHEP::Hep3Vector ddirsum;
    // only count the extra steps associated with the primary MC truth match
-    auto const& simp = kseedmc.simParticle().simParticle(_spcH);
+    auto simp = kseedmc.simParticle().simParticle(_spcH);
+//    std::cout << "KalSeedMC simp kep " << simp.key()
+//      << " start mom " << simp->startMomentum().vect()
+//      << " pos " << simp->startPosition() << std::endl;
     for(auto const& mcstep : mcsteps) {
-      if(mcstep.simParticle() == simp){
+//      if(mcstep.simParticle() == simp){
+//      match keys
+//     std::cout << "MCStep simp key " << mcstep.simParticle().key()
+//       << " start mom " << mcstep.simParticle()->startMomentum().vect()
+//       << " pos " << mcstep.simParticle()->startPosition() << std::endl;
+      if(mcstep.simParticle().key() == simp.key()){
         mcssi.nsteps++;
         MCStepInfo mcsi;
         mcsi.time = mcstep.time();
         mcssi.ftime = std::min(mcssi.ftime,mcsi.time);
         mcssi.ltime = std::max(mcssi.ltime,mcsi.time);
         mcsi.de = mcstep.totalEDep();
+        mcsi.dp = (mcstep.postMomentum() - mcstep.momentum()).mag();
         mcssi.de += mcsi.de;
+        mcssi.dp += mcsi.dp;
         auto ddir = mcstep.postMomentum().unit() - mcstep.momentum().unit();
         mcsi.ddir = ddir.mag();
         ddirsum += ddir;
