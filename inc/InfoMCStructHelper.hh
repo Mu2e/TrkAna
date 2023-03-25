@@ -15,6 +15,7 @@
 #include "TrkAna/inc/SimInfo.hh"
 #include "TrkAna/inc/TrkStrawHitInfoMC.hh"
 #include "TrkAna/inc/CaloClusterInfoMC.hh"
+#include "TrkAna/inc/MCStepInfo.hh"
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
 #include "Offline/MCDataProducts/inc/KalSeedMC.hh"
 #include "BTrk/BbrGeom/HepPoint.h"
@@ -31,6 +32,9 @@ namespace mu2e {
       art::InputTag _spctag;
       art::Handle<SimParticleCollection> _spcH;
       double _mingood;
+      bool _onSpill;
+      bool _mbtime;
+      art::InputTag _ewMarkerTag;
 
       void fillSimInfo(const art::Ptr<SimParticle>& sp, SimInfo& siminfo);
       void fillSimInfo(const SimParticle& sp, SimInfo& siminfo);
@@ -43,14 +47,13 @@ namespace mu2e {
 
         fhicl::Atom<art::InputTag> spctag{Name("SimParticleCollectionTag"), Comment("InputTag for the SimParticleCollection"), art::InputTag()};
         fhicl::Atom<double> mingood{Name("MinGoodMomFraction"), Comment("Minimum fraction of the true particle's momentum for a digi to be described as \"good\"")};
-      };
+        fhicl::Atom<art::InputTag> ewMarkerTag{ Name("EventWindowMarker"), Comment("EventWindowMarker producer"),"EWMProducer" };
+     };
 
       InfoMCStructHelper(const Config& conf) :
-        _spctag(conf.spctag()), _mingood(conf.mingood()) {  };
+        _spctag(conf.spctag()), _mingood(conf.mingood()), _ewMarkerTag(conf.ewMarkerTag()) {};
 
-      void updateEvent(const art::Event& event) {
-        event.getByLabel(_spctag,_spcH);
-      }
+      void updateEvent(const art::Event& event);
 
       void fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
       void fillTrkInfoMCDigis(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
@@ -62,6 +65,8 @@ namespace mu2e {
       void fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs);
       void fillCaloClusterInfoMC(CaloClusterMC const& ccmc, CaloClusterInfoMC& ccimc);
       void fillCrvHitInfoMC(art::Ptr<CrvCoincidenceClusterMC> const& crvCoincMC, CrvHitInfoMC& crvHitInfoMC);
+      void fillExtraMCStepInfos(KalSeedMC const& kseedmc, StepPointMCCollection const& mcsteps,
+      MCStepInfos& mcsic, MCStepSummaryInfo& mcssi);
   };
 }
 

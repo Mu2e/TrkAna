@@ -9,17 +9,31 @@
 
 #include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "Offline/Mu2eUtilities/inc/TwoLinePCA.hh"
-#include "BTrk/TrkBase/TrkHelixUtils.hh"
+#include "Offline/DataProducts/inc/EventWindowMarker.hh"
 
 #include "Offline/GlobalConstantsService/inc/GlobalConstantsHandle.hh"
 #include "Offline/GlobalConstantsService/inc/ParticleDataList.hh"
 #include "Offline/GeometryService/inc/GeomHandle.hh"
 #include "Offline/GeometryService/inc/DetectorSystem.hh"
+#include "Offline/ConditionsService/inc/ConditionsHandle.hh"
+#include "Offline/ConditionsService/inc/AcceleratorParams.hh"
+#include "art/Framework/Principal/Handle.h"
 
 #include <map>
 #include <limits>
 
 namespace mu2e {
+
+  void InfoMCStructHelper::updateEvent(const art::Event& event) {
+    event.getByLabel(_spctag,_spcH);
+    ConditionsHandle<AcceleratorParams> accPar("ignored");
+    _mbtime = accPar->deBuncherPeriod;
+    art::Handle<EventWindowMarker> ewMarkerHandle;
+    event.getByLabel(_ewMarkerTag, ewMarkerHandle);
+    const EventWindowMarker& ewMarker(*ewMarkerHandle);
+    _onSpill = (ewMarker.spillType() == EventWindowMarker::SpillType::onspill);
+  }
+
   void InfoMCStructHelper::fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
     // use the primary match of the track
     // primary associated SimParticle
@@ -166,7 +180,7 @@ namespace mu2e {
 
   void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep,
       std::vector<VirtualDetectorId> const& vids, double target_time) {
-
+    ConditionsHandle<AcceleratorParams> accPar("ignored");
     GeomHandle<DetectorSystem> det;
     GlobalConstantsHandle<ParticleDataList> pdt;
     static CLHEP::Hep3Vector vpoint_mu2e = det->toMu2e(CLHEP::Hep3Vector(0.0,0.0,0.0));
@@ -177,8 +191,14 @@ namespace mu2e {
       for(auto vid : vids) {
         if (i_mcstep._vdid == vid) {
           // take the VD step with the time closest to target_time
-          // this is so that we can take the correct step when looking at upstream/downstream trachs
-          double corrected_time = fmod(i_mcstep._time, 1695); // VDStep is created with the time offsets included
+          // this is so that we can take the correct step when looking at upstream/downstream tracks
+          // This won't work for extracted or OffSpill: FIXME!!!
+          double corrected_time;
+          if(_onSpill) {
+            corrected_time = std::fmod(i_mcstep._time,_mbtime);
+          } else {
+            corrected_time = i_mcstep._time;
+          }
           if(fabs(target_time - corrected_time) < dmin){
             dmin = fabs(target_time - corrected_time);//i_mcstep._time;
             trkinfomcstep.valid = true;
@@ -256,4 +276,32 @@ namespace mu2e {
       crvHitInfoMC._depositedEnergy = crvCoincMC->GetTotalEnergyDeposited();
     }
   }
+
+  void InfoMCStructHelper::fillExtraMCStepInfos(KalSeedMC const& kseedmc, StepPointMCCollection const& mcsteps,
+      MCStepInfos& mcsic, MCStepSummaryInfo& mcssi) {
+    mcssi.reset();
+    mcsic.clear();
+    CLHEP::Hep3Vector ddirsum;
+   // only count the extra steps associated with the primary MC truth match
+    auto const& simp = kseedmc.simParticle().simParticle(_spcH);
+    for(auto const& mcstep : mcsteps) {
+      if(mcstep.simParticle() == simp){
+        mcssi.nsteps++;
+        MCStepInfo mcsi;
+        mcsi.time = mcstep.time();
+        mcssi.ftime = std::min(mcssi.ftime,mcsi.time);
+        mcssi.ltime = std::max(mcssi.ltime,mcsi.time);
+        mcsi.de = mcstep.totalEDep();
+        mcssi.de += mcsi.de;
+        auto ddir = mcstep.postMomentum().unit() - mcstep.momentum().unit();
+        mcsi.ddir = ddir.mag();
+        ddirsum += ddir;
+        mcsi.mom = mcstep.momentum();
+        mcsi.pos = mcstep.position();
+        mcsic.push_back(mcsi);
+        mcssi.ddir = ddirsum.mag();
+      }
+    }
+  }
+
 }

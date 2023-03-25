@@ -8,6 +8,7 @@
 #include "TrkAna/inc/TrkCount.hh"
 #include "TrkAna/inc/TrkInfo.hh"
 #include "TrkAna/inc/SimInfo.hh"
+#include "TrkAna/inc/MCStepInfo.hh"
 #include "TrkAna/inc/TrkCaloHitInfo.hh"
 #include "TrkAna/inc/TrkQualInfo.hh"
 #include "TrkAna/inc/EventWeightInfo.hh"
