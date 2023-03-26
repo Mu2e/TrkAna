@@ -281,37 +281,46 @@ namespace mu2e {
       MCStepInfos& mcsic, MCStepSummaryInfo& mcssi) {
     mcssi.reset();
     mcsic.clear();
-    CLHEP::Hep3Vector ddirsum;
-   // only count the extra steps associated with the primary MC truth match
+    MCStepInfo mcsi;
+    // only count the extra steps associated with the primary MC truth match
     auto simp = kseedmc.simParticle().simParticle(_spcH);
-//    std::cout << "KalSeedMC simp kep " << simp.key()
-//      << " start mom " << simp->startMomentum().vect()
-//      << " pos " << simp->startPosition() << std::endl;
+    //    std::cout << "KalSeedMC simp kep " << simp.key()
+    //      << " start mom " << simp->startMomentum().vect()
+    //      << " pos " << simp->startPosition() << std::endl;
     for(auto const& mcstep : mcsteps) {
-//      if(mcstep.simParticle() == simp){
-//      match keys
-//     std::cout << "MCStep simp key " << mcstep.simParticle().key()
-//       << " start mom " << mcstep.simParticle()->startMomentum().vect()
-//       << " pos " << mcstep.simParticle()->startPosition() << std::endl;
+      //     std::cout << "MCStep simp key " << mcstep.simParticle().key()
+      //       << " start mom " << mcstep.simParticle()->startMomentum().vect()
+      //       << " pos " << mcstep.simParticle()->startPosition() << std::endl;
       if(mcstep.simParticle().key() == simp.key()){
-        mcssi.nsteps++;
-        MCStepInfo mcsi;
-        mcsi.time = mcstep.time();
-        mcssi.ftime = std::min(mcssi.ftime,mcsi.time);
-        mcssi.ltime = std::max(mcssi.ltime,mcsi.time);
-        mcsi.de = mcstep.totalEDep();
-        mcsi.dp = mcstep.momentum().mag() - mcstep.postMomentum().mag();
-        mcssi.de += mcsi.de;
-        mcssi.dp += mcsi.dp;
-        auto ddir = mcstep.momentum().unit() - mcstep.postMomentum().unit();
-        mcsi.ddir = ddir.mag();
-        ddirsum += ddir;
-        mcsi.mom = mcstep.momentum();
-        mcsi.pos = mcstep.position();
-        mcsic.push_back(mcsi);
-        mcssi.ddir = ddirsum.mag();
+        // combine steps if they are in the same material.  They must be close too, since the particle may
+        // re-enter a material
+        //        if(mcstep.volumeId() == mcsi.vid && (XYZVectorF(mcstep.position()) -mcsi.pos).R() < 1.0 )
+        if((XYZVectorF(mcstep.position()) -mcsi.pos).R() < 1.0 && fabs(mcstep.time()-mcsi.time)<0.1 ){
+          mcsi.de += mcstep.totalEDep();
+          mcsi.dp += mcstep.momentum().mag() - mcstep.postMomentum().mag();
+        } else {
+          //    if(mcsi.vid != 0)
+          if(mcsi.time>0.0){
+            // save this step
+            mcsic.push_back(mcsi);
+            // add its info to the summary
+            mcssi.addStep(mcsi);
+          }
+          // initialize the new step
+          mcsi = MCStepInfo();
+          mcsi.vid = mcstep.volumeId();
+          mcsi.time = mcstep.time();
+          mcsi.mom = mcstep.momentum();
+          mcsi.pos = mcstep.position();
+          mcsi.de = mcstep.totalEDep();
+        }
       }
     }
+    // finalize the last step
+    //    if(mcsi.vid != 0)
+    if(mcsi.time > 0){
+      mcsic.push_back(mcsi);
+      mcssi.addStep(mcsi);
+    }
   }
-
 }
