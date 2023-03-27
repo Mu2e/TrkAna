@@ -6,16 +6,17 @@
 #include <vector>
 namespace mu2e {
   struct MCStepInfo {
-    unsigned vid=0; // volume ID of this step
+    int vid=-1; // volume ID of this step
     float time = 0;  // time of this step WRT MC primary proton (ns)
     float de = 0; // energy deposit through this step (MeV)
     float dp = 0; // momentum magnitude change throw this step (MeV/c)
     XYZVectorF mom; // particle momentum at the start of this step
     XYZVectorF pos;  // particle position at the start of this step
     void reset() {*this = MCStepInfo(); }
+    bool valid() { return vid>=0; }
   };
   struct MCStepSummaryInfo {
-    int nsteps = 0; // number of indivdual steps
+    unsigned nsteps = 0; // number of indivdual steps
     float ftime = 1e15;  // time of the first step WRT MC primary proton (ns)
     float ltime = -1e15;  // time of the last step WRT MC primary proton (ns)
     float de = 0; // sum energy deposit through these steps (MeV)

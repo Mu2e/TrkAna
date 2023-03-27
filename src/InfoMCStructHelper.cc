@@ -279,6 +279,7 @@ namespace mu2e {
 
   void InfoMCStructHelper::fillExtraMCStepInfos(KalSeedMC const& kseedmc, StepPointMCCollection const& mcsteps,
       MCStepInfos& mcsic, MCStepSummaryInfo& mcssi) {
+    GeomHandle<DetectorSystem> det;
     mcssi.reset();
     mcsic.clear();
     MCStepInfo mcsi;
@@ -292,33 +293,32 @@ namespace mu2e {
       //       << " start mom " << mcstep.simParticle()->startMomentum().vect()
       //       << " pos " << mcstep.simParticle()->startPosition() << std::endl;
       if(mcstep.simParticle().key() == simp.key()){
-        // combine steps if they are in the same material.  They must be close too, since the particle may
-        // re-enter a material
-        //        if(mcstep.volumeId() == mcsi.vid && (XYZVectorF(mcstep.position()) -mcsi.pos).R() < 1.0 )
-        if((XYZVectorF(mcstep.position()) -mcsi.pos).R() < 1.0 && fabs(mcstep.time()-mcsi.time)<0.1 ){
+        // combine steps if they are in the same material.  They must be close in time too, since the particle may
+        // re-enter the same material
+        auto spos = XYZVectorF(det->toDetector(mcstep.position()));
+        if(static_cast<int>(mcstep.volumeId()) == mcsi.vid && fabs(mcstep.time()-mcsi.time)<0.1 ){
           mcsi.de += mcstep.totalEDep();
-          mcsi.dp += mcstep.momentum().mag() - mcstep.postMomentum().mag();
+          mcsi.dp += mcstep.postMomentum().mag() - mcstep.momentum().mag();
         } else {
-          //    if(mcsi.vid != 0)
-          if(mcsi.time>0.0){
+          if(mcsi.valid()){
             // save this step
             mcsic.push_back(mcsi);
             // add its info to the summary
             mcssi.addStep(mcsi);
           }
           // initialize the new step
-          mcsi = MCStepInfo();
+          mcsi.reset();
           mcsi.vid = mcstep.volumeId();
           mcsi.time = mcstep.time();
-          mcsi.mom = mcstep.momentum();
-          mcsi.pos = mcstep.position();
           mcsi.de = mcstep.totalEDep();
+          mcsi.dp = mcstep.postMomentum().mag()- mcstep.momentum().mag();
+          mcsi.mom = mcstep.momentum();
+          mcsi.pos = spos;
         }
       }
     }
     // finalize the last step
-    //    if(mcsi.vid != 0)
-    if(mcsi.time > 0){
+    if(mcsi.valid()){
       mcsic.push_back(mcsi);
       mcssi.addStep(mcsi);
     }
