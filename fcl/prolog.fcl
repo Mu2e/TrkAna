@@ -248,10 +248,12 @@ TrkAnaReco : {
     TrkAnaNeg : { @table::TrkAnaTreeMaker
       candidate : @local::DeM
       supplements : [ @local::UeM, @local::DmuM ]
+      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
     }
     TrkAnaPos : { @table::TrkAnaTreeMaker
       candidate : @local::DeP
       supplements : [ @local::UeP, @local::DmuP ]
+      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
     }
     TrkAnaExt : { @table::TrkAnaTreeMaker
       candidate : @local::Ext
