@@ -140,11 +140,14 @@ namespace mu2e {
         fhicl::Atom<art::InputTag> PBITag{Name("PBITag"), Comment("Tag for ProtonBunchIntensity object") ,art::InputTag()};
         fhicl::Atom<art::InputTag> PBTTag{Name("PBTTag"), Comment("Tag for ProtonBunchTime object") ,art::InputTag()};
         fhicl::Atom<art::InputTag> PBTMCTag{Name("PBTMCTag"), Comment("Tag for ProtonBunchTimeMC object") ,art::InputTag()};
-        fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
         fhicl::Atom<std::string> simParticleLabel{Name("SimParticleLabel"), Comment("SimParticleLabel")};
         fhicl::Atom<std::string> mcTrajectoryLabel{Name("MCTrajectoryLabel"), Comment("MCTrajectoryLabel")};
         fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
         fhicl::Atom<bool> pempty{Name("ProcessEmptyEvents"),false};
+
+        // Calo control
+        fhicl::Atom<bool> fillCaloMC{ Name("FillCaloMC"),Comment("Fill CaloMC information"), true};
+        fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
 
         // CRV -- flags
         fhicl::Atom<bool> crv{Name("FillCRV"),Comment("Flag for turning on bestcrv(mc) branches"), false};
@@ -232,7 +235,6 @@ namespace mu2e {
       // MC truth branches (inputs)
       art::Handle<PrimaryParticle> _pph;
       art::Handle<KalSeedMCAssns> _ksmcah;
-      art::Handle<CaloClusterMCCollection> _ccmcch;
       art::InputTag _primaryParticleTag;
       std::map<BranchIndex, std::vector<std::vector<VirtualDetectorId>>> _allSegmentVIDs;
       // MC truth branches (outputs)
@@ -240,6 +242,8 @@ namespace mu2e {
       std::vector<std::vector<SimInfo>> _allMCSimTIs;
       std::vector<SimInfo> _allMCPriTIs;
       std::map<BranchIndex, std::vector<TrkInfoMCStep>> _allMCSegmentTIs;
+      bool _fillcalomc;
+      art::Handle<CaloClusterMCCollection> _ccmcch;
       std::vector<CaloClusterInfoMC> _allMCTCHIs;
 
       // hit level info branches
@@ -305,6 +309,7 @@ namespace mu2e {
     _PBTMCTag(conf().PBTMCTag()),
     _trigbitsh(0),
     _fillmc(conf().fillmc()),
+    _fillcalomc(conf().fillCaloMC()),
     // CRV
     _crv(conf().crv()),
     _crvhits(conf().crvhits()),
@@ -369,8 +374,10 @@ namespace mu2e {
       SimInfo mcpri;
       _allMCPriTIs.push_back(mcpri);
 
-      CaloClusterInfoMC mctchi;
-      _allMCTCHIs.push_back(mctchi);
+      if(_fillcalomc){
+        CaloClusterInfoMC mctchi;
+        _allMCTCHIs.push_back(mctchi);
+      }
 
       RecoQualInfo rqi;
       _allRQIs.push_back(rqi);
@@ -511,7 +518,7 @@ namespace mu2e {
           std::string segmentSuffix = segmentSuffixes.at(i_segment);
           _trkana->Branch((branch+"mc"+segmentSuffix+".").c_str(),&_allMCSegmentTIs.at(i_branch).at(i_segment));
         }
-        _trkana->Branch((branch+"tchmc.").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
+        if(_fillcalomc)_trkana->Branch((branch+"tchmc.").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
         // at hit-level MC information
         // (for the time being diagLevel will still work, but I propose removing this at some point)
         if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){
@@ -688,7 +695,7 @@ namespace mu2e {
     if(_fillmc) { // get MC product collections
       event.getByLabel(_conf.primaryParticleTag(),_pph);
       event.getByLabel(_conf.kalSeedMCTag(),_ksmcah);
-      event.getByLabel(_conf.caloClusterMCTag(),_ccmcch);
+      if(_fillcalomc)event.getByLabel(_conf.caloClusterMCTag(),_ccmcch);
     }
     // fill track counts
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
@@ -990,7 +997,7 @@ namespace mu2e {
           break;
         }
       }
-      if (kseed.hasCaloCluster()) {
+      if (kseed.hasCaloCluster() && _fillcalomc) {
         // fill MC truth of the associated CaloCluster.  Use the fact that these are correlated by index with the clusters in that collection
         auto index = kseed.caloCluster().key();
         auto const& ccmcc = *_ccmcch;
@@ -1070,7 +1077,7 @@ namespace mu2e {
       _allMCPriTIs.at(i_branch).reset();
 
       _allMCSegmentTIs.at(i_branch).assign(_allMCSegmentTIs.at(i_branch).size(), TrkInfoMCStep());
-      _allMCTCHIs.at(i_branch).reset();
+      if(_fillcalomc)_allMCTCHIs.at(i_branch).reset();
 
       _allRQIs.at(i_branch).reset();
       _allTQIs.at(i_branch).reset();
