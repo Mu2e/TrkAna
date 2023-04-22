@@ -65,7 +65,6 @@ namespace mu2e {
 
   void BestCrvHitDeltaT::produce(art::Event& event) {
 
-std::cout<<"AAAAA "<<__FILE__<<"  "<<__LINE__<<std::endl;
     const auto& kalSeedHandle = event.getValidHandle<KalSeedCollection>(_kalSeedTag);
     const auto& crvCoincidenceHandle = event.getValidHandle<CrvCoincidenceClusterCollection>(_crvCoincidenceTag);
     auto firstAssns = std::make_unique<BestCrvAssns>();
@@ -105,7 +104,6 @@ std::cout<<"AAAAA "<<__FILE__<<"  "<<__LINE__<<std::endl;
     }
     event.put(std::move(firstAssns), "first");
     event.put(std::move(secondAssns), "second");
-std::cout<<"AAAAA "<<__FILE__<<"  "<<__LINE__<<std::endl;
   }
 }  // end namespace mu2e
 
