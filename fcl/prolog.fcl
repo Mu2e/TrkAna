@@ -70,7 +70,7 @@ TrkPIDProducersPath : [ TrkPIDDeM, TrkPIDDeP ]
 
 BestCrv : {
   module_type : BestCrvHitDeltaT
-  crvCoincidenceTag : "SelectRecoMC"
+  crvCoincidenceTag : "SelectRecoMC:CrvCoincidenceClusterFinder"
 }
 
 BestCrvDeM : @local::BestCrv
@@ -207,8 +207,8 @@ TrkAnaTreeMaker : {
   PBITag : "PBISim"
   PBTTag : "EWMProducer"
   PBTMCTag : "EWMProducer"
-  CrvCoincidenceModuleLabel : "SelectRecoMC"
-  CrvCoincidenceMCModuleLabel : "compressRecoMCs"
+  CrvCoincidenceModuleLabel : "SelectRecoMC:CrvCoincidenceClusterFinder"
+  CrvCoincidenceMCModuleLabel : "compressRecoMCs:CrvCoincidenceClusterMatchMC"
   CrvRecoPulseLabel : "SelectRecoMC"
   CrvStepLabel : "compressRecoMCs"
   SimParticleLabel : "compressRecoMCs"
