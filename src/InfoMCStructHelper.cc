@@ -234,8 +234,8 @@ namespace mu2e {
   }
 
   void InfoMCStructHelper::fillCrvHitInfoMC(art::Ptr<CrvCoincidenceClusterMC> const& crvCoincMC, CrvHitInfoMC& crvHitInfoMC) {
-    if(crvCoincMC->HasMCInfo()) {
-      const art::Ptr<SimParticle> &simParticle = crvCoincMC->GetMostLikelySimParticle();
+    const art::Ptr<SimParticle> &simParticle = crvCoincMC->GetMostLikelySimParticle();
+    if(crvCoincMC->HasMCInfo() && simParticle.isAvailable()) {
       art::Ptr<SimParticle> primaryParticle = simParticle;
       art::Ptr<SimParticle> parentParticle = simParticle;
       art::Ptr<SimParticle> gparentParticle = simParticle;
