@@ -3,7 +3,7 @@
 #include "Offline/fcl/standardServices.fcl"
 #include "TrkAna/fcl/prolog.fcl"
 
-process_name : TrkAnaReco
+process_name : TrkAnaExt
 
 source : { module_type : RootInput }
 

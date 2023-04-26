@@ -141,19 +141,18 @@ namespace mu2e {
     // go through the SimParticles of this primary, and find the one most related to the
     // downstream fit (KalSeedMC)
 
-    if (primary.primarySimParticles().empty()) {
-      throw cet::exception("Simulation")<<"InfoMCStructHelper: No Primary Particle found" << std::endl;
+    if (!primary.primarySimParticles().empty()) {
+      auto bestprimarysp = primary.primarySimParticles().front();
+      MCRelationship bestrel;
+      for(auto const& spp : primary.primarySimParticles()){
+        MCRelationship mcrel(spp,trkprimary);
+        if(mcrel > bestrel){
+          bestrel = mcrel;
+          bestprimarysp = spp;
+        }
+      } // redundant: FIXME!
+      fillSimInfo(bestprimarysp, priinfo);
     }
-    auto bestprimarysp = primary.primarySimParticles().front();
-    MCRelationship bestrel;
-    for(auto const& spp : primary.primarySimParticles()){
-      MCRelationship mcrel(spp,trkprimary);
-      if(mcrel > bestrel){
-        bestrel = mcrel;
-        bestprimarysp = spp;
-      }
-    } // redundant: FIXME!
-    fillSimInfo(bestprimarysp, priinfo);
   }
 
 
