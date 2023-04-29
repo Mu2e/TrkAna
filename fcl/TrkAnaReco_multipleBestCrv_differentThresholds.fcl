@@ -1,0 +1,17 @@
+#include "TrkAna/fcl/TrkAnaReco.fcl"
+
+// Define the new BestCrv modules and add them to the path
+physics.producers.BestCrv6PEsDeM : @local::BestCrvDeM
+physics.producers.BestCrv6PEsDeM.crvCoincidenceTag : "SelectRecoMC:CrvCoincidenceClusterFinder6PEs"
+
+physics.TrkAnaTrigPath : [ @sequence::physics.TrkAnaTrigPath, BestCrv6PEsDeM ]
+
+// Then add them to TrkAna (NB DeM suffix not needed)
+physics.analyzers.TrkAnaNeg.candidate.options.bestCrvModules : [ "BestCrv", "BestCrv6PEs" ]
+
+// The BestCrvHitDeltaT_module.cc produces the first- and second-best crv hits.
+// Here we have two different modules and want the best candidate for each so we use "first" twice...
+physics.analyzers.TrkAnaNeg.candidate.options.bestCrvInstances : [ "first", "first" ]
+
+// This names the branches, which will translate to "debestcrv" and "debestcrv6PEs"
+physics.analyzers.TrkAnaNeg.candidate.options.bestCrvBranches : [ "bestcrv", "bestcrv6PEs" ]
