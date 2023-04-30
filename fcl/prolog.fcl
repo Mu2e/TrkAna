@@ -198,6 +198,7 @@ UmuP : { input : "KFF"
 Ext : { input : "KK"
   branch : "kl"
   suffix : "Line"
+  @table::StdSegments
 }
 
 
@@ -258,6 +259,7 @@ TrkAnaReco : {
     TrkAnaExt : { @table::TrkAnaTreeMaker
       candidate : @local::Ext
       supplements : [ ]
+      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
     }
 
     genCountLogger : @local::genCountLogger
