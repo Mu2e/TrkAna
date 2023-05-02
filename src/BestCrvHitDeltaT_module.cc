@@ -77,7 +77,7 @@ namespace mu2e {
       size_t i_secondBestCrvCoinc = nCrvCoincidences;
       float mindt=1.0e9;
       float min2dt=1.0e9;
-      float t0 = kalSeed.t0().t0();
+      float t0 = kalSeed.t0Val();
       for(size_t i_crvCoinc = 0; i_crvCoinc != nCrvCoincidences; ++i_crvCoinc) {
         const auto& crvCoinc = crvCoincidenceHandle->at(i_crvCoinc);
         auto const& crvStartTime = crvCoinc.GetStartTime();
