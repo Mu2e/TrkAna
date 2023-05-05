@@ -20,21 +20,21 @@ TrkQualPos : @local::TrkQual
 TrkQualPos.TrainingName : "TrkQualPos"
 
 TrkQualDeM           : @local::TrkQualNeg
-TrkQualDeM.KalSeedCollection : "KFFDeM"
+TrkQualDeM.KalSeedCollection : "KKDeM"
 TrkQualUeM           : @local::TrkQualNeg
-TrkQualUeM.KalSeedCollection : "KFFUeM"
+TrkQualUeM.KalSeedCollection : "KKUeM"
 TrkQualDmuM          : @local::TrkQualNeg
-TrkQualDmuM.KalSeedCollection : "KFFDmuM"
+TrkQualDmuM.KalSeedCollection : "KKDmuM"
 TrkQualUmuM          : @local::TrkQualNeg
-TrkQualUmuM.KalSeedCollection : "KFFUmuM"
+TrkQualUmuM.KalSeedCollection : "KKUmuM"
 TrkQualDeP           : @local::TrkQualPos
-TrkQualDeP.KalSeedCollection : "KFFDeP"
+TrkQualDeP.KalSeedCollection : "KKDeP"
 TrkQualUeP           : @local::TrkQualPos
-TrkQualUeP.KalSeedCollection : "KFFUeP"
+TrkQualUeP.KalSeedCollection : "KKUeP"
 TrkQualDmuP          : @local::TrkQualPos
-TrkQualDmuP.KalSeedCollection : "KFFDmuP"
+TrkQualDmuP.KalSeedCollection : "KKDmuP"
 TrkQualUmuP          : @local::TrkQualPos
-TrkQualUmuP.KalSeedCollection : "KFFUmuP"
+TrkQualUmuP.KalSeedCollection : "KKUmuP"
 
 TrkQualProducers : {
   TrkQualDeM : @local::TrkQualDeM
@@ -58,9 +58,9 @@ TrkPID : {
 }
 # this module only makes sense for downstream electron fits
 TrkPIDDeM          : @local::TrkPID
-TrkPIDDeM.KalSeedCollection : "KFFDeM"
+TrkPIDDeM.KalSeedCollection : "KKDeM"
 TrkPIDDeP          : @local::TrkPID
-TrkPIDDeP.KalSeedCollection : "KFFDeP"
+TrkPIDDeP.KalSeedCollection : "KKDeP"
 TrkPIDProducers : {
   TrkPIDDeM : @local::TrkPIDDeM
   TrkPIDDeP : @local::TrkPIDDeP
@@ -74,21 +74,21 @@ BestCrv : {
 }
 
 BestCrvDeM : @local::BestCrv
-BestCrvDeM.kalSeedTag : "KFFDeM"
+BestCrvDeM.kalSeedTag : "KKDeM"
 BestCrvUeM : @local::BestCrv
-BestCrvUeM.kalSeedTag : "KFFUeM"
+BestCrvUeM.kalSeedTag : "KKUeM"
 BestCrvDmuM : @local::BestCrv
-BestCrvDmuM.kalSeedTag : "KFFDmuM"
+BestCrvDmuM.kalSeedTag : "KKDmuM"
 BestCrvUmuM : @local::BestCrv
-BestCrvUmuM.kalSeedTag : "KFFUmuM"
+BestCrvUmuM.kalSeedTag : "KKUmuM"
 BestCrvDeP : @local::BestCrv
-BestCrvDeP.kalSeedTag : "KFFDeP"
+BestCrvDeP.kalSeedTag : "KKDeP"
 BestCrvUeP : @local::BestCrv
-BestCrvUeP.kalSeedTag : "KFFUeP"
+BestCrvUeP.kalSeedTag : "KKUeP"
 BestCrvDmuP : @local::BestCrv
-BestCrvDmuP.kalSeedTag : "KFFDmuP"
+BestCrvDmuP.kalSeedTag : "KKDmuP"
 BestCrvUmuP : @local::BestCrv
-BestCrvUmuP.kalSeedTag : "KFFUmuP"
+BestCrvUmuP.kalSeedTag : "KKUmuP"
 BestCrvLine : @local::BestCrv
 BestCrvLine.kalSeedTag : "KKLine"
 
@@ -155,43 +155,43 @@ AllOpt : { fillMC : true
   bestCrvBranches : [ "bestcrv" ]
 }
 
-DeM : { input : "KFF"
-  branch : "de"
+DeM : { input : "KK"
+  branch : "dem"
   suffix : "DeM"
   @table::StdSegments
 }
-UeM : { input : "KFF"
-  branch : "ue"
+UeM : { input : "KK"
+  branch : "uem"
   suffix : "UeM"
   @table::StdSegments
 }
-DmuM : { input : "KFF"
-  branch : "dm"
+DmuM : { input : "KK"
+  branch : "dmm"
   suffix : "DmuM"
   @table::StdSegments
 }
-UmuM : { input : "KFF"
-  branch : "um"
+UmuM : { input : "KK"
+  branch : "umm"
   suffix : "UmuM"
   @table::StdSegments
 }
-DeP : { input : "KFF"
-  branch : "de"
+DeP : { input : "KK"
+  branch : "dep"
   suffix : "DeP"
   @table::StdSegments
 }
-UeP : { input : "KFF"
-  branch : "ue"
+UeP : { input : "KK"
+  branch : "uep"
   suffix : "UeP"
   @table::StdSegments
 }
-DmuP : { input : "KFF"
-  branch : "dm"
+DmuP : { input : "KK"
+  branch : "dmp"
   suffix : "DmuP"
   @table::StdSegments
 }
-UmuP : { input : "KFF"
-  branch : "um"
+UmuP : { input : "KK"
+  branch : "ump"
   suffix : "UmuP"
   @table::StdSegments
 }
