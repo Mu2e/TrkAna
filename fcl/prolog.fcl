@@ -67,6 +67,16 @@ TrkPIDProducers : {
 }
 TrkPIDProducersPath : [ TrkPIDDeM, TrkPIDDeP ]
 
+MakeCrvCoincidenceClusterMCAssns : {
+  module_type : "MakeCrvCoincidenceClusterMCAssns"
+  crvCoincidenceTags : [ "SelectRecoMC:CrvCoincidenceClusterFinder" ]
+  crvCoincidenceMCTags : [ "compressRecoMCs:CrvCoincidenceClusterMatchMC" ]
+}
+
+MakeCrvCoincidenceClusterMCAssnsProducers : {
+  MakeCrvCoincidenceClusterMCAssns : @local::MakeCrvCoincidenceClusterMCAssns
+}
+MakeCrvCoincidenceClusterMCAssnsPath : [ MakeCrvCoincidenceClusterMCAssns ]
 
 BestCrv : {
   module_type : BestCrvHitDeltaT
@@ -216,6 +226,7 @@ TrkAnaTreeMaker : {
   MCTrajectoryLabel : "compressRecoMCs"
   CrvWaveformsModuleLabel : "compressRecoMCs"
   CrvDigiModuleLabel : "SelectRecoMC"
+  CrvCoincidenceClusterMCAssnsTag : "MakeCrvCoincidenceClusterMCAssns"
   CrvPlaneY : 2653
   FillMCInfo : true
   FillTrkQualInfo : true
@@ -268,6 +279,11 @@ TrkAnaReco : {
   TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath, @sequence::BestCrvProducersPath ]
   EndSequenceNoMC : [ TrkAnaNeg, TrkAnaPos ]
   EndSequence : [ TrkAnaNeg, TrkAnaPos, genCountLogger ]
+
+  MCProducers : {
+    @table::MakeCrvCoincidenceClusterMCAssnsProducers
+  }
+  MCTrigSequence : [ @sequence::MakeCrvCoincidenceClusterMCAssnsPath ]
 }
 
 END_PROLOG

@@ -1,5 +1,9 @@
 #include "TrkAna/fcl/TrkAnaReco.fcl"
 
+// We want a singles Assns between reco and MC CrvCoincidenceClusters from all different collections
+physics.producers.MakeCrvCoincidenceClusterMCAssns.crvCoincidenceTags : [ "SelectRecoMC:CrvCoincidenceClusterFinder", "SelectRecoMC:CrvCoincidenceClusterFinder6PEs" ]
+physics.producers.MakeCrvCoincidenceClusterMCAssns.crvCoincidenceMCTags : [ "compressRecoMCs:CrvCoincidenceClusterMatchMC", "compressRecoMCs:CrvCoincidenceClusterMatchMC6PEs" ]
+
 // Define the new BestCrv modules and add them to the path
 physics.producers.BestCrv6PEsDeM : @local::BestCrvDeM
 physics.producers.BestCrv6PEsDeM.crvCoincidenceTag : "SelectRecoMC:CrvCoincidenceClusterFinder6PEs"

@@ -160,6 +160,7 @@ namespace mu2e {
         fhicl::Atom<std::string> crvStepLabel{Name("CrvStepLabel"), Comment("CrvStepLabel")};
         fhicl::Atom<std::string> crvWaveformsModuleLabel{ Name("CrvWaveformsModuleLabel"), Comment("CrvWaveformsModuleLabel")};
         fhicl::Atom<std::string> crvDigiModuleLabel{ Name("CrvDigiModuleLabel"), Comment("CrvDigiModuleLabel")};
+        fhicl::Atom<art::InputTag> crvMCAssnsTag{ Name("CrvCoincidenceClusterMCAssnsTag"), Comment("art::InputTag for CrvCoincidenceClusterMCAssns")};
         // CRV -- other
         fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters
 
@@ -265,10 +266,12 @@ namespace mu2e {
       std::string _crvStepLabel;
       std::string _crvWaveformsModuleLabel;
       std::string _crvDigiModuleLabel;
+      art::InputTag _crvMCAssnsTag;
       double _crvPlaneY;
       // CRV (inputs)
       std::map<BranchIndex, std::vector<art::Handle<BestCrvAssns>>> _allBestCrvAssns;
       art::Handle<CrvCoincidenceClusterMCCollection> _crvCoincidenceMCCollHandle;
+      art::Handle<CrvCoincidenceClusterMCAssns> _crvMCAssnsHandle;
       // CRV (output)
       std::vector<CrvHitInfoReco> _crvinfo;
       std::map<BranchIndex, std::vector<CrvHitInfoReco>> _allBestCrvs; // there can be more than one of these per candidate/supplement
@@ -320,6 +323,7 @@ namespace mu2e {
     _crvStepLabel(conf().crvStepLabel()),
     _crvWaveformsModuleLabel(conf().crvWaveformsModuleLabel()),
     _crvDigiModuleLabel(conf().crvDigiModuleLabel()),
+    _crvMCAssnsTag(conf().crvMCAssnsTag()),
     _crvPlaneY(conf().crvPlaneY()),
     _infoMCStructHelper(conf().infoMCStructHelper()),
     _buffsize(conf().buffsize()),
@@ -670,7 +674,7 @@ namespace mu2e {
         }
         _allBestCrvAssns[i_branch] = bestCrvAssnsHandles;
         if (_fillmc) {
-          event.getByLabel(_crvCoincidenceMCModuleLabel, _crvCoincidenceMCCollHandle);
+          event.getByLabel(_crvMCAssnsTag, _crvMCAssnsHandle);
         }
       }
     }
@@ -926,8 +930,14 @@ namespace mu2e {
             auto bestCrvCoinc = hBestCrvAssns->at(i_kseed).second;
             _infoStructHelper.fillCrvHitInfo(bestCrvCoinc, _allBestCrvs.at(i_branch).at(i_bestCrvBranch));
             if (_fillmc) {
-              auto bestCrvCoincMC = art::Ptr<CrvCoincidenceClusterMC>(_crvCoincidenceMCCollHandle, bestCrvCoinc.key());
-              _infoMCStructHelper.fillCrvHitInfoMC(bestCrvCoincMC, _allBestCrvMCs.at(i_branch).at(i_bestCrvBranch));
+              // loop through data-MC assns and find bestCrvCoinc (which is an art::Ptr){
+              for (const auto& i_crvMCAssn : *_crvMCAssnsHandle) {
+                if (bestCrvCoinc == i_crvMCAssn.first) {
+                  auto bestCrvCoincMC = i_crvMCAssn.second;//art::Ptr<CrvCoincidenceClusterMC>(_crvCoincidenceMCCollHandle, bestCrvCoinc.key());
+                  _infoMCStructHelper.fillCrvHitInfoMC(bestCrvCoincMC, _allBestCrvMCs.at(i_branch).at(i_bestCrvBranch));
+                  break;
+                }
+              }
             }
           }
         }
