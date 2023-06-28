@@ -11,11 +11,13 @@ services : @local::Services.Reco
 
 physics :
 {
-  producers : { @table::TrkAnaReco.producers }
+  producers : {
+    @table::TrkAnaReco.producers
+    @table::TrkAnaReco.MCProducers
+  }
   analyzers : { @table::TrkAnaReco.analyzers }
 }
-
-physics.TrkAnaTrigPath : [ BestCrvLine ]
+physics.TrkAnaTrigPath : [MakeCrvCoincidenceClusterMCAssns, BestCrvLine ]
 physics.TrkAnaEndPath : [ TrkAnaExt ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)
@@ -23,6 +25,9 @@ physics.analyzers.TrkAnaExt.candidate.options : @local::AllOpt
 physics.analyzers.TrkAnaExt.candidate.options.fillTrkQual : false
 physics.analyzers.TrkAnaExt.candidate.options.fillTrkPID : false
 physics.analyzers.TrkAnaExt.FillTriggerInfo : false
+# use the inner and outer surface VIDs for MC truth
+physics.analyzers.TrkAnaExt.candidate.segmentSuffixes: [  "ent", "mid", "xit", "out", "in" ]
+physics.analyzers.TrkAnaExt.candidate.segmentVIDs: [ [ "TT_FrontHollow", "TT_FrontPA"], [ "TT_Mid", "TT_MidInner"], ["TT_Back"], ["TT_OutSurf"], ["TT_InSurf"] ]
 
 # for hit level diagnostics, set diagLevel to 2
 physics.analyzers.TrkAnaExt.diagLevel : 2

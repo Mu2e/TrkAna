@@ -210,6 +210,39 @@ namespace mu2e {
     }
   }
 
+  void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& earlytrkinfomcstep, TrkInfoMCStep& latetrkinfomcstep) {
+    size_t iearly(0), ilate(0);
+    double etime(1e10), ltime(-1e10);
+    const auto& mcsteps = kseedmc._vdsteps;
+    for(size_t imcstep = 0; imcstep < mcsteps.size(); ++imcstep) {
+      const auto& mcstep = mcsteps[imcstep];
+      double corrected_time;
+      if(_onSpill) {
+        corrected_time = std::fmod(mcstep._time,_mbtime);
+      } else {
+        corrected_time = mcstep._time;
+      }
+      if(corrected_time < etime) {
+        etime = corrected_time;
+        iearly = imcstep;
+      }
+      if(corrected_time > ltime){
+        ltime = corrected_time;
+        ilate = imcstep;
+      }
+    }
+    if(mcsteps.size()>0){
+      earlytrkinfomcstep.valid = true;
+      earlytrkinfomcstep.time = mcsteps[iearly]._time;
+      earlytrkinfomcstep.mom = XYZVectorF(mcsteps[iearly]._mom);
+      earlytrkinfomcstep.pos = XYZVectorF(mcsteps[iearly]._pos);
+      latetrkinfomcstep.valid = true;
+      latetrkinfomcstep.time = mcsteps[ilate]._time;
+      latetrkinfomcstep.mom = XYZVectorF(mcsteps[ilate]._mom);
+      latetrkinfomcstep.pos = XYZVectorF(mcsteps[ilate]._pos);
+    }
+  }
+
   void InfoMCStructHelper::fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs) {
     tshinfomcs.clear();
 

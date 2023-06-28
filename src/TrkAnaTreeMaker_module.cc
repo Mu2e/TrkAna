@@ -348,9 +348,12 @@ namespace mu2e {
       std::vector<TrkFitInfo> allSegments;
       std::vector<TrkInfoMCStep> allMCSegments;
       const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
-      for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-        allSegments.push_back(TrkFitInfo()); // add empty structs to the vector so that ROOT can be given a location to find it
-        allMCSegments.push_back(TrkInfoMCStep());
+      // add extra segments for 'early' and 'late'
+      if(segmentSuffixes.size()>0){
+        for (size_t i_segment = 0; i_segment < segmentSuffixes.size()+2; ++i_segment) {
+          allSegments.push_back(TrkFitInfo()); // add empty structs to the vector so that ROOT can be given a location to find it
+          allMCSegments.push_back(TrkInfoMCStep());
+        }
       }
       _allSegmentTIs[i_branch] = allSegments;
       _allMCSegmentTIs[i_branch] = allMCSegments;
@@ -361,8 +364,12 @@ namespace mu2e {
         std::vector<VirtualDetectorId> thisSegmentVIDs = fromStrings<VirtualDetectorId>(segmentVIDs.at(i_segment));
         allSegmentVIDs.push_back(thisSegmentVIDs);
       }
+      if(segmentSuffixes.size()>0){
+        std::vector<VirtualDetectorId> uvid(VirtualDetectorId::unknown);
+        allSegmentVIDs.push_back(uvid);
+        allSegmentVIDs.push_back(uvid);
+      }
       _allSegmentVIDs[i_branch] = allSegmentVIDs;
-
 
       TrkCaloHitInfo tchi;
       _allTCHIs.push_back(tchi);
@@ -453,6 +460,11 @@ namespace mu2e {
         std::string segmentSuffix = segmentSuffixes.at(i_segment);
         _trkana->Branch((branch+segmentSuffix+".").c_str(),&_allSegmentTIs.at(i_branch).at(i_segment));
       }
+      // add 'early' and 'late' segments
+      if(segmentSuffixes.size()>0){
+        _trkana->Branch((branch+"early.").c_str(),&_allSegmentTIs.at(i_branch).at(segmentSuffixes.size()));
+        _trkana->Branch((branch+"late.").c_str(),&_allSegmentTIs.at(i_branch).at(segmentSuffixes.size()+1));
+      }
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
         int n_trkqual_vars = TrkQual::n_vars;
@@ -521,6 +533,11 @@ namespace mu2e {
         for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
           std::string segmentSuffix = segmentSuffixes.at(i_segment);
           _trkana->Branch((branch+"mc"+segmentSuffix+".").c_str(),&_allMCSegmentTIs.at(i_branch).at(i_segment));
+        }
+        // add 'early' and 'late' segments
+        if(segmentSuffixes.size()>0){
+          _trkana->Branch((branch+"mcearly.").c_str(),&_allMCSegmentTIs.at(i_branch).at(segmentSuffixes.size()));
+          _trkana->Branch((branch+"mclate.").c_str(),&_allMCSegmentTIs.at(i_branch).at(segmentSuffixes.size()+1));
         }
         if(_fillcalomc)_trkana->Branch((branch+"tchmc.").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
         // at hit-level MC information
@@ -944,7 +961,6 @@ namespace mu2e {
       }
     }
 
-
     // all RecoQuals
     std::vector<Float_t> recoQuals; // for the output value
     for (const auto& i_recoQualHandle : _allRQCHs.at(i_branch)) {
@@ -989,8 +1005,15 @@ namespace mu2e {
           double t0 = kseed.t0().t0();
           const std::vector<std::string>& segmentSuffixes = branchConfig.segmentSuffixes();
           for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-            _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCSegmentTIs.at(i_branch).at(i_segment), _allSegmentVIDs.at(i_branch).at(i_segment), t0);
+            auto& mcti = _allMCSegmentTIs.at(i_branch).at(i_segment);
+            auto const& vid = _allSegmentVIDs.at(i_branch).at(i_segment);
+            _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, mcti, vid, t0);
           }
+          // find early and late steps
+          _infoMCStructHelper.fillTrkInfoMCStep(kseedmc,
+              _allMCSegmentTIs.at(i_branch).at(segmentSuffixes.size()),
+              _allMCSegmentTIs.at(i_branch).at(segmentSuffixes.size()+1));
+          // primary info
           _infoMCStructHelper.fillPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch));
           _infoMCStructHelper.fillAllSimInfos(kseedmc, _allMCSimTIs.at(i_branch), branchConfig.options().genealogyDepth());
 
@@ -1020,58 +1043,58 @@ namespace mu2e {
   // some branches can't be made until the analyze() function because we want to write out all data products of a certain type
   // these all have an underlying array where we want to name the individual elements in the array with different leaf names
   template <typename T, typename TI, typename TIA>
-    std::vector<art::Handle<T> >  TrkAnaTreeMaker::createSpecialBranch(const art::Event& event, const std::string& branchname,
-        std::vector<art::Handle<T> >& handles, // this parameter is only needed so that the template parameter T can be deduced. There is probably a better way to do this FIXME
-        TI& infostruct, TIA& array, bool make_individual_branches, const std::string& selection) {
-      std::vector<art::Handle<T> > outputHandles;
-      std::vector<art::Handle<T> > inputHandles = event.getMany<T>();
-      if (inputHandles.size()>0) {
-        std::vector<std::string> labels;
-        for (const auto& i_handle : inputHandles) {
-          std::string moduleLabel = i_handle.provenance()->moduleLabel();
-          // event.getMany() doesn't have a way to wildcard part of the ModuleLabel, do it ourselves here
-          size_t pos;
-          if (selection != "") { // if we want to add a selection
-            pos = moduleLabel.find(selection);
+  std::vector<art::Handle<T> >  TrkAnaTreeMaker::createSpecialBranch(const art::Event& event, const std::string& branchname,
+  std::vector<art::Handle<T> >& handles, // this parameter is only needed so that the template parameter T can be deduced. There is probably a better way to do this FIXME
+  TI& infostruct, TIA& array, bool make_individual_branches, const std::string& selection) {
+    std::vector<art::Handle<T> > outputHandles;
+    std::vector<art::Handle<T> > inputHandles = event.getMany<T>();
+    if (inputHandles.size()>0) {
+      std::vector<std::string> labels;
+      for (const auto& i_handle : inputHandles) {
+        std::string moduleLabel = i_handle.provenance()->moduleLabel();
+        // event.getMany() doesn't have a way to wildcard part of the ModuleLabel, do it ourselves here
+        size_t pos;
+        if (selection != "") { // if we want to add a selection
+          pos = moduleLabel.find(selection);
 
-            // make sure that the selection (e.g. "DeM") appears at the end of the module label
-            if (pos == std::string::npos) {
-              //      std::cout << "Selection not found" << std::endl;
-              continue;
-            }
-            else if (pos+selection.length() != moduleLabel.size()) {
-              //      std::cout << "Selection wasn't at end of moduleLabel" << std::endl;
-              continue;
-            }
-            moduleLabel = moduleLabel.erase(pos, selection.length());
+          // make sure that the selection (e.g. "DeM") appears at the end of the module label
+          if (pos == std::string::npos) {
+            //      std::cout << "Selection not found" << std::endl;
+            continue;
           }
-          std::string instanceName = i_handle.provenance()->productInstanceName();
+          else if (pos+selection.length() != moduleLabel.size()) {
+            //      std::cout << "Selection wasn't at end of moduleLabel" << std::endl;
+            continue;
+          }
+          moduleLabel = moduleLabel.erase(pos, selection.length());
+        }
+        std::string instanceName = i_handle.provenance()->productInstanceName();
 
-          std::string branchname = moduleLabel;
-          if (instanceName != "") {
-            branchname += "_" + instanceName;
-          }
-          outputHandles.push_back(i_handle);
-          labels.push_back(branchname);
+        std::string branchname = moduleLabel;
+        if (instanceName != "") {
+          branchname += "_" + instanceName;
         }
-        if (make_individual_branches) { // if we want to make individual branches per leaf (e.g. to avoid branch ambiguities in python such as detrkqual.NActiveHits vs uetrkqual.NActiveHits)
-          const std::vector<std::string>& leafnames = infostruct.leafnames(labels);
-          int n_leaves = leafnames.size();
-          for (int i_leaf = 0; i_leaf < n_leaves; ++i_leaf) {
-            std::string thisbranchname = (branchname+"."+leafnames.at(i_leaf));
-            if (!_trkana->GetBranch(thisbranchname.c_str())) {  // only want to create the branch once
-              _trkana->Branch(thisbranchname.c_str(), &array[i_leaf]);
-            }
-          }
-        }
-        else {
-          if (!_trkana->GetBranch((branchname+".").c_str())) {  // only want to create the branch once
-            _trkana->Branch((branchname+".").c_str(), &infostruct, infostruct.leafname(labels).c_str());
+        outputHandles.push_back(i_handle);
+        labels.push_back(branchname);
+      }
+      if (make_individual_branches) { // if we want to make individual branches per leaf (e.g. to avoid branch ambiguities in python such as detrkqual.NActiveHits vs uetrkqual.NActiveHits)
+        const std::vector<std::string>& leafnames = infostruct.leafnames(labels);
+        int n_leaves = leafnames.size();
+        for (int i_leaf = 0; i_leaf < n_leaves; ++i_leaf) {
+          std::string thisbranchname = (branchname+"."+leafnames.at(i_leaf));
+          if (!_trkana->GetBranch(thisbranchname.c_str())) {  // only want to create the branch once
+            _trkana->Branch(thisbranchname.c_str(), &array[i_leaf]);
           }
         }
       }
-      return outputHandles;
+      else {
+        if (!_trkana->GetBranch((branchname+".").c_str())) {  // only want to create the branch once
+          _trkana->Branch((branchname+".").c_str(), &infostruct, infostruct.leafname(labels).c_str());
+        }
+      }
     }
+    return outputHandles;
+  }
 
   void TrkAnaTreeMaker::resetTrackBranches() {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
