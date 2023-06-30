@@ -29,6 +29,8 @@
 #include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
 #include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMC.hh"
 #include "Offline/Mu2eUtilities/inc/fromStrings.hh"
+#include "Offline/TrackerGeom/inc/Tracker.hh"
+#include "Offline/GeometryService/inc/GeomHandle.hh"
 // Framework includes.
 #include "art/Framework/Core/EDAnalyzer.h"
 #include "art/Framework/Principal/Event.h"
@@ -143,6 +145,7 @@ namespace mu2e {
         fhicl::Atom<std::string> simParticleLabel{Name("SimParticleLabel"), Comment("SimParticleLabel")};
         fhicl::Atom<std::string> mcTrajectoryLabel{Name("MCTrajectoryLabel"), Comment("MCTrajectoryLabel")};
         fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
+        fhicl::Atom<std::string> fittype{Name("FitType"),Comment("Type of track Fit: LoopHelix, CentralHelix, KinematicLine, or Unknown"),"Unknown"};
         fhicl::Atom<bool> pempty{Name("ProcessEmptyEvents"),false};
 
         // Calo control
@@ -216,7 +219,10 @@ namespace mu2e {
       // track branches (outputs)
       std::vector<TrkInfo> _allTIs;
       //    std::vector<TrkFitInfo> _allEntTIs, _allMidTIs, _allXitTIs;
-      std::map<BranchIndex, std::vector<TrkFitInfo>> _allSegmentTIs;
+      std::map<BranchIndex, std::vector<TrkFitInfo>> _allTFIs;
+      std::map<BranchIndex, std::vector<LoopHelixInfo>> _allLHs;
+      std::map<BranchIndex, std::vector<CentralHelixInfo>> _allCHs;
+      std::map<BranchIndex, std::vector<KinematicLineInfo>> _allKLs;
 
       std::vector<TrkCaloHitInfo> _allTCHIs;
       // quality branches (inputs)
@@ -242,7 +248,7 @@ namespace mu2e {
       std::vector<TrkInfoMC> _allMCTIs;
       std::vector<std::vector<SimInfo>> _allMCSimTIs;
       std::vector<SimInfo> _allMCPriTIs;
-      std::map<BranchIndex, std::vector<TrkInfoMCStep>> _allMCSegmentTIs;
+      std::map<BranchIndex, std::vector<TrkInfoMCStep>> _AllMCTFIs;
       bool _fillcalomc;
       art::Handle<CaloClusterMCCollection> _ccmcch;
       std::vector<CaloClusterInfoMC> _allMCTCHIs;
@@ -290,6 +296,9 @@ namespace mu2e {
       InfoMCStructHelper _infoMCStructHelper;
       // branch structure
       Int_t _buffsize, _splitlevel;
+      enum FType{Unknown=0,LoopHelix=1,CentralHelix=2,KinematicLine=3};
+      FType _ftype = Unknown;
+      std::vector<std::string> fitNames = {"Unknown", "LoopHelix","CentralHelix","KinematicLine"};
 
       // helper functions
       void fillEventInfo(const art::Event& event);
@@ -329,6 +338,15 @@ namespace mu2e {
     _buffsize(conf().buffsize()),
     _splitlevel(conf().splitlevel())
   {
+    // decode fit type
+    for(size_t ifit=0;ifit < fitNames.size();++ifit){
+      auto const& fname = fitNames[ifit];
+      if(_conf.fittype() == fname){
+        _ftype= (FType)ifit;
+        break;
+      }
+    }
+
     // collect both candidate and supplement branches into one place
     _allBranches.push_back(_conf.candidate());
     _candidateIndex = 0;
@@ -345,18 +363,49 @@ namespace mu2e {
 
       TrkInfo ti;
       _allTIs.push_back(ti);
-      std::vector<TrkFitInfo> allSegments;
-      std::vector<TrkInfoMCStep> allMCSegments;
+      std::vector<TrkFitInfo> allTFIs;
+      std::vector<LoopHelixInfo> allLHs;
+      std::vector<CentralHelixInfo> allCHs;
+      std::vector<KinematicLineInfo> allKLs;
+      std::vector<TrkInfoMCStep> allMCTFIs;
       const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
       // add extra segments for 'early' and 'late'
       if(segmentSuffixes.size()>0){
         for (size_t i_segment = 0; i_segment < segmentSuffixes.size()+2; ++i_segment) {
-          allSegments.push_back(TrkFitInfo()); // add empty structs to the vector so that ROOT can be given a location to find it
-          allMCSegments.push_back(TrkInfoMCStep());
+          allTFIs.push_back(TrkFitInfo()); // add empty structs to the vector so that ROOT can be given a location to find it
+          // create fit-specific storeage
+          switch (_ftype ) {
+            case LoopHelix :
+              allLHs.push_back(LoopHelixInfo());
+              break;
+            case CentralHelix :
+              allCHs.push_back(CentralHelixInfo());
+              break;
+            case KinematicLine :
+              allKLs.push_back(KinematicLineInfo());
+              break;
+            default:
+              break;
+          }
+          allMCTFIs.push_back(TrkInfoMCStep());
+          // eventually add fit-specific MC branches TODO
         }
       }
-      _allSegmentTIs[i_branch] = allSegments;
-      _allMCSegmentTIs[i_branch] = allMCSegments;
+      _allTFIs[i_branch] = allTFIs;
+      switch (_ftype ) {
+        case LoopHelix :
+          _allLHs[i_branch] = allLHs;
+          break;
+        case CentralHelix :
+          _allCHs[i_branch] = allCHs;
+          break;
+        case KinematicLine :
+          _allKLs[i_branch] = allKLs;
+          break;
+        default:
+          break;
+      }
+      _AllMCTFIs[i_branch] = allMCTFIs;
 
       const std::vector<std::vector<std::string>>& segmentVIDs = i_branchConfig.segmentVIDs();
       std::vector<std::vector<VirtualDetectorId>> allSegmentVIDs;
@@ -458,12 +507,27 @@ namespace mu2e {
       const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
       for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
         std::string segmentSuffix = segmentSuffixes.at(i_segment);
-        _trkana->Branch((branch+segmentSuffix+".").c_str(),&_allSegmentTIs.at(i_branch).at(i_segment));
+        _trkana->Branch((branch+segmentSuffix+".").c_str(),&_allTFIs.at(i_branch).at(i_segment));
+        if(_ftype == LoopHelix )_trkana->Branch((branch+segmentSuffix+"lh.").c_str(),&_allLHs.at(i_branch).at(i_segment));
+        if(_ftype == CentralHelix )_trkana->Branch((branch+segmentSuffix+"ch.").c_str(),&_allCHs.at(i_branch).at(i_segment));
+        if(_ftype == KinematicLine )_trkana->Branch((branch+segmentSuffix+"kl.").c_str(),&_allKLs.at(i_branch).at(i_segment));
       }
       // add 'early' and 'late' segments
       if(segmentSuffixes.size()>0){
-        _trkana->Branch((branch+"early.").c_str(),&_allSegmentTIs.at(i_branch).at(segmentSuffixes.size()));
-        _trkana->Branch((branch+"late.").c_str(),&_allSegmentTIs.at(i_branch).at(segmentSuffixes.size()+1));
+        _trkana->Branch((branch+"early.").c_str(),&_allTFIs.at(i_branch).at(segmentSuffixes.size()));
+        _trkana->Branch((branch+"late.").c_str(),&_allTFIs.at(i_branch).at(segmentSuffixes.size()+1));
+        if(_ftype == LoopHelix ){
+          _trkana->Branch((branch+"earlylh.").c_str(),&_allLHs.at(i_branch).at(segmentSuffixes.size()));
+          _trkana->Branch((branch+"latelh.").c_str(),&_allLHs.at(i_branch).at(segmentSuffixes.size()+1));
+        }
+        if(_ftype == CentralHelix ){
+          _trkana->Branch((branch+"earlych.").c_str(),&_allCHs.at(i_branch).at(segmentSuffixes.size()));
+          _trkana->Branch((branch+"latech.").c_str(),&_allCHs.at(i_branch).at(segmentSuffixes.size()+1));
+        }
+        if(_ftype == KinematicLine ){
+          _trkana->Branch((branch+"earlykl.").c_str(),&_allKLs.at(i_branch).at(segmentSuffixes.size()));
+          _trkana->Branch((branch+"latekl.").c_str(),&_allKLs.at(i_branch).at(segmentSuffixes.size()+1));
+        }
       }
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
@@ -532,12 +596,12 @@ namespace mu2e {
         const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
         for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
           std::string segmentSuffix = segmentSuffixes.at(i_segment);
-          _trkana->Branch((branch+"mc"+segmentSuffix+".").c_str(),&_allMCSegmentTIs.at(i_branch).at(i_segment));
+          _trkana->Branch((branch+"mc"+segmentSuffix+".").c_str(),&_AllMCTFIs.at(i_branch).at(i_segment));
         }
         // add 'early' and 'late' segments
         if(segmentSuffixes.size()>0){
-          _trkana->Branch((branch+"mcearly.").c_str(),&_allMCSegmentTIs.at(i_branch).at(segmentSuffixes.size()));
-          _trkana->Branch((branch+"mclate.").c_str(),&_allMCSegmentTIs.at(i_branch).at(segmentSuffixes.size()+1));
+          _trkana->Branch((branch+"mcearly.").c_str(),&_AllMCTFIs.at(i_branch).at(segmentSuffixes.size()));
+          _trkana->Branch((branch+"mclate.").c_str(),&_AllMCTFIs.at(i_branch).at(segmentSuffixes.size()+1));
         }
         if(_fillcalomc)_trkana->Branch((branch+"tchmc.").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
         // at hit-level MC information
@@ -906,17 +970,22 @@ namespace mu2e {
   void TrkAnaTreeMaker::fillAllInfos(const art::Handle<KalSeedCollection>& ksch, BranchIndex i_branch, size_t i_kseed) {
 
     const auto& kseed = ksch->at(i_kseed);
-    BranchConfig branchConfig = _allBranches.at(i_branch);
+    // general info
+    _infoStructHelper.fillTrkInfo(kseed,_allTIs.at(i_branch));
+
+    // fit information at specific points:e
 
     // get VD positions
     mu2e::GeomHandle<VirtualDetector> vdHandle;
     mu2e::GeomHandle<DetectorSystem> det;
 
-    _infoStructHelper.fillTrkInfo(kseed,_allTIs.at(i_branch));
+    BranchConfig branchConfig = _allBranches.at(i_branch);
     const std::vector<std::string>& segmentSuffixes = branchConfig.segmentSuffixes();
     for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
       const XYZVectorF& pos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_allSegmentVIDs.at(i_branch).at(i_segment).begin())));
-      _infoStructHelper.fillTrkFitInfo(kseed,_allSegmentTIs.at(i_branch).at(i_segment),pos);
+// treat cylindrical and planar constraints separately
+
+      _infoStructHelper.fillTrkFitInfo(kseed,_allTFIs.at(i_branch).at(i_segment),pos);
     }
     if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){ // want hit level info
       _infoStructHelper.fillHitInfo(kseed, _allTSHIs.at(i_branch));
@@ -1005,14 +1074,14 @@ namespace mu2e {
           double t0 = kseed.t0().t0();
           const std::vector<std::string>& segmentSuffixes = branchConfig.segmentSuffixes();
           for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-            auto& mcti = _allMCSegmentTIs.at(i_branch).at(i_segment);
+            auto& mcti = _AllMCTFIs.at(i_branch).at(i_segment);
             auto const& vid = _allSegmentVIDs.at(i_branch).at(i_segment);
             _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, mcti, vid, t0);
           }
           // find early and late steps
-          _infoMCStructHelper.fillTrkInfoMCStep(kseedmc,
-              _allMCSegmentTIs.at(i_branch).at(segmentSuffixes.size()),
-              _allMCSegmentTIs.at(i_branch).at(segmentSuffixes.size()+1));
+          _infoMCStructHelper.fillTrkInfoMCStep(kseed, kseedmc,
+              _AllMCTFIs.at(i_branch).at(segmentSuffixes.size()),
+              _AllMCTFIs.at(i_branch).at(segmentSuffixes.size()+1));
           // primary info
           _infoMCStructHelper.fillPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch));
           _infoMCStructHelper.fillAllSimInfos(kseedmc, _allMCSimTIs.at(i_branch), branchConfig.options().genealogyDepth());
@@ -1099,7 +1168,7 @@ namespace mu2e {
   void TrkAnaTreeMaker::resetTrackBranches() {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _allTIs.at(i_branch).reset();
-      _allSegmentTIs.at(i_branch).assign(_allSegmentTIs.at(i_branch).size(), TrkFitInfo());       // we don't want to remove elements so use assign instead of clear
+      _allTFIs.at(i_branch).assign(_allTFIs.at(i_branch).size(), TrkFitInfo());       // we don't want to remove elements so use assign instead of clear
 
       _allTCHIs.at(i_branch).reset();
 
@@ -1109,7 +1178,7 @@ namespace mu2e {
       }
       _allMCPriTIs.at(i_branch).reset();
 
-      _allMCSegmentTIs.at(i_branch).assign(_allMCSegmentTIs.at(i_branch).size(), TrkInfoMCStep());
+      _AllMCTFIs.at(i_branch).assign(_AllMCTFIs.at(i_branch).size(), TrkInfoMCStep());
       if(_fillcalomc)_allMCTCHIs.at(i_branch).reset();
 
       _allRQIs.at(i_branch).reset();

@@ -91,21 +91,7 @@ namespace mu2e {
     trkfitinfo.mom = ksegIter->momentum3();
     trkfitinfo.pos = ksegIter->position3();
     trkfitinfo.momerr = ksegIter->momerr();
-    // this should be conditional on the trajectory type: maybe removed?
-    if(!kseed.status().hasAllProperties(TrkFitFlag::KKLine)){
-      auto ltraj = ksegIter->loopHelix();
-      trkfitinfo.Rad = ltraj.rad();
-      trkfitinfo.Lambda = ltraj.lam();
-      trkfitinfo.Cx = ltraj.cx();
-      trkfitinfo.Cy = ltraj.cy();
-      trkfitinfo.phi0 = ltraj.phi0();
-      trkfitinfo.t0 = ltraj.t0();
-      // legacy; these follow the BTrk (CentralHelix) convention
-      double rc = sqrt(ltraj.cx()*ltraj.cx()+ltraj.cy()*ltraj.cy());
-      trkfitinfo.d0 = -ltraj.sign()*( rc - fabs(ltraj.rad()));
-      trkfitinfo.maxr = rc + fabs(ltraj.rad());
-      trkfitinfo.td = trkfitinfo.mom.Z()/trkfitinfo.mom.Rho();
-    }
+    trkfitinfo.valid = true;
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {

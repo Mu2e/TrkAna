@@ -14,6 +14,9 @@
   <class name="mu2e::HitCount" />
   <class name="mu2e::TrkCount" />
   <class name="mu2e::TrkInfo" />
+  <class name="mu2e::LoopHelixInfo" />
+  <class name="mu2e::CentralHelixInfo" />
+  <class name="mu2e::KinematicLineInfo" />
   <class name="mu2e::SimInfo" />
   <class name="mu2e::HelixInfo" />
   <class name="mu2e::TrkCaloHitInfo" />

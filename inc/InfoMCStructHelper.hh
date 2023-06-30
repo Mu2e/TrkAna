@@ -61,7 +61,7 @@ namespace mu2e {
       void fillAllSimInfos(const KalSeedMC& kseedmc, std::vector<SimInfo>& siminfos, int n_generations);
       void fillPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, SimInfo& priinfo);
       void fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep, std::vector<VirtualDetectorId> const& vids, double target_time);
-      void fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& earlytrkinfomcstep, TrkInfoMCStep& latetrkinfomcstep);
+      void fillTrkInfoMCStep(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMCStep& earlytrkinfomcstep, TrkInfoMCStep& latetrkinfomcstep);
 
       void fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs);
       void fillCaloClusterInfoMC(CaloClusterMC const& ccmc, CaloClusterInfoMC& ccimc);
