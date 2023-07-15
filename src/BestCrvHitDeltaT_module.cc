@@ -110,4 +110,4 @@ namespace mu2e {
 // Part of the magic that makes this class a module.
 // create an instance of the module.  It also registers
 using mu2e::BestCrvHitDeltaT;
-DEFINE_ART_MODULE(BestCrvHitDeltaT);
+DEFINE_ART_MODULE(BestCrvHitDeltaT)
