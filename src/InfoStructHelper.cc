@@ -50,9 +50,9 @@ namespace mu2e {
     else if(kseed.status().hasAllProperties(TrkFitFlag::TPRHelix))
       trkinfo.seedalg = 0;
 
-    if(kseed.status().hasAllProperties(TrkFitFlag::KKLoopHelix))
+    if(kseed.status().hasAllProperties(TrkFitFlag::KKLoopHelix)){
       trkinfo.fitalg =1;
-    else if(kseed.status().hasAllProperties(TrkFitFlag::KKCentralHelix))
+    } else if(kseed.status().hasAllProperties(TrkFitFlag::KKCentralHelix))
       trkinfo.fitalg = 2;
     else if(kseed.status().hasAllProperties(TrkFitFlag::KKLine))
       trkinfo.fitalg = 3;
@@ -68,6 +68,8 @@ namespace mu2e {
     trkinfo.chisq = kseed.chisquared();
     trkinfo.fitcon = kseed.fitConsistency();
     trkinfo.nseg = kseed.nTrajSegments();
+    trkinfo.maxgap = kseed._maxgap;
+    trkinfo.avggap = kseed._avggap;
 
     trkinfo.firsthit = kseed.hits().back()._ptoca;
     trkinfo.lasthit = kseed.hits().front()._ptoca;
@@ -89,9 +91,21 @@ namespace mu2e {
     trkfitinfo.mom = ksegIter->momentum3();
     trkfitinfo.pos = ksegIter->position3();
     trkfitinfo.momerr = ksegIter->momerr();
-    trkfitinfo.d0 = ksegIter->centralHelix().d0();
-    trkfitinfo.maxr = ksegIter->centralHelix().d0() + 2.0/ksegIter->centralHelix().omega();
-    trkfitinfo.td = ksegIter->centralHelix().tanDip();
+    // this should be conditional on the trajectory type: maybe removed?
+    if(!kseed.status().hasAllProperties(TrkFitFlag::KKLine)){
+      auto ltraj = ksegIter->loopHelix();
+      trkfitinfo.Rad = ltraj.rad();
+      trkfitinfo.Lambda = ltraj.lam();
+      trkfitinfo.Cx = ltraj.cx();
+      trkfitinfo.Cy = ltraj.cy();
+      trkfitinfo.phi0 = ltraj.phi0();
+      trkfitinfo.t0 = ltraj.t0();
+      // legacy; these follow the BTrk (CentralHelix) convention
+      double rc = sqrt(ltraj.cx()*ltraj.cx()+ltraj.cy()*ltraj.cy());
+      trkfitinfo.d0 = -ltraj.sign()*( rc - fabs(ltraj.rad()));
+      trkfitinfo.maxr = rc + fabs(ltraj.rad());
+      trkfitinfo.td = trkfitinfo.mom.Z()/trkfitinfo.mom.Rho();
+    }
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
@@ -101,7 +115,7 @@ namespace mu2e {
     uint16_t minplane(0), maxplane(0);
     for (auto ihit = kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
       ++trkinfo.nhits;
-      if (ihit->strawHitState()>WireHitState::inactive) {
+      if (ihit->strawHitState() > WireHitState::inactive){
         ++trkinfo.nactive;
         planes.insert(ihit->strawId().plane());
         minplane = std::min(minplane, ihit->strawId().plane());
@@ -147,32 +161,44 @@ namespace mu2e {
       auto const& straw = tracker.getStraw(ihit->strawId());
 
       tshinfo.state = ihit->_ambig;
+      tshinfo.usetot = ihit->_kkshflag.hasAnyProperty(KKSHFlag::tot);
+      tshinfo.usedriftdt = ihit->_kkshflag.hasAnyProperty(KKSHFlag::driftdt);
+      tshinfo.useabsdt = ihit->_kkshflag.hasAnyProperty(KKSHFlag::absdrift);
+      tshinfo.usendvar = ihit->_kkshflag.hasAnyProperty(KKSHFlag::nhdrift);
       tshinfo.algo = ihit->_algo;
       tshinfo.frozen = ihit->_frozen;
-      tshinfo.driftend   = ihit->_end.end();
+      tshinfo.bkgqual = ihit->_bkgqual;
+      tshinfo.signqual = ihit->_signqual;
+      tshinfo.driftqual = ihit->_driftqual;
+      tshinfo.chi2qual = ihit->_chi2qual;
+      tshinfo.earlyend   = ihit->_eend.end();
       tshinfo.plane = ihit->strawId().plane();
       tshinfo.panel = ihit->strawId().panel();
       tshinfo.layer = ihit->strawId().layer();
       tshinfo.straw = ihit->strawId().straw();
 
       tshinfo.edep   = ihit->_edep;
-      tshinfo.htime   = ihit->_htime;
+      tshinfo.etime   = ihit->_etime;
       tshinfo.wdist   = ihit->_wdist;
       tshinfo.werr   = ihit->_werr;
-      tshinfo.totdrift = ihit->_dtime;
+      tshinfo.tottdrift = ihit->_tottdrift;
+      tshinfo.tot = ihit->_tot;
       tshinfo.ptoca   = ihit->_ptoca;
       tshinfo.stoca   = ihit->_stoca;
-      tshinfo.wdoca   = ihit->_wdoca;
-      tshinfo.wdocavar   = ihit->_wdocavar;
-      tshinfo.wdt   = ihit->_wdt;
-      tshinfo.wtocavar   = ihit->_wtocavar;
-      tshinfo.doca   = ihit->_doca;
-      tshinfo.docavar   = ihit->_docavar;
-      tshinfo.dt   = ihit->_dt;
-      tshinfo.tocavar   = ihit->_tocavar;
-      tshinfo.upos   = ihit->_upos;
+      tshinfo.rdoca   = ihit->_rdoca;
+      tshinfo.rdocavar   = ihit->_rdocavar;
+      tshinfo.rdt   = ihit->_rdt;
+      tshinfo.rtocavar   = ihit->_rtocavar;
+      tshinfo.udoca   = ihit->_udoca;
+      tshinfo.udocavar   = ihit->_udocavar;
+      tshinfo.udt   = ihit->_udt;
+      tshinfo.utocavar   = ihit->_utocavar;
+      tshinfo.rupos   = ihit->_rupos;
+      tshinfo.uupos   = ihit->_uupos;
       tshinfo.rdrift   = ihit->_rdrift;
-      tshinfo.rerr   = ihit->_rerr;
+      tshinfo.cdrift   = ihit->_cdrift;
+      tshinfo.sderr   = ihit->_sderr;
+      tshinfo.uderr   = ihit->_uderr;
       tshinfo.dvel   = ihit->_dvel;
       tshinfo.lang   = ihit->_lang;
       tshinfo.utresid   = ihit->_utresid;
@@ -191,14 +217,12 @@ namespace mu2e {
       // find nearest segment
       auto ikseg = kseed.nearestSegment(ihit->_ptoca);
       if(ikseg != kseed.segments().end()){
-        XYZVectorF dir;
-        ikseg->helix().direction(ikseg->localFlt(ihit->trkLen()),dir);
-        auto tdir = GenVector::Hep3Vec(dir);
-        tshinfo.wdot = tdir.dot(straw.getDirection());
+        auto tdir(ikseg->momentum3().Unit());
+        tshinfo.wdot = tdir.Dot(straw.getDirection());
       }
       auto const& wiredir = straw.getDirection();
       auto const& mid = straw.getMidPoint();
-      CLHEP::Hep3Vector hpos = mid + wiredir*ihit->hitLen();
+      auto hpos = mid + wiredir*ihit->_wdist;
       tshinfo.poca = XYZVectorF(hpos);
 
       // count correlations with other TSH
@@ -243,20 +267,23 @@ namespace mu2e {
     if (kseed.hasCaloCluster()) {
       auto const& tch = kseed.caloHit();
       auto const& cc = tch.caloCluster();
-
-      tchinfo.active = tch.flag().hasAllProperties(StrawHitFlag::active);
+      tchinfo.active = tch._flag.hasAllProperties(StrawHitFlag::active);
       tchinfo.did = cc->diskID();
-      tchinfo.poca = tch.clusterPosition();
-      tchinfo.mom = tch.trackMomentum();
-      tchinfo.cdepth = tch.clusterDepth();
-      tchinfo.doca = tch.clusterAxisDOCA();
-      tchinfo.dt = tch.clusterAxisPOCADeltaT();
-      tchinfo.toca = tch.clusterAxisTOCA();
-      tchinfo.tocavar = tch.clusterAxisTOCAVar();
+      tchinfo.poca = tch._cpos;
+      tchinfo.mom = tch._tmom;
+      tchinfo.cdepth = tch._cdepth;
+      tchinfo.doca = tch._udoca;
+      tchinfo.dt = tch._udt;
+      tchinfo.ptoca = tch._uptoca;
+      tchinfo.tocavar = tch._utocavar;
       tchinfo.tresid   = tch._tresid;
       tchinfo.tresidmvar   = tch._tresidmvar;
       tchinfo.tresidpvar   = tch._tresidpvar;
+      tchinfo.ctime = cc->time();
+      tchinfo.ctimeerr = cc->timeErr();
+      tchinfo.csize = cc->size();
       tchinfo.edep = cc->energyDep();
+      tchinfo.edeperr = cc->energyDepErr();
     }
   }
 
@@ -296,6 +323,7 @@ namespace mu2e {
     }
   }
 
+  // this function won't work with KinKal fits and needs to be rewritten from scratch //FIXME
   void InfoStructHelper::fillTrkPIDInfo(const TrkCaloHitPID& tchp, const KalSeed& kseed, TrkPIDInfo& trkpidInfo) {
     mu2e::GeomHandle<mu2e::Calorimeter> calo;
     int n_trktchpid_vars = TrkCaloHitPID::n_vars;

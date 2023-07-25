@@ -9,17 +9,31 @@
 
 #include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "Offline/Mu2eUtilities/inc/TwoLinePCA.hh"
-#include "BTrk/TrkBase/TrkHelixUtils.hh"
+#include "Offline/DataProducts/inc/EventWindowMarker.hh"
 
 #include "Offline/GlobalConstantsService/inc/GlobalConstantsHandle.hh"
 #include "Offline/GlobalConstantsService/inc/ParticleDataList.hh"
 #include "Offline/GeometryService/inc/GeomHandle.hh"
 #include "Offline/GeometryService/inc/DetectorSystem.hh"
+#include "Offline/ConditionsService/inc/ConditionsHandle.hh"
+#include "Offline/ConditionsService/inc/AcceleratorParams.hh"
+#include "art/Framework/Principal/Handle.h"
 
 #include <map>
 #include <limits>
 
 namespace mu2e {
+
+  void InfoMCStructHelper::updateEvent(const art::Event& event) {
+    event.getByLabel(_spctag,_spcH);
+    ConditionsHandle<AcceleratorParams> accPar("ignored");
+    _mbtime = accPar->deBuncherPeriod;
+    art::Handle<EventWindowMarker> ewMarkerHandle;
+    event.getByLabel(_ewMarkerTag, ewMarkerHandle);
+    const EventWindowMarker& ewMarker(*ewMarkerHandle);
+    _onSpill = (ewMarker.spillType() == EventWindowMarker::SpillType::onspill);
+  }
+
   void InfoMCStructHelper::fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
     // use the primary match of the track
     // primary associated SimParticle
@@ -84,6 +98,7 @@ namespace mu2e {
     tshinfomc.earlyend = tshmc._earlyend._end;
     tshinfomc.t0 = tshmc._time;
     tshinfomc.tdrift = tshmc._tdrift;
+    tshinfomc.rdrift = tshmc._rdrift;
     tshinfomc.tprop = tshmc._tprop;
     tshinfomc.edep = tshmc._energySum;
     tshinfomc.mom = std::sqrt(tshmc._mom.mag2());
@@ -91,18 +106,19 @@ namespace mu2e {
 
     // find the step midpoint
     const Straw& straw = tracker.getStraw(tshmc._strawId);
-    CLHEP::Hep3Vector mcsep = GenVector::Hep3Vec(tshmc._cpos)-straw.getMidPoint();
-    tshinfomc.len = mcsep.dot(straw.getDirection());
-    CLHEP::Hep3Vector mdir = GenVector::Hep3Vec(tshmc._mom.unit());
-    CLHEP::Hep3Vector mcperp = (mdir.cross(straw.getDirection())).unit();
-    double dperp = mcperp.dot(mcsep);
-    tshinfomc.twdot = mdir.dot(straw.getDirection());
+    auto mcsep = tshmc._cpos-XYZVectorF(straw.getMidPoint());
+    auto wdir = XYZVectorF(straw.getDirection());
+    tshinfomc.len = mcsep.Dot(wdir);
+    auto mdir = tshmc._mom.Unit();
+    auto mcperp = mdir.Cross(wdir).Unit();
+    double dperp = mcperp.Dot(mcsep);
+    tshinfomc.twdot = mdir.Dot(wdir);
     tshinfomc.dist = fabs(dperp);
+    auto wperp = wdir.Cross(mcperp);
+    tshinfomc.tau = mcsep.Dot(wperp);
+    tshinfomc.cdist = sqrt(tshinfomc.dist*tshinfomc.dist+tshinfomc.tau*tshinfomc.tau);
     tshinfomc.ambig = dperp > 0 ? -1 : 1; // follow TrkPoca convention
-    // use 2-line POCA here
-    TwoLinePCA pca(GenVector::Hep3Vec(tshmc._cpos),mdir,straw.getMidPoint(),straw.getDirection());
-    // sign doca by the angular momentum
-    tshinfomc.doca = pca.dca()*tshinfomc.ambig;
+    tshinfomc.doca = -1*dperp;
   }
 
   void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, std::vector<SimInfo>& siminfos, int n_generations) {
@@ -125,19 +141,18 @@ namespace mu2e {
     // go through the SimParticles of this primary, and find the one most related to the
     // downstream fit (KalSeedMC)
 
-    if (primary.primarySimParticles().empty()) {
-      throw cet::exception("Simulation")<<"InfoMCStructHelper: No Primary Particle found" << std::endl;
+    if (!primary.primarySimParticles().empty()) {
+      auto bestprimarysp = primary.primarySimParticles().front();
+      MCRelationship bestrel;
+      for(auto const& spp : primary.primarySimParticles()){
+        MCRelationship mcrel(spp,trkprimary);
+        if(mcrel > bestrel){
+          bestrel = mcrel;
+          bestprimarysp = spp;
+        }
+      } // redundant: FIXME!
+      fillSimInfo(bestprimarysp, priinfo);
     }
-    auto bestprimarysp = primary.primarySimParticles().front();
-    MCRelationship bestrel;
-    for(auto const& spp : primary.primarySimParticles()){
-      MCRelationship mcrel(spp,trkprimary);
-      if(mcrel > bestrel){
-        bestrel = mcrel;
-        bestprimarysp = spp;
-      }
-    } // redundant: FIXME!
-    fillSimInfo(bestprimarysp, priinfo);
   }
 
 
@@ -163,8 +178,8 @@ namespace mu2e {
   }
 
   void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep,
-      std::vector<int> const& vids, double target_time) {
-
+      std::vector<VirtualDetectorId> const& vids, double target_time) {
+    ConditionsHandle<AcceleratorParams> accPar("ignored");
     GeomHandle<DetectorSystem> det;
     GlobalConstantsHandle<ParticleDataList> pdt;
     static CLHEP::Hep3Vector vpoint_mu2e = det->toMu2e(CLHEP::Hep3Vector(0.0,0.0,0.0));
@@ -175,8 +190,14 @@ namespace mu2e {
       for(auto vid : vids) {
         if (i_mcstep._vdid == vid) {
           // take the VD step with the time closest to target_time
-          // this is so that we can take the correct step when looking at upstream/downstream trachs
-          double corrected_time = fmod(i_mcstep._time, 1695); // VDStep is created with the time offsets included
+          // this is so that we can take the correct step when looking at upstream/downstream tracks
+          // This won't work for extracted or OffSpill: FIXME!!!
+          double corrected_time;
+          if(_onSpill) {
+            corrected_time = std::fmod(i_mcstep._time,_mbtime);
+          } else {
+            corrected_time = i_mcstep._time;
+          }
           if(fabs(target_time - corrected_time) < dmin){
             dmin = fabs(target_time - corrected_time);//i_mcstep._time;
             trkinfomcstep.valid = true;
@@ -213,22 +234,22 @@ namespace mu2e {
   }
 
   void InfoMCStructHelper::fillCrvHitInfoMC(art::Ptr<CrvCoincidenceClusterMC> const& crvCoincMC, CrvHitInfoMC& crvHitInfoMC) {
-    if(crvCoincMC->HasMCInfo()) {
-      const art::Ptr<SimParticle> &simParticle = crvCoincMC->GetMostLikelySimParticle();
+    const art::Ptr<SimParticle> &simParticle = crvCoincMC->GetMostLikelySimParticle();
+    if(crvCoincMC->HasMCInfo() && simParticle.isAvailable()) {
       art::Ptr<SimParticle> primaryParticle = simParticle;
       art::Ptr<SimParticle> parentParticle = simParticle;
       art::Ptr<SimParticle> gparentParticle = simParticle;
       int i_gen = 0;
       while (primaryParticle->hasParent()) {
-	primaryParticle = primaryParticle->parent();
-	if (i_gen ==0) {
-	  parentParticle = primaryParticle;
-	  gparentParticle = primaryParticle;
-	}
-	else if (i_gen == 1) {
-	  gparentParticle = primaryParticle;
-	}
-	++i_gen;
+        primaryParticle = primaryParticle->parent();
+        if (i_gen ==0) {
+          parentParticle = primaryParticle;
+          gparentParticle = primaryParticle;
+        }
+        else if (i_gen == 1) {
+          gparentParticle = primaryParticle;
+        }
+        ++i_gen;
       }
       crvHitInfoMC._valid = true;
       crvHitInfoMC._pdgId = simParticle->pdgId();
@@ -252,6 +273,53 @@ namespace mu2e {
       crvHitInfoMC._z = crvCoincMC->GetEarliestHitPos().z();
       crvHitInfoMC._time = crvCoincMC->GetEarliestHitTime();
       crvHitInfoMC._depositedEnergy = crvCoincMC->GetTotalEnergyDeposited();
+    }
+  }
+
+  void InfoMCStructHelper::fillExtraMCStepInfos(KalSeedMC const& kseedmc, StepPointMCCollection const& mcsteps,
+      MCStepInfos& mcsic, MCStepSummaryInfo& mcssi) {
+    GeomHandle<DetectorSystem> det;
+    mcssi.reset();
+    mcsic.clear();
+    MCStepInfo mcsi;
+    // only count the extra steps associated with the primary MC truth match
+    auto simp = kseedmc.simParticle().simParticle(_spcH);
+    //    std::cout << "KalSeedMC simp kep " << simp.key()
+    //      << " start mom " << simp->startMomentum().vect()
+    //      << " pos " << simp->startPosition() << std::endl;
+    for(auto const& mcstep : mcsteps) {
+      //     std::cout << "MCStep simp key " << mcstep.simParticle().key()
+      //       << " start mom " << mcstep.simParticle()->startMomentum().vect()
+      //       << " pos " << mcstep.simParticle()->startPosition() << std::endl;
+      if(mcstep.simParticle().key() == simp.key()){
+        // combine steps if they are in the same material.  They must be close in time too, since the particle may
+        // re-enter the same material
+        auto spos = XYZVectorF(det->toDetector(mcstep.position()));
+        if(static_cast<int>(mcstep.volumeId()) == mcsi.vid && fabs(mcstep.time()-mcsi.time)<0.1 ){
+          mcsi.de += mcstep.totalEDep();
+          mcsi.dp += mcstep.postMomentum().mag() - mcstep.momentum().mag();
+        } else {
+          if(mcsi.valid()){
+            // save this step
+            mcsic.push_back(mcsi);
+            // add its info to the summary
+            mcssi.addStep(mcsi);
+          }
+          // initialize the new step
+          mcsi.reset();
+          mcsi.vid = mcstep.volumeId();
+          mcsi.time = mcstep.time();
+          mcsi.de = mcstep.totalEDep();
+          mcsi.dp = mcstep.postMomentum().mag()- mcstep.momentum().mag();
+          mcsi.mom = mcstep.momentum();
+          mcsi.pos = spos;
+        }
+      }
+    }
+    // finalize the last step
+    if(mcsi.valid()){
+      mcsic.push_back(mcsi);
+      mcssi.addStep(mcsi);
     }
   }
 }

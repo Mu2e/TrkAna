@@ -11,11 +11,14 @@ services : @local::Services.Reco
 
 physics :
 {
-  producers : { @table::TrkAnaReco.producers }
+  producers : {
+    @table::TrkAnaReco.producers
+    @table::TrkAnaReco.MCProducers
+  }
   analyzers : { @table::TrkAnaReco.analyzers }
 }
 
-physics.TrkAnaTrigPath : [ @sequence::TrkAnaReco.TrigSequence ]
+physics.TrkAnaTrigPath : [ @sequence::TrkAnaReco.MCTrigSequence, @sequence::TrkAnaReco.TrigSequence ]
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)

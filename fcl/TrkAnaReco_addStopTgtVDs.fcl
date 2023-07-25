@@ -1,0 +1,19 @@
+// This fcl file gives an example of how an analyzer
+// can write a TrkAna tree with different VirtualDetectors
+//
+// This is useful if ....
+//
+// In this example, we will write branches for ST_Out virtual detector
+//
+
+// This example builds on TrkAnaReco.fcl
+#include "TrkAna/fcl/TrkAnaReco.fcl"
+
+// First define the suffix of the branches we want
+// In this example, "tgt" will mean we create branched "detgt", "demctgt", "uetgt", etc.
+physics.analyzers.TrkAnaNeg.candidate.segmentSuffixes : [ @sequence::physics.analyzers.TrkAnaNeg.candidate.segmentSuffixes, "tgt" ]
+
+// Then define the virtual detectors we want to be included in this branch
+// NB we add a sequence because we sometimes combine virtual detectors for one "interesting" plane
+// (e.g. TT_FrontHollow and TT_FrontPA define the entrance to the tracker)
+physics.analyzers.TrkAnaNeg.candidate.segmentVIDs : [ @sequence::physics.analyzers.TrkAnaNeg.candidate.segmentVIDs, ["ST_Out"] ]

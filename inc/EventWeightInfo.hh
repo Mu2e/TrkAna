@@ -10,13 +10,22 @@ namespace mu2e
 {
   struct EventWeightInfo {
     static const int MAX_WEIGHTS = 50;
-    const std::string leafnames(std::vector<std::string> labels) {
+    const std::string leafname(std::vector<std::string> labels) {
       std::string leaves = "nwts/I:";
       for (std::vector<std::string>::const_iterator i_label = labels.begin(); i_label != labels.end(); ++i_label) {
         leaves += *i_label + "/F";
         if (i_label != labels.end()-1) {
           leaves += ":";
         }
+      }
+      n_weights = labels.size();
+      return leaves;
+    }
+
+    const std::vector<std::string> leafnames(std::vector<std::string> labels) {
+      std::vector<std::string> leaves;
+      for (std::vector<std::string>::const_iterator i_label = labels.begin(); i_label != labels.end(); ++i_label) {
+        leaves.push_back(*i_label);
       }
       n_weights = labels.size();
       return leaves;

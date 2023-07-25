@@ -15,14 +15,14 @@ namespace mu2e
     XYZVectorF mom; // Track momentum vector at Point Of Closest Approach (POCA)
     Float_t cdepth;    // depth at POCA
     Float_t doca; // DOCA of this hit
-    Float_t dt, toca, tocavar; // dt and TOCA of this hit
+    Float_t dt, ptoca, tocavar; // dt and TOCA of this hit
     Float_t tresid, tresidmvar, tresidpvar; // unbiased time residual and associated measurement and parameter variances
-    Float_t edep;    // reconstructed crystal energy deposition
+    Float_t ctime, ctimeerr, csize, edep, edeperr;    // reconstructed cluster properties
     TrkCaloHitInfo() : active(false),did(-1),
     cdepth(-1000.0),
-    doca(-1000.0), dt(-1000.0), toca(-1000.0), tocavar(-1000.0),
+    doca(-1000.0), dt(-1000.0), ptoca(-1000.0), tocavar(-1000.0),
     tresid(-1000.0), tresidmvar(-1000.0), tresidpvar(-1000.0),
-    edep(-1000.0)  {}
+    ctime(-1000.0), ctimeerr(-1000.0),  csize(-1000.0), edep(-1000.0), edeperr(-1000.0)  {}
     void reset() { *this = TrkCaloHitInfo(); }
   };
 }

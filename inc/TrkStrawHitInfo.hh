@@ -3,48 +3,40 @@
 //
 #ifndef TrkStrawHitInfoHH
 #define TrkStrawHitInfoHH
-#include "Rtypes.h"
 #include "Offline/DataProducts/inc/GenVector.hh"
+#include "Offline/DataProducts/inc/TrkTypes.hh"
 namespace mu2e
 {
   struct TrkStrawHitInfo {
-    Int_t plane, panel, layer, straw;  // StrawId fields for the straw hit
-    Int_t state;     // hit state, including activity and left-right ambiguity
-    Int_t algo; // updater algorithm last used on this hit
-    Bool_t frozen; // was state frozen?
-    Int_t driftend; // which end(s) was used in computing the drift
-    Float_t edep;        // reco energy deposition
-    Float_t htime;   // raw hit time
-    Float_t wdist;       // raw hit U position
-    Float_t werr;    // raw hit U position error estimate
-    Float_t totdrift; // TOT expressed as drift time
-    Float_t ptoca, stoca;    // reference particle (sensor) time of closest approach (TOCA)
-    Float_t wdoca, wdocavar;   // reference (biased) DOCA from the track to the wire, signed by the angular momentum WRT the wire and the measurement end (and variance)
-    Float_t wdt, wtocavar;   // reference (biased) time difference (and variance) at POCA
-    Float_t doca, docavar; // unbiaed DOCA (and variance)
-    Float_t dt, tocavar;   // fit (unbiased) dt and variance
-    Float_t upos; // POCA position along the straw WRT the straw middle
-    Float_t rdrift,rerr,dvel,lang; // drift information
-    Float_t utresid, utresidmvar, utresidpvar; // unbiased time residual and associated measurement and parameter variances
-    Float_t udresid, udresidmvar, udresidpvar; // unbiased distance residual and associated measurement and parameter variances
-    Float_t rtresid, rtresidmvar, rtresidpvar; // reference time residual and associated measurement and parameter variances
-    Float_t rdresid, rdresidmvar, rdresidpvar; // reference distance residual and associated measurement and parameter variances
+    int plane = 0, panel = 0, layer = 0, straw = 0;  // StrawId fields for the straw hit
+    int state = 0;     // hit state, including activity and left-right ambiguity
+    int algo = 0; // updater algorithm last used on this hit
+    bool frozen = false; // was state frozen?
+    bool usetot, usedriftdt, useabsdt, usendvar; // flags
+    float bkgqual = -1.0, signqual = -1.0, driftqual = -1.0, chi2qual = -1.0; // hit state assignment quality
+    int earlyend = 0; // which end had the early TDC
+    float edep = -1.0 ;        // reco energy deposition
+    float wdist = 0;       // raw hit U position
+    float werr = -1.0;    // raw hit U position error estimate
+    float tottdrift = 0; // TOT expressed as drift time
+    TrkTypes::TDCTimes etime = {0,0};   // raw hit time at each end
+    TrkTypes::TOTTimes  tot = {0,0};   // TOT times in ns from each end
+    float ptoca = 0, stoca = 0;    // reference particle (sensor) time of closest approach (TOCA)
+    float rdoca = 0, rdocavar = 0;   // reference (biased) DOCA from the track to the wire, signed by the angular momentum WRT the wire and the measurement end (and variance)
+    float rdt = 0, rtocavar = -1.0;   // reference (biased) time difference (and variance) at POCA
+    float udoca = 0, udocavar = -1.0; // unbiaed DOCA (and variance)
+    float udt = 0, utocavar = -1.0;   // unbiased dt and variance
+    float rupos = 0, uupos = 0; // POCA position along the straw WRT the straw middle
+    float rdrift = 0, cdrift = 0, sderr = -1.0, uderr = -1.0, dvel = 0, lang = 0; // drift information
+    float utresid = 0, utresidmvar = -1.0, utresidpvar = -1.0; // unbiased time residual and associated measurement and parameter variances
+    float udresid = 0, udresidmvar = -1.0, udresidpvar = -1.0; // unbiased distance residual and associated measurement and parameter variances
+    float rtresid = 0, rtresidmvar = -1.0, rtresidpvar = -1.0; // reference time residual and associated measurement and parameter variances
+    float rdresid = 0, rdresidmvar = -1.0, rdresidpvar = -1.0; // reference distance residual and associated measurement and parameter variances
+    float wdot = 0; // cosine of the angle between the track and wire
+    XYZVectorF poca; // POCA
     // not sure if we still want these
-    Float_t wdot;
-    XYZVectorF poca;
-    bool dhit, dactive;
-
-    TrkStrawHitInfo() : plane(-1), panel(-1), layer(-1), straw(-1), state(-10),driftend(-1),
-    edep(0), htime(0), wdist(0), werr(0),totdrift(0),
-    ptoca(0), stoca(0),
-    wdoca(0), wdocavar(0), wdt(0), wtocavar(0),
-    doca(0.0), docavar(0), dt(0), tocavar(0),
-    upos(0),rdrift(0), rerr(0), dvel(0), lang(0),
-    utresid(0), utresidmvar(0), utresidpvar(0),
-    udresid(0), udresidmvar(0), udresidpvar(0),
-    rtresid(0), rtresidmvar(0), rtresidpvar(0),
-    rdresid(0), rdresidmvar(0), rdresidpvar(0),
-    wdot(0), dhit(false), dactive(false) {}
+    bool dhit = false;
+    bool dactive = false;
   };
 }
 #endif
