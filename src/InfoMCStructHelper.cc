@@ -210,6 +210,52 @@ namespace mu2e {
     }
   }
 
+  void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMCStep& earlytrkinfomcstep, TrkInfoMCStep& latetrkinfomcstep) {
+    // find the true time of the earliest and latest hit actually used in this fit
+    float tshmcearly(1e10), tshmclate(-1e10);
+    for(size_t ish=0;ish < kseed.hits().size();++ish){
+      auto const& tsh = kseed.hits().at(ish);
+      auto const& tshmc = kseedmc.trkStrawHitMCs().at(ish);
+      if(tsh._flag.hasAllProperties(StrawHitFlag::active)){
+        tshmcearly = std::min(tshmcearly,tshmc._time);
+        tshmclate = std::max(tshmclate,tshmc._time);
+      }
+    }
+    // now, find the closest VD crossing that is before (after) that early (late) hit time
+    size_t iearly(0), ilate(0);
+    double detime(1e10), dltime(1e10);
+    const auto& mcsteps = kseedmc._vdsteps;
+    for(size_t imcstep = 0; imcstep < mcsteps.size(); ++imcstep) {
+      const auto& mcstep = mcsteps[imcstep];
+      double corrected_time;
+      if(_onSpill) {
+        corrected_time = std::fmod(mcstep._time,_mbtime);
+      } else {
+        corrected_time = mcstep._time;
+      }
+      if(corrected_time < tshmcearly && fabs(corrected_time-tshmcearly) < detime) {
+        detime = fabs(corrected_time-tshmcearly);
+        iearly = imcstep;
+      }
+      if(corrected_time > tshmclate && fabs(corrected_time-tshmclate) < dltime) {
+        dltime = fabs(corrected_time-tshmclate);
+        ilate = imcstep;
+      }
+    }
+    if(mcsteps.size()>0){
+      auto const& emcstep = mcsteps[iearly];
+      auto const& lmcstep = mcsteps[iearly];
+      earlytrkinfomcstep.valid = true;
+      earlytrkinfomcstep.time = _onSpill ? std::fmod(emcstep._time,_mbtime) : emcstep._time;
+      earlytrkinfomcstep.mom = XYZVectorF(mcsteps[iearly]._mom);
+      earlytrkinfomcstep.pos = XYZVectorF(mcsteps[iearly]._pos);
+      latetrkinfomcstep.valid = true;
+      latetrkinfomcstep.time = _onSpill ? std::fmod(lmcstep._time,_mbtime) : lmcstep._time;
+      latetrkinfomcstep.mom = XYZVectorF(mcsteps[ilate]._mom);
+      latetrkinfomcstep.pos = XYZVectorF(mcsteps[ilate]._pos);
+    }
+  }
+
   void InfoMCStructHelper::fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs) {
     tshinfomcs.clear();
 

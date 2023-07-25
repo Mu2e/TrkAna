@@ -11,17 +11,39 @@
 #include "Rtypes.h"
 namespace mu2e
 {
-  // information about the track fit at a particular place.
+  // generic information about the track fit at a particular place/time
   struct TrkFitInfo {
     XYZVectorF mom;
     XYZVectorF pos;
-    float momerr = -1000;
-    float d0 = 0;
-    float maxr = 0;
-    float td = 0;
-    // loop helix parameters
-    float Rad=0, Lambda=0, Cx=0, Cy=0, phi0=0, t0=0;
+    float momerr = -1000;  // projected error on the scalar momentum
+    bool valid = false;
     void reset() { *this = TrkFitInfo(); }
+  };
+  // specific structs for specific fit types
+  struct CentralHelixInfo {
+    // central helix parameters
+    float d0=0,phi0=0,omega=0,z0=0,tanDip=0,t0=0;
+    float d0err=0,phi0err=0,omegaerr=0,z0err=0,tanDiperr=0,t0err=0;
+    // max radius (assuming geometric extrapolation).  This member is deprecated
+    // in favor of explicit extrapolation to the OPA
+    float maxr = 0;
+    void reset() { *this = CentralHelixInfo(); }
+  };
+
+  struct LoopHelixInfo {
+    // max radius (assuming geometric extrapolation).  This member is deprecated
+    // in favor of explicit extrapolation to the OPA
+    float maxr = 0;
+    // loop helix parameters
+    float rad=0,lam=0,cx=0,cy=0,phi0=0,t0=0;
+    float raderr=0,lamerr=0,cxerr=0,cyerr=0,phi0err=0,t0err=0;
+    void reset() { *this = LoopHelixInfo(); }
+  };
+
+  struct KinematicLineInfo {
+    float  d0=0, phi0=0, z0=0, theta=0, mom=0,t0=0;
+    float  d0err=0, phi0err=0, z0err=0, thetaerr=0, momerr=0,t0err=0;
+    void reset() { *this = KinematicLineInfo(); }
   };
 
   // general information about a track
