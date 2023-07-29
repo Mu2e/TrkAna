@@ -80,8 +80,6 @@
 #include "TrkAna/inc/RecoQualInfo.hh"
 #include "TrkAna/inc/BestCrvAssns.hh"
 #include "TrkAna/inc/MCStepInfo.hh"
-// CRV info; this still requires the obsolete time offsets FIXME
-#include "Offline/Mu2eUtilities/inc/SimParticleTimeOffset.hh"
 #include "Offline/CRVAnalysis/inc/CRVAnalysis.hh"
 
 // C++ includes.
@@ -773,11 +771,8 @@ namespace mu2e {
               _crvsummary, _crvsummarymc, _crvinfomcplane, _crvPlaneY);
         }
         if(_crvpulses){
-          // temporary hack: FIXME
-          std::vector<art::InputTag> nulltags;
-          SimParticleTimeOffset nulloffset(nulltags);
           CRVAnalysis::FillCrvPulseInfoCollections(_crvRecoPulseLabel, _crvWaveformsModuleLabel, _crvDigiModuleLabel,
-              nulloffset, event, _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
+              event, _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
         }
       }
       // fill this row in the TTree
