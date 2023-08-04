@@ -31,6 +31,7 @@
 #include "Offline/Mu2eUtilities/inc/fromStrings.hh"
 #include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "Offline/GeometryService/inc/GeomHandle.hh"
+#include "Offline/KinKalGeom/inc/SurfaceId.hh"
 // Framework includes.
 #include "art/Framework/Core/EDAnalyzer.h"
 #include "art/Framework/Principal/Event.h"
@@ -128,6 +129,7 @@ namespace mu2e {
         fhicl::Sequence<std::string> segmentSuffixes{Name("segmentSuffixes"), Comment("The suffix to the branch for this segment (e.g. putting \"ent\" will give a branch \"deent\", and if fillMC = true, \"demcent\")")};
         fhicl::Sequence<fhicl::Sequence<std::string>> segmentVIDs{Name("segmentVIDs"), Comment("The VirtualDetectorId that this segment should find tits position from")};
         fhicl::Table<BranchOptConfig> options{Name("options"), Comment("Optional arguments for a branch")};
+        fhicl::Sequence<std::string> surfaceNames{Name("SurfaceNames"), Comment("SurfaceId names to record KalIntersections")};
       };
 
       struct Config {
@@ -242,6 +244,7 @@ namespace mu2e {
       art::Handle<KalSeedMCAssns> _ksmcah;
       art::InputTag _primaryParticleTag;
       std::map<BranchIndex, std::vector<std::vector<VirtualDetectorId>>> _allSegmentVIDs;
+      std::map<BranchIndex, std::vector<SurfaceId>> _allSurfaceIds;
       // MC truth branches (outputs)
       std::vector<TrkInfoMC> _allMCTIs;
       std::vector<std::vector<SimInfo>> _allMCSimTIs;
@@ -358,18 +361,48 @@ namespace mu2e {
     // Create all the info structs
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       auto i_branchConfig = _allBranches.at(i_branch);
-
       TrkInfo ti;
       _allTIs.push_back(ti);
       std::vector<TrkFitInfo> allTFIs;
+      // fit-specific branches
       std::vector<LoopHelixInfo> allLHs;
       std::vector<CentralHelixInfo> allCHs;
       std::vector<KinematicLineInfo> allKLs;
+      // mc truth info, from VDs
       std::vector<TrkInfoMCStep> allMCTFIs;
       const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
       // add extra segments for 'early' and 'late'
       if(segmentSuffixes.size()>0){
         for (size_t i_segment = 0; i_segment < segmentSuffixes.size()+2; ++i_segment) {
+          allMCTFIs.push_back(TrkInfoMCStep());
+        }
+      }
+      _AllMCTFIs[i_branch] = allMCTFIs;
+
+      const std::vector<std::vector<std::string>>& segmentVIDs = i_branchConfig.segmentVIDs();
+      std::vector<std::vector<VirtualDetectorId>> allSegmentVIDs;
+      for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
+        std::vector<VirtualDetectorId> thisSegmentVIDs = fromStrings<VirtualDetectorId>(segmentVIDs.at(i_segment));
+        allSegmentVIDs.push_back(thisSegmentVIDs);
+      }
+      // add segments for 'early' and 'late'
+      if(segmentSuffixes.size()>0){
+        std::vector<VirtualDetectorId> uvid(VirtualDetectorId::unknown);
+        allSegmentVIDs.push_back(uvid);
+        allSegmentVIDs.push_back(uvid);
+      }
+      _allSegmentVIDs[i_branch] = allSegmentVIDs;
+
+      // fit sampling (KalIntersection) at a surface
+      const std::vector<std::string>& surfaceNames = i_branchConfig.surfaceNames();
+      std::vector<SurfaceId>> allSurfaceIds;
+      for(auto const& sname : surfaceNames){
+        SurfaceId sid(sname);
+        allSurfaceIds.push_back(sid);
+      }
+      // create storage for branches: add 2 entries for 'early' and 'late
+      if(surfaceNames.size() > 0){
+        for(size_t isurf = 0; isurf < surfaceNames.size()+2; ++isurf){
           allTFIs.push_back(TrkFitInfo()); // add empty structs to the vector so that ROOT can be given a location to find it
           // create fit-specific storeage
           switch (_ftype ) {
@@ -385,10 +418,9 @@ namespace mu2e {
             default:
               break;
           }
-          allMCTFIs.push_back(TrkInfoMCStep());
-          // eventually add fit-specific MC branches TODO
         }
       }
+      _allSurfaceIds[i_branch] = allSurfaceIds;
       _allTFIs[i_branch] = allTFIs;
       switch (_ftype ) {
         case LoopHelix :
@@ -403,20 +435,6 @@ namespace mu2e {
         default:
           break;
       }
-      _AllMCTFIs[i_branch] = allMCTFIs;
-
-      const std::vector<std::vector<std::string>>& segmentVIDs = i_branchConfig.segmentVIDs();
-      std::vector<std::vector<VirtualDetectorId>> allSegmentVIDs;
-      for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-        std::vector<VirtualDetectorId> thisSegmentVIDs = fromStrings<VirtualDetectorId>(segmentVIDs.at(i_segment));
-        allSegmentVIDs.push_back(thisSegmentVIDs);
-      }
-      if(segmentSuffixes.size()>0){
-        std::vector<VirtualDetectorId> uvid(VirtualDetectorId::unknown);
-        allSegmentVIDs.push_back(uvid);
-        allSegmentVIDs.push_back(uvid);
-      }
-      _allSegmentVIDs[i_branch] = allSegmentVIDs;
 
       TrkCaloHitInfo tchi;
       _allTCHIs.push_back(tchi);
@@ -502,29 +520,29 @@ namespace mu2e {
       std::string branch = i_branchConfig.branch();
       _trkana->Branch((branch+".").c_str(),&_allTIs.at(i_branch));
 
-      const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
-      for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-        std::string segmentSuffix = segmentSuffixes.at(i_segment);
-        _trkana->Branch((branch+segmentSuffix+".").c_str(),&_allTFIs.at(i_branch).at(i_segment));
-        if(_ftype == LoopHelix )_trkana->Branch((branch+segmentSuffix+"lh.").c_str(),&_allLHs.at(i_branch).at(i_segment));
-        if(_ftype == CentralHelix )_trkana->Branch((branch+segmentSuffix+"ch.").c_str(),&_allCHs.at(i_branch).at(i_segment));
-        if(_ftype == KinematicLine )_trkana->Branch((branch+segmentSuffix+"kl.").c_str(),&_allKLs.at(i_branch).at(i_segment));
+      auto const& sids = _allSurfaceIds[i_branch];
+      for (auto const& sid : sids) {
+        std::string sname = sid.name();
+        _trkana->Branch((branch+sname+".").c_str(),&_allTFIs.at(i_branch).at(i_segment));
+        if(_ftype == LoopHelix )_trkana->Branch((branch+sname+"lh.").c_str(),&_allLHs.at(i_branch).at(i_segment));
+        if(_ftype == CentralHelix )_trkana->Branch((branch+sname+"ch.").c_str(),&_allCHs.at(i_branch).at(i_segment));
+        if(_ftype == KinematicLine )_trkana->Branch((branch+sname+"kl.").c_str(),&_allKLs.at(i_branch).at(i_segment));
       }
       // add 'early' and 'late' segments
-      if(segmentSuffixes.size()>0){
-        _trkana->Branch((branch+"early.").c_str(),&_allTFIs.at(i_branch).at(segmentSuffixes.size()));
-        _trkana->Branch((branch+"late.").c_str(),&_allTFIs.at(i_branch).at(segmentSuffixes.size()+1));
+      if(sids.size()>0){
+        _trkana->Branch((branch+"early.").c_str(),&_allTFIs.at(i_branch).at(sids.size()));
+        _trkana->Branch((branch+"late.").c_str(),&_allTFIs.at(i_branch).at(sids.size()+1));
         if(_ftype == LoopHelix ){
-          _trkana->Branch((branch+"earlylh.").c_str(),&_allLHs.at(i_branch).at(segmentSuffixes.size()));
-          _trkana->Branch((branch+"latelh.").c_str(),&_allLHs.at(i_branch).at(segmentSuffixes.size()+1));
+          _trkana->Branch((branch+"earlylh.").c_str(),&_allLHs.at(i_branch).at(sids.size()));
+          _trkana->Branch((branch+"latelh.").c_str(),&_allLHs.at(i_branch).at(sids.size()+1));
         }
         if(_ftype == CentralHelix ){
-          _trkana->Branch((branch+"earlych.").c_str(),&_allCHs.at(i_branch).at(segmentSuffixes.size()));
-          _trkana->Branch((branch+"latech.").c_str(),&_allCHs.at(i_branch).at(segmentSuffixes.size()+1));
+          _trkana->Branch((branch+"earlych.").c_str(),&_allCHs.at(i_branch).at(sids.size()));
+          _trkana->Branch((branch+"latech.").c_str(),&_allCHs.at(i_branch).at(sids.size()+1));
         }
         if(_ftype == KinematicLine ){
-          _trkana->Branch((branch+"earlykl.").c_str(),&_allKLs.at(i_branch).at(segmentSuffixes.size()));
-          _trkana->Branch((branch+"latekl.").c_str(),&_allKLs.at(i_branch).at(segmentSuffixes.size()+1));
+          _trkana->Branch((branch+"earlykl.").c_str(),&_allKLs.at(i_branch).at(sids.size()));
+          _trkana->Branch((branch+"latekl.").c_str(),&_allKLs.at(i_branch).at(sids.size()+1));
         }
       }
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
@@ -975,13 +993,12 @@ namespace mu2e {
     mu2e::GeomHandle<DetectorSystem> det;
 
     BranchConfig branchConfig = _allBranches.at(i_branch);
-    const std::vector<std::string>& segmentSuffixes = branchConfig.segmentSuffixes();
-    for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-      const XYZVectorF& pos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_allSegmentVIDs.at(i_branch).at(i_segment).begin())));
-// treat cylindrical and planar constraints separately
-
-      _infoStructHelper.fillTrkFitInfo(kseed,_allTFIs.at(i_branch).at(i_segment),pos);
+    for (size_t i_surf = 0; i_surf < _allSurfaceIds.size(); ++i_surf) {
+      auto const& surfid = _allSurfaceIds[i_surf];
+      _infoStructHelper.fillTrkFitInfo(kseed,_allTFIs.at(i_branch).at(i_surf),surfid);
     }
+    // early and late; TODO
+
     if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){ // want hit level info
       _infoStructHelper.fillHitInfo(kseed, _allTSHIs.at(i_branch));
       _infoStructHelper.fillMatInfo(kseed, _allTSMIs.at(i_branch));

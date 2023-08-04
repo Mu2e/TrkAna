@@ -15,6 +15,7 @@ namespace mu2e
   struct TrkFitInfo {
     XYZVectorF mom;
     XYZVectorF pos;
+    double time;
     float momerr = -1000;  // projected error on the scalar momentum
     bool valid = false;
     void reset() { *this = TrkFitInfo(); }

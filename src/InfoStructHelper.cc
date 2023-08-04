@@ -83,15 +83,17 @@ namespace mu2e {
     fillTrkInfoStraws(kseed, trkinfo);
   }
 
-  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed,TrkFitInfo& trkfitinfo, const XYZVectorF& pos) {
-    const auto& ksegIter = kseed.nearestSegment(pos);
-    if (ksegIter == kseed.segments().end()) {
-      cet::exception("InfoStructHelper") << "Couldn't find KalSegment that includes pos = " << pos;
+  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed,TrkFitInfo& trkfitinfo, SurfaceId const& surfid) {
+    const auto& KIiter = kseed.intersection(surfid);
+    if (KIiter != kseed.intersections().end()) {
+      trkfitinfo.mom = KIiter->momentum3();
+      trkfitinfo.pos = KIiter->position3();
+      trkfitinfo.time = KIiter->time();
+      trkfitinfo.momerr = KIiter->momerr();
+      trkfitinfo.valid = true;
+    } else {
+      trkfitinfo.valid = false;
     }
-    trkfitinfo.mom = ksegIter->momentum3();
-    trkfitinfo.pos = ksegIter->position3();
-    trkfitinfo.momerr = ksegIter->momerr();
-    trkfitinfo.valid = true;
   }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
