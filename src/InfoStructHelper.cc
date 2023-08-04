@@ -92,7 +92,7 @@ namespace mu2e {
       trkfitinfo.momerr = KIiter->momerr();
       trkfitinfo.valid = KIiter->flag_.onsurface_;
       trkfitinfo.inbounds = KIiter->flag_.inbounds_;
-      trkfitinfo.inrange = KIiter->timeRange().inRange(KIiter->time());
+      trkfitinfo.inrange = kseed.timeRange().inRange(KIiter->time());
       trkfitinfo.sid = KIiter->surfid_.id().id();
       trkfitinfo.sindex = KIiter->surfid_.index();
 
