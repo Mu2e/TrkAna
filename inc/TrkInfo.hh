@@ -7,6 +7,7 @@
 #ifndef TrkInfo_HH
 #define TrkInfo_HH
 #include "Offline/DataProducts/inc/GenVector.hh"
+#include "Offline/KinKalGeom/inc/SurfaceId.hh"
 #include "Offline/MCDataProducts/inc/MCRelationship.hh"
 #include "Rtypes.h"
 namespace mu2e
@@ -18,6 +19,10 @@ namespace mu2e
     double time;
     float momerr = -1000;  // projected error on the scalar momentum
     bool valid = false;
+    bool inbounds = false;
+    bool inrange = false;
+    int sid = SurfaceIdEnum::unknown;
+    int sindex = 0;
     void reset() { *this = TrkFitInfo(); }
   };
   // specific structs for specific fit types

@@ -395,7 +395,7 @@ namespace mu2e {
 
       // fit sampling (KalIntersection) at a surface
       const std::vector<std::string>& surfaceNames = i_branchConfig.surfaceNames();
-      std::vector<SurfaceId>> allSurfaceIds;
+      std::vector<SurfaceId> allSurfaceIds;
       for(auto const& sname : surfaceNames){
         SurfaceId sid(sname);
         allSurfaceIds.push_back(sid);
@@ -521,12 +521,13 @@ namespace mu2e {
       _trkana->Branch((branch+".").c_str(),&_allTIs.at(i_branch));
 
       auto const& sids = _allSurfaceIds[i_branch];
-      for (auto const& sid : sids) {
+      for(size_t i_surf=0;i_surf < sids.size(); ++i_surf ) {
+        auto const& sid = sids[i_surf];
         std::string sname = sid.name();
-        _trkana->Branch((branch+sname+".").c_str(),&_allTFIs.at(i_branch).at(i_segment));
-        if(_ftype == LoopHelix )_trkana->Branch((branch+sname+"lh.").c_str(),&_allLHs.at(i_branch).at(i_segment));
-        if(_ftype == CentralHelix )_trkana->Branch((branch+sname+"ch.").c_str(),&_allCHs.at(i_branch).at(i_segment));
-        if(_ftype == KinematicLine )_trkana->Branch((branch+sname+"kl.").c_str(),&_allKLs.at(i_branch).at(i_segment));
+        _trkana->Branch((branch+sname+".").c_str(),&_allTFIs.at(i_branch).at(i_surf));
+        if(_ftype == LoopHelix )_trkana->Branch((branch+sname+"lh.").c_str(),&_allLHs.at(i_branch).at(i_surf));
+        if(_ftype == CentralHelix )_trkana->Branch((branch+sname+"ch.").c_str(),&_allCHs.at(i_branch).at(i_surf));
+        if(_ftype == KinematicLine )_trkana->Branch((branch+sname+"kl.").c_str(),&_allKLs.at(i_branch).at(i_surf));
       }
       // add 'early' and 'late' segments
       if(sids.size()>0){
@@ -993,8 +994,9 @@ namespace mu2e {
     mu2e::GeomHandle<DetectorSystem> det;
 
     BranchConfig branchConfig = _allBranches.at(i_branch);
-    for (size_t i_surf = 0; i_surf < _allSurfaceIds.size(); ++i_surf) {
-      auto const& surfid = _allSurfaceIds[i_surf];
+    auto const& sids = _allSurfaceIds[i_branch];
+    for (size_t i_surf = 0; i_surf < sids.size(); ++i_surf) {
+      auto const& surfid = sids[i_surf];
       _infoStructHelper.fillTrkFitInfo(kseed,_allTFIs.at(i_branch).at(i_surf),surfid);
     }
     // early and late; TODO
