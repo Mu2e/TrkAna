@@ -50,7 +50,6 @@
 #include "TBits.h"
 #include "TTree.h"
 #include "TProfile.h"
-#include "TH1F.h"
 
 // BaBar includes
 #include "BTrk/BaBar/BaBar.hh"
@@ -129,7 +128,6 @@ namespace mu2e {
         fhicl::Sequence<std::string> segmentSuffixes{Name("segmentSuffixes"), Comment("The suffix to the branch for this segment (e.g. putting \"ent\" will give a branch \"deent\", and if fillMC = true, \"demcent\")")};
         fhicl::Sequence<fhicl::Sequence<std::string>> segmentVIDs{Name("segmentVIDs"), Comment("The VirtualDetectorId that this segment should find tits position from")};
         fhicl::Table<BranchOptConfig> options{Name("options"), Comment("Optional arguments for a branch")};
-        fhicl::Sequence<std::string> surfaceNames{Name("SurfaceNames"), Comment("SurfaceId names to record KalIntersections")};
       };
 
       struct Config {
@@ -201,7 +199,6 @@ namespace mu2e {
 
       // main TTree
       TTree* _trkana;
-      TProfile* _tht; // profile plot of track hit times: just an example
       // general event info branch
       EventInfo _einfo;
       EventInfoMC _einfomc;
@@ -218,7 +215,6 @@ namespace mu2e {
       std::vector<art::Handle<KalSeedCollection> > _allKSCHs;
       // track branches (outputs)
       std::vector<TrkInfo> _allTIs;
-      //    std::vector<TrkFitInfo> _allEntTIs, _allMidTIs, _allXitTIs;
       std::map<BranchIndex, std::vector<TrkFitInfo>> _allTFIs;
       std::map<BranchIndex, std::vector<LoopHelixInfo>> _allLHs;
       std::map<BranchIndex, std::vector<CentralHelixInfo>> _allCHs;
@@ -235,16 +231,14 @@ namespace mu2e {
       std::vector<TrkPIDInfo> _allTPIs;
       // trigger information
       unsigned _trigbits;
-      TH1F* _trigbitsh; // plot of trigger bits: just an example
       std::map<size_t,unsigned> _tmap; // map between path and trigger ID.  ID should come from trigger itself FIXME!
       // MC truth (fcl parameters)
       bool _fillmc;
-      // MC truth branches (inputs)
+      // MC truth inputs
       art::Handle<PrimaryParticle> _pph;
       art::Handle<KalSeedMCAssns> _ksmcah;
       art::InputTag _primaryParticleTag;
       std::map<BranchIndex, std::vector<std::vector<VirtualDetectorId>>> _allSegmentVIDs;
-      std::map<BranchIndex, std::vector<SurfaceId>> _allSurfaceIds;
       // MC truth branches (outputs)
       std::vector<TrkInfoMC> _allMCTIs;
       std::vector<std::vector<SimInfo>> _allMCSimTIs;
@@ -320,7 +314,6 @@ namespace mu2e {
     _PBITag(conf().PBITag()),
     _PBTTag(conf().PBTTag()),
     _PBTMCTag(conf().PBTMCTag()),
-    _trigbitsh(0),
     _fillmc(conf().fillmc()),
     _fillcalomc(conf().fillCaloMC()),
     // CRV
@@ -363,11 +356,27 @@ namespace mu2e {
       auto i_branchConfig = _allBranches.at(i_branch);
       TrkInfo ti;
       _allTIs.push_back(ti);
+      // fit sampling (KalIntersection) at a surface
       std::vector<TrkFitInfo> allTFIs;
+      _allTFIs[i_branch] = allTFIs;
       // fit-specific branches
       std::vector<LoopHelixInfo> allLHs;
       std::vector<CentralHelixInfo> allCHs;
       std::vector<KinematicLineInfo> allKLs;
+      switch (_ftype ) {
+        case LoopHelix :
+          _allLHs[i_branch] = allLHs;
+          break;
+        case CentralHelix :
+          _allCHs[i_branch] = allCHs;
+          break;
+        case KinematicLine :
+          _allKLs[i_branch] = allKLs;
+          break;
+        default:
+          break;
+      }
+
       // mc truth info, from VDs
       std::vector<TrkInfoMCStep> allMCTFIs;
       const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
@@ -393,48 +402,6 @@ namespace mu2e {
       }
       _allSegmentVIDs[i_branch] = allSegmentVIDs;
 
-      // fit sampling (KalIntersection) at a surface
-      const std::vector<std::string>& surfaceNames = i_branchConfig.surfaceNames();
-      std::vector<SurfaceId> allSurfaceIds;
-      for(auto const& sname : surfaceNames){
-        SurfaceId sid(sname);
-        allSurfaceIds.push_back(sid);
-      }
-      // create storage for branches: add 2 entries for 'early' and 'late
-      if(surfaceNames.size() > 0){
-        for(size_t isurf = 0; isurf < surfaceNames.size()+2; ++isurf){
-          allTFIs.push_back(TrkFitInfo()); // add empty structs to the vector so that ROOT can be given a location to find it
-          // create fit-specific storeage
-          switch (_ftype ) {
-            case LoopHelix :
-              allLHs.push_back(LoopHelixInfo());
-              break;
-            case CentralHelix :
-              allCHs.push_back(CentralHelixInfo());
-              break;
-            case KinematicLine :
-              allKLs.push_back(KinematicLineInfo());
-              break;
-            default:
-              break;
-          }
-        }
-      }
-      _allSurfaceIds[i_branch] = allSurfaceIds;
-      _allTFIs[i_branch] = allTFIs;
-      switch (_ftype ) {
-        case LoopHelix :
-          _allLHs[i_branch] = allLHs;
-          break;
-        case CentralHelix :
-          _allCHs[i_branch] = allCHs;
-          break;
-        case KinematicLine :
-          _allKLs[i_branch] = allKLs;
-          break;
-        default:
-          break;
-      }
 
       TrkCaloHitInfo tchi;
       _allTCHIs.push_back(tchi);
@@ -489,7 +456,6 @@ namespace mu2e {
     art::ServiceHandle<art::TFileService> tfs;
     // create TTree
     _trkana=tfs->make<TTree>("trkana","track analysis");
-    _tht=tfs->make<TProfile>("tht","Track Hit Time Profile",RecoCount::_nshtbins,-25.0,1725.0);
     // add event info branch
     _trkana->Branch("evtinfo.",&_einfo,_buffsize,_splitlevel);
     _trkana->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
@@ -519,33 +485,12 @@ namespace mu2e {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string branch = i_branchConfig.branch();
       _trkana->Branch((branch+".").c_str(),&_allTIs.at(i_branch));
-
-      auto const& sids = _allSurfaceIds[i_branch];
-      for(size_t i_surf=0;i_surf < sids.size(); ++i_surf ) {
-        auto const& sid = sids[i_surf];
-        std::string sname = sid.name();
-        _trkana->Branch((branch+sname+".").c_str(),&_allTFIs.at(i_branch).at(i_surf));
-        if(_ftype == LoopHelix )_trkana->Branch((branch+sname+"lh.").c_str(),&_allLHs.at(i_branch).at(i_surf));
-        if(_ftype == CentralHelix )_trkana->Branch((branch+sname+"ch.").c_str(),&_allCHs.at(i_branch).at(i_surf));
-        if(_ftype == KinematicLine )_trkana->Branch((branch+sname+"kl.").c_str(),&_allKLs.at(i_branch).at(i_surf));
-      }
-      // add 'early' and 'late' segments
-      if(sids.size()>0){
-        _trkana->Branch((branch+"early.").c_str(),&_allTFIs.at(i_branch).at(sids.size()));
-        _trkana->Branch((branch+"late.").c_str(),&_allTFIs.at(i_branch).at(sids.size()+1));
-        if(_ftype == LoopHelix ){
-          _trkana->Branch((branch+"earlylh.").c_str(),&_allLHs.at(i_branch).at(sids.size()));
-          _trkana->Branch((branch+"latelh.").c_str(),&_allLHs.at(i_branch).at(sids.size()+1));
-        }
-        if(_ftype == CentralHelix ){
-          _trkana->Branch((branch+"earlych.").c_str(),&_allCHs.at(i_branch).at(sids.size()));
-          _trkana->Branch((branch+"latech.").c_str(),&_allCHs.at(i_branch).at(sids.size()+1));
-        }
-        if(_ftype == KinematicLine ){
-          _trkana->Branch((branch+"earlykl.").c_str(),&_allKLs.at(i_branch).at(sids.size()));
-          _trkana->Branch((branch+"latekl.").c_str(),&_allKLs.at(i_branch).at(sids.size()+1));
-        }
-      }
+      _trkana->Branch((branch+"fit.").c_str(),&_allTFIs.at(i_branch),_buffsize,_splitlevel);
+// add traj-specific branches
+      if(_ftype == LoopHelix )_trkana->Branch((branch+sname+"lh.").c_str(),&_allLHs.at(i_branch),_buffsize,_splitlevel);
+      if(_ftype == CentralHelix )_trkana->Branch((branch+sname+"ch.").c_str(),&_allCHs.at(i_branch),_buffsize,_splitlevel);
+      if(_ftype == KinematicLine )_trkana->Branch((branch+sname+"kl.").c_str(),&_allKLs.at(i_branch),_buffsize,_splitlevel);
+      // TrkCaloHit: currently only 1
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
         int n_trkqual_vars = TrkQual::n_vars;
@@ -785,7 +730,6 @@ namespace mu2e {
       for(size_t ibin=0;ibin < rc._nshtbins; ++ibin){
         float time = rc._shthist.binMid(ibin);
         float count  = rc._shthist.binContents(ibin);
-        _tht->Fill(time,count);
       }
     }
 
@@ -949,15 +893,6 @@ namespace mu2e {
           ntrig++;
         }
       }
-      // build trigger histogram
-      art::ServiceHandle<art::TFileService> tfs;
-      _trigbitsh = tfs->make<TH1F>("trigbits","Trigger IDs",ntrig,-0.5,ntrig-0.5);
-      for(size_t ipath=0;ipath < npath; ++ipath){
-        auto ifnd = _tmap.find(ipath);
-        if(ifnd != _tmap.end()){
-          _trigbitsh->GetXaxis()->SetBinLabel(ifnd->second+1,tnav.getTrigPath(ipath).c_str());
-        }
-      }
     }
     for(size_t ipath=0;ipath < trigResults->size(); ++ipath){
       if(trigResults->accept(ipath)) {
@@ -993,14 +928,8 @@ namespace mu2e {
     mu2e::GeomHandle<VirtualDetector> vdHandle;
     mu2e::GeomHandle<DetectorSystem> det;
 
+    _infoStructHelper.fillTrkFitInfo(kseed,_allTFIs.at(i_branch));
     BranchConfig branchConfig = _allBranches.at(i_branch);
-    auto const& sids = _allSurfaceIds[i_branch];
-    for (size_t i_surf = 0; i_surf < sids.size(); ++i_surf) {
-      auto const& surfid = sids[i_surf];
-      _infoStructHelper.fillTrkFitInfo(kseed,_allTFIs.at(i_branch).at(i_surf),surfid);
-    }
-    // early and late; TODO
-
     if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){ // want hit level info
       _infoStructHelper.fillHitInfo(kseed, _allTSHIs.at(i_branch));
       _infoStructHelper.fillMatInfo(kseed, _allTSMIs.at(i_branch));

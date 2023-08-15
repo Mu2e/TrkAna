@@ -21,6 +21,9 @@ namespace mu2e
     bool valid = false;
     bool inbounds = false;
     bool inrange = false;
+    bool gap = false;
+    bool early = false;
+    bool late = false;
     int sid = SurfaceIdEnum::unknown;
     int sindex = 0;
     void reset() { *this = TrkFitInfo(); }

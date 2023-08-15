@@ -8,6 +8,7 @@
 #include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "Offline/Mu2eKinKal/inc/WireHitState.hh"
 #include <cmath>
+#include <limits>
 
 namespace mu2e {
   void InfoStructHelper::fillHitCount(StrawHitFlagCollection const& shfC, HitCount& hitcount) {
@@ -83,21 +84,38 @@ namespace mu2e {
     fillTrkInfoStraws(kseed, trkinfo);
   }
 
-  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed,TrkFitInfo& trkfitinfo, SurfaceId const& surfid) {
-    const auto& KIiter = kseed.intersection(surfid);
-    if (KIiter != kseed.intersections().end()) {
-      trkfitinfo.mom = KIiter->momentum3();
-      trkfitinfo.pos = KIiter->position3();
-      trkfitinfo.time = KIiter->time();
-      trkfitinfo.momerr = KIiter->momerr();
-      trkfitinfo.valid = KIiter->flag_.onsurface_;
-      trkfitinfo.inbounds = KIiter->flag_.inbounds_;
-      trkfitinfo.inrange = kseed.timeRange().inRange(KIiter->time());
-      trkfitinfo.sid = KIiter->surfid_.id().id();
-      trkfitinfo.sindex = KIiter->surfid_.index();
-
-    } else {
-      trkfitinfo.valid = false;
+  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed, std::vector<TrkFitInfo>& tfis) {
+    tfis.clear();
+    double tmin(std::numeric_limits<float>.max());
+    double tmax(std::numeric_limits<float>.lowest());
+    size_t imin(0), imax(0);
+    for(size_t ikinter = 0; ikinter < kseed.intersections().size(); ++ikinter){
+      const& kinter = kseed.intersections()[ikinter];
+      // record earliest and latest intersections
+      if(kinter.time() > tmin){
+        tmin = kinter.time();
+        imin = ikinter;
+      }
+      if(kinter.time() < tmax){
+        tmax = kinter.time();
+        imax = ikinter;
+      }
+      TrkFitInfo tfi;
+      tfi.mom = KIiter->momentum3();
+      tfi.pos = KIiter->position3();
+      tfi.time = KIiter->time();
+      tfi.momerr = KIiter->momerr();
+      tfi.valid = KIiter->onSurface();
+      tfi.inbounds = KIiter->inBounds();
+      tfi.gap = KIiter->gap();
+      tfi.sid = KIiter->surfid_.id().id();
+      tfi.sindex = KIiter->surfid_.index();
+      tfis.push_back(tfi);
+    }
+    // now flag early and latest intersections
+    if(tfis.size() > 0){
+      tfis[imin].early = true;
+      tfis[imax].late = true;
     }
   }
 
