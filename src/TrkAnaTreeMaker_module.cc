@@ -487,9 +487,9 @@ namespace mu2e {
       _trkana->Branch((branch+".").c_str(),&_allTIs.at(i_branch));
       _trkana->Branch((branch+"fit.").c_str(),&_allTFIs.at(i_branch),_buffsize,_splitlevel);
 // add traj-specific branches
-      if(_ftype == LoopHelix )_trkana->Branch((branch+sname+"lh.").c_str(),&_allLHs.at(i_branch),_buffsize,_splitlevel);
-      if(_ftype == CentralHelix )_trkana->Branch((branch+sname+"ch.").c_str(),&_allCHs.at(i_branch),_buffsize,_splitlevel);
-      if(_ftype == KinematicLine )_trkana->Branch((branch+sname+"kl.").c_str(),&_allKLs.at(i_branch),_buffsize,_splitlevel);
+      if(_ftype == LoopHelix )_trkana->Branch((branch+"lh.").c_str(),&_allLHs.at(i_branch),_buffsize,_splitlevel);
+      if(_ftype == CentralHelix )_trkana->Branch((branch+"ch.").c_str(),&_allCHs.at(i_branch),_buffsize,_splitlevel);
+      if(_ftype == KinematicLine )_trkana->Branch((branch+"kl.").c_str(),&_allKLs.at(i_branch),_buffsize,_splitlevel);
       // TrkCaloHit: currently only 1
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
@@ -722,17 +722,6 @@ namespace mu2e {
       }
     }
 
-    // general reco counts
-    if( !_conf.rctag().empty() ){
-      auto rch = event.getValidHandle<RecoCount>(_conf.rctag());
-      auto const& rc = *rch;
-      _infoStructHelper.fillHitCount(rc, _hcnt);
-      for(size_t ibin=0;ibin < rc._nshtbins; ++ibin){
-        float time = rc._shthist.binMid(ibin);
-        float count  = rc._shthist.binContents(ibin);
-      }
-    }
-
     // trigger information
     if(_conf.filltrig()){
       fillTriggerBits(event,process);
@@ -884,14 +873,12 @@ namespace mu2e {
     TriggerResultsNavigator tnav(trigResults);
     _trigbits = 0;
     // setup the bin labels
-    if(_trigbitsh == 0){ // is there a better way to do this?  I think not
-      unsigned ntrig(0);
-      unsigned npath = trigResults->size();
-      for(size_t ipath=0;ipath < npath; ++ipath){
-        if (tnav.getTrigPath(ipath).find(_conf.trigpathsuffix()) != std::string::npos) {
-          _tmap[ipath] = ntrig;
-          ntrig++;
-        }
+    unsigned ntrig(0);
+    unsigned npath = trigResults->size();
+    for(size_t ipath=0;ipath < npath; ++ipath){
+      if (tnav.getTrigPath(ipath).find(_conf.trigpathsuffix()) != std::string::npos) {
+        _tmap[ipath] = ntrig;
+        ntrig++;
       }
     }
     for(size_t ipath=0;ipath < trigResults->size(); ++ipath){
@@ -899,7 +886,6 @@ namespace mu2e {
         auto ifnd = _tmap.find(ipath);
         if(ifnd != _tmap.end()){
           unsigned itrig = ifnd->second;
-          _trigbitsh->Fill(itrig);
           _trigbits |= 1 << itrig;
           if(_conf.debug() > 1)
             cout << "Trigger path " << tnav.getTrigPath(ipath) << " Trigger ID " << itrig << " returns " << trigResults->accept(ipath) << endl;

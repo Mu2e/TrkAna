@@ -86,30 +86,30 @@ namespace mu2e {
 
   void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed, std::vector<TrkFitInfo>& tfis) {
     tfis.clear();
-    double tmin(std::numeric_limits<float>.max());
-    double tmax(std::numeric_limits<float>.lowest());
+    double tmin(std::numeric_limits<float>::max());
+    double tmax(std::numeric_limits<float>::lowest());
     size_t imin(0), imax(0);
     for(size_t ikinter = 0; ikinter < kseed.intersections().size(); ++ikinter){
-      const& kinter = kseed.intersections()[ikinter];
+      auto const& kinter = kseed.intersections()[ikinter];
       // record earliest and latest intersections
-      if(kinter.time() > tmin){
+      if(kinter.time() < tmin){
         tmin = kinter.time();
         imin = ikinter;
       }
-      if(kinter.time() < tmax){
+      if(kinter.time() > tmax){
         tmax = kinter.time();
         imax = ikinter;
       }
       TrkFitInfo tfi;
-      tfi.mom = KIiter->momentum3();
-      tfi.pos = KIiter->position3();
-      tfi.time = KIiter->time();
-      tfi.momerr = KIiter->momerr();
-      tfi.valid = KIiter->onSurface();
-      tfi.inbounds = KIiter->inBounds();
-      tfi.gap = KIiter->gap();
-      tfi.sid = KIiter->surfid_.id().id();
-      tfi.sindex = KIiter->surfid_.index();
+      tfi.mom = kinter.momentum3();
+      tfi.pos = kinter.position3();
+      tfi.time = kinter.time();
+      tfi.momerr = kinter.momerr();
+      tfi.valid = kinter.onSurface();
+      tfi.inbounds = kinter.inBounds();
+      tfi.gap = kinter.gap();
+      tfi.sid = kinter.surfid_.id().id();
+      tfi.sindex = kinter.surfid_.index();
       tfis.push_back(tfi);
     }
     // now flag early and latest intersections

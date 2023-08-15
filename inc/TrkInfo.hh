@@ -20,7 +20,6 @@ namespace mu2e
     float momerr = -1000;  // projected error on the scalar momentum
     bool valid = false;
     bool inbounds = false;
-    bool inrange = false;
     bool gap = false;
     bool early = false;
     bool late = false;

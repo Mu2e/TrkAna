@@ -150,9 +150,6 @@ StdSegments : {
   segmentSuffixes : [ "ent", "mid", "xit" ]
   segmentVIDs : [ [ "TT_FrontHollow", "TT_FrontPA"], [ "TT_Mid", "TT_MidInner"], ["TT_Back"] ]
 }
-StdSurfaces : {
-  SurfaceNames : ["TT_Front", "TT_Mid", "TT_Back"]
-}
 
 AllOpt : { fillMC : true
   trkqual : "TrkQual"
@@ -172,25 +169,21 @@ DeM : { input : "KK"
   branch : "dem"
   suffix : "DeM"
   @table::StdSegments
-  @table::StdSurfaces
 }
 UeM : { input : "KK"
   branch : "uem"
   suffix : "UeM"
   @table::StdSegments
-  @table::StdSurfaces
 }
 DmuM : { input : "KK"
   branch : "dmm"
   suffix : "DmuM"
   @table::StdSegments
-  @table::StdSurfaces
 }
 UmuM : { input : "KK"
   branch : "umm"
   suffix : "UmuM"
   @table::StdSegments
-  @table::StdSurfaces
 }
 DeP : { input : "KK"
   branch : "dep"
@@ -201,25 +194,21 @@ UeP : { input : "KK"
   branch : "uep"
   suffix : "UeP"
   @table::StdSegments
-  @table::StdSurfaces
 }
 DmuP : { input : "KK"
   branch : "dmp"
   suffix : "DmuP"
   @table::StdSegments
-  @table::StdSurfaces
 }
 UmuP : { input : "KK"
   branch : "ump"
   suffix : "UmuP"
   @table::StdSegments
-  @table::StdSurfaces
 }
 Ext : { input : "KK"
   branch : "kl"
   suffix : "Line"
   @table::StdSegments
-  @table::StdSurfaces
 }
 
 
