@@ -105,7 +105,6 @@ namespace mu2e {
       tfi.pos = kinter.position3();
       tfi.time = kinter.time();
       tfi.momerr = kinter.momerr();
-      tfi.valid = kinter.onSurface();
       tfi.inbounds = kinter.inBounds();
       tfi.gap = kinter.gap();
       tfi.sid = kinter.surfid_.id().id();

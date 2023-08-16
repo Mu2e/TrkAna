@@ -33,8 +33,11 @@ namespace mu2e {
       art::Handle<SimParticleCollection> _spcH;
       double _mingood;
       bool _onSpill;
-      bool _mbtime;
+      double _mbtime;
+      double _maxdt;
       art::InputTag _ewMarkerTag;
+      // record which SurfaceIds match to a given VirtualDetectorId
+      std::map<VirtualDetectorId,SurfaceId> _vdmap;
 
       void fillSimInfo(const art::Ptr<SimParticle>& sp, SimInfo& siminfo);
       void fillSimInfo(const SimParticle& sp, SimInfo& siminfo);
@@ -48,11 +51,10 @@ namespace mu2e {
         fhicl::Atom<art::InputTag> spctag{Name("SimParticleCollectionTag"), Comment("InputTag for the SimParticleCollection"), art::InputTag()};
         fhicl::Atom<double> mingood{Name("MinGoodMomFraction"), Comment("Minimum fraction of the true particle's momentum for a digi to be described as \"good\"")};
         fhicl::Atom<art::InputTag> ewMarkerTag{ Name("EventWindowMarker"), Comment("EventWindowMarker producer"),"EWMProducer" };
+        fhicl::Atom<double> maxvddt{Name("MaxVDDt"), Comment("Maximum time difference between reco and VirtualDetector time to associate")};
      };
 
-      InfoMCStructHelper(const Config& conf) :
-        _spctag(conf.spctag()), _mingood(conf.mingood()), _ewMarkerTag(conf.ewMarkerTag()) {};
-
+      InfoMCStructHelper(const Config& conf);
       void updateEvent(const art::Event& event);
 
       void fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
@@ -60,9 +62,7 @@ namespace mu2e {
       void fillHitInfoMC(const KalSeedMC& kseedmc, TrkStrawHitInfoMC& tshinfomc, const TrkStrawHitMC& tshmc);
       void fillAllSimInfos(const KalSeedMC& kseedmc, std::vector<SimInfo>& siminfos, int n_generations);
       void fillPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, SimInfo& priinfo);
-      void fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep, std::vector<VirtualDetectorId> const& vids, double target_time);
-      void fillTrkInfoMCStep(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMCStep& earlytrkinfomcstep, TrkInfoMCStep& latetrkinfomcstep);
-
+      void fillVDInfo(KalSeed const& kseed, const KalSeedMC& kseedmc, std::vector<MCStepInfo>& vdinfos);
       void fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs);
       void fillCaloClusterInfoMC(CaloClusterMC const& ccmc, CaloClusterInfoMC& ccimc);
       void fillCrvHitInfoMC(art::Ptr<CrvCoincidenceClusterMC> const& crvCoincMC, CrvHitInfoMC& crvHitInfoMC);

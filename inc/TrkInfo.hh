@@ -18,7 +18,6 @@ namespace mu2e
     XYZVectorF pos;
     double time;
     float momerr = -1000;  // projected error on the scalar momentum
-    bool valid = false;
     bool inbounds = false;
     bool gap = false;
     bool early = false;
@@ -27,7 +26,7 @@ namespace mu2e
     int sindex = 0;
     void reset() { *this = TrkFitInfo(); }
   };
-  // specific structs for specific fit types
+  // structs for specific fit types
   struct CentralHelixInfo {
     // central helix parameters
     float d0=0,phi0=0,omega=0,z0=0,tanDip=0,t0=0;
@@ -93,14 +92,6 @@ namespace mu2e
     XYZVectorF omom;  // origin momentum
     XYZVectorF opos;  // origin position
     void reset() { *this = TrkInfoMC(); }
-  };
-  //  MC information about a particle for a specific point/time
-  struct TrkInfoMCStep {
-    bool valid = false; // true/false whether the data is valid
-    float time = 0;  // time of this step WRT MC primary proton (ns)
-    XYZVectorF mom; // particle momentum at the start of this step
-    XYZVectorF pos;  // particle position at the start of this step
-    void reset() {*this = TrkInfoMCStep(); }
   };
 }
 #endif

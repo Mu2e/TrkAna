@@ -125,8 +125,6 @@ namespace mu2e {
         fhicl::Atom<std::string> input{Name("input"), Comment("KalSeedCollection input tag (use prefix if fcl parameter suffix is defined)")};
         fhicl::Atom<std::string> branch{Name("branch"), Comment("Name of output branch")};
         fhicl::Atom<std::string> suffix{Name("suffix"), Comment("Fit suffix (e.g. DeM)"), ""};
-        fhicl::Sequence<std::string> segmentSuffixes{Name("segmentSuffixes"), Comment("The suffix to the branch for this segment (e.g. putting \"ent\" will give a branch \"deent\", and if fillMC = true, \"demcent\")")};
-        fhicl::Sequence<fhicl::Sequence<std::string>> segmentVIDs{Name("segmentVIDs"), Comment("The VirtualDetectorId that this segment should find tits position from")};
         fhicl::Table<BranchOptConfig> options{Name("options"), Comment("Optional arguments for a branch")};
       };
 
@@ -134,53 +132,56 @@ namespace mu2e {
         using Name=fhicl::Name;
         using Comment=fhicl::Comment;
 
-        fhicl::Table<BranchConfig> candidate{Name("candidate"), Comment("Candidate physics track info")};
-        fhicl::OptionalSequence< fhicl::Table<BranchConfig> > supplements{Name("supplements"), Comment("Supplemental physics track info (TrkAna will find closest in time to candidate)")};
+        // General control and config
+        fhicl::Atom<bool> pempty{Name("ProcessEmptyEvents"),false};
+        fhicl::Atom<int> diag{Name("diagLevel"),1};
+        fhicl::Atom<int> debug{Name("debugLevel"),0};
+        fhicl::Atom<int> splitlevel{Name("splitlevel"),99};
+        fhicl::Atom<int> buffsize{Name("buffsize"),32000};
+        // General event info
         fhicl::Atom<art::InputTag> rctag{Name("RecoCountTag"), Comment("RecoCount"), art::InputTag()};
         fhicl::Atom<art::InputTag> PBITag{Name("PBITag"), Comment("Tag for ProtonBunchIntensity object") ,art::InputTag()};
         fhicl::Atom<art::InputTag> PBTTag{Name("PBTTag"), Comment("Tag for ProtonBunchTime object") ,art::InputTag()};
-        fhicl::Atom<art::InputTag> PBTMCTag{Name("PBTMCTag"), Comment("Tag for ProtonBunchTimeMC object") ,art::InputTag()};
-        fhicl::Atom<std::string> simParticleLabel{Name("SimParticleLabel"), Comment("SimParticleLabel")};
-        fhicl::Atom<std::string> mcTrajectoryLabel{Name("MCTrajectoryLabel"), Comment("MCTrajectoryLabel")};
-        fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
+        fhicl::Atom<bool> filltrig{Name("FillTriggerInfo"),false};
+        fhicl::Atom<std::string> trigProcessName{Name("TriggerProcessName"), Comment("Process name for Trigger")};
+        fhicl::Atom<std::string> trigpathsuffix{Name("TriggerPathSuffix"), "_trigger"}; // all trigger paths have this in the name
+        // core tracking
+        fhicl::Table<BranchConfig> candidate{Name("candidate"), Comment("Candidate physics track info")};
+        fhicl::OptionalSequence< fhicl::Table<BranchConfig> > supplements{Name("supplements"), Comment("Supplemental physics track info (TrkAna will find closest in time to candidate)")};
+        // Additional (optional) tracking information
+        fhicl::Atom<bool> fillhits{Name("FillHitInfo"),Comment("Global switch to turn on/off hit-level info"), false};
         fhicl::Atom<std::string> fittype{Name("FitType"),Comment("Type of track Fit: LoopHelix, CentralHelix, KinematicLine, or Unknown"),"Unknown"};
-        fhicl::Atom<bool> pempty{Name("ProcessEmptyEvents"),false};
-
-        // Calo control
-        fhicl::Atom<bool> fillCaloMC{ Name("FillCaloMC"),Comment("Fill CaloMC information"), true};
-        fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
-
-        // CRV -- flags
-        fhicl::Atom<bool> crv{Name("FillCRV"),Comment("Flag for turning on bestcrv(mc) branches"), false};
-        fhicl::Atom<bool> crvhits{Name("FillCRVHits"), Comment("Flag for turning on crvinfo(mc), crvsummary(mc), and crvinfomcplane branches"), false};
-        fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
+        fhicl::Atom<bool> helices{Name("FillHelixInfo"),false};
         // CRV -- input tags
         fhicl::Atom<std::string> crvCoincidenceModuleLabel{Name("CrvCoincidenceModuleLabel"), Comment("CrvCoincidenceModuleLabel")};
-        fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
         fhicl::Atom<std::string> crvRecoPulseLabel{Name("CrvRecoPulseLabel"), Comment("CrvRecoPulseLabel")};
         fhicl::Atom<std::string> crvStepLabel{Name("CrvStepLabel"), Comment("CrvStepLabel")};
         fhicl::Atom<std::string> crvWaveformsModuleLabel{ Name("CrvWaveformsModuleLabel"), Comment("CrvWaveformsModuleLabel")};
         fhicl::Atom<std::string> crvDigiModuleLabel{ Name("CrvDigiModuleLabel"), Comment("CrvDigiModuleLabel")};
-        fhicl::Atom<art::InputTag> crvMCAssnsTag{ Name("CrvCoincidenceClusterMCAssnsTag"), Comment("art::InputTag for CrvCoincidenceClusterMCAssns")};
+        // CRV -- flags
+        fhicl::Atom<bool> crv{Name("FillCRV"),Comment("Flag for turning on bestcrv(mc) branches"), false};
+        fhicl::Atom<bool> crvhits{Name("FillCRVHits"), Comment("Flag for turning on crvinfo(mc), crvsummary(mc), and crvinfomcplane branches"), false};
+        fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
         // CRV -- other
         fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters
-
-
-        fhicl::Atom<bool> helices{Name("FillHelixInfo"),false};
-        fhicl::Atom<bool> filltrkqual{Name("FillTrkQualInfo"),false};
-        fhicl::Atom<bool> filltrkpid{Name("FillTrkPIDInfo"),false};
-        fhicl::Atom<bool> filltrig{Name("FillTriggerInfo"),false};
-        fhicl::Atom<std::string> trigProcessName{Name("TriggerProcessName"), Comment("Process name for Trigger")};
-        fhicl::Atom<std::string> trigpathsuffix{Name("TriggerPathSuffix"), "_trigger"}; // all trigger paths have this in the name
-        fhicl::Atom<int> diag{Name("diagLevel"),1};
-        fhicl::Atom<bool> fillhits{Name("FillHitInfo"),Comment("Global switch to turn on/off hit-level info"), false};
-        fhicl::Atom<int> debug{Name("debugLevel"),0};
+        // MC truth
+        fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
+        fhicl::Table<InfoMCStructHelper::Config> infoMCStructHelper{Name("InfoMCStructHelper"), Comment("Configuration for the InfoMCStructHelper")};
+        fhicl::Atom<art::InputTag> PBTMCTag{Name("PBTMCTag"), Comment("Tag for ProtonBunchTimeMC object") ,art::InputTag()};
+        fhicl::Atom<std::string> simParticleLabel{Name("SimParticleLabel"), Comment("SimParticleLabel")};
+        fhicl::Atom<std::string> mcTrajectoryLabel{Name("MCTrajectoryLabel"), Comment("MCTrajectoryLabel")};
         fhicl::Atom<art::InputTag> primaryParticleTag{Name("PrimaryParticleTag"), Comment("Tag for PrimaryParticle"), art::InputTag()};
         fhicl::Atom<art::InputTag> kalSeedMCTag{Name("KalSeedMCAssns"), Comment("Tag for KalSeedMCAssn"), art::InputTag()};
-        fhicl::Table<InfoMCStructHelper::Config> infoMCStructHelper{Name("InfoMCStructHelper"), Comment("Configuration for the InfoMCStructHelper")};
         fhicl::OptionalSequence<art::InputTag> extraMCStepTags{Name("ExtraMCStepCollectionTags"), Comment("Input tags for any other StepPointMCCollections you want written out")};
-        fhicl::Atom<int> splitlevel{Name("splitlevel"),99};
-        fhicl::Atom<int> buffsize{Name("buffsize"),32000};
+        // Calo MC
+        fhicl::Atom<bool> fillCaloMC{ Name("FillCaloMC"),Comment("Fill CaloMC information"), true};
+        fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
+        // CRV MC
+        fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
+        fhicl::Atom<art::InputTag> crvMCAssnsTag{ Name("CrvCoincidenceClusterMCAssnsTag"), Comment("art::InputTag for CrvCoincidenceClusterMCAssns")};
+        // Pre-processed analysis info; are these redundant with the branch config ?
+        fhicl::Atom<bool> filltrkqual{Name("FillTrkQualInfo"),false};
+        fhicl::Atom<bool> filltrkpid{Name("FillTrkPIDInfo"),false};
       };
       typedef art::EDAnalyzer::Table<Config> Parameters;
 
@@ -238,12 +239,11 @@ namespace mu2e {
       art::Handle<PrimaryParticle> _pph;
       art::Handle<KalSeedMCAssns> _ksmcah;
       art::InputTag _primaryParticleTag;
-      std::map<BranchIndex, std::vector<std::vector<VirtualDetectorId>>> _allSegmentVIDs;
       // MC truth branches (outputs)
       std::vector<TrkInfoMC> _allMCTIs;
       std::vector<std::vector<SimInfo>> _allMCSimTIs;
       std::vector<SimInfo> _allMCPriTIs;
-      std::map<BranchIndex, std::vector<TrkInfoMCStep>> _AllMCTFIs;
+      std::map<BranchIndex, std::vector<MCStepInfo>> _allMCVDInfos;
       bool _fillcalomc;
       art::Handle<CaloClusterMCCollection> _ccmcch;
       std::vector<CaloClusterInfoMC> _allMCTCHIs;
@@ -377,31 +377,9 @@ namespace mu2e {
           break;
       }
 
-      // mc truth info, from VDs
-      std::vector<TrkInfoMCStep> allMCTFIs;
-      const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
-      // add extra segments for 'early' and 'late'
-      if(segmentSuffixes.size()>0){
-        for (size_t i_segment = 0; i_segment < segmentSuffixes.size()+2; ++i_segment) {
-          allMCTFIs.push_back(TrkInfoMCStep());
-        }
-      }
-      _AllMCTFIs[i_branch] = allMCTFIs;
-
-      const std::vector<std::vector<std::string>>& segmentVIDs = i_branchConfig.segmentVIDs();
-      std::vector<std::vector<VirtualDetectorId>> allSegmentVIDs;
-      for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-        std::vector<VirtualDetectorId> thisSegmentVIDs = fromStrings<VirtualDetectorId>(segmentVIDs.at(i_segment));
-        allSegmentVIDs.push_back(thisSegmentVIDs);
-      }
-      // add segments for 'early' and 'late'
-      if(segmentSuffixes.size()>0){
-        std::vector<VirtualDetectorId> uvid(VirtualDetectorId::unknown);
-        allSegmentVIDs.push_back(uvid);
-        allSegmentVIDs.push_back(uvid);
-      }
-      _allSegmentVIDs[i_branch] = allSegmentVIDs;
-
+      // candidate mc truth info at VDs
+      std::vector<MCStepInfo> allMCVDSteps;
+      _allMCVDInfos[i_branch] = allMCVDSteps;
 
       TrkCaloHitInfo tchi;
       _allTCHIs.push_back(tchi);
@@ -555,16 +533,7 @@ namespace mu2e {
           _trkana->Branch((full_branchname).c_str(),&_allMCSimTIs.at(i_branch).at(i_generation));
         }
         _trkana->Branch((branch+"mcpri.").c_str(),&_allMCPriTIs.at(i_branch),_buffsize,_splitlevel);
-        const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
-        for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-          std::string segmentSuffix = segmentSuffixes.at(i_segment);
-          _trkana->Branch((branch+"mc"+segmentSuffix+".").c_str(),&_AllMCTFIs.at(i_branch).at(i_segment));
-        }
-        // add 'early' and 'late' segments
-        if(segmentSuffixes.size()>0){
-          _trkana->Branch((branch+"mcearly.").c_str(),&_AllMCTFIs.at(i_branch).at(segmentSuffixes.size()));
-          _trkana->Branch((branch+"mclate.").c_str(),&_AllMCTFIs.at(i_branch).at(segmentSuffixes.size()+1));
-        }
+        _trkana->Branch((branch+"mcvd.").c_str(),&_allMCVDInfos.at(i_branch),_buffsize,_splitlevel);
         if(_fillcalomc)_trkana->Branch((branch+"tchmc.").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
         // at hit-level MC information
         // (for the time being diagLevel will still work, but I propose removing this at some point)
@@ -1000,17 +969,8 @@ namespace mu2e {
           auto const& kseedmc = *(iksmca->second);
           auto const& kseed = *kptr;
           _infoMCStructHelper.fillTrkInfoMC(kseed, kseedmc, _allMCTIs.at(i_branch));
-          double t0 = kseed.t0().t0();
-          const std::vector<std::string>& segmentSuffixes = branchConfig.segmentSuffixes();
-          for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-            auto& mcti = _AllMCTFIs.at(i_branch).at(i_segment);
-            auto const& vid = _allSegmentVIDs.at(i_branch).at(i_segment);
-            _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, mcti, vid, t0);
-          }
-          // find early and late steps
-          _infoMCStructHelper.fillTrkInfoMCStep(kseed, kseedmc,
-              _AllMCTFIs.at(i_branch).at(segmentSuffixes.size()),
-              _AllMCTFIs.at(i_branch).at(segmentSuffixes.size()+1));
+          auto& mcvdis = _allMCVDInfos.at(i_branch);
+          _infoMCStructHelper.fillVDInfo(kseed, kseedmc, mcvdis);
           // primary info
           _infoMCStructHelper.fillPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch));
           _infoMCStructHelper.fillAllSimInfos(kseedmc, _allMCSimTIs.at(i_branch), branchConfig.options().genealogyDepth());
@@ -1107,7 +1067,6 @@ namespace mu2e {
       }
       _allMCPriTIs.at(i_branch).reset();
 
-      _AllMCTFIs.at(i_branch).assign(_AllMCTFIs.at(i_branch).size(), TrkInfoMCStep());
       if(_fillcalomc)_allMCTCHIs.at(i_branch).reset();
 
       _allRQIs.at(i_branch).reset();

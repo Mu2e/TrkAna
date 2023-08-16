@@ -10,6 +10,7 @@
 #include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "Offline/Mu2eUtilities/inc/TwoLinePCA.hh"
 #include "Offline/DataProducts/inc/EventWindowMarker.hh"
+#include "Offline/DataProducts/inc/VirtualDetectorId.hh"
 
 #include "Offline/GlobalConstantsService/inc/GlobalConstantsHandle.hh"
 #include "Offline/GlobalConstantsService/inc/ParticleDataList.hh"
@@ -23,6 +24,19 @@
 #include <limits>
 
 namespace mu2e {
+
+  InfoMCStructHelper::InfoMCStructHelper(const Config& conf) :
+    _spctag(conf.spctag()), _mingood(conf.mingood()),
+    _maxdt(conf.maxvddt()),
+    _ewMarkerTag(conf.ewMarkerTag()) {
+      // build the VDId -> SId map by hand
+      _vdmap[VirtualDetectorId(VirtualDetectorId::TT_FrontHollow)] = SurfaceId("TT_Front");
+      _vdmap[VirtualDetectorId(VirtualDetectorId::TT_Mid)] = SurfaceId("TT_Mid");
+      _vdmap[VirtualDetectorId(VirtualDetectorId::TT_MidInner)] = SurfaceId("TT_Mid");
+      _vdmap[VirtualDetectorId(VirtualDetectorId::TT_Back)] = SurfaceId("TT_Back");
+      _vdmap[VirtualDetectorId(VirtualDetectorId::TT_OutSurf)] = SurfaceId("TT_Outer");
+      _vdmap[VirtualDetectorId(VirtualDetectorId::TT_InSurf)] = SurfaceId("TT_Inner");
+    }
 
   void InfoMCStructHelper::updateEvent(const art::Event& event) {
     event.getByLabel(_spctag,_spcH);
@@ -177,82 +191,54 @@ namespace mu2e {
     siminfo.pos = XYZVectorF(det->toDetector(sp.startPosition()));
   }
 
-  void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeedMC& kseedmc, TrkInfoMCStep& trkinfomcstep,
-      std::vector<VirtualDetectorId> const& vids, double target_time) {
-    ConditionsHandle<AcceleratorParams> accPar("ignored");
-    GeomHandle<DetectorSystem> det;
-    GlobalConstantsHandle<ParticleDataList> pdt;
-    static CLHEP::Hep3Vector vpoint_mu2e = det->toMu2e(CLHEP::Hep3Vector(0.0,0.0,0.0));
+  void InfoMCStructHelper::fillVDInfo(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<MCStepInfo>& vdinfos) {
+    vdinfos.clear();
+    const auto& vdsteps = kseedmc._vdsteps;
+    const auto& inters = kseed.intersections();
+    double tmin = std::numeric_limits<float>::max();
+    double tmax = std::numeric_limits<float>::lowest();
+    size_t imin(0), imax(0);
 
-    const auto& mcsteps = kseedmc._vdsteps;
-    double dmin = std::numeric_limits<double>::max();
-    for (const auto& i_mcstep : mcsteps) {
-      for(auto vid : vids) {
-        if (i_mcstep._vdid == vid) {
-          // take the VD step with the time closest to target_time
-          // this is so that we can take the correct step when looking at upstream/downstream tracks
-          // This won't work for extracted or OffSpill: FIXME!!!
-          double corrected_time;
-          if(_onSpill) {
-            corrected_time = std::fmod(i_mcstep._time,_mbtime);
-          } else {
-            corrected_time = i_mcstep._time;
-          }
-          if(fabs(target_time - corrected_time) < dmin){
-            dmin = fabs(target_time - corrected_time);//i_mcstep._time;
-            trkinfomcstep.valid = true;
-            trkinfomcstep.time = i_mcstep._time;
-            trkinfomcstep.mom = XYZVectorF(i_mcstep._mom);
-            trkinfomcstep.pos = XYZVectorF(i_mcstep._pos);
+    for (const auto& vdstep : vdsteps) {
+      // record VD steps close in time and space with candidate samples (intersections)
+      double corrected_time;
+      if(_onSpill) {
+        corrected_time = std::fmod(vdstep._time,_mbtime);
+      } else {
+        corrected_time = vdstep._time;
+      }
+      double dtmin = std::numeric_limits<float>::max();
+      MCStepInfo vdinfo;
+      for(size_t iinter=0; iinter < inters.size(); ++iinter){
+        auto const& inter = inters[iinter];
+        if(_vdmap[vdstep._vdid] == inter.surfaceId()){
+          double dt = fabs(inter.time() - corrected_time);
+          if(dt < _maxdt && dt < dtmin) {
+            dtmin = dt;
+            vdinfo.time = corrected_time; // use corrected time for early, late flagging.  Not sure if this affects anything
+            vdinfo.mom = XYZVectorF(vdstep._mom);
+            vdinfo.pos = XYZVectorF(vdstep._pos);
+            vdinfo.vid = vdstep._vdid.id();
+            vdinfo.iinter = iinter;
+            vdinfo.sid = inter.surfaceId().id();
           }
         }
       }
-    }
-  }
-
-  void InfoMCStructHelper::fillTrkInfoMCStep(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMCStep& earlytrkinfomcstep, TrkInfoMCStep& latetrkinfomcstep) {
-    // find the true time of the earliest and latest hit actually used in this fit
-    float tshmcearly(1e10), tshmclate(-1e10);
-    for(size_t ish=0;ish < kseed.hits().size();++ish){
-      auto const& tsh = kseed.hits().at(ish);
-      auto const& tshmc = kseedmc.trkStrawHitMCs().at(ish);
-      if(tsh._flag.hasAllProperties(StrawHitFlag::active)){
-        tshmcearly = std::min(tshmcearly,tshmc._time);
-        tshmclate = std::max(tshmclate,tshmc._time);
+      if(vdinfo.iinter >=0){
+        vdinfos.push_back(vdinfo);
+        if(vdinfo.time > tmax){
+          tmax = vdinfo.time;
+          imax = vdinfos.size()-1;
+        }
+        if(vdinfo.time < tmin){
+          tmin = vdinfo.time;
+          imin = vdinfos.size()-1;
+        }
       }
     }
-    // now, find the closest VD crossing that is before (after) that early (late) hit time
-    size_t iearly(0), ilate(0);
-    double detime(1e10), dltime(1e10);
-    const auto& mcsteps = kseedmc._vdsteps;
-    for(size_t imcstep = 0; imcstep < mcsteps.size(); ++imcstep) {
-      const auto& mcstep = mcsteps[imcstep];
-      double corrected_time;
-      if(_onSpill) {
-        corrected_time = std::fmod(mcstep._time,_mbtime);
-      } else {
-        corrected_time = mcstep._time;
-      }
-      if(corrected_time < tshmcearly && fabs(corrected_time-tshmcearly) < detime) {
-        detime = fabs(corrected_time-tshmcearly);
-        iearly = imcstep;
-      }
-      if(corrected_time > tshmclate && fabs(corrected_time-tshmclate) < dltime) {
-        dltime = fabs(corrected_time-tshmclate);
-        ilate = imcstep;
-      }
-    }
-    if(mcsteps.size()>0){
-      auto const& emcstep = mcsteps[iearly];
-      auto const& lmcstep = mcsteps[iearly];
-      earlytrkinfomcstep.valid = true;
-      earlytrkinfomcstep.time = _onSpill ? std::fmod(emcstep._time,_mbtime) : emcstep._time;
-      earlytrkinfomcstep.mom = XYZVectorF(mcsteps[iearly]._mom);
-      earlytrkinfomcstep.pos = XYZVectorF(mcsteps[iearly]._pos);
-      latetrkinfomcstep.valid = true;
-      latetrkinfomcstep.time = _onSpill ? std::fmod(lmcstep._time,_mbtime) : lmcstep._time;
-      latetrkinfomcstep.mom = XYZVectorF(mcsteps[ilate]._mom);
-      latetrkinfomcstep.pos = XYZVectorF(mcsteps[ilate]._pos);
+    if(vdinfos.size() > 0){
+      vdinfos[imin].early = true;
+      vdinfos[imax].late = true;
     }
   }
 
