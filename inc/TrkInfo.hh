@@ -18,12 +18,12 @@ namespace mu2e
     XYZVectorF pos;
     double time;
     float momerr = -1000;  // projected error on the scalar momentum
-    bool inbounds = false;
-    bool gap = false;
-    bool early = false;
-    bool late = false;
-    int sid = SurfaceIdEnum::unknown;
-    int sindex = 0;
+    bool inbounds = false; // was the intersection within the (literal) surface bounds
+    bool gap = false; // was the intersection in a piecewise trajectory gap
+    bool early = false; // is this the earliest intersection for this track
+    bool late = false; // is this the latest intersection for this track
+    int sid = SurfaceIdEnum::unknown; // SurfaceId of the intersected surface, see Offline/KinKalGeom/inc/SurfaceId.hh
+    int sindex = 0; // index to the intersected surface (for multi-surface elements like StoppingTarget)
     void reset() { *this = TrkFitInfo(); }
   };
   // structs for specific fit types

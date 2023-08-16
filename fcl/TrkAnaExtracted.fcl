@@ -25,14 +25,10 @@ physics.analyzers.TrkAnaExt.candidate.options : @local::AllOpt
 physics.analyzers.TrkAnaExt.candidate.options.fillTrkQual : false
 physics.analyzers.TrkAnaExt.candidate.options.fillTrkPID : false
 physics.analyzers.TrkAnaExt.FillTriggerInfo : false
-# use the inner and outer surface VIDs for MC truth
-physics.analyzers.TrkAnaExt.candidate.segmentSuffixes: [  "ent", "mid", "xit", "out", "in" ]
-physics.analyzers.TrkAnaExt.candidate.segmentVIDs: [ [ "TT_FrontHollow", "TT_FrontPA"], [ "TT_Mid", "TT_MidInner"], ["TT_Back"], ["TT_OutSurf"], ["TT_InSurf"] ]
-physics.analyzers.TrkAnaExt.candidate.SurfaceNames: [ "TT_Front", "TT_Back", "TT_Outer", "TCRV" ]
 
 # for hit level diagnostics, set diagLevel to 2
 physics.analyzers.TrkAnaExt.diagLevel : 2
 physics.analyzers.TrkAnaExt.FillMCInfo : true
 physics.analyzers.TrkAnaExt.FillCRV : true
 
-services.TFileService.fileName: "nts.owner.trkana-reco.version.sequencer.root"
+services.TFileService.fileName: "nts.owner.trkanaextracted-reco.version.sequencer.root"

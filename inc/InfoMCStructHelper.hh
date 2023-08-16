@@ -32,11 +32,11 @@ namespace mu2e {
       art::InputTag _spctag;
       art::Handle<SimParticleCollection> _spcH;
       double _mingood;
-      bool _onSpill;
-      double _mbtime;
-      double _maxdt;
+      bool _onSpill; // onspill data flag, needed to decide if MC times should be wrapped.  Updated each event
+      double _mbtime; // microbunch period (onspill wrapping time), only relevant for onspill
+      double _maxdt; // maximum time difference between reco intersection and equivalent MC VD hit
       art::InputTag _ewMarkerTag;
-      // record which SurfaceIds match to a given VirtualDetectorId
+      // map VirtualDetectorIds to the equivalen SurfaceIds
       std::map<VirtualDetectorId,SurfaceId> _vdmap;
 
       void fillSimInfo(const art::Ptr<SimParticle>& sp, SimInfo& siminfo);

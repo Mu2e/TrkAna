@@ -12,13 +12,16 @@ services : @local::Services.Reco
 physics :
 {
   producers : {
-    @table::TrkAnaReco.producers
+#    @table::TrkAnaReco.producers
+    PBIWeight : @local::PBIWeight
+    @table::BestCrvProducers
     @table::TrkAnaReco.MCProducers
   }
   analyzers : { @table::TrkAnaReco.analyzers }
 }
 
-physics.TrkAnaTrigPath : [ @sequence::TrkAnaReco.MCTrigSequence, @sequence::TrkAnaReco.TrigSequence ]
+#physics.TrkAnaTrigPath : [ @sequence::TrkAnaReco.MCTrigSequence, @sequence::TrkAnaReco.TrigSequence ]
+physics.TrkAnaTrigPath : [ PBIWeight, @sequence::TrkAnaReco.MCTrigSequence, @sequence::BestCrvProducersPath ]
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)
@@ -34,5 +37,12 @@ physics.analyzers.TrkAnaPos.diagLevel : 1
 physics.analyzers.TrkAnaPos.FillMCInfo : true
 physics.analyzers.TrkAnaPos.FillCRV : true
 physics.analyzers.TrkAnaPos.FillTriggerInfo : false
+
+physics.analyzers.TrkAnaNeg.FillTrkQualInfo : false
+physics.analyzers.TrkAnaNeg.FillTrkPIDInfo : false
+
+physics.analyzers.TrkAnaPos.FillTrkQualInfo : false
+physics.analyzers.TrkAnaPos.FillTrkPIDInfo : false
+
 
 services.TFileService.fileName: "nts.owner.trkana-reco.version.sequencer.root"
