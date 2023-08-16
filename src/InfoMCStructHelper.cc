@@ -211,7 +211,9 @@ namespace mu2e {
       MCStepInfo vdinfo;
       for(size_t iinter=0; iinter < inters.size(); ++iinter){
         auto const& inter = inters[iinter];
-        if(_vdmap[vdstep._vdid] == inter.surfaceId()){
+        // make sure this is the same surface and that the particles are going in the same direction
+        if(_vdmap[vdstep._vdid] == inter.surfaceId() && vdstep._mom.Dot(inter.intersection().pdir_) > 0.0){
+          // there could still be multiple intersections if the particle reflected: check
           double dt = fabs(inter.time() - corrected_time);
           if(dt < _maxdt && dt < dtmin) {
             dtmin = dt;
