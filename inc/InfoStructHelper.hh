@@ -52,6 +52,9 @@ namespace mu2e {
     void fillTrkFitInfo(const KalSeed& kseed,std::vector<TrkFitInfo>& trkfitinfos);
     void fillTrkInfoHits(const KalSeed& kseed,TrkInfo& trkinfo);
     void fillTrkInfoStraws(const KalSeed& kseed,TrkInfo& trkinfo);
+    void fillLoopHelixInfo(const KalSeed& kseed, std::vector<LoopHelixInfo>& lhis);
+    void fillCentralHelixInfo(const KalSeed& kseed, std::vector<CentralHelixInfo>& chis);
+    void fillKinematicLineInfo(const KalSeed& kseed, std::vector<KinematicLineInfo>& klis);
 
     void fillHitInfo(const KalSeed& kseed, std::vector<TrkStrawHitInfo>& tshinfos );
     void fillMatInfo(const KalSeed& kseed, std::vector<TrkStrawMatInfo>& tminfos );

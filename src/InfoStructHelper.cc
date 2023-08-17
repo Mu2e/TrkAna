@@ -118,6 +118,71 @@ namespace mu2e {
     }
   }
 
+  void InfoStructHelper::fillLoopHelixInfo(const KalSeed& kseed, std::vector<LoopHelixInfo>& lhis) {
+    lhis.clear();
+    for(auto const& kinter : kseed.intersections()) {
+      auto lh = kinter.loopHelix();
+      LoopHelixInfo lhi;
+      lhi.rad = lh.rad();
+      lhi.lam = lh.lam();
+      lhi.cx = lh.cx();
+      lhi.cy = lh.cy();
+      lhi.phi0 = lh.phi0();
+      lhi.t0 = lh.t0();
+      lhi.raderr = sqrt(lh.paramVar(KinKal::LoopHelix::rad_));
+      lhi.lamerr = sqrt(lh.paramVar(KinKal::LoopHelix::lam_));
+      lhi.cxerr = sqrt(lh.paramVar(KinKal::LoopHelix::cx_));
+      lhi.cyerr = sqrt(lh.paramVar(KinKal::LoopHelix::cy_));
+      lhi.phi0err = sqrt(lh.paramVar(KinKal::LoopHelix::phi0_));
+      lhi.t0err = sqrt(lh.paramVar(KinKal::LoopHelix::t0_));
+      // deprecated!
+      lhi.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
+      lhis.push_back(lhi);
+    }
+  }
+  void InfoStructHelper::fillCentralHelixInfo(const KalSeed& kseed, std::vector<CentralHelixInfo>& chis) {
+    chis.clear();
+    for(auto const& kinter : kseed.intersections()) {
+      auto ch = kinter.centralHelix();
+      CentralHelixInfo chi;
+      chi.d0 = ch.d0();
+      chi.phi0 = ch.phi0();
+      chi.omega = ch.omega();
+      chi.z0 = ch.z0();
+      chi.tanDip = ch.tanDip();
+      chi.t0 = ch.t0();
+      chi.d0err = sqrt(ch.paramVar(KinKal::CentralHelix::d0_));
+      chi.phi0err = sqrt(ch.paramVar(KinKal::CentralHelix::phi0_));
+      chi.omegaerr = sqrt(ch.paramVar(KinKal::CentralHelix::omega_));
+      chi.z0err = sqrt(ch.paramVar(KinKal::CentralHelix::z0_));
+      chi.tanDiperr = sqrt(ch.paramVar(KinKal::CentralHelix::tanDip_));
+      chi.t0err = sqrt(ch.paramVar(KinKal::CentralHelix::t0_));
+      // deprecated!
+      chi.maxr = fabs(-1.0/ch.omega() - ch.d0());
+      chis.push_back(chi);
+    }
+  }
+  void InfoStructHelper::fillKinematicLineInfo(const KalSeed& kseed, std::vector<KinematicLineInfo>& klis) {
+     klis.clear();
+    for(auto const& kinter : kseed.intersections()) {
+      auto kl = kinter.kinematicLine();
+      KinematicLineInfo kli;
+      kli.d0 = kl.d0();
+      kli.phi0 = kl.phi0();
+      kli.z0 = kl.z0();
+      kli.theta = kl.theta();
+      kli.mom = kl.mom();
+      kli.t0 = kl.t0();
+      kli.d0err = sqrt(kl.paramVar(KinKal::KinematicLine::d0_));
+      kli.phi0err = sqrt(kl.paramVar(KinKal::KinematicLine::phi0_));
+      kli.z0err = sqrt(kl.paramVar(KinKal::KinematicLine::z0_));
+      kli.thetaerr = sqrt(kl.paramVar(KinKal::KinematicLine::theta_));
+      kli.momerr = sqrt(kl.paramVar(KinKal::KinematicLine::mom_));
+      kli.t0err = sqrt(kl.paramVar(KinKal::KinematicLine::t0_));
+      klis.push_back(kli);
+    }
+ }
+
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
     trkinfo.nhits = trkinfo.nactive = trkinfo.ndouble = trkinfo.ndactive = trkinfo.nplanes = trkinfo.planespan = trkinfo.nnullambig = 0;
     static StrawHitFlag active(StrawHitFlag::active);

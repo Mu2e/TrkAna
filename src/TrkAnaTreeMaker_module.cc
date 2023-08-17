@@ -217,9 +217,9 @@ namespace mu2e {
       // track branches (outputs)
       std::vector<TrkInfo> _allTIs;
       std::map<BranchIndex, std::vector<TrkFitInfo>> _allTFIs;
-      std::map<BranchIndex, std::vector<LoopHelixInfo>> _allLHs;
-      std::map<BranchIndex, std::vector<CentralHelixInfo>> _allCHs;
-      std::map<BranchIndex, std::vector<KinematicLineInfo>> _allKLs;
+      std::map<BranchIndex, std::vector<LoopHelixInfo>> _allLHIs;
+      std::map<BranchIndex, std::vector<CentralHelixInfo>> _allCHIs;
+      std::map<BranchIndex, std::vector<KinematicLineInfo>> _allKLIs;
 
       std::vector<TrkCaloHitInfo> _allTCHIs;
       // quality branches (inputs)
@@ -291,7 +291,7 @@ namespace mu2e {
       InfoMCStructHelper _infoMCStructHelper;
       // branch structure
       Int_t _buffsize, _splitlevel;
-      enum FType{Unknown=0,LoopHelix=1,CentralHelix=2,KinematicLine=3};
+      enum FType{Unknown=0,LoopHelix,CentralHelix,KinematicLine};
       FType _ftype = Unknown;
       std::vector<std::string> fitNames = {"Unknown", "LoopHelix","CentralHelix","KinematicLine"};
 
@@ -357,25 +357,11 @@ namespace mu2e {
       TrkInfo ti;
       _allTIs.push_back(ti);
       // fit sampling (KalIntersection) at a surface
-      std::vector<TrkFitInfo> allTFIs;
-      _allTFIs[i_branch] = allTFIs;
+      _allTFIs[i_branch] = std::vector<TrkFitInfo>();
       // fit-specific branches
-      std::vector<LoopHelixInfo> allLHs;
-      std::vector<CentralHelixInfo> allCHs;
-      std::vector<KinematicLineInfo> allKLs;
-      switch (_ftype ) {
-        case LoopHelix :
-          _allLHs[i_branch] = allLHs;
-          break;
-        case CentralHelix :
-          _allCHs[i_branch] = allCHs;
-          break;
-        case KinematicLine :
-          _allKLs[i_branch] = allKLs;
-          break;
-        default:
-          break;
-      }
+      _allLHIs[i_branch] = std::vector<LoopHelixInfo>();
+      _allCHIs[i_branch] = std::vector<CentralHelixInfo>();
+      _allKLIs[i_branch] = std::vector<KinematicLineInfo>();
 
       // candidate mc truth info at VDs
       std::vector<MCStepInfo> allMCVDSteps;
@@ -465,9 +451,9 @@ namespace mu2e {
       _trkana->Branch((branch+".").c_str(),&_allTIs.at(i_branch));
       _trkana->Branch((branch+"fit.").c_str(),&_allTFIs.at(i_branch),_buffsize,_splitlevel);
 // add traj-specific branches
-      if(_ftype == LoopHelix )_trkana->Branch((branch+"lh.").c_str(),&_allLHs.at(i_branch),_buffsize,_splitlevel);
-      if(_ftype == CentralHelix )_trkana->Branch((branch+"ch.").c_str(),&_allCHs.at(i_branch),_buffsize,_splitlevel);
-      if(_ftype == KinematicLine )_trkana->Branch((branch+"kl.").c_str(),&_allKLs.at(i_branch),_buffsize,_splitlevel);
+      if(_ftype == LoopHelix )_trkana->Branch((branch+"lh.").c_str(),&_allLHIs.at(i_branch),_buffsize,_splitlevel);
+      if(_ftype == CentralHelix )_trkana->Branch((branch+"ch.").c_str(),&_allCHIs.at(i_branch),_buffsize,_splitlevel);
+      if(_ftype == KinematicLine )_trkana->Branch((branch+"kl.").c_str(),&_allKLIs.at(i_branch),_buffsize,_splitlevel);
       // TrkCaloHit: currently only 1
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
@@ -879,11 +865,10 @@ namespace mu2e {
 
     // fit information at specific points:e
 
-    // get VD positions
-    mu2e::GeomHandle<VirtualDetector> vdHandle;
-    mu2e::GeomHandle<DetectorSystem> det;
-
     _infoStructHelper.fillTrkFitInfo(kseed,_allTFIs.at(i_branch));
+    if(_ftype == LoopHelix)_infoStructHelper.fillLoopHelixInfo(kseed,_allLHIs.at(i_branch));
+    if(_ftype == CentralHelix)_infoStructHelper.fillCentralHelixInfo(kseed,_allCHIs.at(i_branch));
+    if(_ftype == KinematicLine)_infoStructHelper.fillKinematicLineInfo(kseed,_allKLIs.at(i_branch));
     BranchConfig branchConfig = _allBranches.at(i_branch);
     if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){ // want hit level info
       _infoStructHelper.fillHitInfo(kseed, _allTSHIs.at(i_branch));
