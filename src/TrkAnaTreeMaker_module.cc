@@ -29,6 +29,9 @@
 #include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
 #include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMC.hh"
 #include "Offline/Mu2eUtilities/inc/fromStrings.hh"
+#include "Offline/TrackerGeom/inc/Tracker.hh"
+#include "Offline/GeometryService/inc/GeomHandle.hh"
+#include "Offline/KinKalGeom/inc/SurfaceId.hh"
 // Framework includes.
 #include "art/Framework/Core/EDAnalyzer.h"
 #include "art/Framework/Principal/Event.h"
@@ -47,7 +50,6 @@
 #include "TBits.h"
 #include "TTree.h"
 #include "TProfile.h"
-#include "TH1F.h"
 
 // BaBar includes
 #include "BTrk/BaBar/BaBar.hh"
@@ -123,8 +125,6 @@ namespace mu2e {
         fhicl::Atom<std::string> input{Name("input"), Comment("KalSeedCollection input tag (use prefix if fcl parameter suffix is defined)")};
         fhicl::Atom<std::string> branch{Name("branch"), Comment("Name of output branch")};
         fhicl::Atom<std::string> suffix{Name("suffix"), Comment("Fit suffix (e.g. DeM)"), ""};
-        fhicl::Sequence<std::string> segmentSuffixes{Name("segmentSuffixes"), Comment("The suffix to the branch for this segment (e.g. putting \"ent\" will give a branch \"deent\", and if fillMC = true, \"demcent\")")};
-        fhicl::Sequence<fhicl::Sequence<std::string>> segmentVIDs{Name("segmentVIDs"), Comment("The VirtualDetectorId that this segment should find tits position from")};
         fhicl::Table<BranchOptConfig> options{Name("options"), Comment("Optional arguments for a branch")};
       };
 
@@ -132,52 +132,56 @@ namespace mu2e {
         using Name=fhicl::Name;
         using Comment=fhicl::Comment;
 
-        fhicl::Table<BranchConfig> candidate{Name("candidate"), Comment("Candidate physics track info")};
-        fhicl::OptionalSequence< fhicl::Table<BranchConfig> > supplements{Name("supplements"), Comment("Supplemental physics track info (TrkAna will find closest in time to candidate)")};
+        // General control and config
+        fhicl::Atom<bool> pempty{Name("ProcessEmptyEvents"),false};
+        fhicl::Atom<int> diag{Name("diagLevel"),1};
+        fhicl::Atom<int> debug{Name("debugLevel"),0};
+        fhicl::Atom<int> splitlevel{Name("splitlevel"),99};
+        fhicl::Atom<int> buffsize{Name("buffsize"),32000};
+        // General event info
         fhicl::Atom<art::InputTag> rctag{Name("RecoCountTag"), Comment("RecoCount"), art::InputTag()};
         fhicl::Atom<art::InputTag> PBITag{Name("PBITag"), Comment("Tag for ProtonBunchIntensity object") ,art::InputTag()};
         fhicl::Atom<art::InputTag> PBTTag{Name("PBTTag"), Comment("Tag for ProtonBunchTime object") ,art::InputTag()};
-        fhicl::Atom<art::InputTag> PBTMCTag{Name("PBTMCTag"), Comment("Tag for ProtonBunchTimeMC object") ,art::InputTag()};
-        fhicl::Atom<std::string> simParticleLabel{Name("SimParticleLabel"), Comment("SimParticleLabel")};
-        fhicl::Atom<std::string> mcTrajectoryLabel{Name("MCTrajectoryLabel"), Comment("MCTrajectoryLabel")};
-        fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
-        fhicl::Atom<bool> pempty{Name("ProcessEmptyEvents"),false};
-
-        // Calo control
-        fhicl::Atom<bool> fillCaloMC{ Name("FillCaloMC"),Comment("Fill CaloMC information"), true};
-        fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
-
-        // CRV -- flags
-        fhicl::Atom<bool> crv{Name("FillCRV"),Comment("Flag for turning on bestcrv(mc) branches"), false};
-        fhicl::Atom<bool> crvhits{Name("FillCRVHits"), Comment("Flag for turning on crvinfo(mc), crvsummary(mc), and crvinfomcplane branches"), false};
-        fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
+        fhicl::Atom<bool> filltrig{Name("FillTriggerInfo"),false};
+        fhicl::Atom<std::string> trigProcessName{Name("TriggerProcessName"), Comment("Process name for Trigger")};
+        fhicl::Atom<std::string> trigpathsuffix{Name("TriggerPathSuffix"), "_trigger"}; // all trigger paths have this in the name
+        // core tracking
+        fhicl::Table<BranchConfig> candidate{Name("candidate"), Comment("Candidate physics track info")};
+        fhicl::OptionalSequence< fhicl::Table<BranchConfig> > supplements{Name("supplements"), Comment("Supplemental physics track info (TrkAna will find closest in time to candidate)")};
+        // Additional (optional) tracking information
+        fhicl::Atom<bool> fillhits{Name("FillHitInfo"),Comment("Global switch to turn on/off hit-level info"), false};
+        fhicl::Atom<std::string> fittype{Name("FitType"),Comment("Type of track Fit: LoopHelix, CentralHelix, KinematicLine, or Unknown"),"Unknown"};
+        fhicl::Atom<bool> helices{Name("FillHelixInfo"),false};
         // CRV -- input tags
         fhicl::Atom<std::string> crvCoincidenceModuleLabel{Name("CrvCoincidenceModuleLabel"), Comment("CrvCoincidenceModuleLabel")};
-        fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
         fhicl::Atom<std::string> crvRecoPulseLabel{Name("CrvRecoPulseLabel"), Comment("CrvRecoPulseLabel")};
         fhicl::Atom<std::string> crvStepLabel{Name("CrvStepLabel"), Comment("CrvStepLabel")};
         fhicl::Atom<std::string> crvWaveformsModuleLabel{ Name("CrvWaveformsModuleLabel"), Comment("CrvWaveformsModuleLabel")};
         fhicl::Atom<std::string> crvDigiModuleLabel{ Name("CrvDigiModuleLabel"), Comment("CrvDigiModuleLabel")};
-        fhicl::Atom<art::InputTag> crvMCAssnsTag{ Name("CrvCoincidenceClusterMCAssnsTag"), Comment("art::InputTag for CrvCoincidenceClusterMCAssns")};
+        // CRV -- flags
+        fhicl::Atom<bool> crv{Name("FillCRV"),Comment("Flag for turning on bestcrv(mc) branches"), false};
+        fhicl::Atom<bool> crvhits{Name("FillCRVHits"), Comment("Flag for turning on crvinfo(mc), crvsummary(mc), and crvinfomcplane branches"), false};
+        fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
         // CRV -- other
         fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters
-
-
-        fhicl::Atom<bool> helices{Name("FillHelixInfo"),false};
-        fhicl::Atom<bool> filltrkqual{Name("FillTrkQualInfo"),false};
-        fhicl::Atom<bool> filltrkpid{Name("FillTrkPIDInfo"),false};
-        fhicl::Atom<bool> filltrig{Name("FillTriggerInfo"),false};
-        fhicl::Atom<std::string> trigProcessName{Name("TriggerProcessName"), Comment("Process name for Trigger")};
-        fhicl::Atom<std::string> trigpathsuffix{Name("TriggerPathSuffix"), "_trigger"}; // all trigger paths have this in the name
-        fhicl::Atom<int> diag{Name("diagLevel"),1};
-        fhicl::Atom<bool> fillhits{Name("FillHitInfo"),Comment("Global switch to turn on/off hit-level info"), false};
-        fhicl::Atom<int> debug{Name("debugLevel"),0};
+        // MC truth
+        fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
+        fhicl::Table<InfoMCStructHelper::Config> infoMCStructHelper{Name("InfoMCStructHelper"), Comment("Configuration for the InfoMCStructHelper")};
+        fhicl::Atom<art::InputTag> PBTMCTag{Name("PBTMCTag"), Comment("Tag for ProtonBunchTimeMC object") ,art::InputTag()};
+        fhicl::Atom<std::string> simParticleLabel{Name("SimParticleLabel"), Comment("SimParticleLabel")};
+        fhicl::Atom<std::string> mcTrajectoryLabel{Name("MCTrajectoryLabel"), Comment("MCTrajectoryLabel")};
         fhicl::Atom<art::InputTag> primaryParticleTag{Name("PrimaryParticleTag"), Comment("Tag for PrimaryParticle"), art::InputTag()};
         fhicl::Atom<art::InputTag> kalSeedMCTag{Name("KalSeedMCAssns"), Comment("Tag for KalSeedMCAssn"), art::InputTag()};
-        fhicl::Table<InfoMCStructHelper::Config> infoMCStructHelper{Name("InfoMCStructHelper"), Comment("Configuration for the InfoMCStructHelper")};
         fhicl::OptionalSequence<art::InputTag> extraMCStepTags{Name("ExtraMCStepCollectionTags"), Comment("Input tags for any other StepPointMCCollections you want written out")};
-        fhicl::Atom<int> splitlevel{Name("splitlevel"),99};
-        fhicl::Atom<int> buffsize{Name("buffsize"),32000};
+        // Calo MC
+        fhicl::Atom<bool> fillCaloMC{ Name("FillCaloMC"),Comment("Fill CaloMC information"), true};
+        fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
+        // CRV MC
+        fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
+        fhicl::Atom<art::InputTag> crvMCAssnsTag{ Name("CrvCoincidenceClusterMCAssnsTag"), Comment("art::InputTag for CrvCoincidenceClusterMCAssns")};
+        // Pre-processed analysis info; are these redundant with the branch config ?
+        fhicl::Atom<bool> filltrkqual{Name("FillTrkQualInfo"),false};
+        fhicl::Atom<bool> filltrkpid{Name("FillTrkPIDInfo"),false};
       };
       typedef art::EDAnalyzer::Table<Config> Parameters;
 
@@ -196,7 +200,6 @@ namespace mu2e {
 
       // main TTree
       TTree* _trkana;
-      TProfile* _tht; // profile plot of track hit times: just an example
       // general event info branch
       EventInfo _einfo;
       EventInfoMC _einfomc;
@@ -213,8 +216,10 @@ namespace mu2e {
       std::vector<art::Handle<KalSeedCollection> > _allKSCHs;
       // track branches (outputs)
       std::vector<TrkInfo> _allTIs;
-      //    std::vector<TrkFitInfo> _allEntTIs, _allMidTIs, _allXitTIs;
-      std::map<BranchIndex, std::vector<TrkFitInfo>> _allSegmentTIs;
+      std::map<BranchIndex, std::vector<TrkFitInfo>> _allTFIs;
+      std::map<BranchIndex, std::vector<LoopHelixInfo>> _allLHIs;
+      std::map<BranchIndex, std::vector<CentralHelixInfo>> _allCHIs;
+      std::map<BranchIndex, std::vector<KinematicLineInfo>> _allKLIs;
 
       std::vector<TrkCaloHitInfo> _allTCHIs;
       // quality branches (inputs)
@@ -227,20 +232,18 @@ namespace mu2e {
       std::vector<TrkPIDInfo> _allTPIs;
       // trigger information
       unsigned _trigbits;
-      TH1F* _trigbitsh; // plot of trigger bits: just an example
       std::map<size_t,unsigned> _tmap; // map between path and trigger ID.  ID should come from trigger itself FIXME!
       // MC truth (fcl parameters)
       bool _fillmc;
-      // MC truth branches (inputs)
+      // MC truth inputs
       art::Handle<PrimaryParticle> _pph;
       art::Handle<KalSeedMCAssns> _ksmcah;
       art::InputTag _primaryParticleTag;
-      std::map<BranchIndex, std::vector<std::vector<VirtualDetectorId>>> _allSegmentVIDs;
       // MC truth branches (outputs)
       std::vector<TrkInfoMC> _allMCTIs;
       std::vector<std::vector<SimInfo>> _allMCSimTIs;
       std::vector<SimInfo> _allMCPriTIs;
-      std::map<BranchIndex, std::vector<TrkInfoMCStep>> _allMCSegmentTIs;
+      std::map<BranchIndex, std::vector<MCStepInfo>> _allMCVDInfos;
       bool _fillcalomc;
       art::Handle<CaloClusterMCCollection> _ccmcch;
       std::vector<CaloClusterInfoMC> _allMCTCHIs;
@@ -288,6 +291,9 @@ namespace mu2e {
       InfoMCStructHelper _infoMCStructHelper;
       // branch structure
       Int_t _buffsize, _splitlevel;
+      enum FType{Unknown=0,LoopHelix,CentralHelix,KinematicLine};
+      FType _ftype = Unknown;
+      std::vector<std::string> fitNames = {"Unknown", "LoopHelix","CentralHelix","KinematicLine"};
 
       // helper functions
       void fillEventInfo(const art::Event& event);
@@ -308,7 +314,6 @@ namespace mu2e {
     _PBITag(conf().PBITag()),
     _PBTTag(conf().PBTTag()),
     _PBTMCTag(conf().PBTMCTag()),
-    _trigbitsh(0),
     _fillmc(conf().fillmc()),
     _fillcalomc(conf().fillCaloMC()),
     // CRV
@@ -327,6 +332,15 @@ namespace mu2e {
     _buffsize(conf().buffsize()),
     _splitlevel(conf().splitlevel())
   {
+    // decode fit type
+    for(size_t ifit=0;ifit < fitNames.size();++ifit){
+      auto const& fname = fitNames[ifit];
+      if(_conf.fittype() == fname){
+        _ftype= (FType)ifit;
+        break;
+      }
+    }
+
     // collect both candidate and supplement branches into one place
     _allBranches.push_back(_conf.candidate());
     _candidateIndex = 0;
@@ -340,27 +354,18 @@ namespace mu2e {
     // Create all the info structs
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       auto i_branchConfig = _allBranches.at(i_branch);
-
       TrkInfo ti;
       _allTIs.push_back(ti);
-      std::vector<TrkFitInfo> allSegments;
-      std::vector<TrkInfoMCStep> allMCSegments;
-      const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
-      for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-        allSegments.push_back(TrkFitInfo()); // add empty structs to the vector so that ROOT can be given a location to find it
-        allMCSegments.push_back(TrkInfoMCStep());
-      }
-      _allSegmentTIs[i_branch] = allSegments;
-      _allMCSegmentTIs[i_branch] = allMCSegments;
+      // fit sampling (KalIntersection) at a surface
+      _allTFIs[i_branch] = std::vector<TrkFitInfo>();
+      // fit-specific branches
+      _allLHIs[i_branch] = std::vector<LoopHelixInfo>();
+      _allCHIs[i_branch] = std::vector<CentralHelixInfo>();
+      _allKLIs[i_branch] = std::vector<KinematicLineInfo>();
 
-      const std::vector<std::vector<std::string>>& segmentVIDs = i_branchConfig.segmentVIDs();
-      std::vector<std::vector<VirtualDetectorId>> allSegmentVIDs;
-      for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-        std::vector<VirtualDetectorId> thisSegmentVIDs = fromStrings<VirtualDetectorId>(segmentVIDs.at(i_segment));
-        allSegmentVIDs.push_back(thisSegmentVIDs);
-      }
-      _allSegmentVIDs[i_branch] = allSegmentVIDs;
-
+      // candidate mc truth info at VDs
+      std::vector<MCStepInfo> allMCVDSteps;
+      _allMCVDInfos[i_branch] = allMCVDSteps;
 
       TrkCaloHitInfo tchi;
       _allTCHIs.push_back(tchi);
@@ -415,7 +420,6 @@ namespace mu2e {
     art::ServiceHandle<art::TFileService> tfs;
     // create TTree
     _trkana=tfs->make<TTree>("trkana","track analysis");
-    _tht=tfs->make<TProfile>("tht","Track Hit Time Profile",RecoCount::_nshtbins,-25.0,1725.0);
     // add event info branch
     _trkana->Branch("evtinfo.",&_einfo,_buffsize,_splitlevel);
     _trkana->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
@@ -445,12 +449,12 @@ namespace mu2e {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string branch = i_branchConfig.branch();
       _trkana->Branch((branch+".").c_str(),&_allTIs.at(i_branch));
-
-      const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
-      for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-        std::string segmentSuffix = segmentSuffixes.at(i_segment);
-        _trkana->Branch((branch+segmentSuffix+".").c_str(),&_allSegmentTIs.at(i_branch).at(i_segment));
-      }
+      _trkana->Branch((branch+"fit.").c_str(),&_allTFIs.at(i_branch),_buffsize,_splitlevel);
+// add traj-specific branches
+      if(_ftype == LoopHelix )_trkana->Branch((branch+"lh.").c_str(),&_allLHIs.at(i_branch),_buffsize,_splitlevel);
+      if(_ftype == CentralHelix )_trkana->Branch((branch+"ch.").c_str(),&_allCHIs.at(i_branch),_buffsize,_splitlevel);
+      if(_ftype == KinematicLine )_trkana->Branch((branch+"kl.").c_str(),&_allKLIs.at(i_branch),_buffsize,_splitlevel);
+      // TrkCaloHit: currently only 1
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
         int n_trkqual_vars = TrkQual::n_vars;
@@ -515,11 +519,7 @@ namespace mu2e {
           _trkana->Branch((full_branchname).c_str(),&_allMCSimTIs.at(i_branch).at(i_generation));
         }
         _trkana->Branch((branch+"mcpri.").c_str(),&_allMCPriTIs.at(i_branch),_buffsize,_splitlevel);
-        const std::vector<std::string>& segmentSuffixes = i_branchConfig.segmentSuffixes();
-        for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-          std::string segmentSuffix = segmentSuffixes.at(i_segment);
-          _trkana->Branch((branch+"mc"+segmentSuffix+".").c_str(),&_allMCSegmentTIs.at(i_branch).at(i_segment));
-        }
+        _trkana->Branch((branch+"mcvd.").c_str(),&_allMCVDInfos.at(i_branch),_buffsize,_splitlevel);
         if(_fillcalomc)_trkana->Branch((branch+"tchmc.").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
         // at hit-level MC information
         // (for the time being diagLevel will still work, but I propose removing this at some point)
@@ -677,18 +677,6 @@ namespace mu2e {
       }
     }
 
-    // general reco counts
-    if( !_conf.rctag().empty() ){
-      auto rch = event.getValidHandle<RecoCount>(_conf.rctag());
-      auto const& rc = *rch;
-      _infoStructHelper.fillHitCount(rc, _hcnt);
-      for(size_t ibin=0;ibin < rc._nshtbins; ++ibin){
-        float time = rc._shthist.binMid(ibin);
-        float count  = rc._shthist.binContents(ibin);
-        _tht->Fill(time,count);
-      }
-    }
-
     // trigger information
     if(_conf.filltrig()){
       fillTriggerBits(event,process);
@@ -840,23 +828,12 @@ namespace mu2e {
     TriggerResultsNavigator tnav(trigResults);
     _trigbits = 0;
     // setup the bin labels
-    if(_trigbitsh == 0){ // is there a better way to do this?  I think not
-      unsigned ntrig(0);
-      unsigned npath = trigResults->size();
-      for(size_t ipath=0;ipath < npath; ++ipath){
-        if (tnav.getTrigPath(ipath).find(_conf.trigpathsuffix()) != std::string::npos) {
-          _tmap[ipath] = ntrig;
-          ntrig++;
-        }
-      }
-      // build trigger histogram
-      art::ServiceHandle<art::TFileService> tfs;
-      _trigbitsh = tfs->make<TH1F>("trigbits","Trigger IDs",ntrig,-0.5,ntrig-0.5);
-      for(size_t ipath=0;ipath < npath; ++ipath){
-        auto ifnd = _tmap.find(ipath);
-        if(ifnd != _tmap.end()){
-          _trigbitsh->GetXaxis()->SetBinLabel(ifnd->second+1,tnav.getTrigPath(ipath).c_str());
-        }
+    unsigned ntrig(0);
+    unsigned npath = trigResults->size();
+    for(size_t ipath=0;ipath < npath; ++ipath){
+      if (tnav.getTrigPath(ipath).find(_conf.trigpathsuffix()) != std::string::npos) {
+        _tmap[ipath] = ntrig;
+        ntrig++;
       }
     }
     for(size_t ipath=0;ipath < trigResults->size(); ++ipath){
@@ -864,7 +841,6 @@ namespace mu2e {
         auto ifnd = _tmap.find(ipath);
         if(ifnd != _tmap.end()){
           unsigned itrig = ifnd->second;
-          _trigbitsh->Fill(itrig);
           _trigbits |= 1 << itrig;
           if(_conf.debug() > 1)
             cout << "Trigger path " << tnav.getTrigPath(ipath) << " Trigger ID " << itrig << " returns " << trigResults->accept(ipath) << endl;
@@ -884,18 +860,16 @@ namespace mu2e {
   void TrkAnaTreeMaker::fillAllInfos(const art::Handle<KalSeedCollection>& ksch, BranchIndex i_branch, size_t i_kseed) {
 
     const auto& kseed = ksch->at(i_kseed);
-    BranchConfig branchConfig = _allBranches.at(i_branch);
-
-    // get VD positions
-    mu2e::GeomHandle<VirtualDetector> vdHandle;
-    mu2e::GeomHandle<DetectorSystem> det;
-
+    // general info
     _infoStructHelper.fillTrkInfo(kseed,_allTIs.at(i_branch));
-    const std::vector<std::string>& segmentSuffixes = branchConfig.segmentSuffixes();
-    for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-      const XYZVectorF& pos = XYZVectorF(det->toDetector(vdHandle->getGlobal(*_allSegmentVIDs.at(i_branch).at(i_segment).begin())));
-      _infoStructHelper.fillTrkFitInfo(kseed,_allSegmentTIs.at(i_branch).at(i_segment),pos);
-    }
+
+    // fit information at specific points:e
+
+    _infoStructHelper.fillTrkFitInfo(kseed,_allTFIs.at(i_branch));
+    if(_ftype == LoopHelix)_infoStructHelper.fillLoopHelixInfo(kseed,_allLHIs.at(i_branch));
+    if(_ftype == CentralHelix)_infoStructHelper.fillCentralHelixInfo(kseed,_allCHIs.at(i_branch));
+    if(_ftype == KinematicLine)_infoStructHelper.fillKinematicLineInfo(kseed,_allKLIs.at(i_branch));
+    BranchConfig branchConfig = _allBranches.at(i_branch);
     if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){ // want hit level info
       _infoStructHelper.fillHitInfo(kseed, _allTSHIs.at(i_branch));
       _infoStructHelper.fillMatInfo(kseed, _allTSMIs.at(i_branch));
@@ -939,7 +913,6 @@ namespace mu2e {
       }
     }
 
-
     // all RecoQuals
     std::vector<Float_t> recoQuals; // for the output value
     for (const auto& i_recoQualHandle : _allRQCHs.at(i_branch)) {
@@ -981,11 +954,9 @@ namespace mu2e {
           auto const& kseedmc = *(iksmca->second);
           auto const& kseed = *kptr;
           _infoMCStructHelper.fillTrkInfoMC(kseed, kseedmc, _allMCTIs.at(i_branch));
-          double t0 = kseed.t0().t0();
-          const std::vector<std::string>& segmentSuffixes = branchConfig.segmentSuffixes();
-          for (size_t i_segment = 0; i_segment < segmentSuffixes.size(); ++i_segment) {
-            _infoMCStructHelper.fillTrkInfoMCStep(kseedmc, _allMCSegmentTIs.at(i_branch).at(i_segment), _allSegmentVIDs.at(i_branch).at(i_segment), t0);
-          }
+          auto& mcvdis = _allMCVDInfos.at(i_branch);
+          _infoMCStructHelper.fillVDInfo(kseed, kseedmc, mcvdis);
+          // primary info
           _infoMCStructHelper.fillPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch));
           _infoMCStructHelper.fillAllSimInfos(kseedmc, _allMCSimTIs.at(i_branch), branchConfig.options().genealogyDepth());
 
@@ -1015,63 +986,63 @@ namespace mu2e {
   // some branches can't be made until the analyze() function because we want to write out all data products of a certain type
   // these all have an underlying array where we want to name the individual elements in the array with different leaf names
   template <typename T, typename TI, typename TIA>
-    std::vector<art::Handle<T> >  TrkAnaTreeMaker::createSpecialBranch(const art::Event& event, const std::string& branchname,
-        std::vector<art::Handle<T> >& handles, // this parameter is only needed so that the template parameter T can be deduced. There is probably a better way to do this FIXME
-        TI& infostruct, TIA& array, bool make_individual_branches, const std::string& selection) {
-      std::vector<art::Handle<T> > outputHandles;
-      std::vector<art::Handle<T> > inputHandles = event.getMany<T>();
-      if (inputHandles.size()>0) {
-        std::vector<std::string> labels;
-        for (const auto& i_handle : inputHandles) {
-          std::string moduleLabel = i_handle.provenance()->moduleLabel();
-          // event.getMany() doesn't have a way to wildcard part of the ModuleLabel, do it ourselves here
-          size_t pos;
-          if (selection != "") { // if we want to add a selection
-            pos = moduleLabel.find(selection);
+  std::vector<art::Handle<T> >  TrkAnaTreeMaker::createSpecialBranch(const art::Event& event, const std::string& branchname,
+  std::vector<art::Handle<T> >& handles, // this parameter is only needed so that the template parameter T can be deduced. There is probably a better way to do this FIXME
+  TI& infostruct, TIA& array, bool make_individual_branches, const std::string& selection) {
+    std::vector<art::Handle<T> > outputHandles;
+    std::vector<art::Handle<T> > inputHandles = event.getMany<T>();
+    if (inputHandles.size()>0) {
+      std::vector<std::string> labels;
+      for (const auto& i_handle : inputHandles) {
+        std::string moduleLabel = i_handle.provenance()->moduleLabel();
+        // event.getMany() doesn't have a way to wildcard part of the ModuleLabel, do it ourselves here
+        size_t pos;
+        if (selection != "") { // if we want to add a selection
+          pos = moduleLabel.find(selection);
 
-            // make sure that the selection (e.g. "DeM") appears at the end of the module label
-            if (pos == std::string::npos) {
-              //      std::cout << "Selection not found" << std::endl;
-              continue;
-            }
-            else if (pos+selection.length() != moduleLabel.size()) {
-              //      std::cout << "Selection wasn't at end of moduleLabel" << std::endl;
-              continue;
-            }
-            moduleLabel = moduleLabel.erase(pos, selection.length());
+          // make sure that the selection (e.g. "DeM") appears at the end of the module label
+          if (pos == std::string::npos) {
+            //      std::cout << "Selection not found" << std::endl;
+            continue;
           }
-          std::string instanceName = i_handle.provenance()->productInstanceName();
+          else if (pos+selection.length() != moduleLabel.size()) {
+            //      std::cout << "Selection wasn't at end of moduleLabel" << std::endl;
+            continue;
+          }
+          moduleLabel = moduleLabel.erase(pos, selection.length());
+        }
+        std::string instanceName = i_handle.provenance()->productInstanceName();
 
-          std::string branchname = moduleLabel;
-          if (instanceName != "") {
-            branchname += "_" + instanceName;
-          }
-          outputHandles.push_back(i_handle);
-          labels.push_back(branchname);
+        std::string branchname = moduleLabel;
+        if (instanceName != "") {
+          branchname += "_" + instanceName;
         }
-        if (make_individual_branches) { // if we want to make individual branches per leaf (e.g. to avoid branch ambiguities in python such as detrkqual.NActiveHits vs uetrkqual.NActiveHits)
-          const std::vector<std::string>& leafnames = infostruct.leafnames(labels);
-          int n_leaves = leafnames.size();
-          for (int i_leaf = 0; i_leaf < n_leaves; ++i_leaf) {
-            std::string thisbranchname = (branchname+"."+leafnames.at(i_leaf));
-            if (!_trkana->GetBranch(thisbranchname.c_str())) {  // only want to create the branch once
-              _trkana->Branch(thisbranchname.c_str(), &array[i_leaf]);
-            }
-          }
-        }
-        else {
-          if (!_trkana->GetBranch((branchname+".").c_str())) {  // only want to create the branch once
-            _trkana->Branch((branchname+".").c_str(), &infostruct, infostruct.leafname(labels).c_str());
+        outputHandles.push_back(i_handle);
+        labels.push_back(branchname);
+      }
+      if (make_individual_branches) { // if we want to make individual branches per leaf (e.g. to avoid branch ambiguities in python such as detrkqual.NActiveHits vs uetrkqual.NActiveHits)
+        const std::vector<std::string>& leafnames = infostruct.leafnames(labels);
+        int n_leaves = leafnames.size();
+        for (int i_leaf = 0; i_leaf < n_leaves; ++i_leaf) {
+          std::string thisbranchname = (branchname+"."+leafnames.at(i_leaf));
+          if (!_trkana->GetBranch(thisbranchname.c_str())) {  // only want to create the branch once
+            _trkana->Branch(thisbranchname.c_str(), &array[i_leaf]);
           }
         }
       }
-      return outputHandles;
+      else {
+        if (!_trkana->GetBranch((branchname+".").c_str())) {  // only want to create the branch once
+          _trkana->Branch((branchname+".").c_str(), &infostruct, infostruct.leafname(labels).c_str());
+        }
+      }
     }
+    return outputHandles;
+  }
 
   void TrkAnaTreeMaker::resetTrackBranches() {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _allTIs.at(i_branch).reset();
-      _allSegmentTIs.at(i_branch).assign(_allSegmentTIs.at(i_branch).size(), TrkFitInfo());       // we don't want to remove elements so use assign instead of clear
+      _allTFIs.at(i_branch).assign(_allTFIs.at(i_branch).size(), TrkFitInfo());       // we don't want to remove elements so use assign instead of clear
 
       _allTCHIs.at(i_branch).reset();
 
@@ -1081,7 +1052,6 @@ namespace mu2e {
       }
       _allMCPriTIs.at(i_branch).reset();
 
-      _allMCSegmentTIs.at(i_branch).assign(_allMCSegmentTIs.at(i_branch).size(), TrkInfoMCStep());
       if(_fillcalomc)_allMCTCHIs.at(i_branch).reset();
 
       _allRQIs.at(i_branch).reset();

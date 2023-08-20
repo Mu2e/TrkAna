@@ -8,6 +8,7 @@
 #include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "Offline/Mu2eKinKal/inc/WireHitState.hh"
 #include <cmath>
+#include <limits>
 
 namespace mu2e {
   void InfoStructHelper::fillHitCount(StrawHitFlagCollection const& shfC, HitCount& hitcount) {
@@ -83,30 +84,104 @@ namespace mu2e {
     fillTrkInfoStraws(kseed, trkinfo);
   }
 
-  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed,TrkFitInfo& trkfitinfo, const XYZVectorF& pos) {
-    const auto& ksegIter = kseed.nearestSegment(pos);
-    if (ksegIter == kseed.segments().end()) {
-      cet::exception("InfoStructHelper") << "Couldn't find KalSegment that includes pos = " << pos;
+  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed, std::vector<TrkFitInfo>& tfis) {
+    tfis.clear();
+    double tmin(std::numeric_limits<float>::max());
+    double tmax(std::numeric_limits<float>::lowest());
+    size_t imin(0), imax(0);
+    for(size_t ikinter = 0; ikinter < kseed.intersections().size(); ++ikinter){
+      auto const& kinter = kseed.intersections()[ikinter];
+      // record earliest and latest intersections
+      if(kinter.time() < tmin){
+        tmin = kinter.time();
+        imin = ikinter;
+      }
+      if(kinter.time() > tmax){
+        tmax = kinter.time();
+        imax = ikinter;
+      }
+      TrkFitInfo tfi;
+      tfi.mom = kinter.momentum3();
+      tfi.pos = kinter.position3();
+      tfi.time = kinter.time();
+      tfi.momerr = kinter.momerr();
+      tfi.inbounds = kinter.inBounds();
+      tfi.gap = kinter.gap();
+      tfi.sid = kinter.surfid_.id().id();
+      tfi.sindex = kinter.surfid_.index();
+      tfis.push_back(tfi);
     }
-    trkfitinfo.mom = ksegIter->momentum3();
-    trkfitinfo.pos = ksegIter->position3();
-    trkfitinfo.momerr = ksegIter->momerr();
-    // this should be conditional on the trajectory type: maybe removed?
-    if(!kseed.status().hasAllProperties(TrkFitFlag::KKLine)){
-      auto ltraj = ksegIter->loopHelix();
-      trkfitinfo.Rad = ltraj.rad();
-      trkfitinfo.Lambda = ltraj.lam();
-      trkfitinfo.Cx = ltraj.cx();
-      trkfitinfo.Cy = ltraj.cy();
-      trkfitinfo.phi0 = ltraj.phi0();
-      trkfitinfo.t0 = ltraj.t0();
-      // legacy; these follow the BTrk (CentralHelix) convention
-      double rc = sqrt(ltraj.cx()*ltraj.cx()+ltraj.cy()*ltraj.cy());
-      trkfitinfo.d0 = -ltraj.sign()*( rc - fabs(ltraj.rad()));
-      trkfitinfo.maxr = rc + fabs(ltraj.rad());
-      trkfitinfo.td = trkfitinfo.mom.Z()/trkfitinfo.mom.Rho();
+    // now flag early and latest intersections
+    if(tfis.size() > 0){
+      tfis[imin].early = true;
+      tfis[imax].late = true;
     }
   }
+
+  void InfoStructHelper::fillLoopHelixInfo(const KalSeed& kseed, std::vector<LoopHelixInfo>& lhis) {
+    lhis.clear();
+    for(auto const& kinter : kseed.intersections()) {
+      auto lh = kinter.loopHelix();
+      LoopHelixInfo lhi;
+      lhi.rad = lh.rad();
+      lhi.lam = lh.lam();
+      lhi.cx = lh.cx();
+      lhi.cy = lh.cy();
+      lhi.phi0 = lh.phi0();
+      lhi.t0 = lh.t0();
+      lhi.raderr = sqrt(lh.paramVar(KinKal::LoopHelix::rad_));
+      lhi.lamerr = sqrt(lh.paramVar(KinKal::LoopHelix::lam_));
+      lhi.cxerr = sqrt(lh.paramVar(KinKal::LoopHelix::cx_));
+      lhi.cyerr = sqrt(lh.paramVar(KinKal::LoopHelix::cy_));
+      lhi.phi0err = sqrt(lh.paramVar(KinKal::LoopHelix::phi0_));
+      lhi.t0err = sqrt(lh.paramVar(KinKal::LoopHelix::t0_));
+      // deprecated!
+      lhi.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
+      lhis.push_back(lhi);
+    }
+  }
+  void InfoStructHelper::fillCentralHelixInfo(const KalSeed& kseed, std::vector<CentralHelixInfo>& chis) {
+    chis.clear();
+    for(auto const& kinter : kseed.intersections()) {
+      auto ch = kinter.centralHelix();
+      CentralHelixInfo chi;
+      chi.d0 = ch.d0();
+      chi.phi0 = ch.phi0();
+      chi.omega = ch.omega();
+      chi.z0 = ch.z0();
+      chi.tanDip = ch.tanDip();
+      chi.t0 = ch.t0();
+      chi.d0err = sqrt(ch.paramVar(KinKal::CentralHelix::d0_));
+      chi.phi0err = sqrt(ch.paramVar(KinKal::CentralHelix::phi0_));
+      chi.omegaerr = sqrt(ch.paramVar(KinKal::CentralHelix::omega_));
+      chi.z0err = sqrt(ch.paramVar(KinKal::CentralHelix::z0_));
+      chi.tanDiperr = sqrt(ch.paramVar(KinKal::CentralHelix::tanDip_));
+      chi.t0err = sqrt(ch.paramVar(KinKal::CentralHelix::t0_));
+      // deprecated!
+      chi.maxr = fabs(-1.0/ch.omega() - ch.d0());
+      chis.push_back(chi);
+    }
+  }
+  void InfoStructHelper::fillKinematicLineInfo(const KalSeed& kseed, std::vector<KinematicLineInfo>& klis) {
+     klis.clear();
+    for(auto const& kinter : kseed.intersections()) {
+      auto kl = kinter.kinematicLine();
+      KinematicLineInfo kli;
+      kli.d0 = kl.d0();
+      kli.phi0 = kl.phi0();
+      kli.z0 = kl.z0();
+      kli.theta = kl.theta();
+      kli.mom = kl.mom();
+      kli.t0 = kl.t0();
+      kli.d0err = sqrt(kl.paramVar(KinKal::KinematicLine::d0_));
+      kli.phi0err = sqrt(kl.paramVar(KinKal::KinematicLine::phi0_));
+      kli.z0err = sqrt(kl.paramVar(KinKal::KinematicLine::z0_));
+      kli.thetaerr = sqrt(kl.paramVar(KinKal::KinematicLine::theta_));
+      kli.momerr = sqrt(kl.paramVar(KinKal::KinematicLine::mom_));
+      kli.t0err = sqrt(kl.paramVar(KinKal::KinematicLine::t0_));
+      klis.push_back(kli);
+    }
+ }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
     trkinfo.nhits = trkinfo.nactive = trkinfo.ndouble = trkinfo.ndactive = trkinfo.nplanes = trkinfo.planespan = trkinfo.nnullambig = 0;

@@ -145,12 +145,6 @@ dioLLWeight : {
 }
 genCountLogger: { module_type: GenEventCountReader }
 
-# candidate configuration for TrkAna
-StdSegments : {
-  segmentSuffixes : [ "ent", "mid", "xit" ]
-  segmentVIDs : [ [ "TT_FrontHollow", "TT_FrontPA"], [ "TT_Mid", "TT_MidInner"], ["TT_Back"] ]
-}
-
 AllOpt : { fillMC : true
   trkqual : "TrkQual"
   fillTrkQual : true
@@ -168,47 +162,38 @@ AllOpt : { fillMC : true
 DeM : { input : "KK"
   branch : "dem"
   suffix : "DeM"
-  @table::StdSegments
 }
 UeM : { input : "KK"
   branch : "uem"
   suffix : "UeM"
-  @table::StdSegments
 }
 DmuM : { input : "KK"
   branch : "dmm"
   suffix : "DmuM"
-  @table::StdSegments
 }
 UmuM : { input : "KK"
   branch : "umm"
   suffix : "UmuM"
-  @table::StdSegments
 }
 DeP : { input : "KK"
   branch : "dep"
   suffix : "DeP"
-  @table::StdSegments
 }
 UeP : { input : "KK"
   branch : "uep"
   suffix : "UeP"
-  @table::StdSegments
 }
 DmuP : { input : "KK"
   branch : "dmp"
   suffix : "DmuP"
-  @table::StdSegments
 }
 UmuP : { input : "KK"
   branch : "ump"
   suffix : "UmuP"
-  @table::StdSegments
 }
 Ext : { input : "KK"
   branch : "kl"
   suffix : "Line"
-  @table::StdSegments
 }
 
 
@@ -244,6 +229,7 @@ TrkAnaTreeMaker : {
   InfoMCStructHelper : {
     SimParticleCollectionTag : "compressRecoMCs"
     MinGoodMomFraction : 0.9
+    MaxVDDt : 5 # ns
   }
 }
 

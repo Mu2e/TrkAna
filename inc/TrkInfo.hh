@@ -7,21 +7,50 @@
 #ifndef TrkInfo_HH
 #define TrkInfo_HH
 #include "Offline/DataProducts/inc/GenVector.hh"
+#include "Offline/KinKalGeom/inc/SurfaceId.hh"
 #include "Offline/MCDataProducts/inc/MCRelationship.hh"
 #include "Rtypes.h"
 namespace mu2e
 {
-  // information about the track fit at a particular place.
+  // generic information about the track fit at a particular place/time
   struct TrkFitInfo {
     XYZVectorF mom;
     XYZVectorF pos;
-    float momerr = -1000;
-    float d0 = 0;
-    float maxr = 0;
-    float td = 0;
-    // loop helix parameters
-    float Rad=0, Lambda=0, Cx=0, Cy=0, phi0=0, t0=0;
+    double time;
+    float momerr = -1000;  // projected error on the scalar momentum
+    bool inbounds = false; // was the intersection within the (literal) surface bounds
+    bool gap = false; // was the intersection in a piecewise trajectory gap
+    bool early = false; // is this the earliest intersection for this track
+    bool late = false; // is this the latest intersection for this track
+    int sid = SurfaceIdEnum::unknown; // SurfaceId of the intersected surface, see Offline/KinKalGeom/inc/SurfaceId.hh
+    int sindex = 0; // index to the intersected surface (for multi-surface elements like StoppingTarget)
     void reset() { *this = TrkFitInfo(); }
+  };
+  // structs for specific fit types
+  struct CentralHelixInfo {
+    // central helix parameters
+    float d0=0,phi0=0,omega=0,z0=0,tanDip=0,t0=0;
+    float d0err=0,phi0err=0,omegaerr=0,z0err=0,tanDiperr=0,t0err=0;
+    // max radius (assuming geometric extrapolation).  This member is deprecated
+    // in favor of explicit extrapolation to the OPA
+    float maxr = 0;
+    void reset() { *this = CentralHelixInfo(); }
+  };
+
+  struct LoopHelixInfo {
+    // max radius (assuming geometric extrapolation).  This member is deprecated
+    // in favor of explicit extrapolation to the OPA
+    float maxr = 0;
+    // loop helix parameters
+    float rad=0,lam=0,cx=0,cy=0,phi0=0,t0=0;
+    float raderr=0,lamerr=0,cxerr=0,cyerr=0,phi0err=0,t0err=0;
+    void reset() { *this = LoopHelixInfo(); }
+  };
+
+  struct KinematicLineInfo {
+    float  d0=0, phi0=0, z0=0, theta=0, mom=0,t0=0;
+    float  d0err=0, phi0err=0, z0err=0, thetaerr=0, momerr=0,t0err=0;
+    void reset() { *this = KinematicLineInfo(); }
   };
 
   // general information about a track
@@ -63,14 +92,6 @@ namespace mu2e
     XYZVectorF omom;  // origin momentum
     XYZVectorF opos;  // origin position
     void reset() { *this = TrkInfoMC(); }
-  };
-  //  MC information about a particle for a specific point/time
-  struct TrkInfoMCStep {
-    bool valid = false; // true/false whether the data is valid
-    float time = 0;  // time of this step WRT MC primary proton (ns)
-    XYZVectorF mom; // particle momentum at the start of this step
-    XYZVectorF pos;  // particle position at the start of this step
-    void reset() {*this = TrkInfoMCStep(); }
   };
 }
 #endif
