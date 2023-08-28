@@ -59,7 +59,6 @@
 #include "BTrk/TrkBase/TrkHelixUtils.hh"
 #include "Offline/Mu2eUtilities/inc/TriggerResultsNavigator.hh"
 // mu2e tracking
-#include "Offline/RecoDataProducts/inc/TrkFitDirection.hh"
 #include "Offline/BTrkData/inc/TrkStrawHit.hh"
 // diagnostics
 #include "TrkAna/inc/TrkComp.hh"
@@ -866,9 +865,9 @@ namespace mu2e {
     // fit information at specific points:e
 
     _infoStructHelper.fillTrkFitInfo(kseed,_allTFIs.at(i_branch));
-    if(_ftype == LoopHelix)_infoStructHelper.fillLoopHelixInfo(kseed,_allLHIs.at(i_branch));
-    if(_ftype == CentralHelix)_infoStructHelper.fillCentralHelixInfo(kseed,_allCHIs.at(i_branch));
-    if(_ftype == KinematicLine)_infoStructHelper.fillKinematicLineInfo(kseed,_allKLIs.at(i_branch));
+    if(_ftype == LoopHelix && kseed.loopHelixFit())_infoStructHelper.fillLoopHelixInfo(kseed,_allLHIs.at(i_branch));
+    if(_ftype == CentralHelix && kseed.centralHelixFit())_infoStructHelper.fillCentralHelixInfo(kseed,_allCHIs.at(i_branch));
+    if(_ftype == KinematicLine && kseed.kinematicLineFit())_infoStructHelper.fillKinematicLineInfo(kseed,_allKLIs.at(i_branch));
     BranchConfig branchConfig = _allBranches.at(i_branch);
     if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){ // want hit level info
       _infoStructHelper.fillHitInfo(kseed, _allTSHIs.at(i_branch));
