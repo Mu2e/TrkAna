@@ -28,6 +28,7 @@
 #include "Offline/GeometryService/inc/VirtualDetector.hh"
 #include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
 #include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMC.hh"
+#include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMCAssns.hh"
 #include "Offline/Mu2eUtilities/inc/fromStrings.hh"
 #include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "Offline/GeometryService/inc/GeomHandle.hh"
