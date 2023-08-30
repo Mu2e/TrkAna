@@ -13,11 +13,10 @@ physics :
 {
   producers : {
     @table::TrkAnaReco.producers
-    @table::TrkAnaReco.MCProducers
   }
   analyzers : { @table::TrkAnaReco.analyzers }
 }
-physics.TrkAnaTrigPath : [MakeCrvCoincidenceClusterMCAssns, BestCrvLine ]
+physics.TrkAnaTrigPath : [ BestCrvLine ]
 physics.TrkAnaEndPath : [ TrkAnaExt ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)
