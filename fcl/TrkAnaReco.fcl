@@ -15,7 +15,6 @@ physics :
 #    @table::TrkAnaReco.producers
     PBIWeight : @local::PBIWeight
     @table::BestCrvProducers
-    @table::TrkAnaReco.MCProducers
   }
   analyzers : { @table::TrkAnaReco.analyzers }
 }
