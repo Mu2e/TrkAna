@@ -1,0 +1,42 @@
+#
+#  Special configuration base for running TrkAna on trigger fits
+#
+#include "TrkAna/fcl/prolog.fcl"
+BEGIN_PROLOG
+TrkAnaTrigger : {
+  TrkAnaTT : {
+    @table::TrkAnaTreeMaker
+      candidate : {
+        @table::DeM
+          options : {
+            @table::AllOpt
+            fillBestCrv : false
+            fillHits : true
+          }
+      }
+    supplements : []
+    ExtraMCStepCollectionTags : []
+    diagLevel : 2
+    FillCRV : false
+    FillMCInfo : true
+    FillCaloMC : false
+    RecoCountTag : ""
+    FillTriggerInfo : true
+    FillTrkQualInfo : false
+    FillTrkPIDInfo : false
+    FillHitInfo : true
+    FillTriggerInfo : false
+    supplements : []
+    PrimaryParticleTag: "compressDigiMCs"
+    SimParticleLabel: "compressDigiMCs"
+    MCTrajectoryLabel: "compressDigiMCs"
+    ExtraMCStepCollectionTags: [ ]
+    InfoMCStructHelper : {
+      SimParticleCollectionTag : "compressDigiMCs"
+      MinGoodMomFraction : 0.9
+      MaxVDDt : 5 # ns
+    }
+  }
+}
+
+END_PROLOG

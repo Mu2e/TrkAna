@@ -25,6 +25,8 @@ physics.analyzers.TrkAnaExt.candidate.options.fillTrkQual : false
 physics.analyzers.TrkAnaExt.candidate.options.fillTrkPID : false
 physics.analyzers.TrkAnaExt.FillTriggerInfo : false
 physics.analyzers.TrkAnaExt.FitType : KinematicLine
+physics.analyzers.TrkAnaExt.FillCRVHits : true
+physics.analyzers.TrkAnaExt.FillCRVPulses : true
 
 # for hit level diagnostics, set diagLevel to 2
 physics.analyzers.TrkAnaExt.diagLevel : 2
