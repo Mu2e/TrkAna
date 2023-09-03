@@ -17,8 +17,8 @@ void ROOTScript() {
   TH1F* hMom_t0Cut = new TH1F("hMom_t0Cut", "Reconstructed Momentum", n_mom_bins,min_mom, max_mom);
 
   // Fill histograms
-  trkana->Draw("deent.mom>>hMom", "", "goff"); // "goff" means don't draw yet
-  trkana->Draw("deent.mom>>hMom_t0Cut", "de.t0>700", "goff");
+  trkana->Draw("demfit[0].mom.R()>>hMom", "", "goff"); // "goff" means don't draw yet
+  trkana->Draw("demfit[0].mom.R()>>hMom_t0Cut", "demlh[0].t0>700", "goff");
 
   // Set line color and axis labels of histograms
   hMom->SetLineColor(kRed);
@@ -38,6 +38,6 @@ void ROOTScript() {
   leg->SetTextSize(0.035);
   leg->SetFillColor(kWhite);
   leg->AddEntry(hMom, "All Tracks");
-  leg->AddEntry(hMom_t0Cut, "de.t0 > 700 ns");
+  leg->AddEntry(hMom_t0Cut, "demlh[0].t0 > 700 ns");
   leg->Draw();
 }
