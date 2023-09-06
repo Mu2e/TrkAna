@@ -10,6 +10,12 @@ namespace mu2e
 {
   struct RecoQualInfo {
     static const int MAX_QUALS = 50;
+
+    RecoQualInfo() {
+      n_quals = 0;
+      reset();
+    }
+
     const std::string leafname(std::vector<std::string> labels) {
       std::string leaves = "nquals/I:";
       for (std::vector<std::string>::const_iterator i_label = labels.begin(); i_label != labels.end(); ++i_label) {
