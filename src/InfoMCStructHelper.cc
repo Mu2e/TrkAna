@@ -18,6 +18,7 @@
 #include "Offline/GeometryService/inc/DetectorSystem.hh"
 #include "Offline/ConditionsService/inc/ConditionsHandle.hh"
 #include "Offline/ConditionsService/inc/AcceleratorParams.hh"
+#include "art/Framework/Principal/Event.h"
 #include "art/Framework/Principal/Handle.h"
 
 #include <map>
