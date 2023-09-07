@@ -19,6 +19,7 @@
 #include "Offline/ConditionsService/inc/ConditionsHandle.hh"
 #include "Offline/ConditionsService/inc/AcceleratorParams.hh"
 #include "art/Framework/Principal/Handle.h"
+#include "art/Framework/Principal/Event.h"
 
 #include <map>
 #include <limits>
