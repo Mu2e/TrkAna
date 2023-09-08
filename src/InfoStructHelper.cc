@@ -67,6 +67,7 @@ namespace mu2e {
     fillTrkInfoHits(kseed, trkinfo);
 
     trkinfo.chisq = kseed.chisquared();
+    trkinfo.ndof  = kseed.nDOF();
     trkinfo.fitcon = kseed.fitConsistency();
     trkinfo.nseg = kseed.nTrajSegments();
     trkinfo.maxgap = kseed._maxgap;
@@ -206,11 +207,6 @@ namespace mu2e {
       }
       trkinfo.nplanes = planes.size();
       trkinfo.planespan = abs(maxplane-minplane);
-    }
-
-    trkinfo.ndof = trkinfo.nactive -5; // this won't work with KinKal fits FIXME
-    if (kseed.hasCaloCluster()) {
-      ++trkinfo.ndof;
     }
   }
 
