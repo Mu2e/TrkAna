@@ -241,7 +241,7 @@ namespace mu2e {
       art::InputTag _primaryParticleTag;
       // MC truth branches (outputs)
       std::vector<TrkInfoMC> _allMCTIs;
-      std::vector<std::vector<SimInfo>> _allMCSimTIs;
+      std::map<BranchIndex, std::vector<SimInfo>> _allMCSimTIs;
       std::vector<SimInfo> _allMCPriTIs;
       std::map<BranchIndex, std::vector<MCStepInfo>> _allMCVDInfos;
       bool _fillcalomc;
@@ -372,12 +372,7 @@ namespace mu2e {
 
       TrkInfoMC mcti;
       _allMCTIs.push_back(mcti);
-      std::vector<SimInfo> tempMCSimTIs;
-      for (int i_generation = 0; i_generation < _allBranches.at(i_branch).options().genealogyDepth(); ++i_generation){
-        SimInfo mcsim;
-        tempMCSimTIs.push_back(mcsim);
-      }
-      _allMCSimTIs.push_back(tempMCSimTIs);
+      _allMCSimTIs[i_branch] = std::vector<SimInfo>();
       SimInfo mcpri;
       _allMCPriTIs.push_back(mcpri);
 
@@ -504,20 +499,7 @@ namespace mu2e {
       if(_fillmc && i_branchConfig.options().fillmc()){
         _trkana->Branch((branch+"mc.").c_str(),&_allMCTIs.at(i_branch),_buffsize,_splitlevel);
 
-        std::string branch_suffix = "";
-        for (int i_generation = 0; i_generation < i_branchConfig.options().genealogyDepth(); ++i_generation) {
-          if (i_generation == 0) {
-            branch_suffix = "sim";
-          }
-          else if (i_generation == 1) {
-            branch_suffix = "parent";
-          }
-          else {
-            branch_suffix = "g" + branch_suffix;
-          }
-          std::string full_branchname = branch + "mc" + branch_suffix + ".";
-          _trkana->Branch((full_branchname).c_str(),&_allMCSimTIs.at(i_branch).at(i_generation));
-        }
+        _trkana->Branch((branch+"mcsim.").c_str(),&_allMCSimTIs.at(i_branch),_buffsize,_splitlevel);
         _trkana->Branch((branch+"mcpri.").c_str(),&_allMCPriTIs.at(i_branch),_buffsize,_splitlevel);
         _trkana->Branch((branch+"mcvd.").c_str(),&_allMCVDInfos.at(i_branch),_buffsize,_splitlevel);
         if(_fillcalomc)_trkana->Branch((branch+"tchmc.").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
@@ -1042,14 +1024,12 @@ namespace mu2e {
   void TrkAnaTreeMaker::resetTrackBranches() {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _allTIs.at(i_branch).reset();
-      _allTFIs.at(i_branch).assign(_allTFIs.at(i_branch).size(), TrkFitInfo());       // we don't want to remove elements so use assign instead of clear
+      _allTFIs.at(i_branch).assign(_allTFIs.at(i_branch).size(), TrkFitInfo());       // we don't want to remove elements and have to use push_back again, so use assign instead of clear to put in empty TrkFitInfo struct
 
       _allTCHIs.at(i_branch).reset();
 
       _allMCTIs.at(i_branch).reset();
-      for (int i_generation = 0; i_generation < _allBranches.at(i_branch).options().genealogyDepth(); ++i_generation){
-        _allMCSimTIs.at(i_branch).at(i_generation).reset();
-      }
+      _allMCSimTIs.at(i_branch).clear();       // we do want to remove elements since we may have different numbers of SimInfos
       _allMCPriTIs.at(i_branch).reset();
 
       if(_fillcalomc)_allMCTCHIs.at(i_branch).reset();

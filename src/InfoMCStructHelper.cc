@@ -140,7 +140,11 @@ namespace mu2e {
     auto trkprimary = kseedmc.simParticle().simParticle(_spcH)->originParticle();
 
     for (int i_generation = 0; i_generation < n_generations; ++i_generation) {
-      fillSimInfo(trkprimary, siminfos.at(i_generation));
+      SimInfo sim_info;
+      fillSimInfo(trkprimary, sim_info);
+      sim_info.generation = -i_generation;
+
+      siminfos.push_back(sim_info);
       if (trkprimary.parent().isNonnull()) {
         trkprimary = trkprimary.parent()->originParticle();
       }
