@@ -140,7 +140,7 @@ AllOpt : { fillMC : true
   trkpid : "TrkPID"
   fillTrkPID : true
   fillHits : true
-  genealogyDepth : 5
+  genealogyDepth : -1
   fillBestCrv : true
 
   bestCrvModules : [ "BestCrv" ]

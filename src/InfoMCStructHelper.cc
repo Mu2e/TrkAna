@@ -139,6 +139,10 @@ namespace mu2e {
   void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, std::vector<SimInfo>& siminfos, int n_generations) {
     auto trkprimary = kseedmc.simParticle().simParticle(_spcH)->originParticle();
 
+    if (n_generations == -1) { // means do all generations
+      n_generations = std::numeric_limits<int>::max();
+    }
+
     for (int i_generation = 0; i_generation < n_generations; ++i_generation) {
       SimInfo sim_info;
       fillSimInfo(trkprimary, sim_info);
