@@ -242,7 +242,6 @@ namespace mu2e {
       // MC truth branches (outputs)
       std::vector<TrkInfoMC> _allMCTIs;
       std::map<BranchIndex, std::vector<SimInfo>> _allMCSimTIs;
-      std::vector<SimInfo> _allMCPriTIs;
       std::map<BranchIndex, std::vector<MCStepInfo>> _allMCVDInfos;
       bool _fillcalomc;
       art::Handle<CaloClusterMCCollection> _ccmcch;
@@ -373,8 +372,6 @@ namespace mu2e {
       TrkInfoMC mcti;
       _allMCTIs.push_back(mcti);
       _allMCSimTIs[i_branch] = std::vector<SimInfo>();
-      SimInfo mcpri;
-      _allMCPriTIs.push_back(mcpri);
 
       if(_fillcalomc){
         CaloClusterInfoMC mctchi;
@@ -500,7 +497,6 @@ namespace mu2e {
         _trkana->Branch((branch+"mc.").c_str(),&_allMCTIs.at(i_branch),_buffsize,_splitlevel);
 
         _trkana->Branch((branch+"mcsim.").c_str(),&_allMCSimTIs.at(i_branch),_buffsize,_splitlevel);
-        _trkana->Branch((branch+"mcpri.").c_str(),&_allMCPriTIs.at(i_branch),_buffsize,_splitlevel);
         _trkana->Branch((branch+"mcvd.").c_str(),&_allMCVDInfos.at(i_branch),_buffsize,_splitlevel);
         if(_fillcalomc)_trkana->Branch((branch+"tchmc.").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
         // at hit-level MC information
@@ -938,9 +934,7 @@ namespace mu2e {
           _infoMCStructHelper.fillTrkInfoMC(kseed, kseedmc, _allMCTIs.at(i_branch));
           auto& mcvdis = _allMCVDInfos.at(i_branch);
           _infoMCStructHelper.fillVDInfo(kseed, kseedmc, mcvdis);
-          // primary info
-          _infoMCStructHelper.fillPriInfo(kseedmc, primary, _allMCPriTIs.at(i_branch));
-          _infoMCStructHelper.fillAllSimInfos(kseedmc, _allMCSimTIs.at(i_branch), branchConfig.options().genealogyDepth());
+          _infoMCStructHelper.fillAllSimInfos(kseedmc, primary, _allMCSimTIs.at(i_branch), branchConfig.options().genealogyDepth());
 
           if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){
             _infoMCStructHelper.fillHitInfoMCs(kseedmc, _allTSHIMCs.at(i_branch));
@@ -1030,7 +1024,6 @@ namespace mu2e {
 
       _allMCTIs.at(i_branch).reset();
       _allMCSimTIs.at(i_branch).clear();       // we do want to remove elements since we may have different numbers of SimInfos
-      _allMCPriTIs.at(i_branch).reset();
 
       if(_fillcalomc)_allMCTCHIs.at(i_branch).reset();
 

@@ -125,45 +125,54 @@ namespace mu2e {
     tshinfomc.doca = -1*dperp;
   }
 
-  void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, std::vector<SimInfo>& siminfos, int n_generations) {
-    auto trkprimary = kseedmc.simParticle().simParticle(_spcH)->originParticle();
+  void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<SimInfo>& siminfos, int n_generations) {
+    auto trkprimaryptr = kseedmc.simParticle().simParticle(_spcH);
+    auto trkprimary = trkprimaryptr->originParticle();
 
+    // Add all the primary particles first
+    SimInfo sim_info;
+    for(auto const& spp : primary.primarySimParticles()){
+      // check whether we already put this primary in
+      fillSimInfo(spp, sim_info);
+      sim_info.trkrel = MCRelationship(spp, trkprimaryptr);
+      sim_info.prirel = MCRelationship(spp, spp);
+      siminfos.push_back(sim_info);
+    }
+
+
+    auto current_sim_particle_ptr = trkprimaryptr;
+    auto current_sim_particle = trkprimary;
     if (n_generations == -1) { // means do all generations
       n_generations = std::numeric_limits<int>::max();
     }
 
     for (int i_generation = 0; i_generation < n_generations; ++i_generation) {
       SimInfo sim_info;
-      fillSimInfo(trkprimary, sim_info);
-      sim_info.generation = -i_generation;
+      fillSimInfo(current_sim_particle, sim_info);
+      sim_info.trkrel = MCRelationship(trkprimaryptr, current_sim_particle_ptr);
 
-      siminfos.push_back(sim_info);
-      if (trkprimary.parent().isNonnull()) {
-        trkprimary = trkprimary.parent()->originParticle();
-      }
-      else {
-        break; // this particle doesn't have a parent
-      }
-    }
-  }
-
-  void InfoMCStructHelper::fillPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, SimInfo& priinfo) {
-    auto trkprimary = kseedmc.simParticle().simParticle(_spcH);
-
-    // go through the SimParticles of this primary, and find the one most related to the
-    // downstream fit (KalSeedMC)
-
-    if (!primary.primarySimParticles().empty()) {
       auto bestprimarysp = primary.primarySimParticles().front();
       MCRelationship bestrel;
       for(auto const& spp : primary.primarySimParticles()){
-        MCRelationship mcrel(spp,trkprimary);
+        MCRelationship mcrel(spp,current_sim_particle_ptr);
         if(mcrel > bestrel){
           bestrel = mcrel;
           bestprimarysp = spp;
         }
-      } // redundant: FIXME!
-      fillSimInfo(bestprimarysp, priinfo);
+      }
+      sim_info.prirel = bestrel;
+
+      // We already added all the primaries
+      if (sim_info.prirel != MCRelationship::same) {
+        siminfos.push_back(sim_info);
+      }
+      if (current_sim_particle.parent().isNonnull()) {
+        current_sim_particle_ptr = current_sim_particle.parent();
+        current_sim_particle = current_sim_particle_ptr->originParticle();
+      }
+      else {
+        break; // this particle doesn't have a parent
+      }
     }
   }
 

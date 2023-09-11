@@ -18,7 +18,8 @@ namespace mu2e
     Float_t time = -1.0;  // time of this step
     XYZVectorF mom = XYZVectorF();  // particle momentum at the start of this step
     XYZVectorF pos = XYZVectorF();  // particle position at the start of this step
-    Int_t generation = 1000; // where 0=current generation, -1 is previous generation, etc..
+    MCRelationship prirel = MCRelationship::none; // relationship to the event primary particles
+    MCRelationship trkrel = MCRelationship::none; // relationship to the particle that created the track
     void reset() { *this = SimInfo(); }
   };
 }
