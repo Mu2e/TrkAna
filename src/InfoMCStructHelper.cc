@@ -52,25 +52,14 @@ namespace mu2e {
   void InfoMCStructHelper::fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
     // use the primary match of the track
     // primary associated SimParticle
-    auto trkprimary = kseedmc.simParticle().simParticle(_spcH);
     if(kseedmc.simParticles().size() > 0){
       auto const& simp = kseedmc.simParticles().front();
       trkinfomc.valid = true;
-      trkinfomc.gen = simp._gid.id();
-      trkinfomc.pdg = simp._pdg;
-      trkinfomc.proc = simp._proc;
       trkinfomc.nhits = simp._nhits; // number of hits from the primary particle
       trkinfomc.nactive = simp._nactive; // number of active hits from the primary particle
-      trkinfomc.prel = simp._rel; // relationship of the track primary to the event primary
     }
 
     fillTrkInfoMCDigis(kseed, kseedmc, trkinfomc);
-
-    // fill the origin information of this SimParticle
-    GeomHandle<DetectorSystem> det;
-    trkinfomc.otime = trkprimary->startGlobalTime();
-    trkinfomc.opos = XYZVectorF(det->toDetector(trkprimary->startPosition()));
-    trkinfomc.omom = XYZVectorF(trkprimary->startMomentum().vect());
   }
 
   void InfoMCStructHelper::fillTrkInfoMCDigis(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
