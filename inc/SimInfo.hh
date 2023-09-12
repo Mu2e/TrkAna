@@ -7,19 +7,20 @@
 #ifndef SimInfo_HH
 #define SimInfo_HH
 #include "Offline/DataProducts/inc/GenVector.hh"
-#include "TrkAna/inc/helixpar.hh"
 #include "Rtypes.h"
 namespace mu2e
 {
 // general info about the SimParticle which was simulated
   struct SimInfo {
-    bool valid; // true/false as to whether the data is valid
-    Int_t pdg, gen; // true PDG code, generator code
-    Float_t time;  // time of this step
-    XYZVectorF mom;  // particle momentum at the start of this step
-    XYZVectorF pos;  // particle position at the start of this step
-    SimInfo() { reset(); }
-    void reset() { valid = false; pdg = gen = -1; time = -1.0; mom =XYZVectorF(); pos = XYZVectorF(); }
+    bool valid = false; // true/false as to whether the data is valid
+    Int_t pdg = -1; // true PDG code
+    Int_t gen = -1; // generator code
+    Float_t time = -1.0;  // time of this step
+    XYZVectorF mom = XYZVectorF();  // particle momentum at the start of this step
+    XYZVectorF pos = XYZVectorF();  // particle position at the start of this step
+    MCRelationship prirel = MCRelationship::none; // relationship to the event primary particles
+    MCRelationship trkrel = MCRelationship::none; // relationship to the particle that created the track
+    void reset() { *this = SimInfo(); }
   };
 }
 #endif

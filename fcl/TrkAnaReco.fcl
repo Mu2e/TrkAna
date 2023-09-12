@@ -20,7 +20,7 @@ physics :
 }
 
 #physics.TrkAnaTrigPath : [ @sequence::TrkAnaReco.MCTrigSequence, @sequence::TrkAnaReco.TrigSequence ]
-physics.TrkAnaTrigPath : [ PBIWeight, @sequence::TrkAnaReco.MCTrigSequence, @sequence::BestCrvProducersPath ]
+physics.TrkAnaTrigPath : [ PBIWeight, @sequence::BestCrvProducersPath ]
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)

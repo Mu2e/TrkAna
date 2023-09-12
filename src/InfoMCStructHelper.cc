@@ -52,25 +52,14 @@ namespace mu2e {
   void InfoMCStructHelper::fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
     // use the primary match of the track
     // primary associated SimParticle
-    auto trkprimary = kseedmc.simParticle().simParticle(_spcH);
     if(kseedmc.simParticles().size() > 0){
       auto const& simp = kseedmc.simParticles().front();
       trkinfomc.valid = true;
-      trkinfomc.gen = simp._gid.id();
-      trkinfomc.pdg = simp._pdg;
-      trkinfomc.proc = simp._proc;
       trkinfomc.nhits = simp._nhits; // number of hits from the primary particle
       trkinfomc.nactive = simp._nactive; // number of active hits from the primary particle
-      trkinfomc.prel = simp._rel; // relationship of the track primary to the event primary
     }
 
     fillTrkInfoMCDigis(kseed, kseedmc, trkinfomc);
-
-    // fill the origin information of this SimParticle
-    GeomHandle<DetectorSystem> det;
-    trkinfomc.otime = trkprimary->startGlobalTime();
-    trkinfomc.opos = XYZVectorF(det->toDetector(trkprimary->startPosition()));
-    trkinfomc.omom = XYZVectorF(trkprimary->startMomentum().vect());
   }
 
   void InfoMCStructHelper::fillTrkInfoMCDigis(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
@@ -136,37 +125,54 @@ namespace mu2e {
     tshinfomc.doca = -1*dperp;
   }
 
-  void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, std::vector<SimInfo>& siminfos, int n_generations) {
-    auto trkprimary = kseedmc.simParticle().simParticle(_spcH)->originParticle();
+  void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<SimInfo>& siminfos, int n_generations) {
+    auto trkprimaryptr = kseedmc.simParticle().simParticle(_spcH);
+    auto trkprimary = trkprimaryptr->originParticle();
+
+    // Add all the primary particles first
+    SimInfo sim_info;
+    for(auto const& spp : primary.primarySimParticles()){
+      // check whether we already put this primary in
+      fillSimInfo(spp, sim_info);
+      sim_info.trkrel = MCRelationship(spp, trkprimaryptr);
+      sim_info.prirel = MCRelationship(spp, spp);
+      siminfos.push_back(sim_info);
+    }
+
+
+    auto current_sim_particle_ptr = trkprimaryptr;
+    auto current_sim_particle = trkprimary;
+    if (n_generations == -1) { // means do all generations
+      n_generations = std::numeric_limits<int>::max();
+    }
 
     for (int i_generation = 0; i_generation < n_generations; ++i_generation) {
-      fillSimInfo(trkprimary, siminfos.at(i_generation));
-      if (trkprimary.parent().isNonnull()) {
-        trkprimary = trkprimary.parent()->originParticle();
-      }
-      else {
-        break; // this particle doesn't have a parent
-      }
-    }
-  }
+      SimInfo sim_info;
+      fillSimInfo(current_sim_particle, sim_info);
+      sim_info.trkrel = MCRelationship(trkprimaryptr, current_sim_particle_ptr);
 
-  void InfoMCStructHelper::fillPriInfo(const KalSeedMC& kseedmc, const PrimaryParticle& primary, SimInfo& priinfo) {
-    auto trkprimary = kseedmc.simParticle().simParticle(_spcH);
-
-    // go through the SimParticles of this primary, and find the one most related to the
-    // downstream fit (KalSeedMC)
-
-    if (!primary.primarySimParticles().empty()) {
       auto bestprimarysp = primary.primarySimParticles().front();
       MCRelationship bestrel;
       for(auto const& spp : primary.primarySimParticles()){
-        MCRelationship mcrel(spp,trkprimary);
+        MCRelationship mcrel(spp,current_sim_particle_ptr);
         if(mcrel > bestrel){
           bestrel = mcrel;
           bestprimarysp = spp;
         }
-      } // redundant: FIXME!
-      fillSimInfo(bestprimarysp, priinfo);
+      }
+      sim_info.prirel = bestrel;
+
+      // We already added all the primaries
+      if (sim_info.prirel != MCRelationship::same) {
+        siminfos.push_back(sim_info);
+      }
+      if (current_sim_particle.parent().isNonnull()) {
+        current_sim_particle_ptr = current_sim_particle.parent();
+        current_sim_particle = current_sim_particle_ptr->originParticle();
+      }
+      else {
+        break; // this particle doesn't have a parent
+      }
     }
   }
 
