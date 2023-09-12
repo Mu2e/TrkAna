@@ -129,17 +129,6 @@ namespace mu2e {
     auto trkprimaryptr = kseedmc.simParticle().simParticle(_spcH);
     auto trkprimary = trkprimaryptr->originParticle();
 
-    // Add all the primary particles first
-    SimInfo sim_info;
-    for(auto const& spp : primary.primarySimParticles()){
-      // check whether we already put this primary in
-      fillSimInfo(spp, sim_info);
-      sim_info.trkrel = MCRelationship(spp, trkprimaryptr);
-      sim_info.prirel = MCRelationship(spp, spp);
-      siminfos.push_back(sim_info);
-    }
-
-
     auto current_sim_particle_ptr = trkprimaryptr;
     auto current_sim_particle = trkprimary;
     if (n_generations == -1) { // means do all generations
@@ -162,10 +151,7 @@ namespace mu2e {
       }
       sim_info.prirel = bestrel;
 
-      // We already added all the primaries
-      if (sim_info.prirel != MCRelationship::same) {
-        siminfos.push_back(sim_info);
-      }
+      siminfos.push_back(sim_info);
       if (current_sim_particle.parent().isNonnull()) {
         current_sim_particle_ptr = current_sim_particle.parent();
         current_sim_particle = current_sim_particle_ptr->originParticle();
@@ -174,6 +160,19 @@ namespace mu2e {
         break; // this particle doesn't have a parent
       }
     }
+
+    // Now add all the primary particles
+    SimInfo sim_info;
+    for(auto const& spp : primary.primarySimParticles()){
+      // check whether we already put this primary in
+      fillSimInfo(spp, sim_info);
+      sim_info.trkrel = MCRelationship(spp, trkprimaryptr);
+      sim_info.prirel = MCRelationship(spp, spp);
+      if (sim_info.trkrel != MCRelationship::same) {
+        siminfos.push_back(sim_info);
+      }
+    }
+
   }
 
 
