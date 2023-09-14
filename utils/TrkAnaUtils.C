@@ -27,7 +27,6 @@ class TrkAnaUtils {
     TrkAnaUtils(TFile* myfile,const char* treename="TrkAnaNeg");
     TrkAnaUtils(const char* filename,const char* treename);
     TrkAnaUtils(const char* treename="TrkAnaNeg");
-    ~TrkAnaUtils() { delete myfile_; }
     TFile const& File() const { return *myfile_; }
     void ListTrees() const;
     void UseTree(const char* treename="TrkAnaNeg");
