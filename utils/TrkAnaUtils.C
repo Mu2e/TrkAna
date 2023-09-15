@@ -27,12 +27,11 @@ class TrkAnaUtils {
     TrkAnaUtils(TFile* myfile,const char* treename="TrkAnaNeg");
     TrkAnaUtils(const char* filename,const char* treename);
     TrkAnaUtils(const char* treename="TrkAnaNeg");
-    ~TrkAnaUtils() { delete myfile_; }
     TFile const& File() const { return *myfile_; }
     void ListTrees() const;
     void UseTree(const char* treename="TrkAnaNeg");
-    void fileName() { return myfile_->GetName(); }
-    void treeName() { if(mytree_)return mytree_->GetName(); else std::cout << "No current tree" << std::endl; }
+    auto fileName() { return myfile_->GetName(); }
+    auto treeName() { if(mytree_)return mytree_->GetName(); else return "none"; }
     TFile* file() { return myfile_;}
     TTree* tree() { return mytree_;}
     TCanvas* can() const { return mycan_; }
