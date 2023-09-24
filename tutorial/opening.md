@@ -12,12 +12,19 @@ in ROOT and/or python.
 
 ## Contents
 
-* [ROOT Command Line](#ROOT-Command-Line)
-* [ROOT Macro](#ROOT-Macro)
+* [Common Introduction](#Common-Introduction)
+* [ROOT](#ROOT)
+** [ROOT Command Line](#ROOT-Command-Line)
+** [ROOT Macro](#ROOT-Macro)
 * [Python Notebook](#Python-Notebook)
 * [Python Script](#Python-Script)
 
-## ROOT Command Line
+## Common Introduction
+
+
+## ROOT 
+
+### ROOT Command Line
 
 With the ROOT command line, we open the TrkAna ROOT file like so:
 
@@ -80,7 +87,7 @@ root [5] trkana->Scan("evtinfo.runid:evtinfo.subrunid:evtinfo.eventid:demfit[0].
 *        8 *      1210 *         0 *        24 * 103.32880 *
 ```
 
-## ROOT Macro
+### ROOT Macro
 
 Instead of typing all the commands each time, we can write a ROOT macro called ```Opening.C``` with the following contents:
 
