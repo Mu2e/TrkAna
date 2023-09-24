@@ -100,4 +100,4 @@ Open up a jupyter-notebook like so:
 jupyter-notebook --port=YYYY --no-browser
 ```
 
-and copy the URL that is printed at the end into your local browser. Note that ```YYYY``` is the port you opened when logging in during the [general setup](intro.md/General Setup)
+and copy the URL that is printed at the end into your local browser. Note that ```YYYY``` is the port you opened when logging in during the [general setup](intro.md#General-Setup)
