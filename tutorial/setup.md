@@ -4,14 +4,15 @@
 
 In this exercise, you will learn how to:
 
-* set up
+* log in to a mu2egpvm machine, and
+* how to set up your environment for this tutorial.
 
 ## Contents
 
 * [Common Instructions](#Common-Instructions)
 * [ROOT](#ROOT)
 * [Python](#Python)
-** [Python Notebook](#Python-Notebook)
+    * [Python Notebook](#Python-Notebook)
 
 ## Common Instructions
 
