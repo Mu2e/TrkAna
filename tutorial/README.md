@@ -4,8 +4,6 @@
 
 Welcome to the TrkAna Tutorial! 
 
-TrkAna is a ROOT-based ntuple designed to support both ROOT- and python-based analyes. 
-
 The exercises in this tutorial are designed to be self-paced and for both ROOT and python analyzers.
 
 If you have any questions, comments, or feedback, then you can either post on the [Mu2e Slack](https://mu2ewiki.fnal.gov/wiki/Slack) (either the ```#is_it_me_or_a_bug``` or ```#trkana``` channels), or [open a GitHub issue](https://github.com/Mu2e/TrkAna/issues)
