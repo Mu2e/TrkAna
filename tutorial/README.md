@@ -2,7 +2,9 @@
 
 ## Introduction
 
-Welcome to the TrkAna Tutorial! These exercises are designed to be self-paced and pick-and-choose. Both ROOT- and python-based examples are shown.
+Welcome to the TrkAna Tutorial! These exercises are designed to be self-paced and for both ROOT and python analyzers.
+
+If you have any questions, comments, or feedback on this tutorial, then either post on the Mu2e Slack (either the ```#is_it_me_or_a_bug``` or ```#trkana``` channels), or [open a GitHub issue](https://github.com/Mu2e/TrkAna/issues)
 
 ## TrkAna Tree Structure
 
