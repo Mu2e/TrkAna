@@ -22,4 +22,6 @@ The columns of the ROOT TTree include fit information about the candidate track,
 
 We will be looking at the datasets ```mcs.brownd.CeEndpointMix1BBSignal.MDC2020z.art```. This file contains the output of the reconstruction for a simulation of conversion electron events (```CeEndpoint```) with background hits assuming one booster batch (```1BB```) that pass the signal trigger (```Signal```). The reconstruction pass was done using the SimJob Musing MDC2020z. More details on the MDC2020 campaign and generated datasets can be found [here](https://mu2ewiki.fnal.gov/wiki/MDC2020)
 
-Next Exercise: [Logging In and Setting Up](setup.md)
+Last Page: [Main Page](README.md)
+
+Next Page: [Logging In and Setting Up](setup.md)

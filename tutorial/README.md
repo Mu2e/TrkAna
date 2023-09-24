@@ -34,3 +34,5 @@ Hope to get to these...
 1. [Plotting the Simulated Energy Loss of Conversion Electrons in the Stopping Target and IPA](e-loss.md)
 
 --->
+
+Next Page: [Preliminary Information](prelims.md)
