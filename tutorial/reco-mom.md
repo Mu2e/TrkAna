@@ -4,6 +4,4 @@ In this exercise you will plot the reconstructed momentum of simulated conversio
 
 ## ROOT
 
-
-
 ## Python
