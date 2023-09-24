@@ -2,6 +2,13 @@
 
 In this exercise, we will open the TrkAna ROOT file and inspect the TrkAna TTree and its branches.
 
+Contents:
+
+* [ROOT Command Line](#ROOT-Command-Line)
+* [ROOT Macro](#ROOT-Macro)
+* [Python Notebook](#Python-Notebook)
+* [Python Script](#Python-Script)
+
 ## ROOT Command Line
 
 With the ROOT command line, we open the TrkAna ROOT file like so:
