@@ -39,13 +39,9 @@ We will be looking at the datasets ```mcs.brownd.CeEndpointMix1BBSignal.MDC2020z
 
 Here are the list of exercises in this tutorial:
 
-1. [Opening and Inspecting a TrkAna ROOT file](opening.md)
+1. [Opening and Inspecting a TrkAna ROOT file](opening.md): In this exercise we will open and inspect the TrkAna ROOT files
 
-In this exercise we will open and inspect the TrkAna ROOT files
-
-1. [Plotting the Reconstructed Track Momentum of Conversion Electrons](reco-mom.md)
-
-In this exercise we will describe the ```demfit``` branches and plot the reconstructed track momentum at the entrance, middle, and exit of the tracker
+1. [Plotting the Reconstructed Track Momentum of Conversion Electrons](reco-mom.md): In this exercise we will describe the ```demfit``` branches and plot the reconstructed track momentum at the entrance, middle, and exit of the tracker
 
 <!----
 Hope to get to these...
