@@ -27,6 +27,10 @@ For python exercises using jupyter notebooks, you should log into to a mu2egpvm 
 
 ```
 ssh -XY -L YYYY:localhost:YYYY username@mu2egpvm0X.fnal.gov
+cd to/your/working/area/
+setup mu2e
+muse setup TrkAna v04_00_00
+setup pyana v1_05_00
 ```
 
 where ```YYYY``` is a port number (e.g. 3000, 3001) that you will use to open a browser on your local machine.
@@ -39,9 +43,9 @@ We will be looking at the datasets ```mcs.brownd.CeEndpointMix1BBSignal.MDC2020z
 
 Here are the list of exercises in this tutorial:
 
-1. [Opening and Inspecting a TrkAna ROOT file](opening.md): In this exercise we will open and inspect the TrkAna ROOT files
+1. [Opening and Inspecting a TrkAna ROOT file](opening.md): In this exercise we will open and inspect the TrkAna ROOT files.
 
-1. [Plotting the Reconstructed Track Momentum of Conversion Electrons](reco-mom.md): In this exercise we will describe the ```demfit``` branches and plot the reconstructed track momentum at the entrance, middle, and exit of the tracker
+1. [Plotting the Reconstructed Track Momentum of Conversion Electrons](reco-mom.md): In this exercise we will describe the ```demfit``` branches and plot the reconstructed track momentum at the entrance, middle, and exit of the tracker.
 
 <!----
 Hope to get to these...
