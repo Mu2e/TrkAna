@@ -41,7 +41,9 @@ We will be looking at the datasets ```mcs.brownd.CeEndpointMix1BBSignal.MDC2020z
 
 ## Exercises
 
-Here are the list of exercises in this tutorial:
+All the exercises have both ROOT and python instructions. Feel free to just read one or the other.
+
+Here are the list of exercises:
 
 1. [Opening and Inspecting a TrkAna ROOT file](opening.md): In this exercise we will open and inspect the TrkAna ROOT files.
 

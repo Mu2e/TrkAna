@@ -1,8 +1,16 @@
 # Opening and Inspecting a TrkAna ROOT file
 
-In this exercise, we will open the TrkAna ROOT file and inspect the TrkAna TTree and its branches.
+## Objectives
 
-Contents:
+In this exercise, you will learn:
+
+* how to open a TrkAna ROOT file, 
+* get a list of branches in the TrkAna tree, and
+* how to scan through a few events
+
+in ROOT and/or python.
+
+## Contents
 
 * [ROOT Command Line](#ROOT-Command-Line)
 * [ROOT Macro](#ROOT-Macro)
