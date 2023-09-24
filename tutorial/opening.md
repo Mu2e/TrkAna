@@ -8,8 +8,6 @@ In this exercise, you will learn:
 * get a list of branches in the TrkAna tree, and
 * how to scan through a few events
 
-in ROOT and/or python.
-
 ## Contents
 
 * [Common Introduction](#Common-Introduction)
@@ -22,7 +20,17 @@ in ROOT and/or python.
 
 ## Common Introduction
 
-TrkAna trees are contained in TrkAna ROOT files. These have the file type ```.tka``` but they are just a ROOT file and so can be opened and inspected in either ROOT, or python using uproot.
+TrkAna trees are contained in TrkAna ROOT files. These have the file type ```.tka``` but they are just ROOT files and so can be opened and inspected in either ROOT, or python using uproot.
+
+In the standard TrkAna ROOT files we have three top-level directories:
+
+* ```TrkAnaNeg```,
+* ```TrkAnaPos```, and
+* ```genCountLogger```.
+
+The two ```TrkAnaNeg``` and ```TrkAnaPos``` directories contain different TrkAna trees. ```TrkAnaNeg``` contains a TrkAna tree where the candidate tracks are downstream e-minus, and the supplemental tracks upstream e-minus, and downstream mu-minus. ```TrkAnaPos``` contains a TrkAna tree where the candidate tracks are downstream e-plus, and the supplemental tracks upstream e-plus, and downstream mu-plus.
+
+The ```genCountLogger``` folder contains a histogram that holds the total number of simulated events. This is necessary to normalize simulated data appropriately. It will be used in a later exercise.
 
 ## ROOT 
 
@@ -45,9 +53,7 @@ TFile**         nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka
   KEY: TDirectoryFile   genCountLogger;1        genCountLogger (GenEventCountReader) folder
 ```
 
-We see that there are two TrkAna directories: ```TrkAnaNeg``` and ```TrkAnaPos```. These are two separate TrkAna trees where the candidate tracks are downstream e-minus and downstream mu-plus, respectively. (And the supplemental tracks are upstream e-minus + downstream mu-minus, and upstream e-plus + downstream mu-plus, respectively).
-
-The ```genCountLogger``` folder contains a histogram that holds the total number of simulated events. This is necessary to normalize simulated data appropriately. It will be used in a later exercise.
+where we see the three directories listed earlier.
 
 Now ```cd()``` into the ```TrkAnaNeg()``` folder and ```.ls``` the directory to see the trkana tree:
 
@@ -59,8 +65,6 @@ TDirectoryFile*         TrkAnaNeg       TrkAnaNeg (TrkAnaTreeMaker) folder
  KEY: TTree     trkana;6        track analysis [current cycle]
  KEY: TTree     trkana;5        track analysis [backup cycle]
 ```
-
-(Note that there are two ```trkanas``` for ROOT reasons)
 
 Now we can ```Print()``` to see the branches of the tree:
 
@@ -91,7 +95,7 @@ root [5] trkana->Scan("evtinfo.runid:evtinfo.subrunid:evtinfo.eventid:demfit[0].
 
 ### ROOT Macro
 
-Instead of typing all the commands each time, we can write a ROOT macro called ```Opening.C``` with the following contents:
+A ROOT macro called ```Opening.C``` with the following contents will perform the same commands as in the [previous section](#ROOT-Command-Line):
 
 ```
 void Opening() {
@@ -119,18 +123,10 @@ root -l Opening.C
 
 To open and inspect the TrkAna ROOT file with python, we will use [uproot](https://uproot.readthedocs.io/en/latest/index.html).
 
-Open up a jupyter-notebook like so:
+Open up a [new notebook](setup.md/#Python-Notebook) and in the first cell, we will import uproot:
 
 ```
-jupyter-notebook --port=YYYY --no-browser
-```
-
-and copy the URL that is printed at the end into your local browser. Note that ```YYYY``` is the port you opened when logging in during the [general setup](intro.md#General-Setup).
-
-Open up a new notebook and in the first cell, we will import uproot:
-
-```
-import uproot # for opening ROOT files
+import uproot
 ```
 
 Run the cell by pressing ctrl+enter.
@@ -148,7 +144,7 @@ which will produce the output:
 ['TrkAnaNeg;1', 'TrkAnaNeg/trkana;6', 'TrkAnaNeg/trkana;5', 'TrkAnaPos;1', 'TrkAnaPos/trkana;1', 'genCountLogger;1', 'genCountLogger/numEvents;1', 'genCountLogger/numSubRuns;1']
 ```
 
-where uproot has descended into each top-level directory to get the contents of each.
+where we see that uproot has descended into each of the three top-level directories listed earlier to get the contents of each.
 
 The TrkAna tree can be accessed and the branches inspected by doing:
 
@@ -165,8 +161,7 @@ Note that getting the TrkAna tree can be done in a single step like this:
 trkana = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka:TrkAnaNeg/trkana")
 ```
 
-With ```trkana``` defined, to be able to see its contents we need to use the ```arrays()``` function to read the data into an [awkward array](https://awkward-array.org/doc/main/). A brief note on this: in HEP we don't often have a numbers of physics objects that will nicely fit into the same fixed-length array for all events. For example, if we want to store the straw hits in the tracker, there will be a different number in each event. Therefore we need to use "awkward" or "ragged" arrays, which requires the use of the awkward array package. This is the default library used by uproot to read branches. 
-
+With ```trkana``` defined we can now get its contents using the ```arrays()``` function. This function reads the data into an [awkward array](https://awkward-array.org/doc/main/). A brief note on this: in HEP we often have different numbers of physics objects in each event, and so they will now fit efficiently into fixed-length arrays. For example, if we want to store the straw hits in the tracker, there will be a different number in each event. Therefore we need to use "awkward" or "ragged" arrays, which requires the use of the awkward array package. This is the default library used by uproot to read branches.
 
 The first entry in the TTree can be seen with:
 
@@ -186,19 +181,21 @@ or the events between ```N``` and ```M```:
 trkana.arrays()[N:M]
 ```
 
-You may notice that this is slow. The ```arrays()``` function has an option to just filter the branches so that you just read in the ones you need. For example:
+You may notice that this is slow. The ```arrays()``` function has an option to filter branches so that you only read in the data you want. For example:
 
 ```
 branches = trkana.arrays(filter_name=["/evtinfo.*id/", "/demfit.mom.*/"])
 print(branches.fields)
 ```
 
+will read in the just the ```evtinfo.*``` and ```demfit.mom.*``` branches.
+
 Then you can inspect these branches with ```branches[N:M]```
 
 
 ### Python Script
 
-The above commands that we put into a python notebook can be put into a script called Opening.py:
+A python script called ```Opening.py``` with the following content will perform the same commands as covered in the above [python](#Python) example:
 
 ```
 import uproot
