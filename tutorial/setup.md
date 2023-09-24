@@ -11,7 +11,7 @@ In this exercise, you will learn how to:
 * [Common Instructions](#Common-Instructions)
 * [ROOT](#ROOT)
 * [Python](#Python)
-* [Python Notebook](#Python-Notebook)
+** [Python Notebook](#Python-Notebook)
 
 ## Common Instructions
 
@@ -46,7 +46,7 @@ setup pyana v1_05_00
 
 Pyana is a UPS package that provides a common python environment that all Mu2e analyzers can use. We recommend the use of pyana over a personal python environment to allow easier sharing of scripts between users.
 
-## Python Notebook
+### Python Notebook
 
 If you want to use a python notebook for the python exercises, then you should log into to a mu2egpvm machine with a port forwarded:
 
