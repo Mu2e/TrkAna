@@ -33,7 +33,7 @@ muse setup TrkAna v04_00_00
 setup pyana v1_05_00
 ```
 
-where ```YYYY``` is a port number (e.g. 3000, 3001) that you will use to open a browser on your local machine.
+where ```YYYY``` is a port number (e.g. 3000, 3001) that you will use to open a browser on your local machine. [Pyana](https://mu2ewiki.fnal.gov/wiki/Pyana) is a UPS package that provides a common python environment for all Mu2e analyzers. We recommend the use of ```pyana``` over a personal python environment to allow for easier coordination between python and Offline, and easier sharing of scripts between users.
 
 ## Simulation Samples
 

@@ -90,7 +90,7 @@ root -l Opening.C
 ```
 
 
-## Python
+## Python Notebook
 
 To open and inspect the TrkAna ROOT file with python, we will use [uproot](https://uproot.readthedocs.io/en/latest/index.html).
 
@@ -100,4 +100,90 @@ Open up a jupyter-notebook like so:
 jupyter-notebook --port=YYYY --no-browser
 ```
 
-and copy the URL that is printed at the end into your local browser. Note that ```YYYY``` is the port you opened when logging in during the [general setup](intro.md#General-Setup)
+and copy the URL that is printed at the end into your local browser. Note that ```YYYY``` is the port you opened when logging in during the [general setup](intro.md#General-Setup).
+
+Open up a new notebook and in the first cell, we will import uproot:
+
+```
+import uproot # for opening ROOT files
+```
+
+Run the cell by pressing ctrl+enter.
+
+In the next cell we can open up the file and look at its contents like this:
+
+```
+file = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv4.tka")
+file.keys()
+```
+
+which will produce the output:
+
+```
+['TrkAnaNeg;1', 'TrkAnaNeg/trkana;6', 'TrkAnaNeg/trkana;5', 'TrkAnaPos;1', 'TrkAnaPos/trkana;1', 'genCountLogger;1', 'genCountLogger/numEvents;1', 'genCountLogger/numSubRuns;1']
+```
+
+where uproot has descended into each top-level directory to get the contents of each.
+
+The TrkAna tree can be accessed and the branches inspected by doing:
+
+```
+trkana = file["TrkAnaNeg"]["trkana"]
+trkana.keys()
+```
+
+which will produce a lot of output since there are a lot of branches. These are documented [elsewhere](https://mu2ewiki.fnal.gov/wiki/TrkAna#Tree_Structure) but we will go through the important ones in later tutorial exercises.
+
+Note that getting the TrkAna tree can be done in a single step like this:
+
+```
+trkana = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka:TrkAnaNeg/trkana")
+```
+
+With ```trkana``` defined, to be able to see its contents we need to use the ```arrays()``` function to read the data into an [awkward array](https://awkward-array.org/doc/main/). A brief note on this: in HEP we don't often have a numbers of physics objects that will nicely fit into the same fixed-length array for all events. For example, if we want to store the straw hits in the tracker, there will be a different number in each event. Therefore we need to use "awkward" or "ragged" arrays, which requires the use of the awkward array package. This is the default library used by uproot to read branches. 
+
+
+The first entry in the TTree can be seen with:
+
+```
+trkana.arrays()[0]
+```
+
+and you can also use python slicing to look at the first ```N``` events:
+
+```
+trkana.arrays()[:N]
+```
+
+or the events between ```N``` and ```M```:
+
+```
+trkana.arrays()[N:M]
+```
+
+You may notice that this is slow. The ```arrays()``` function has an option to just filter the branches so that you just read in the ones you need. For example:
+
+```
+branches = trkana.arrays(filter_name=["/evtinfo.*id/", "/demfit.mom.*/"])
+print(branches.fields)
+```
+
+Then you can inspect these branches with ```branches[N:M]```
+
+
+## Python Script
+
+The above commands that we put into a python notebook can be put into a script called Opening.py:
+
+```
+import uproot
+trkana = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka:TrkAnaNeg/trkana")
+branches = trkana.arrays(filter_name=["/evtinfo.*id/", "/demfit.mom.*/"])
+print(branches[:20])
+```
+
+which can be run with:
+
+```
+python3 Opening.py
+```
