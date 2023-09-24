@@ -10,7 +10,7 @@ TrkAna is a ROOT TTree with one candidate track per row.
 
 ## Exercises
 
-1. [Opening and Inspecting a TrkAna ROOT file][opening.md]
+1. [Opening and Inspecting a TrkAna ROOT file](opening.md)
 
 1. [Reconstructed Track Momentum](reco-mom.md)
 
