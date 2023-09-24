@@ -92,4 +92,12 @@ root -l Opening.C
 
 ## Python
 
-To open and inspect the TrkAna ROOT file with python, we will use [```uproot```](https://uproot.readthedocs.io/en/latest/index.html)
+To open and inspect the TrkAna ROOT file with python, we will use [uproot](https://uproot.readthedocs.io/en/latest/index.html).
+
+Open up a jupyter-notebook like so:
+
+```
+jupyter-notebook --port=YYYY --no-browser
+```
+
+and copy the URL that is printed at the end into your local browser. Note that ```YYYY``` is the port you opened when logging in during the [general setup](intro.md/General Setup)
