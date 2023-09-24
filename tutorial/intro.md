@@ -31,10 +31,33 @@ ssh -XY -L YYYY:localhost:YYYY username@mu2egpvm0X.fnal.gov
 
 where ```YYYY``` is a port number (e.g. 3000, 3001) that you will use to open a browser on your local machine.
 
+## Simulation Samples
+
+We will be looking at the datasets ```mcs.brownd.CeEndpointMix1BBSignal.MDC2020z.art```. This file contains the output of the reconstruction for a simulation of conversion electron events (```CeEndpoint```) with background hits assuming one booster batch (```1BB```) that pass the signal trigger (```Signal```). The reconstruction pass was done using the SimJob Musing MDC2020z. More details on the MDC2020 campaign and generated datasets can be found [here](https://mu2ewiki.fnal.gov/wiki/MDC2020)
+
 ## Exercises
+
+Here are the list of exercises in this tutorial:
 
 1. [Opening and Inspecting a TrkAna ROOT file](opening.md)
 
-1. [Reconstructed Track Momentum](reco-mom.md)
+* in this exercise we will open and inspect the TrkAna ROOT files
 
-In this exercise you will plot the reconstructed momentum of simulated conversion electrons.
+1. [Plotting the Reconstructed Track Momentum of Conversion Electrons](reco-mom.md)
+
+* in this exercise we will describe the ```demfit``` branches and plot the reconstructed track momentum at the entrance, middle, and exit of the tracker
+
+<! ----
+Hope to get to these...
+
+1. [Plotting the Simulated Energy Loss of Conversion Electrons](e-loss.md)
+
+1. [Following the Genealogy of Conversion Electrons](genealogy.md)
+
+1. [Plotting the Time Difference between a Track and CRV hit](crv.md)
+
+1. [Plotting the Reconstructed Track Momentum of particles that weren't the conversion electron]
+
+1. [Plotting the Simulated Energy Loss of Conversion Electrons in the Stopping Target and IPA](e-loss.md)
+
+--->
