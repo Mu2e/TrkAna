@@ -14,10 +14,11 @@ in ROOT and/or python.
 
 * [Common Introduction](#Common-Introduction)
 * [ROOT](#ROOT)
-** [ROOT Command Line](#ROOT-Command-Line)
-** [ROOT Macro](#ROOT-Macro)
-* [Python Notebook](#Python-Notebook)
-* [Python Script](#Python-Script)
+   * [ROOT Command Line](#ROOT-Command-Line)
+   * [ROOT Macro](#ROOT-Macro)
+* [Python](#Python)
+   * [Python Notebook](#Python-Notebook)
+   * [Python Script](#Python-Script)
 
 ## Common Introduction
 
@@ -112,7 +113,8 @@ root -l Opening.C
 ```
 
 
-## Python Notebook
+## Python
+### Python Notebook
 
 To open and inspect the TrkAna ROOT file with python, we will use [uproot](https://uproot.readthedocs.io/en/latest/index.html).
 
@@ -193,7 +195,7 @@ print(branches.fields)
 Then you can inspect these branches with ```branches[N:M]```
 
 
-## Python Script
+### Python Script
 
 The above commands that we put into a python notebook can be put into a script called Opening.py:
 
