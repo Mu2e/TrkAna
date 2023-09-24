@@ -6,7 +6,7 @@ In this exercise, you will learn:
 
 * how to open a TrkAna ROOT file, 
 * get a list of branches in the TrkAna tree, and
-* how to scan through a few events
+* how to scan through a few events.
 
 ## Contents
 
