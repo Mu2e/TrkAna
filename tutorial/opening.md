@@ -22,6 +22,7 @@ in ROOT and/or python.
 
 ## Common Introduction
 
+TrkAna trees are contained in TrkAna ROOT files. These have the file type ```.tka``` but they are just a ROOT file and so can be opened and inspected in either ROOT, or python using uproot.
 
 ## ROOT 
 
@@ -30,7 +31,7 @@ in ROOT and/or python.
 With the ROOT command line, we open the TrkAna ROOT file like so:
 
 ```
-root -l nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv4.tka
+root -l nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka
 ```
 
 Doing a ```.ls``` will print the top-level directories:
@@ -96,7 +97,7 @@ Instead of typing all the commands each time, we can write a ROOT macro called `
 void Opening() {
 
      // Open the TrkAna ROOT file for reading
-     TFile* file = new TFile("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv4.tka", "READ");
+     TFile* file = new TFile("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka", "READ");
 
      // Get the TrkAna tree from the file. (Note that the (TTree*) is needed to "cast" the object to the correct class)
      TTree* trkana = (TTree*) file->Get("TrkAnaNeg/trkana");
@@ -137,7 +138,7 @@ Run the cell by pressing ctrl+enter.
 In the next cell we can open up the file and look at its contents like this:
 
 ```
-file = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv4.tka")
+file = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka")
 file.keys()
 ```
 
