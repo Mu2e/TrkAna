@@ -30,19 +30,21 @@ TCanvas* c1 = new TCanvas("c1", "c1");
 We can then plot a histogram of the number of hits on each track like so:
 
 ```
-trkana->Draw("dem.nhits>>hist(100,0,100)")
+trkana->Draw("dem.nhits>>hist(100,0,100)", "", "goff")
 ```
 
-but this is still missing some important information: axis labels
+where ```goff``` is the drawing option to now draw yet since we are still missing some important information: axis labels
 
 ```
 hist->GetXaxis()->SetTitle("N Hits");
 hist->GetYaxis()->SetTitle("Number of Tracks");
-hist->Draw();
 ```
 
-where the last line is because we need to redraw to see the changes.
+Now we can draw the histogram:
 
+```
+hist->Draw("HIST");
+```
 
 You could also plot the number of hits that were actually used in the track fit ("active") on the same set of axes:
 
