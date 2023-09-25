@@ -11,9 +11,7 @@ In this exercise, you will:
 
 * [Common Introduction](#Common-Introduction)
 * [ROOT](#ROOT)
-    * [Making ROOT plots informative](#Making-ROOT-plots-informative)
 * [Python](#Python)
-    * [Making python plots informative](#Making-python-plots-informative)
 
 ## Common Introduction
 
