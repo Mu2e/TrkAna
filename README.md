@@ -6,4 +6,4 @@ TrkAna is a track-based ntuple for Mu2e analyses. Each entry in the ntuple corre
 
 ## Tutorial
 
-See the tutorial [here](tutorial/intro.md)
+See the tutorial [here](tutorial/README.md)
