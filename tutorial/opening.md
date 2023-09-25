@@ -100,14 +100,17 @@ A ROOT macro called ```Opening.C``` with the following contents will perform the
 ```
 void Opening() {
 
-     // Open the TrkAna ROOT file for reading
-     TFile* file = new TFile("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka", "READ");
+  TString filename = "nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka";
+  TString treename = "TrkAnaNeg/trkana";
 
-     // Get the TrkAna tree from the file. (Note that the (TTree*) is needed to "cast" the object to the correct class)
-     TTree* trkana = (TTree*) file->Get("TrkAnaNeg/trkana");
+  // Open the TrkAna ROOT file for reading
+  TFile* file = new TFile(filename, "READ");
 
-     trkana->Print();
-     trkana->Scan("evtinfo.runid:evtinfo.subrunid:evtinfo.eventid:demfit[0].mom.R()");
+  // Get the TrkAna tree from the file. (Note that the (TTree*) is needed to "cast" the object to the correct class)
+  TTree* trkana = (TTree*) file->Get(treename);
+
+  trkana->Print();
+  trkana->Scan("evtinfo.runid:evtinfo.subrunid:evtinfo.eventid:demfit[0].mom.R()");
 }
 ```
 
@@ -198,9 +201,18 @@ Then you can inspect these branches with ```branches[N:M]```
 A python script called ```Opening.py``` with the following content will perform the same commands as covered in the above [python](#Python) example:
 
 ```
-import uproot
-trkana = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka:TrkAnaNeg/trkana")
+import uproot # for reading in ROOT files
+
+filename="nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka"
+treename="TrkAnaNeg/trkana"
+
+# Open the ROOT file and be read yto read in the trkana tree
+trkana = uproot.open(filename+":"+treename)
+
+# Read in just the evtinfo id branches, and the demfit.mom branches
 branches = trkana.arrays(filter_name=["/evtinfo.*id/", "/demfit.mom.*/"])
+
+# Print the first 20 tracks
 print(branches[:20])
 ```
 
