@@ -10,6 +10,8 @@ void NHits() {
   TTree* trkana = (TTree*) file->Get(treename);
 
   TCanvas* c1 = new TCanvas("c1", "c1");
+  c1->SetGridx();
+  c1->SetGridy();
 
   TH1D* hist = new TH1D("h_nhits", "", 100,0,100);
   trkana->Draw("dem.nhits>>h_nhits", "", "goff");
