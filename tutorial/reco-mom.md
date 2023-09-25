@@ -4,7 +4,7 @@
 
 In this exercise, you will learn:
 
-* about the ```fit``` branches and how they are, 
+* about the ```demfit``` and ```demlh``` branches, 
 * how to plot the reconstructed momentum of tracks, and
 * apply a cut.
 
@@ -26,6 +26,8 @@ The TrkAna tree contains the results from the KinKal track fit. This is a piecew
 There are various track fit parameters. 
 
 We store the position and momentum as the three individual x, y, and z components. 
+
+KinKal can present tracks in a few paramaterizations. We will look at the LoopHelix parameterization, which is stored in the ```demlh``` branch
 
 ### Track Fit Intersections
 
@@ -84,6 +86,6 @@ Here are some additional exercises you might want to try:
 * plot the track momentum at the middle and exit of the tracker
 * plot the difference in track momentum between the entrance and the exit of the tracker
 
-Last Page: [Opening and Inspecting a TrkAna ROOT file](opening.md)
+Last Page: [Plotting Global Track Information](n-hits.md)
 
 <!-- Next Page: [Applying Cuts](cuts.md) -->

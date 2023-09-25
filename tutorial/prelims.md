@@ -18,7 +18,7 @@ TrkAna is a ROOT TTree that contains the results of the track reconstruction. It
 
 Each entry or row in TrkAna corresponds to a single "candidate" track. Candidate tracks are of a given type (e.g. downstream e-minus) the type of track that is the being analyzed (e.g. downstream e-minus).
 
-The columns of the ROOT TTree include fit information about the candidate track, as well as any "supplemental" tracks that the analysis needs. For example, in the standard TrkAna trees upstream e-minus and downstream mu-minus are supplemental tracks since a muon-to-electron conversion search will need to veto on upstream tracks, and ensure that the reconstructed particle is an electron and not a muon.
+The columns of the ROOT TTree include fit information about the candidate track, as well as any "supplemental" tracks in the same event that the analysis needs. For example, in the standard TrkAna trees upstream e-minus and downstream mu-minus are supplemental tracks since a muon-to-electron conversion search will need to veto on upstream tracks, and ensure that the reconstructed particle is an electron and not a muon.
 
 ## Simulation Samples
 

@@ -16,7 +16,9 @@ If you have any questions, comments, or feedback, then you can either post on th
 
 1. [Opening and Inspecting a TrkAna ROOT file](opening.md): In this exercise, we will open and inspect the TrkAna ROOT files.
 
-1. [Plotting the Reconstructed Track Momentum of Conversion Electrons](reco-mom.md): In this exercise, we will describe the ```demfit``` branches and plot the reconstructed track momentum at the entrance, middle, and exit of the tracker.
+1. [Plotting Global Track Information](n-hits.md): In this exercise, we will use the ```dem``` branch to plot the number of hits on a track.
+
+1. [Plotting Local Track Information](reco-mom.md): In this exercise, we will describe the ```demfit``` branches and plot the reconstructed track momentum at the entrance, middle, and exit of the tracker.
 
 <!----
 Hope to get to these...
