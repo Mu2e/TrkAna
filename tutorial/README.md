@@ -16,12 +16,11 @@ If you have any questions, comments, or feedback, then you can either post on th
 
 1. [Opening and Inspecting a TrkAna ROOT file](opening.md): In this exercise, we will open and inspect the TrkAna ROOT files.
 
+The following are still work in progress...
+
 1. [Plotting Global Track Information](n-hits.md): In this exercise, we will use the ```dem``` branch to plot the number of hits on a track.
 
 1. [Plotting Local Track Information](reco-mom.md): In this exercise, we will use the ```demfit``` branches to plot the reconstructed track momentum at the entrance, middle, and exit of the tracker.
-
-<!----
-Hope to get to these...
 
 1. [Plotting MC Truth Information of the Track](mom-res.md): In this exercise, we will use the ```demmcvd``` to plot the momentum resolution at the entrance, middle, and exit of the tracker.
 
@@ -31,8 +30,6 @@ Hope to get to these...
 
 1. [Plotting the Simulated Energy Loss of Conversion Electrons in the Stopping Target and IPA](tgt-ipa-e-loss.md)
 
-1. [Plotting the Time Difference between a Track and CRV hit in the Extracted Position](crv.md)
-
---->
+1. [Plotting the Time Difference between a Track and CRV hit in the Extracted Position](crv-extracted.md)
 
 Next Page: [Preliminary Information](prelims.md)
