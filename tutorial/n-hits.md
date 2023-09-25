@@ -4,7 +4,7 @@
 
 In this exercise, you will:
 
-* learn about the ```dem``` branch that contains , and
+* learn about the ```dem``` branch that contains global track information, and
 * plot the number of hits on each track.
 
 ## Contents
@@ -23,41 +23,52 @@ Note that the same type of branch exists also for the supplemental tracks: upstr
 
 ## ROOT
 
-From the ROOT command line, after you have opened the TrkAna ROOT file and ```cd```'d into the TrkAnaNeg directory. You can see all the leaves on the ```dem``` branch with:
+In ROOT, after opening the ROOT file and getting the TrkAna tree, we want to create a [TCanvas](https://root.cern.ch/doc/v628/classTCanvas.html) to put the plot on:
 
 ```
-trkana->Print("dem.*")
+TCanvas* c1 = new TCanvas("c1", "c1");
 ```
 
-And then you can plot one of the leaves like so:
+We can then plot a histogram of the number of hits on each track like so:
 
 ```
 trkana->Draw("dem.nhits>>hist(100,0,100)")
 ```
 
+but this is still missing some important information: axis labels
+
+```
+hist->GetXaxis()->SetTitle("N Hits");
+hist->GetYaxis()->SetTitle("Number of Tracks");
+hist->Draw();
+```
+
+where the last line is because we need to redraw to see the changes.
+
+
 You could also plot the number of hits that were actually used in the track fit ("active") on the same set of axes:
 
 ```
-trkana->Draw("dem.nactive>>hist2", "", "SAME")
+trkana->Draw("dem.nactive>>hist2", "", "HIST SAME")
 ```
 
-### Making ROOT plots informative
+Since the colors are the same, we will want to change that:
 
-All plots should have axis labels, titles, legends, stats boxes, and grids. Here are pointers to adding these:
+```
+hist2->SetLineColor(kRed)
+hist2->Draw("HIST SAME")
+```
 
-* setting histogram title
-    * ```hist->SetTitle("Hist Title")```
-* setting axis labels
-    * ```hist->GetXaxis()->SetTitle("x-axis title")```
-* setting grid lines
-    * create a ```TCanvas``` before drawing: ```TCanvas* c1 = new TCanvas("c1", "c1");```
-    * set the grid: ```c1->SetGridx()```
-* setting different colors
-    * ```hist->SetLineColor(kRed)```
-* adding a legend
-    * create a legend: ```TLegend* leg = new TLegend()```
-    * add entries: ```leg->AddEntry(hist, "all hits", "l");```
-    * draw the legend: ```leg->Draw()```
+where the last line is because we need to redraw to see the changes.
+
+Finally, we need a [TLegend](https://root.cern.ch/doc/v628/classTLegend.html) to document what the two histograms are:
+
+```
+TLegend* leg = new TLegend()
+leg->AddEntry(hist, "all hits", "l")
+leg->AddEntry(hist2, "n active hits", "l")
+leg->Draw()
+```
 
 
 ## Python
@@ -80,9 +91,6 @@ plt.hist(branches['dem.nhits'], bins=100, range=(0,100), label='nhits', histtype
 plt.show()
 ```
 
-### Making ROOT plots informative
-
-All plots should have axis labels, titles, legends, stats boxes, and grids. Here are pointers to adding these:
 
 
 Last Page: [Opening and Inspecting a TrkAna ROOT file](opening.md)
