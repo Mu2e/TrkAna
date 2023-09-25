@@ -18,8 +18,6 @@ If you have any questions, comments, or feedback, then you can either post on th
 
 1. [Plotting the Reconstructed Track Momentum of Conversion Electrons](reco-mom.md): In this exercise, we will describe the ```demfit``` branches and plot the reconstructed track momentum at the entrance, middle, and exit of the tracker.
 
-1. [Applying Cuts](cuts.md): In this exercise, we will apply cuts so that we only analyze the subset of the data we are interested in.
-
 <!----
 Hope to get to these...
 
