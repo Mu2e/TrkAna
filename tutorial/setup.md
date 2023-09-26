@@ -11,12 +11,16 @@ In this exercise, you will learn how to:
 
 * [Common Instructions](#Common-Instructions)
 * [ROOT](#ROOT)
+    * [ROOT Command Line](#ROOT-Command-Line)
+    * [ROOT Macro](#ROOT-Macro)
 * [Python](#Python)
+    * [Python Command Line](#Python-Command-Line)
+    * [Python Script](#Python-Script)
     * [Python Notebook](#Python-Notebook)
 
 ## Common Instructions
 
-For all exercises, you should log in to a mu2egpvm machine like do:
+For all exercises, you should log in to a mu2egpvm machine like so:
 
 ```
 ssh -XY username@mu2egpvm0X.fnal.gov
@@ -35,17 +39,64 @@ muse setup TrkAna v04_00_00
 
 ## ROOT
 
-There is no additional setting up required for ROOT exercises.
+The ROOT exercises can be completed either on the command line or with a macro.
+
+### ROOT Command Line
+
+To use the ROOT command line, open up the ROOT prompt with:
+
+```
+root -l
+```
+
+You leave the command line by typing ```.q```
+
+### ROOT Macro
+
+To use a ROOT macro, open up a file in your favorite text editor. Assuming you name it ```Macro.C```, the file should contain:
+
+```
+void Macro() {
+    // put your code in here
+}
+```
+
+which can then be run on the command line with:
+
+```
+root -l Macro.C
+```
 
 ## Python
 
-For python exercises, you will also need to setup [pyana](https://mu2ewiki.fnal.gov/wiki/Pyana):
+The python exercises can be completed either on the command line, in a python notebook, or with a python script. 
+
+For all of these, you will need to setup [pyana](https://mu2ewiki.fnal.gov/wiki/Pyana):
 
 ```
 setup pyana v1_05_00
 ```
 
 Pyana is a UPS package that provides a common python environment that all Mu2e analyzers can use. We recommend the use of pyana over a personal python environment to allow easier sharing of scripts between users.
+
+### Python Command Line
+
+To use the python command line, you can open it with:
+
+
+```
+python3
+```
+
+You leave the command line by pressing Ctrl+D.
+
+### Python Script
+
+To use a python script, open up a file in your favorite text editor. Assuming you name it ```Script.py```, which can then be run on the command line with:
+
+```
+python3 Script.py
+```
 
 ### Python Notebook
 
@@ -56,12 +107,6 @@ ssh -XY -L YYYY:localhost:YYYY username@mu2egpvm0X.fnal.gov
 ```
 
 where ```YYYY``` is a port number (e.g. 3000, 3001) that you will use to open a browser on your local machine.
-
-You will also need to setup pyana (see above):
-
-```
-setup pyana v1_05_00
-```
 
 Then you can start your notebook like this:
 
