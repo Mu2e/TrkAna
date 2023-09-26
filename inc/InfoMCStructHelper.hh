@@ -16,11 +16,11 @@
 #include "TrkAna/inc/TrkStrawHitInfoMC.hh"
 #include "TrkAna/inc/CaloClusterInfoMC.hh"
 #include "TrkAna/inc/MCStepInfo.hh"
+#include "TrkAna/inc/CrvHitInfoMC.hh"
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
 #include "Offline/MCDataProducts/inc/KalSeedMC.hh"
 #include "BTrk/BbrGeom/HepPoint.h"
 #include "Offline/MCDataProducts/inc/PrimaryParticle.hh"
-#include "Offline/CRVAnalysis/inc/CrvHitInfoMC.hh"
 
 #include <vector>
 #include <functional>

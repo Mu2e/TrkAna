@@ -422,9 +422,7 @@ namespace mu2e {
 
   void InfoStructHelper::fillCrvHitInfo(art::Ptr<CrvCoincidenceCluster> const& crvCoinc, CrvHitInfoReco& crvHitInfo) {
     crvHitInfo._crvSectorType = crvCoinc->GetCrvSectorType();
-    crvHitInfo._x = crvCoinc->GetAvgHitPos().x();
-    crvHitInfo._y = crvCoinc->GetAvgHitPos().y();
-    crvHitInfo._z = crvCoinc->GetAvgHitPos().z();
+    crvHitInfo._pos = XYZVectorF(crvCoinc->GetAvgCounterPos());
     crvHitInfo._timeWindowStart = crvCoinc->GetStartTime();
     crvHitInfo._timeWindowEnd = crvCoinc->GetEndTime();
     crvHitInfo._PEs = crvCoinc->GetPEs();

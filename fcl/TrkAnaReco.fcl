@@ -19,7 +19,6 @@ physics :
   analyzers : { @table::TrkAnaReco.analyzers }
 }
 
-#physics.TrkAnaTrigPath : [ @sequence::TrkAnaReco.MCTrigSequence, @sequence::TrkAnaReco.TrigSequence ]
 physics.TrkAnaTrigPath : [ PBIWeight, @sequence::BestCrvProducersPath ]
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
 

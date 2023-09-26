@@ -24,7 +24,7 @@ namespace mu2e
     Float_t             _gparentE;         //energy of the gparent particle of this MC particle
     XYZVectorF _gparent;   //starting point of the gparent particle of this MC particle
 
-    XYZVectorF _opos;//position of the MC particle when it "created" the first StepPointMC
+    XYZVectorF _pos;//position of the MC particle when it "created" the first StepPointMC
     Float_t             _time;             //time of the MC particle when it "created" the first StepPointMC
     Float_t             _depositedEnergy;  //total energy deposited for this cluster (not just for this track)
     CrvHitInfoMC(bool valid, int pdgId,
@@ -39,11 +39,11 @@ namespace mu2e
               _primary(primaryPos),
               _parentPdgId(parentPdgId),
               _parentE(parentE),
-              _parentX(parentPos),
+              _parent(parentPos),
               _gparentPdgId(gparentPdgId),
               _gparentE(gparentE),
-              _gparentX(gparentPos),
-              _opos(pos),
+              _gparent(gparentPos),
+              _pos(pos),
               _time(time),
               _depositedEnergy(depositedEnergy)
               {}

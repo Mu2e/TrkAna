@@ -8,7 +8,7 @@
 #include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMC.hh"
 #include "Offline/MCDataProducts/inc/CrvDigiMC.hh"
 #include "Offline/MCDataProducts/inc/CrvStep.hh"
-#include "Offline/MCDataProducts/inc/MCTrajectoryCollection.hh"
+#include "Offline/MCDataProducts/inc/MCTrajectory.hh"
 #include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
 #include "Offline/RecoDataProducts/inc/CrvDigi.hh"
 #include "Offline/RecoDataProducts/inc/CrvRecoPulse.hh"
@@ -19,11 +19,12 @@
 
 namespace mu2e
 {
-  void CrvInfoHelper::FillCrvHitInfoCollections( const& art::Handle<CrvCoincidenceClusterCollection> crvCoincidences,
-      const& art::Handle<CrvCoincidenceClusterMCCollection> crvCoincidencesMC,
-      const& art::Handle<CrvRecoPulseCollection> crvRecoPulses,
-      const& art::Handle<CrvStepCollection> crvSteps,
-      const& art::Handle<MCTrajectoryCollection> mcTrajectories,
+  void CrvInfoHelper::FillCrvHitInfoCollections(
+      art::Handle<CrvCoincidenceClusterCollection> const& crvCoincidences,
+      art::Handle<CrvCoincidenceClusterMCCollection> const& crvCoincidencesMC,
+      art::Handle<CrvRecoPulseCollection> const& crvRecoPulses,
+      art::Handle<CrvStepCollection> const& crvSteps,
+      art::Handle<MCTrajectoryCollection> const& mcTrajectories,
       CrvHitInfoRecoCollection &recoInfo, CrvHitInfoMCCollection &MCInfo,
       CrvSummaryReco &recoSummary, CrvSummaryMC &MCSummary,
       CrvPlaneInfoMCCollection &MCInfoPlane, double crvPlaneY) {
@@ -35,7 +36,7 @@ namespace mu2e
       const CrvCoincidenceCluster &cluster = crvCoincidences->at(i);
 
       //fill the Reco collection
-      recoInfo.emplace_back(cluster.GetCrvSectorType(), cluster.GetAvgHitPos(),
+      recoInfo.emplace_back(cluster.GetCrvSectorType(), cluster.GetAvgCounterPos(),
           cluster.GetStartTime(), cluster.GetEndTime(),
           cluster.GetPEs(), cluster.GetCrvRecoPulses().size(),
           cluster.GetLayers().size(), cluster.GetSlope());
@@ -72,8 +73,8 @@ namespace mu2e
               primaryParticle->pdgId(), primaryParticle->startMomentum().e() - primaryParticle->startMomentum().m(), primaryParticle->startPosition(),
               parentParticle->pdgId(),  parentParticle->startMomentum().e()  - parentParticle->startMomentum().m(),  parentParticle->startPosition(),
               gparentParticle->pdgId(), gparentParticle->startMomentum().e() - gparentParticle->startMomentum().m(), gparentParticle->startPosition(),
-              clusterMC.GetAvgHitPos(),
-              clusterMC.GetAvgHitTime(),
+              clusterMC.GetEarliestHitPos(),
+              clusterMC.GetEarliestHitTime(),
               clusterMC.GetTotalEnergyDeposited());
         }
         else MCInfo.emplace_back();
@@ -107,10 +108,7 @@ namespace mu2e
           MCSummary._crvSectorType = CRS->getCRSScintillatorShield(sectorNumber).getSectorType();
           MCSummary._pdgId = pdgId;
         }
-
       }
-
-
 
       MCSummary._nHitCounters=counters.size();
       MCSummary._minPathLayer=*std::min_element(totalStep,totalStep+4);
@@ -120,8 +118,7 @@ namespace mu2e
     //locate points where the cosmic MC trajectories cross the xz plane of CRV-T
     if(mcTrajectories.isValid())
     {
-      std::map<art::Ptr<mu2e::SimParticle>,mu2e::MCTrajectory>::const_iterator trajectoryIter;
-      for(trajectoryIter=mcTrajectories->begin(); trajectoryIter!=mcTrajectories->end(); trajectoryIter++)
+      for(auto trajectoryIter=mcTrajectories->begin(); trajectoryIter!=mcTrajectories->end(); trajectoryIter++)
       {
         const art::Ptr<SimParticle> &trajectorySimParticle = trajectoryIter->first;
         if(abs(trajectorySimParticle->pdgId())!=PDGCode::mu_minus) continue;
@@ -162,9 +159,9 @@ namespace mu2e
 
 
   void CrvInfoHelper::FillCrvPulseInfoCollections (
-      const& art::Handle<CrvRecoPulseCollection> crvRecoPulses,
-      const& art::Handle<CrvWaveformCollection> crvWaveforms,
-      const& art::Handle<CrvDigiCollection> crvDigis,
+      art::Handle<CrvRecoPulseCollection> const& crvRecoPulses,
+      art::Handle<CrvDigiMCCollection> const& crvDigiMCs,
+      art::Handle<CrvDigiCollection> const& crvDigis,
       CrvPulseInfoRecoCollection &recoInfo, CrvHitInfoMCCollection &MCInfo, CrvWaveformInfoCollection &waveformInfo){
 
 
@@ -211,13 +208,11 @@ namespace mu2e
       //MCtruth pulses information
       double visibleEnergyDeposited  = 0;
       double earliestHitTime         = 0;
-      double avgHitTime              = 0;
       CLHEP::Hep3Vector earliestHitPos;
-      CLHEP::Hep3Vector avgHitPos;
       art::Ptr<SimParticle> mostLikelySimParticle;
       //for this reco pulse
-      CrvMCHelper::GetInfoFromCrvRecoPulse(crvRecoPulse, crvDigiMCCollection, visibleEnergyDeposited,
-          earliestHitTime, earliestHitPos, avgHitTime, avgHitPos, mostLikelySimParticle);
+      CrvMCHelper::GetInfoFromCrvRecoPulse(crvRecoPulse, crvDigiMCs, visibleEnergyDeposited,
+          earliestHitTime, earliestHitPos, mostLikelySimParticle);
 
       bool hasMCInfo = (mostLikelySimParticle.isNonnull()?true:false); //MC
       if(hasMCInfo)
@@ -229,7 +224,7 @@ namespace mu2e
             primaryParticle->pdgId(), primaryParticle->startMomentum().e() - primaryParticle->startMomentum().m(), primaryParticle->startPosition(),
             parentParticle->pdgId(),  parentParticle->startMomentum().e()  - parentParticle->startMomentum().m(),  parentParticle->startPosition(),
             gparentParticle->pdgId(), gparentParticle->startMomentum().e() - gparentParticle->startMomentum().m(), gparentParticle->startPosition(),
-            avgHitPos, avgHitTime, visibleEnergyDeposited);
+            earliestHitPos, earliestHitTime, visibleEnergyDeposited);
       }
       else
         MCInfo.emplace_back();

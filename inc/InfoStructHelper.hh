@@ -25,7 +25,7 @@
 #include "TrkAna/inc/TrkQualInfo.hh"
 #include "TrkAna/inc/TrkPIDInfo.hh"
 #include "TrkAna/inc/HelixInfo.hh"
-#include "Offline/CRVAnalysis/inc/CrvHitInfoReco.hh"
+#include "TrkAna/inc/CrvHitInfoReco.hh"
 
 #include <vector>
 #include <functional>

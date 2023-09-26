@@ -7,7 +7,15 @@
 #include "TrkAna/inc/CrvSummaryMC.hh"
 #include "TrkAna/inc/CrvPlaneInfoMC.hh"
 #include "TrkAna/inc/CrvPulseInfoReco.hh"
+#include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
+#include "Offline/RecoDataProducts/inc/CrvRecoPulse.hh"
+#include "Offline/RecoDataProducts/inc/CrvDigi.hh"
+#include "Offline/MCDataProducts/inc/CrvDigiMC.hh"
+#include "Offline/MCDataProducts/inc/CrvStep.hh"
 #include "Offline/MCDataProducts/inc/SimParticle.hh"
+#include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMC.hh"
+#include "Offline/MCDataProducts/inc/MCTrajectory.hh"
+#include "art/Framework/Principal/Handle.h"
 
 namespace mu2e
 {
@@ -18,19 +26,19 @@ namespace mu2e
       CrvInfoHelper() {}
 
       static void FillCrvHitInfoCollections(
-          const& art::Handle<CrvCoincidenceClusterCollection> crvCoincidences,
-          const& art::Handle<CrvCoincidenceClusterMCCollection> crvCoincidencesMC,
-          const& art::Handle<CrvRecoPulseCollection> crvRecoPulses,
-          const& art::Handle<CrvStepCollection> crvSteps,
-          const& art::Handle<MCTrajectoryCollection> mcTrajectories,
+          art::Handle<CrvCoincidenceClusterCollection> const& crvCoincidences,
+          art::Handle<CrvCoincidenceClusterMCCollection> const& crvCoincidencesMC,
+          art::Handle<CrvRecoPulseCollection> const& crvRecoPulses,
+          art::Handle<CrvStepCollection> const& crvSteps,
+          art::Handle<MCTrajectoryCollection> const& mcTrajectories,
           CrvHitInfoRecoCollection &recoInfo, CrvHitInfoMCCollection &MCInfo,
           CrvSummaryReco &recoSummary, CrvSummaryMC &MCSummary,
           CrvPlaneInfoMCCollection &MCInfoPlane, double crvPlaneY);
 
       static void FillCrvPulseInfoCollections(
-          const& art::Handle<CrvRecoPulseCollection> crvRecoPulses,
-          const& art::Handle<CrvWaveformCollection> crvWaveforms,
-          const& art::Handle<CrvDigiCollection> crvDigis,
+          art::Handle<CrvRecoPulseCollection> const& crvRecoPulses,
+          art::Handle<CrvDigiMCCollection> const& crvDigiMCs,
+          art::Handle<CrvDigiCollection> const& crvDigis,
           CrvPulseInfoRecoCollection &recoInfo, CrvHitInfoMCCollection &MCInfo, CrvWaveformInfoCollection &waveformInfo);
 
     private:

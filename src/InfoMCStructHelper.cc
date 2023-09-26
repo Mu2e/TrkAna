@@ -303,22 +303,14 @@ namespace mu2e {
       crvHitInfoMC._pdgId = simParticle->pdgId();
       crvHitInfoMC._primaryPdgId = primaryParticle->pdgId();
       crvHitInfoMC._primaryE = primaryParticle->startMomentum().e() - primaryParticle->startMomentum().m();
-      crvHitInfoMC._primaryX = primaryParticle->startPosition().x();
-      crvHitInfoMC._primaryY = primaryParticle->startPosition().y();
-      crvHitInfoMC._primaryZ = primaryParticle->startPosition().z();
+      crvHitInfoMC._primary = XYZVectorF(primaryParticle->startPosition());
       crvHitInfoMC._parentPdgId = parentParticle->pdgId();
       crvHitInfoMC._parentE = parentParticle->startMomentum().e()  - parentParticle->startMomentum().m();
-      crvHitInfoMC._parentX = parentParticle->startPosition().x();
-      crvHitInfoMC._parentY = parentParticle->startPosition().y();
-      crvHitInfoMC._parentZ = parentParticle->startPosition().z();
+      crvHitInfoMC._parent = XYZVectorF(parentParticle->startPosition());
       crvHitInfoMC._gparentPdgId = gparentParticle->pdgId();
       crvHitInfoMC._gparentE = gparentParticle->startMomentum().e() - gparentParticle->startMomentum().m();
-      crvHitInfoMC._gparentX = gparentParticle->startPosition().x();
-      crvHitInfoMC._gparentY = gparentParticle->startPosition().y();
-      crvHitInfoMC._gparentZ = gparentParticle->startPosition().z();
-      crvHitInfoMC._x = crvCoincMC->GetEarliestHitPos().x();
-      crvHitInfoMC._y = crvCoincMC->GetEarliestHitPos().y();
-      crvHitInfoMC._z = crvCoincMC->GetEarliestHitPos().z();
+      crvHitInfoMC._gparent = XYZVectorF(gparentParticle->startPosition());
+      crvHitInfoMC._pos = XYZVectorF(crvCoincMC->GetEarliestHitPos());
       crvHitInfoMC._time = crvCoincMC->GetEarliestHitTime();
       crvHitInfoMC._depositedEnergy = crvCoincMC->GetTotalEnergyDeposited();
     }
