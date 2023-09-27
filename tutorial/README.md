@@ -20,9 +20,9 @@ If you have any questions, comments, or feedback, then you can either post on th
 
 The following are still work in progress...
 
-1. [Plotting Local Track Information](pages/reco-mom.md): In this exercise, we will use the ```demfit``` branches to plot the reconstructed track momentum at the entrance, middle, and exit of the tracker.
+1. [Plotting Local Track Information](pages/reco-mom.md): In this exercise, we will use the ```demfit``` branches to plot the reconstructed track momentum at the entrance of the tracker with and without various cuts.
 
-1. [Plotting MC Truth Information of the Track](pages/mom-res.md): In this exercise, we will use the ```demmcvd``` to plot the momentum resolution at the entrance, middle, and exit of the tracker.
+1. [Plotting MC Truth Information of the Track](pages/mom-res.md): In this exercise, we will use the ```demmcvd``` branch compare reconstructed and MC turth information to plot the momentum resolution at the entrance of the tracker.
 
 1. [Plotting MC Truth Information of the Particle](pages/e-loss.md): In this exercise, we will use the ```demmcsim``` branch to plot the energy of the particle when it was generated, and therefore the MC truth energy it lost. And also its starting position?
 
@@ -31,5 +31,7 @@ The following are still work in progress...
 1. [Plotting the Simulated Energy Loss of Conversion Electrons in the Stopping Target and IPA](pages/tgt-ipa-e-loss.md)
 
 1. [Plotting the Time Difference between a Track and CRV hit in the Extracted Position](pages/crv-extracted.md)
+
+1. [Handling Large Datasets](pages/large-datasets.md)
 
 Next Page: [Preliminary Information](pages/prelims.md)

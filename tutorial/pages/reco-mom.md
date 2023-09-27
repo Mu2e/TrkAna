@@ -19,19 +19,11 @@ In this exercise, you will learn:
 
 ## Common Introduction
 
-The TrkAna tree contains the results from the KinKal track fit. This is a piecewise fit which iterates through a trajectory and accounts for material and megntic field effects.
-
-### Track Fit Parameters
-
-There are various track fit parameters. 
-
-We store the position and momentum as the three individual x, y, and z components. 
-
-KinKal can present tracks in a few paramaterizations. We will look at the LoopHelix parameterization, which is stored in the ```demlh``` branch
+The TrkAna tree contains the results from the KinKal track fit. This is a piecewise fit which iterates through a trajectory and accounts for material and megntic field effects. Therefore, there is no value for e.g. the momentum of the track as a whole -- we can only ask what the momentum is at a given location.
 
 ### Track Fit Intersections
 
-Since KinKal is a piecewise fit, there is no value for the momentum of the whole track -- we can only say what the momentum is at a given location. In Offline, we define surfaces and can ask "what were the parameters of the track when it intersected this surface?"
+Since KinKal is a piecewise fit, there is no value for the momentum of the whole track -- we can only  In Offline, we define surfaces and can ask "what were the parameters of the track when it intersected this surface?"
 
 In TrkAna, we can store the information from any number of surfaces. We currently pick three: the entrance, middle, and exit of the tracker. In order to allow for future expansion, we store the track information from all these locations as a vector in a single branch: ```demfit```.
 
@@ -40,6 +32,18 @@ To differentiate between these we will use the [SurfaceId](https://github.com/Mu
 * surface id = 0: entrance to tracker
 * surface id = 1: middle of tracker
 * surface id = 2: exit of tracker
+
+We store the position and momentum as the three individual x, y, and z components. 
+
+### Track Fit Parameters
+
+KinKal supports three different track parameterizations:
+
+* LoopHelix: looping tracks like conversion electrons in Mu2e
+* KinematicLine: straight-line tracks like cosmic rays
+* CentralHelix: curved tracks like cosmic rays with magnetic field on
+
+Depending on the type of track we are fitting, TrkAna will put the fit parameters (and their uncertainties) in the ```demlh```, ```demkl```, or ```demch```. 
 
 
 ## ROOT

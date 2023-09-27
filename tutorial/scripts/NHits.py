@@ -12,8 +12,8 @@ branches = trkana.arrays(filter_name=["/dem[.]*/"])
 
 fig, ax = plt.subplots(1,1)
 
-counts, edges, patches = ax.hist(branches['dem.nhits'], bins=100, range=(0,100), label='total number of hits', histtype='step')
-counts, edges, patches = ax.hist(branches['dem.nactive'], bins=100, range=(0,100), label='total number of used hits', histtype='step')
+ax.hist(branches['dem.nhits'], bins=100, range=(0,100), label='total number of hits', histtype='step')
+ax.hist(branches['dem.nactive'], bins=100, range=(0,100), label='total number of used hits', histtype='step')
 
 ax.legend()
 ax.set_xlabel('Number of Hits')
