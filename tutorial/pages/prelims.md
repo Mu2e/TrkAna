@@ -34,6 +34,6 @@ In this tutorial, we will be looking at the dataset ```mcs.brownd.CeEndpointMix1
 
 More details on the MDC2020 campaign and generated datasets can be found [here](https://mu2ewiki.fnal.gov/wiki/MDC2020)
 
-Last Page: [Main Page](README.md)
+Last Page: [Main Page](../README.md)
 
 Next Page: [Logging In and Setting Up](setup.md)
