@@ -12,11 +12,8 @@ In this exercise, you will learn:
 
 * [Common Introduction](#Common-Introduction)
 * [ROOT](#ROOT)
-   * [ROOT Command Line](#ROOT-Command-Line)
-   * [ROOT Macro](#ROOT-Macro)
 * [Python](#Python)
-   * [Python Notebook](#Python-Notebook)
-   * [Python Script](#Python-Script)
+* [Additional Exercises](#Additional-Exercises)
 
 ## Common Introduction
 
@@ -34,9 +31,9 @@ The ```genCountLogger``` folder contains a histogram that holds the total number
 
 ## ROOT 
 
-### ROOT Command Line
+This exercise is run using the ROOT command line.
 
-With the ROOT command line, we open the TrkAna ROOT file like so:
+In our terminal, we open the TrkAna ROOT file like so:
 
 ```
 root -l nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka
@@ -93,40 +90,14 @@ root [5] trkana->Scan("evtinfo.runid:evtinfo.subrunid:evtinfo.eventid:demfit[0].
 *        8 *      1210 *         0 *        24 * 103.32880 *
 ```
 
-### ROOT Macro
-
-A ROOT macro called ```Opening.C``` with the following contents will perform the same commands as in the [previous section](#ROOT-Command-Line):
-
-```
-void Opening() {
-
-  TString filename = "nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka";
-  TString treename = "TrkAnaNeg/trkana";
-
-  // Open the TrkAna ROOT file for reading
-  TFile* file = new TFile(filename, "READ");
-
-  // Get the TrkAna tree from the file. (Note that the (TTree*) is needed to "cast" the object to the correct class)
-  TTree* trkana = (TTree*) file->Get(treename);
-
-  trkana->Print();
-  trkana->Scan("evtinfo.runid:evtinfo.subrunid:evtinfo.eventid:demfit[0].mom.R()");
-}
-```
-
-which can be run like so:
-
-```
-root -l Opening.C
-```
-
 
 ## Python
-### Python Notebook
+
+The python exercise can be run either in a 
 
 To open and inspect the TrkAna ROOT file with python, we will use [uproot](https://uproot.readthedocs.io/en/latest/index.html).
 
-Open up a [new notebook](setup.md/#Python-Notebook) and in the first cell, we will import uproot:
+Open up a  and in the first cell, we will import uproot:
 
 ```
 import uproot
@@ -221,6 +192,11 @@ which can be run with:
 ```
 python3 Opening.py
 ```
+
+## Additional Exercises
+Try some of the following additional exercises:
+
+* open up the ```TrkAnaPos``` TrkAna tree and get the number of downstream e-plus tracks
 
 Last Page: [Logging In and Setting Up](setup.md)
 

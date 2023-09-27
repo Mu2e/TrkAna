@@ -21,7 +21,14 @@ Note that the same type of branch exists also for the supplemental tracks: upstr
 
 ## ROOT
 
-In ROOT, after opening the ROOT file and getting the TrkAna tree, we want to create a [TCanvas](https://root.cern.ch/doc/v628/classTCanvas.html) to put the plot on:
+In ROOT, we start by opening the ROOT file and getting the TrkAna tree:
+
+```
+TFile* file = new TFile("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka", "READ");
+TTree* trkana = (TTree*) file->Get("TrkAnaNeg/trkana");
+```
+
+Then we create a [TCanvas](https://root.cern.ch/doc/v628/classTCanvas.html) to put the plot on:
 
 ```
 TCanvas* c1 = new TCanvas("c1", "c1");
@@ -30,10 +37,10 @@ TCanvas* c1 = new TCanvas("c1", "c1");
 We can then plot a histogram of the number of hits on each track like so:
 
 ```
-trkana->Draw("dem.nhits>>hist(100,0,100)", "", "goff")
+trkana->Draw("dem.nhits>>hist(100,0,100)", "", "goff");
 ```
 
-where ```goff``` is the drawing option to now draw yet since we are still missing some important information: axis labels
+where ```goff``` is the drawing option to now draw since we are still missing some important information: axis labels
 
 ```
 hist->GetXaxis()->SetTitle("N Hits");
@@ -49,24 +56,22 @@ hist->Draw("HIST");
 You could also plot the number of hits that were actually used in the track fit ("active") on the same set of axes:
 
 ```
-trkana->Draw("dem.nactive>>hist2", "", "HIST SAME")
+trkana->Draw("dem.nactive>>hist2", "", "goff");
 ```
 
-Since the colors are the same, we will want to change that:
+Before drawing, we will want to change the line color of this histogram::
 
 ```
-hist2->SetLineColor(kRed)
-hist2->Draw("HIST SAME")
+hist2->SetLineColor(kRed);
+hist2->Draw("HIST SAME");
 ```
-
-where the last line is because we need to redraw to see the changes.
 
 Finally, we need a [TLegend](https://root.cern.ch/doc/v628/classTLegend.html) to document what the two histograms are:
 
 ```
 TLegend* leg = new TLegend()
-leg->AddEntry(hist, "all hits", "l")
-leg->AddEntry(hist2, "n active hits", "l")
+leg->AddEntry(hist, "total number of hits", "l")
+leg->AddEntry(hist2, "total number of active hits", "l")
 leg->Draw()
 ```
 
