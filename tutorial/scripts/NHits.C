@@ -15,18 +15,17 @@ void NHits() {
 
   TH1D* hist = new TH1D("h_nhits", "", 100,0,100);
   trkana->Draw("dem.nhits>>h_nhits", "", "goff");
-  hist->GetXaxis()->SetTitle("N Hits");
+  hist->GetXaxis()->SetTitle("Number of Hits");
   hist->GetYaxis()->SetTitle("Number of Tracks");
+  hist->Draw();
 
   TH1D* hist2 = new TH1D("h_nactive", "", 100,0,100);
   trkana->Draw("dem.nactive>>h_nactive", "", "goff");
   hist2->SetLineColor(kRed);
+  hist2->Draw("HIST SAME");
 
   TLegend* leg = new TLegend();
-  leg->AddEntry(hist, "all hits", "l");
-  leg->AddEntry(hist2, "n active hits", "l");
-
-  hist->Draw();
-  hist2->Draw("HIST SAME");
+  leg->AddEntry(hist, "total number of hits", "l");
+  leg->AddEntry(hist2, "total number of used hits", "l");
   leg->Draw();
 }
