@@ -34,7 +34,7 @@ In this tutorial, we will be using the TrkAna dataset ```nts.mu2e.CeEndpointMix1
     * ```MDC2020z```: the SimJob [Musing](https://mu2ewiki.fnal.gov/wiki/Muse#Musings_.28published_muse_builds.29) that was used
     * ```best```: using the "best" alignment uncertainties we can expect
     * ```v1_1```: the conditions database version used
-* ```tka```: the file type. Note that it is just a ROOT file
+* ```tka```: the file type. Note that this is just a ROOT file
 
 More details on the MDC2020 campaign and generated datasets can be found [here](https://mu2ewiki.fnal.gov/wiki/MDC2020)
 

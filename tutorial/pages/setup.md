@@ -2,10 +2,9 @@
 
 ## Objectives
 
-In this exercise, you will learn how to:
+In this exercise, you will:
 
-* log in to a mu2egpvm machine, and
-* how to set up your environment for this tutorial.
+* set up your environment on a mu2egpvm machine to complete the exercises with either ROOT or python
 
 ## Contents
 
@@ -20,6 +19,8 @@ In this exercise, you will learn how to:
 
 ## Common Instructions
 
+### Logging In
+
 For all exercises, you should log in to a mu2egpvm machine like so:
 
 ```
@@ -27,6 +28,8 @@ ssh -XY username@mu2egpvm0X.fnal.gov
 ```
 
 where ```username``` is your FNAL username, and ```mu2egpvm0X``` is between ```mu2egpvm01``` and ```mu2egpvm06```.
+
+### Creating Your Work Area
 
 Once logged in, you should create a working area, move to it, and then setup a TrkAna [Musing](https://mu2ewiki.fnal.gov/wiki/Muse#Musings_.28published_muse_builds.29) like this:
 
@@ -36,6 +39,10 @@ cd your/new/working/area/
 setup mu2e
 muse setup TrkAna v04_00_00
 ```
+
+### Getting the List of TrkAna Files
+
+[TODO]
 
 ## ROOT
 
@@ -49,7 +56,9 @@ To use the ROOT command line, open up the ROOT prompt with:
 root -l
 ```
 
-You leave the command line by typing ```.q```
+and type in the commands from the exercises.
+
+You exit the command line type ```.q```
 
 ### ROOT Macro
 
@@ -57,7 +66,7 @@ To use a ROOT macro, open up a file in your favorite text editor. Assuming you n
 
 ```
 void Macro() {
-    // put your code in here
+    // put the commands from the exercises here
 }
 ```
 
@@ -88,11 +97,13 @@ To use the python command line, you can open it with:
 python3
 ```
 
-You leave the command line by pressing Ctrl+D.
+and type in the commands from the exercises.
+
+You exit the command line by pressing Ctrl+D.
 
 ### Python Script
 
-To use a python script, open up a file in your favorite text editor. Assuming you name it ```Script.py```, which can then be run on the command line with:
+To use a python script, open up a file in your favorite text editor and type in the commands in the exercises. Assuming you name it ```Script.py```, which can then be run on the command line with:
 
 ```
 python3 Script.py
@@ -114,7 +125,7 @@ Then you can start your notebook like this:
 jupyter-notebook --no-browser --port=YYYY
 ```
 
-and copy the URL that is printed, into your local browser.
+and copy the URL that is printed, into your local browser. You then type commands into each cell and presst Ctrl+Enter to execute the commands in that cell.
 
 
 Last Page: [Preliminary Information](prelims.md)
