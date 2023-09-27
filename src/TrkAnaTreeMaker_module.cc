@@ -156,8 +156,7 @@ namespace mu2e {
         fhicl::Atom<art::InputTag> crvDigiMCsTag{Name("CrvDigiMCsTag"), Comment("Tag for CrvDigiMC Collection"), art::InputTag()};
         fhicl::Atom<art::InputTag> crvDigisTag{Name("CrvDigisTag"), Comment("Tag for CrvDigi Collection"), art::InputTag()};
         // CRV -- flags
-        fhicl::Atom<bool> crv{Name("FillCRV"),Comment("Flag for turning on crv(mc) branches"), false};
-        fhicl::Atom<bool> crvhits{Name("FillCRVHits"), Comment("Flag for turning on crvinfo(mc), crvsummary(mc), and crvinfomcplane branches"), false};
+        fhicl::Atom<bool> crvhits{Name("FillCRVHits"),Comment("Flag for turning on crv CoincidenceClusterbranches"), false};
         fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
         // CRV -- other
         fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters.  This belongs in KinKalGeom as an intersection plane, together with the rest of the CRV planes FIXME
@@ -265,7 +264,7 @@ namespace mu2e {
       art::Handle<CrvDigiCollection>                 _crvDigis;
       art::Handle<CrvStepCollection>                 _crvSteps;
       // CRV -- fhicl parameters
-      bool _crv, _crvhits, _crvpulses;
+      bool _crvhits, _crvpulses;
       double _crvPlaneY;  // needs to move to KinKalGeom FIXME
       // CRV (output)
       std::vector<CrvHitInfoReco> _crvinfo;
@@ -278,6 +277,7 @@ namespace mu2e {
       std::vector<CrvPulseInfoReco> _crvpulseinfo;
       std::vector<CrvWaveformInfo> _crvwaveforminfo;
       std::vector<CrvHitInfoMC> _crvpulseinfomc;
+      std::vector<CrvHitInfoReco> _crvrecoinfo;
       // helices
       HelixInfo _hinfo;
       // struct helpers
@@ -311,7 +311,6 @@ namespace mu2e {
     _fillmc(conf().fillmc()),
     _fillcalomc(conf().fillCaloMC()),
     // CRV
-    _crv(conf().crv()),
     _crvhits(conf().crvhits()),
     _infoMCStructHelper(conf().infoMCStructHelper()),
     _buffsize(conf().buffsize()),
@@ -488,26 +487,21 @@ namespace mu2e {
     }
     // calorimeter information for the downstream electron track
     // general CRV info
-    if(_crv) {
+    if(_crvhits) {
       // coincidence branches should be here FIXME
-      //
-      if (_crvhits) {
-        _trkana->Branch("crvsummary.",&_crvsummary,_buffsize,_splitlevel);
-        _trkana->Branch("crvinfo.",&_crvinfo,_buffsize,_splitlevel);
-        if(_crvpulses) {
-          _trkana->Branch("crvpulseinfo.",&_crvpulseinfo,_buffsize,_splitlevel);
-          _trkana->Branch("crvwaveforminfo.",&_crvwaveforminfo,_buffsize,_splitlevel);
-        }
+      _trkana->Branch("crvsummary.",&_crvsummary,_buffsize,_splitlevel);
+      _trkana->Branch("crvinfo.",&_crvinfo,_buffsize,_splitlevel);
+      if(_crvpulses) {
+        _trkana->Branch("crvpulseinfo.",&_crvpulseinfo,_buffsize,_splitlevel);
+        _trkana->Branch("crvwaveforminfo.",&_crvwaveforminfo,_buffsize,_splitlevel);
       }
 
       if(_fillmc){
-        if (_crvhits) {
-          _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
-          _trkana->Branch("crvinfomc.",&_crvinfomc,_buffsize,_splitlevel);
-          _trkana->Branch("crvinfomcplane.",&_crvinfomcplane,_buffsize,_splitlevel);
-          if(_crvpulses) {
-            _trkana->Branch("crvpulseinfomc.",&_crvpulseinfomc,_buffsize,_splitlevel);
-          }
+        _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
+        _trkana->Branch("crvinfomc.",&_crvinfomc,_buffsize,_splitlevel);
+        _trkana->Branch("crvinfomcplane.",&_crvinfomcplane,_buffsize,_splitlevel);
+        if(_crvpulses) {
+          _trkana->Branch("crvpulseinfomc.",&_crvpulseinfomc,_buffsize,_splitlevel);
         }
       }
     }
@@ -608,7 +602,6 @@ namespace mu2e {
       event.getByLabel(_conf.simParticlesTag(),_simParticles);
       event.getByLabel(_conf.mcTrajectoriesTag(),_mcTrajectories);
       if(_fillcalomc)event.getByLabel(_conf.caloClusterMCTag(),_ccmcch);
-      if(_crv)event.getByLabel(_conf.crvCoincidenceMCsTag(),_crvCoincidenceMCs);
     }
     // fill track counts
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
@@ -640,7 +633,6 @@ namespace mu2e {
         auto hptr = (*khassns)[i_kseed].second;
         _infoStructHelper.fillHelixInfo(hptr, _hinfo);
       }
-
 
       // Now loop through all the branches (both candidate + supplements)...
       for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
@@ -674,18 +666,19 @@ namespace mu2e {
 
       // TODO we want MC information when we don't have a track
       // fill general CRV info
-      if(_crv){
+      if(_crvhits){
         event.getByLabel(_conf.crvCoincidencesTag(),_crvCoincidences);
         event.getByLabel(_conf.crvRecoPulsesTag(),_crvRecoPulses);
         event.getByLabel(_conf.crvStepsTag(),_crvSteps);
-        event.getByLabel(_conf.crvDigiMCsTag(),_crvDigiMCs);
         event.getByLabel(_conf.crvDigisTag(),_crvDigis);
-        if (_crvhits) {
-          CrvInfoHelper::FillCrvHitInfoCollections(
-              _crvCoincidences, _crvCoincidenceMCs,
-              _crvRecoPulses, _crvSteps, _mcTrajectories,_crvinfo, _crvinfomc,
-              _crvsummary, _crvsummarymc, _crvinfomcplane, _crvPlaneY);
+        if(_fillmc){
+          event.getByLabel(_conf.crvCoincidenceMCsTag(),_crvCoincidenceMCs);
+          event.getByLabel(_conf.crvDigiMCsTag(),_crvDigiMCs);
         }
+        CrvInfoHelper::FillCrvHitInfoCollections(
+            _crvCoincidences, _crvCoincidenceMCs,
+            _crvRecoPulses, _crvSteps, _mcTrajectories,_crvinfo, _crvinfomc,
+            _crvsummary, _crvsummarymc, _crvinfomcplane, _crvPlaneY);
         if(_crvpulses){
           CrvInfoHelper::FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs, _crvDigis,
               _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);

@@ -100,9 +100,7 @@ namespace mu2e
         // Save info from the first step in the CRV
         if(i==0){
           CLHEP::Hep3Vector CrvPos = crvSteps->at(i).startPosition();
-          MCSummary._x = CrvPos.x();
-          MCSummary._y = CrvPos.y();
-          MCSummary._z = CrvPos.z();
+          MCSummary._pos = XYZVectorF(CrvPos);
           int sectorNumber = CRVCounterId.getShieldNumber();
           MCSummary._crvSectorNumber = sectorNumber;
           MCSummary._crvSectorType = CRS->getCRSScintillatorShield(sectorNumber).getSectorType();

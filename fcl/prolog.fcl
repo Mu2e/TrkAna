@@ -167,8 +167,7 @@ TrkAnaTreeMaker : {
   FillTriggerInfo : true
   TriggerProcessName : "Mix"
   ProcessEmptyEvents : false
-  FillCRV : true
-  FillCRVHits : false
+  FillCRVHits : true
   FillCRVPulses : false
   PrimaryParticleTag : "compressRecoMCs"
   KalSeedMCAssns : "SelectRecoMC"
