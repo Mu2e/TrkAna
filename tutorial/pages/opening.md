@@ -155,7 +155,7 @@ or the events between ```N``` and ```M```:
 trkana.arrays()[N:M]
 ```
 
-You may notice that this is slow. The ```arrays()``` function has an option to filter branches so that you only read in the data you want. For example:
+You may notice that this is slow: one important difference between python and ROOT is that python will automatically ready the whole tree into memory. We will come to ways around this. For the time being, we will use the ```filter_name``` argument to the ```arrays()``` function to reduce the amount of data we read in. For example:
 
 ```
 branches = trkana.arrays(filter_name=["/evtinfo.*id/", "/demfit.mom.*/"])
