@@ -19,7 +19,7 @@ In this exercise, you will learn:
 
 ## Common Introduction
 
-The TrkAna tree contains the results from the KinKal track fit. This is a piecewise fit which iterates through a trajectory and accounts for material and megntic field effects. Therefore, there is no value for e.g. the momentum of the track as a whole -- we can only ask what the momentum is at a given location.
+The TrkAna tree contains the results from the KinKal track fit. This is a piecewise fit which iterates through a trajectory and accounts for material and megntic field effects.
 
 ### Track Fit Intersections
 
@@ -48,37 +48,63 @@ Depending on the type of track we are fitting, TrkAna will put the fit parameter
 
 ## ROOT
 
-From the ROOT command line, after you have opened the TrkAna ROOT file and ```cd```'d into the TrkAnaNeg directory.
+In ROOT, we can open the ROOT file, get the TrkAna tree, and create a TCanvas as usual:
 
 ```
-trkana->Print("demfit.*")
+TFile* file = new TFile("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka", "READ");
+TTree* trkana = (TTree*) file->Get("TrkAnaNeg/trkana");
+
+TCanvas* c1 = new TCanvas("c1", "c1");
+c1->SetGridx(true);
+c1->SetGridy(true);
 ```
 
-, you can do:
+We want to plot the momentum of the tracks. If you ```Print()``` the ```demfit``` branch, you will notice that the momentum is split into its three components:
 
 ```
-trkana->Draw("demfit.mom.R()>>hist(100,100,110)", "", "HIST E")
+*............................................................................*
+*Br    1 :demfit.mom.fCoordinates.fX : Float_t fX[demfit_]                   *
+*Entries :   130524 : Total  Size=    2091152 bytes  File Size  =    1617083 *
+*Baskets :       21 : Basket Size=     586240 bytes  Compression=   1.29     *
+*............................................................................*
+*Br    2 :demfit.mom.fCoordinates.fY : Float_t fY[demfit_]                   *
+*Entries :   130524 : Total  Size=    2091152 bytes  File Size  =    1616994 *
+*Baskets :       21 : Basket Size=     586240 bytes  Compression=   1.29     *
+*............................................................................*
+*Br    3 :demfit.mom.fCoordinates.fZ : Float_t fZ[demfit_]                   *
+*Entries :   130524 : Total  Size=    2091152 bytes  File Size  =    1513081 *
+*Baskets :       21 : Basket Size=     586240 bytes  Compression=   1.38     *
+*............................................................................*
 ```
 
-to draw a histogram (100 bins between 100 MeV/c and 110 MeV/c) of the reconstructed track momentum at all the intersections (entrance, middle, and exit of the tracker). You might notice that the peak is rather broad.
+We want to plot the magnitude of the momentum vector. We could calculate it ourselves from the components but in ROOT, we can use member functions of [XYZVectorF](https://root.cern.ch/doc/v628/namespaceROOT_1_1Math.html#a767e8c52a85dc9538fe00603961eab98). We will use ```R()``` function:
 
-Note that the ```R()``` function is a member of the ```XYZVectorF``` that we use. 
+```
+trkana->Draw("demfit.mom.R()>>hist(100,100,110)", "", "HIST");
+```
+
+You may notice that the peak is rather broad... That's because we are plotting the reconstructed track momentum at all the intersections - the entrance, middle, and exit of the tracker. 
 
 To see just the track momentum at one of the intersections, we need to apply a cut using the second argument to the ```Draw()``` function:
 
 ```
-trkana->Draw("demfit.mom.R()>>hist(100,100,110)", "demfit.sid==0", "HIST E")
+trkana->Draw("demfit.mom.R()>>hist(100,100,110)", "demfit.sid==0", "HIST")
 ```
 
 where ```sid``` is the surface id of the intersection we want to plot (```sid=0``` is the entrance to the tracker).
 
-## Python
-
-A bit of house-keeping. If you read through the ROOT example, you will have seen that the momentum can be easily obtained with ```demfit.mom.R()```. It is not currently possible to call the ```R()``` function (or an equivalent) in python (we are looking into [vector](https://github.com/scikit-hep/vector) as a possible tool). For the time being, we recommend defining a utility function to do these sort of calculations:
+We might also want to make a cut on some other track parameter. For example, in the Mu2e muon-to-electron conversion search we will apply a time cut to the tracks. Again, like for momentum, there is no "time" for the whole track and we have the time at each intersection. The time is part of the parameterization and is stored in the ```demlh``` branch:
 
 ```
-def add_useful_branches(batch):
-    batch['demfit.mom'] = (batch['demfit.mom.fCoordinates.fX']**2 + batch['demfit.mom.fCoordinates.fY']**2 + batch['demfit.mom.fCoordinates.fZ']**2)**0.5
+trkana->Draw("demfit.mom.R()>>hist2", "demfit.sid==0 && demlh.t0>=700" "HIST SAME");
+```
+
+## Python
+
+A bit of house-keeping. If you read through the ROOT example, you will have seen that the momentum can be easily obtained with ```demfit.mom.R()```. It is not currently possible to call the ```R()``` function (or an equivalent) in python (we are looking into [vector](https://github.com/scikit-hep/vector) as a possible tool). For the time being, we have to define it ourselves but it's easy to add columns in python:
+
+```
+batch['demfit.mom'] = (batch['demfit.mom.fCoordinates.fX']**2 + batch['demfit.mom.fCoordinates.fY']**2 + batch['demfit.mom.fCoordinates.fZ']**2)**0.5
 ```
 
 
