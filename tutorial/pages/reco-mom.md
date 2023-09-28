@@ -101,12 +101,91 @@ trkana->Draw("demfit.mom.R()>>hist2", "demfit.sid==0 && demlh.t0>=700" "HIST SAM
 
 ## Python
 
-A bit of house-keeping. If you read through the ROOT example, you will have seen that the momentum can be easily obtained with ```demfit.mom.R()```. It is not currently possible to call the ```R()``` function (or an equivalent) in python (we are looking into [vector](https://github.com/scikit-hep/vector) as a possible tool). For the time being, we have to define it ourselves but it's easy to add columns in python:
+In python, we will need to import awkward directly 
+
+```
+import uproot
+import matplotlib.pyplot as plt
+import awkward as ak
+
+trkana = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka:TrkAnaNeg/trkana")
+
+fig, ax = plt.subplots(1,1)
+```
+
+Now let's read in just the ```demfit``` and ```demlh``` branches:
+
+```
+branches = trkana.arrays(filter_name=["/demfit[.]*/", "/demlh[.]*/"])
+```
+
+We want to plot the momentum
+
+If you look at the ```branches.fields```, you will see that we store the momentum in its x, y, and z components:
+
+```
+print(branches.fields)
+['demfit.mom.fCoordinates.fX', 'demfit.mom.fCoordinates.fY', 'demfit.mom.fCoordinates.fZ', 'demfit.pos.fCoordinates.fX', 'demfit.pos.fCoordinates.fY', 'demfit.pos.fCoordinates.fZ', 'demfit.time', 'demfit.momerr', 'demfit.inbounds', 'demfit.gap', 'demfit.early', 'demfit.late', 'demfit.sid', 'demfit.sindex']
+```
+
+so we will have to calculate the magnitude of the momentum ourselves. (If you read through the ROOT example, you will have seen that the momentum can be easily obtained with ```demfit.mom.R()```. It is not currently possible to call the ```R()``` function (or an equivalent) in python but we are looking into [vector](https://github.com/scikit-hep/vector) as a possible tool). 
+
+Anyway, it is easy to add a column in python:
 
 ```
 batch['demfit.mom'] = (batch['demfit.mom.fCoordinates.fX']**2 + batch['demfit.mom.fCoordinates.fY']**2 + batch['demfit.mom.fCoordinates.fZ']**2)**0.5
 ```
 
+If you try to plot this like we did before:
+
+```
+ax.hist(branches['demfit.mom'], bins=100, range=(100,110), label='all tracks', histtype='step')
+```
+
+you will get an error. That's because the ```demfit``` branch is an array, and the function doesn't like that. So we need to ```flatten``` it down to one dimension:
+
+```
+ax.hist(ak.flatten(branches['demfit.mom'], bins=100, range=(100,110), label='all tracks', histtype='step')
+```
+
+Now you may notice that the peak is rather broad... That's because the ```demfit``` branch contains the fit information at the entrance, middle, and exit of the tracker.
+
+To plot just the momentum at the tracker entrance, we need to make a "mask array", which is an array of the same shape and dimensionality as our data but containing either ```True``` or ```False```:
+
+```
+trk_ent_mask = (branches['demfit.sid']==0)
+```
+
+To see what I mean about the dimensionality and shape you can ```print``` them:
+
+```
+print(branches['demfit.sid'])
+print(trk_ent_mask)
+```
+
+Now we need to use this mask when plotting:
+
+```
+ax.hist(ak.flatten(branches['demfit.mom'][(trk_ent_mask)], bins=100, range=(100,110), label='all tracks', histtype='step')
+
+ax.set_xlabel('Reconstructed Momentum at Tracker Entrance [MeV/c]')
+ax.set_ylabel('Number of Tracks')
+ax.legend()
+ax.grid(True)
+plt.show()
+```
+
+We might also want to make a cut on some other track parameter. For example, in the Mu2e muon-to-electron conversion search we will apply a time cut to the tracks. Again, like for momentum, there is no "time" for the whole track and we have the time at each intersection. The time is part of the parameterization and is stored in the ```demlh``` branch. Let's make a mask for it:
+
+```
+time_cut_mask = (branches['demlh.t0']>=700)
+```
+
+and to use it when plotting we need to use the bitwise ```&``` operator.
+
+```
+ax.hist(ak.flatten(branches['demfit.mom'][(trk_ent_mask) & (time_cut_mask)], bins=100, range=(100,110), label='all tracks', histtype='step')
+```
 
 
 ## Additional Exercises

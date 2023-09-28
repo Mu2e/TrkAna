@@ -18,9 +18,9 @@ If you have any questions, comments, or feedback, then you can either post on th
 
 1. [Plotting Global Track Information](pages/n-hits.md): In this exercise, we will use the ```dem``` branch to plot the number of hits on a track.
 
-The following are still work in progress...
-
 1. [Plotting Local Track Information](pages/reco-mom.md): In this exercise, we will use the ```demfit``` branches to plot the reconstructed track momentum at the entrance of the tracker with and without various cuts.
+
+The following are still work in progress...
 
 1. [Plotting MC Truth Information of the Track](pages/mom-res.md): In this exercise, we will use the ```demmcvd``` branch compare reconstructed and MC turth information to plot the momentum resolution at the entrance of the tracker.
 
