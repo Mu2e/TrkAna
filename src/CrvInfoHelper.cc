@@ -40,7 +40,7 @@ namespace mu2e
       //fill the Reco collection
       recoInfo.emplace_back(
           cluster.GetCrvSectorType(),
-          tdet->toDetector(cluster.GetAvgCounterPos()),
+          tdet->toDetector(cluster.GetAvgHitPos()),
           cluster.GetStartTime(), cluster.GetEndTime(),
           cluster.GetPEs(),
           cluster.GetCrvRecoPulses().size(),
@@ -218,11 +218,13 @@ namespace mu2e
       //MCtruth pulses information
       double visibleEnergyDeposited  = 0;
       double earliestHitTime         = 0;
+      double avgHitTime         = 0;
       CLHEP::Hep3Vector earliestHitPos;
+      CLHEP::Hep3Vector avgHitPos;
       art::Ptr<SimParticle> mostLikelySimParticle;
       //for this reco pulse
-      CrvMCHelper::GetInfoFromCrvRecoPulse(crvRecoPulse, crvDigiMCs, visibleEnergyDeposited,
-          earliestHitTime, earliestHitPos, mostLikelySimParticle);
+      CrvMCHelper::GetInfoFromCrvRecoPulse(crvRecoPulse, crvDigiMCs, visibleEnergyDeposited,earliestHitTime, earliestHitPos, avgHitTime, avgHitPos,
+          mostLikelySimParticle);
 
       bool hasMCInfo = (mostLikelySimParticle.isNonnull()?true:false); //MC
       if(hasMCInfo)
