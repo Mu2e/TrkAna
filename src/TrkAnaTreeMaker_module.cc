@@ -267,13 +267,13 @@ namespace mu2e {
       bool _crvhits, _crvpulses;
       double _crvPlaneY;  // needs to move to KinKalGeom FIXME
       // CRV (output)
-      std::vector<CrvHitInfoReco> _crvinfo;
+      std::vector<CrvHitInfoReco> _crvhit;
       std::map<BranchIndex, std::vector<CrvHitInfoReco>> _allBestCrvs; // there can be more than one of these per candidate/supplement
-      std::vector<CrvHitInfoMC> _crvinfomc;
+      std::vector<CrvHitInfoMC> _crvhitmc;
       std::map<BranchIndex, std::vector<CrvHitInfoMC>> _allBestCrvMCs;
       CrvSummaryReco _crvsummary;
       CrvSummaryMC   _crvsummarymc;
-      std::vector<CrvPlaneInfoMC> _crvinfomcplane;
+      std::vector<CrvPlaneInfoMC> _crvhitmcplane;
       std::vector<CrvPulseInfoReco> _crvpulseinfo;
       std::vector<CrvWaveformInfo> _crvwaveforminfo;
       std::vector<CrvHitInfoMC> _crvpulseinfomc;
@@ -283,6 +283,7 @@ namespace mu2e {
       // struct helpers
       InfoStructHelper _infoStructHelper;
       InfoMCStructHelper _infoMCStructHelper;
+      CrvInfoHelper _crvHelper;
       // branch structure
       Int_t _buffsize, _splitlevel;
       enum FType{Unknown=0,LoopHelix,CentralHelix,KinematicLine};
@@ -490,7 +491,7 @@ namespace mu2e {
     if(_crvhits) {
       // coincidence branches should be here FIXME
       _trkana->Branch("crvsummary.",&_crvsummary,_buffsize,_splitlevel);
-      _trkana->Branch("crvinfo.",&_crvinfo,_buffsize,_splitlevel);
+      _trkana->Branch("crvhit.",&_crvhit,_buffsize,_splitlevel);
       if(_crvpulses) {
         _trkana->Branch("crvpulseinfo.",&_crvpulseinfo,_buffsize,_splitlevel);
         _trkana->Branch("crvwaveforminfo.",&_crvwaveforminfo,_buffsize,_splitlevel);
@@ -498,8 +499,8 @@ namespace mu2e {
 
       if(_fillmc){
         _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
-        _trkana->Branch("crvinfomc.",&_crvinfomc,_buffsize,_splitlevel);
-        _trkana->Branch("crvinfomcplane.",&_crvinfomcplane,_buffsize,_splitlevel);
+        _trkana->Branch("crvhitmc.",&_crvhitmc,_buffsize,_splitlevel);
+        _trkana->Branch("crvhitmcplane.",&_crvhitmcplane,_buffsize,_splitlevel);
         if(_crvpulses) {
           _trkana->Branch("crvpulseinfomc.",&_crvpulseinfomc,_buffsize,_splitlevel);
         }
@@ -675,12 +676,12 @@ namespace mu2e {
           event.getByLabel(_conf.crvCoincidenceMCsTag(),_crvCoincidenceMCs);
           event.getByLabel(_conf.crvDigiMCsTag(),_crvDigiMCs);
         }
-        CrvInfoHelper::FillCrvHitInfoCollections(
+        _crvHelper.FillCrvHitInfoCollections(
             _crvCoincidences, _crvCoincidenceMCs,
-            _crvRecoPulses, _crvSteps, _mcTrajectories,_crvinfo, _crvinfomc,
-            _crvsummary, _crvsummarymc, _crvinfomcplane, _crvPlaneY);
+            _crvRecoPulses, _crvSteps, _mcTrajectories,_crvhit, _crvhitmc,
+            _crvsummary, _crvsummarymc, _crvhitmcplane, _crvPlaneY);
         if(_crvpulses){
-          CrvInfoHelper::FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs, _crvDigis,
+          _crvHelper.FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs, _crvDigis,
               _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
         }
       }
@@ -957,9 +958,9 @@ namespace mu2e {
 
     }
     // clear vectors
-    _crvinfo.clear();
-    _crvinfomc.clear();
-    _crvinfomcplane.clear();
+    _crvhit.clear();
+    _crvhitmc.clear();
+    _crvhitmcplane.clear();
     _crvpulseinfo.clear();
     _crvwaveforminfo.clear();
     _crvpulseinfomc.clear();

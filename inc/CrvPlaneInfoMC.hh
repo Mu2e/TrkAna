@@ -9,42 +9,28 @@ namespace mu2e
 {
   struct CrvPlaneInfoMC  //information about the point where the MC trajectory crosses the xz plane of CRV-T
   {
-    Int_t               _pdgId;            //PDG ID of this MC particle
-    Int_t               _primaryPdgId;     //PDG ID of the primary particle of this MC particle
-    Float_t             _primaryE;         //energy of the primary particle of this MC particle
-    Float_t             _primaryX, _primaryY, _primaryZ;   //starting point of the primary particle of this MC particle
-    Float_t             _x, _y, _z;        //position of the MC particle when it crosses the xz plane of CRV-T
-    Float_t             _xDir, _yDir, _zDir;    //direction of the MC particle when it crosses the xz plane of CRV-T
-    Float_t             _time;             //time of the MC particle when it crosses the xz plane of CRV-T
-    Float_t             _kineticEnergy;    //time of the MC particle when it crosses the xz plane of CRV-T
-    Int_t               _dataSource;       //temporary variable; will be removed (1...data from stepPointMCs, 2...data from trajectory extrapolation)
+    Int_t    pdgId = -1;            //PDG ID of this MC particle
+    Int_t    primaryPdgId = -1;     //PDG ID of the primary particle of this MC particle
+    Float_t  primaryE = -1;         //energy of the primary particle of this MC particle
+    XYZVectorF  primary;           //starting point of the primary particle of this MC particle
+    XYZVectorF pos;               //position of the MC particle when it crosses the xz plane of CRV-T
+    XYZVectorF dir;             //direction of the MC particle when it crosses the xz plane of CRV-T
+    Float_t  time = -1;             //time of the MC particle when it crosses the xz plane of CRV-T
+    Float_t  kineticEnergy = -1;    //time of the MC particle when it crosses the xz plane of CRV-T
+    Int_t    dataSource = -1;       //temporary variable; will be removed (1...data from stepPointMCs, 2...data from trajectory extrapolation)
+    CrvPlaneInfoMC(){}
     CrvPlaneInfoMC(int pdgId, int primaryPdgId, float primaryE, CLHEP::Hep3Vector primaryPos,
-              CLHEP::Hep3Vector pos, CLHEP::Hep3Vector dir, float time, float kineticEnergy, int dataSource) :
-              _pdgId(pdgId),
-              _primaryPdgId(primaryPdgId),
-              _primaryE(primaryE),
-              _primaryX(primaryPos.x()),
-              _primaryY(primaryPos.y()),
-              _primaryZ(primaryPos.z()),
-              _x(pos.x()), _y(pos.y()), _z(pos.z()),
-              _xDir(dir.x()), _yDir(dir.y()), _zDir(dir.z()),
-              _time(time),
-              _kineticEnergy(kineticEnergy),
-              _dataSource(dataSource)
-              {}
-    CrvPlaneInfoMC() :
-              _pdgId(0),
-              _primaryPdgId(0),
-              _primaryE(0),
-              _primaryX(0),
-              _primaryY(0),
-              _primaryZ(0),
-              _x(0), _y(0), _z(0),
-              _xDir(0), _yDir(0), _zDir(0),
-              _time(0),
-              _kineticEnergy(0),
-              _dataSource(0)
-              {}
+        CLHEP::Hep3Vector ppos, CLHEP::Hep3Vector pdir, float time, float kineticEnergy, int dataSource) :
+      pdgId(pdgId),
+      primaryPdgId(primaryPdgId),
+      primaryE(primaryE),
+      primary(primaryPos),
+      pos(ppos),
+      dir(pdir),
+      time(time),
+      kineticEnergy(kineticEnergy),
+      dataSource(dataSource)
+    {}
   };
 
   typedef std::vector<CrvPlaneInfoMC>   CrvPlaneInfoMCCollection;    //this is the MC vector which will be stored in the main TTree

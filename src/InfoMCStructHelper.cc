@@ -281,41 +281,6 @@ namespace mu2e {
     }
   }
 
-  void InfoMCStructHelper::fillCrvHitInfoMC(art::Ptr<CrvCoincidenceClusterMC> const& crvCoincMC, CrvHitInfoMC& crvHitInfoMC) {
-    const art::Ptr<SimParticle> &simParticle = crvCoincMC->GetMostLikelySimParticle();
-    if(crvCoincMC->HasMCInfo() && simParticle.isAvailable()) {
-      art::Ptr<SimParticle> primaryParticle = simParticle;
-      art::Ptr<SimParticle> parentParticle = simParticle;
-      art::Ptr<SimParticle> gparentParticle = simParticle;
-      int i_gen = 0;
-      while (primaryParticle->hasParent()) {
-        primaryParticle = primaryParticle->parent();
-        if (i_gen ==0) {
-          parentParticle = primaryParticle;
-          gparentParticle = primaryParticle;
-        }
-        else if (i_gen == 1) {
-          gparentParticle = primaryParticle;
-        }
-        ++i_gen;
-      }
-      crvHitInfoMC._valid = true;
-      crvHitInfoMC._pdgId = simParticle->pdgId();
-      crvHitInfoMC._primaryPdgId = primaryParticle->pdgId();
-      crvHitInfoMC._primaryE = primaryParticle->startMomentum().e() - primaryParticle->startMomentum().m();
-      crvHitInfoMC._primary = XYZVectorF(primaryParticle->startPosition());
-      crvHitInfoMC._parentPdgId = parentParticle->pdgId();
-      crvHitInfoMC._parentE = parentParticle->startMomentum().e()  - parentParticle->startMomentum().m();
-      crvHitInfoMC._parent = XYZVectorF(parentParticle->startPosition());
-      crvHitInfoMC._gparentPdgId = gparentParticle->pdgId();
-      crvHitInfoMC._gparentE = gparentParticle->startMomentum().e() - gparentParticle->startMomentum().m();
-      crvHitInfoMC._gparent = XYZVectorF(gparentParticle->startPosition());
-      crvHitInfoMC._pos = XYZVectorF(crvCoincMC->GetEarliestHitPos());
-      crvHitInfoMC._time = crvCoincMC->GetEarliestHitTime();
-      crvHitInfoMC._depositedEnergy = crvCoincMC->GetTotalEnergyDeposited();
-    }
-  }
-
   void InfoMCStructHelper::fillExtraMCStepInfos(KalSeedMC const& kseedmc, StepPointMCCollection const& mcsteps,
       MCStepInfos& mcsic, MCStepSummaryInfo& mcssi) {
     GeomHandle<DetectorSystem> det;

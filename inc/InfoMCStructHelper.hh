@@ -64,7 +64,6 @@ namespace mu2e {
       void fillVDInfo(KalSeed const& kseed, const KalSeedMC& kseedmc, std::vector<MCStepInfo>& vdinfos);
       void fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs);
       void fillCaloClusterInfoMC(CaloClusterMC const& ccmc, CaloClusterInfoMC& ccimc);
-      void fillCrvHitInfoMC(art::Ptr<CrvCoincidenceClusterMC> const& crvCoincMC, CrvHitInfoMC& crvHitInfoMC);
       void fillExtraMCStepInfos(KalSeedMC const& kseedmc, StepPointMCCollection const& mcsteps,
       MCStepInfos& mcsic, MCStepSummaryInfo& mcssi);
   };

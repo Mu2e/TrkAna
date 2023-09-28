@@ -14,12 +14,11 @@ physics :
   producers : {
 #    @table::TrkAnaReco.producers
     PBIWeight : @local::PBIWeight
-    @table::BestCrvProducers
   }
   analyzers : { @table::TrkAnaReco.analyzers }
 }
 
-physics.TrkAnaTrigPath : [ PBIWeight, @sequence::BestCrvProducersPath ]
+physics.TrkAnaTrigPath : [ PBIWeight ]
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)

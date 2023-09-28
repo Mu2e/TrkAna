@@ -16,6 +16,7 @@
 #include "art/Framework/Principal/Handle.h"
 #include "Offline/CRVResponse/inc/CrvMCHelper.hh"
 #include "Offline/CRVReco/inc/CrvHelper.hh"
+#include "Offline/GeometryService/inc/DetectorSystem.hh"
 
 namespace mu2e
 {
@@ -29,6 +30,7 @@ namespace mu2e
       CrvSummaryReco &recoSummary, CrvSummaryMC &MCSummary,
       CrvPlaneInfoMCCollection &MCInfoPlane, double crvPlaneY) {
     GeomHandle<CosmicRayShield> CRS;
+    GeomHandle<DetectorSystem> tdet;
     if(!crvCoincidences.isValid()) return;
     size_t nClusters=crvCoincidences->size();
     for(size_t i=0; i<nClusters; i++)
@@ -36,22 +38,26 @@ namespace mu2e
       const CrvCoincidenceCluster &cluster = crvCoincidences->at(i);
 
       //fill the Reco collection
-      recoInfo.emplace_back(cluster.GetCrvSectorType(), cluster.GetAvgCounterPos(),
+      recoInfo.emplace_back(
+          cluster.GetCrvSectorType(),
+          tdet->toDetector(cluster.GetAvgCounterPos()),
           cluster.GetStartTime(), cluster.GetEndTime(),
-          cluster.GetPEs(), cluster.GetCrvRecoPulses().size(),
-          cluster.GetLayers().size(), cluster.GetSlope());
+          cluster.GetPEs(),
+          cluster.GetCrvRecoPulses().size(),
+          cluster.GetLayers().size(),
+          cluster.GetSlope());
     }
 
     if(!crvRecoPulses.isValid()) return;
     size_t nRecoPulses=crvRecoPulses->size();
-    recoSummary._totalPEs=0;
+    recoSummary.totalPEs=0;
     std::set<CRSScintillatorBarIndex> counters;
     for(size_t i=0; i<nRecoPulses; i++)
     {
-      recoSummary._totalPEs+=crvRecoPulses->at(i).GetPEs();
+      recoSummary.totalPEs+=crvRecoPulses->at(i).GetPEs();
       counters.insert(crvRecoPulses->at(i).GetScintillatorBarIndex());
     }
-    recoSummary._nHitCounters=counters.size();
+    recoSummary.nHitCounters=counters.size();
 
 
     //fill the MC collection
@@ -68,12 +74,19 @@ namespace mu2e
           const art::Ptr<SimParticle> &primaryParticle = FindPrimaryParticle(simParticle);
           const art::Ptr<SimParticle> &parentParticle  = FindParentParticle(simParticle);
           const art::Ptr<SimParticle> &gparentParticle = FindGParentParticle(simParticle);
-          MCInfo.emplace_back(true,
+          MCInfo.emplace_back(
+              true,
               simParticle->pdgId(),
-              primaryParticle->pdgId(), primaryParticle->startMomentum().e() - primaryParticle->startMomentum().m(), primaryParticle->startPosition(),
-              parentParticle->pdgId(),  parentParticle->startMomentum().e()  - parentParticle->startMomentum().m(),  parentParticle->startPosition(),
-              gparentParticle->pdgId(), gparentParticle->startMomentum().e() - gparentParticle->startMomentum().m(), gparentParticle->startPosition(),
-              clusterMC.GetEarliestHitPos(),
+              primaryParticle->pdgId(),
+              primaryParticle->startMomentum().e() - primaryParticle->startMomentum().m(),
+              tdet->toDetector(primaryParticle->startPosition()),
+              parentParticle->pdgId(),
+              parentParticle->startMomentum().e()  - parentParticle->startMomentum().m(),
+              tdet->toDetector(parentParticle->startPosition()),
+              gparentParticle->pdgId(),
+              gparentParticle->startMomentum().e() - gparentParticle->startMomentum().m(),
+              tdet->toDetector(gparentParticle->startPosition()),
+              tdet->toDetector(clusterMC.GetEarliestHitPos()),
               clusterMC.GetEarliestHitTime(),
               clusterMC.GetTotalEnergyDeposited());
         }
@@ -81,15 +94,15 @@ namespace mu2e
       }
     }
 
-    MCSummary = {};
+    MCSummary = CrvSummaryMC();
     if(crvSteps.isValid())
     {
       size_t nSteps=crvSteps->size();
-      MCSummary._totalEnergyDeposited=0;
+      MCSummary.totalEnergyDeposited=0;
       std::set<CRSScintillatorBarIndex> counters;
       double totalStep[] = {0, 0, 0, 0};
       for(size_t i=0; i<nSteps; i++){
-        MCSummary._totalEnergyDeposited+=crvSteps->at(i).visibleEDep();
+        MCSummary.totalEnergyDeposited+=crvSteps->at(i).visibleEDep();
         counters.insert(crvSteps->at(i).barIndex());
         const CRSScintillatorBarId &CRVCounterId = CRS->getBar(crvSteps->at(i).barIndex()).id();
         int layer = CRVCounterId.getLayerNumber();
@@ -100,17 +113,17 @@ namespace mu2e
         // Save info from the first step in the CRV
         if(i==0){
           CLHEP::Hep3Vector CrvPos = crvSteps->at(i).startPosition();
-          MCSummary._pos = XYZVectorF(CrvPos);
+          MCSummary.pos = XYZVectorF(tdet->toDetector(CrvPos));
           int sectorNumber = CRVCounterId.getShieldNumber();
-          MCSummary._crvSectorNumber = sectorNumber;
-          MCSummary._crvSectorType = CRS->getCRSScintillatorShield(sectorNumber).getSectorType();
-          MCSummary._pdgId = pdgId;
+          MCSummary.sectorNumber = sectorNumber;
+          MCSummary.sectorType = CRS->getCRSScintillatorShield(sectorNumber).getSectorType();
+          MCSummary.pdgId = pdgId;
         }
       }
 
-      MCSummary._nHitCounters=counters.size();
-      MCSummary._minPathLayer=*std::min_element(totalStep,totalStep+4);
-      MCSummary._maxPathLayer=*std::max_element(totalStep,totalStep+4);
+      MCSummary.nHitCounters=counters.size();
+      MCSummary.minPathLayer=*std::min_element(totalStep,totalStep+4);
+      MCSummary.maxPathLayer=*std::max_element(totalStep,totalStep+4);
     }
 
     //locate points where the cosmic MC trajectories cross the xz plane of CRV-T
@@ -140,8 +153,8 @@ namespace mu2e
               MCInfoPlane.emplace_back(trajectorySimParticle->pdgId(),
                   trajectoryPrimaryParticle->pdgId(),
                   trajectoryPrimaryParticle->startMomentum().e(),
-                  trajectoryPrimaryParticle->startPosition(),
-                  planePos,
+                  tdet->toDetector(trajectoryPrimaryParticle->startPosition()),
+                  tdet->toDetector(planePos),
                   planeDir,
                   planeTime,
                   planeKineticEnergy,
@@ -155,13 +168,12 @@ namespace mu2e
 
   }//FillCrvInfoStructure
 
-
   void CrvInfoHelper::FillCrvPulseInfoCollections (
       art::Handle<CrvRecoPulseCollection> const& crvRecoPulses,
       art::Handle<CrvDigiMCCollection> const& crvDigiMCs,
       art::Handle<CrvDigiCollection> const& crvDigis,
       CrvPulseInfoRecoCollection &recoInfo, CrvHitInfoMCCollection &MCInfo, CrvWaveformInfoCollection &waveformInfo){
-
+    GeomHandle<DetectorSystem> tdet;
 
     if(!crvRecoPulses.isValid()) return;
 
@@ -219,10 +231,18 @@ namespace mu2e
         const art::Ptr<SimParticle> &parentParticle = FindParentParticle(mostLikelySimParticle);
         const art::Ptr<SimParticle> &gparentParticle = FindGParentParticle(mostLikelySimParticle);
         MCInfo.emplace_back(true, mostLikelySimParticle->pdgId(),
-            primaryParticle->pdgId(), primaryParticle->startMomentum().e() - primaryParticle->startMomentum().m(), primaryParticle->startPosition(),
-            parentParticle->pdgId(),  parentParticle->startMomentum().e()  - parentParticle->startMomentum().m(),  parentParticle->startPosition(),
-            gparentParticle->pdgId(), gparentParticle->startMomentum().e() - gparentParticle->startMomentum().m(), gparentParticle->startPosition(),
-            earliestHitPos, earliestHitTime, visibleEnergyDeposited);
+            primaryParticle->pdgId(),
+            primaryParticle->startMomentum().e() - primaryParticle->startMomentum().m(),
+            tdet->toDetector(primaryParticle->startPosition()),
+            parentParticle->pdgId(),
+            parentParticle->startMomentum().e()  - parentParticle->startMomentum().m(),
+            tdet->toDetector(parentParticle->startPosition()),
+            gparentParticle->pdgId(),
+            gparentParticle->startMomentum().e() - gparentParticle->startMomentum().m(),
+            tdet->toDetector(gparentParticle->startPosition()),
+            tdet->toDetector(earliestHitPos),
+            earliestHitTime,
+            visibleEnergyDeposited);
       }
       else
         MCInfo.emplace_back();
@@ -232,9 +252,9 @@ namespace mu2e
     for(size_t j=0; j<crvDigis->size(); j++)
     {
       mu2e::CrvDigi const& digi(crvDigis->at(j));
-      int _SiPMId = sipm_map.find(digi.GetScintillatorBarIndex().asInt()*4 + digi.GetSiPMNumber())->second;
+      int SiPMId = sipm_map.find(digi.GetScintillatorBarIndex().asInt()*4 + digi.GetSiPMNumber())->second;
       for(size_t k=0; k<mu2e::CrvDigi::NSamples; k++)
-        waveformInfo.emplace_back(digi.GetADCs()[k], (digi.GetStartTDC()+k)*CRVDigitizationPeriod, _SiPMId);
+        waveformInfo.emplace_back(digi.GetADCs()[k], (digi.GetStartTDC()+k)*CRVDigitizationPeriod, SiPMId);
     }
   } //FillCrvPulseInfoCollections
 

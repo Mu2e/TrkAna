@@ -6,22 +6,17 @@
 
 namespace mu2e
 {
-
   struct CrvWaveformInfo   //information about CRV waveforms
   {
-    Float_t             _adc;
-    Float_t             _time;
-    Int_t               _SiPMId;
+    Float_t adc = -1;
+    Float_t time = -1;
+    Int_t   SiPMId = -1;
+    CrvWaveformInfo(){}
     CrvWaveformInfo(float adc, float time, int SiPMId) :
-                _adc(adc),
-                _time(time),
-                _SiPMId(SiPMId)
-                {}
-    CrvWaveformInfo() :
-                _adc(0),
-                _time(0),
-                _SiPMId(0)
-                {}
+      adc(adc),
+      time(time),
+      SiPMId(SiPMId)
+    {}
   };
 
   typedef std::vector<CrvWaveformInfo> CrvWaveformInfoCollection;  //this is the reco vector which will be stored in the main TTree

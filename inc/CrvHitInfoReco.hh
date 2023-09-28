@@ -11,34 +11,26 @@ namespace mu2e
 
   struct CrvHitInfoReco   //information about a cluster of CRV coincidence triplets
   {
-    Int_t               _crvSectorType;   //CRV sector type
-    XYZVectorF          _pos; //average position of counters
-    Float_t             _timeWindowStart; //first hit time
-    Float_t             _timeWindowEnd;   //last hit time
-    Int_t               _PEs;                   //total number of PEs for this cluster
-    Int_t               _nCoincidenceHits;      //number of coincidence hits in this cluster
-    Int_t               _nCoincidenceLayers;      //number of coincidence layers in this cluster
-    Float_t             _angle;   //coincidence direction
+    Int_t               sectorType =-1;   //CRV sector type
+    XYZVectorF          pos; //average position of counters
+    Float_t             timeWindowStart = -1; //first hit time
+    Float_t             timeWindowEnd = -1;   //last hit time
+    Int_t               PEs = -1;                   //total number of PEs for this cluster
+    Int_t               nCoincidenceHits = -1;      //number of coincidence hits in this cluster
+    Int_t               nCoincidenceLayers = -1;      //number of coincidence layers in this cluster
+    Float_t             angle = -999;   //coincidence direction
 
-    CrvHitInfoReco(int crvSectorType, CLHEP::Hep3Vector pos, float timeWindowStart, float timeWindowEnd, int PEs, int nCoincidenceHits, int nCoincidenceLayers, float angle) :
-                _crvSectorType(crvSectorType),
-                _pos(pos),
-                _timeWindowStart(timeWindowStart),
-                _timeWindowEnd(timeWindowEnd),
-                _PEs(PEs),
-                _nCoincidenceHits(nCoincidenceHits),
-                _nCoincidenceLayers(nCoincidenceLayers),
-                _angle(angle)
-                {}
-    CrvHitInfoReco() :
-                _crvSectorType(-1),
-                _timeWindowStart(0),
-                _timeWindowEnd(0),
-                _PEs(0),
-                _nCoincidenceHits(0),
-                _nCoincidenceLayers(0),
-                _angle(-999)
-                {}
+    CrvHitInfoReco(){}
+    CrvHitInfoReco(int sectorType, CLHEP::Hep3Vector hpos, float timeWindowStart, float timeWindowEnd, int PEs, int nCoincidenceHits, int nCoincidenceLayers, float angle) :
+      sectorType(sectorType),
+      pos(hpos),
+      timeWindowStart(timeWindowStart),
+      timeWindowEnd(timeWindowEnd),
+      PEs(PEs),
+      nCoincidenceHits(nCoincidenceHits),
+      nCoincidenceLayers(nCoincidenceLayers),
+      angle(angle)
+    {}
   };
 
   typedef std::vector<CrvHitInfoReco> CrvHitInfoRecoCollection;  //this is the reco vector which will be stored in the main TTree

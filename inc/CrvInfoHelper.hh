@@ -1,5 +1,6 @@
-#include <string>
-
+//
+//  Replacement for CRVAnalysis
+//
 #include "TrkAna/inc/CrvHitInfoReco.hh"
 #include "TrkAna/inc/CrvHitInfoMC.hh"
 #include "TrkAna/inc/CrvWaveformInfo.hh"
@@ -25,7 +26,7 @@ namespace mu2e
 
       CrvInfoHelper() {}
 
-      static void FillCrvHitInfoCollections(
+      void FillCrvHitInfoCollections(
           art::Handle<CrvCoincidenceClusterCollection> const& crvCoincidences,
           art::Handle<CrvCoincidenceClusterMCCollection> const& crvCoincidencesMC,
           art::Handle<CrvRecoPulseCollection> const& crvRecoPulses,
@@ -35,7 +36,7 @@ namespace mu2e
           CrvSummaryReco &recoSummary, CrvSummaryMC &MCSummary,
           CrvPlaneInfoMCCollection &MCInfoPlane, double crvPlaneY);
 
-      static void FillCrvPulseInfoCollections(
+      void FillCrvPulseInfoCollections(
           art::Handle<CrvRecoPulseCollection> const& crvRecoPulses,
           art::Handle<CrvDigiMCCollection> const& crvDigiMCs,
           art::Handle<CrvDigiCollection> const& crvDigis,

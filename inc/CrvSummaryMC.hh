@@ -7,35 +7,26 @@ namespace mu2e
 {
   struct CrvSummaryMC
   {
-    Double_t            _totalEnergyDeposited;
-    Double_t            _minPathLayer;
-    Double_t            _maxPathLayer;
-    Int_t               _nHitCounters;
-    XYZVectorF          _pos;   //position of the first MC particle in CRV
-    Int_t               _crvSectorNumber; //CRV sector number of the first MC particle in CR
-    Int_t               _crvSectorType;   //CRV sector type of the first MC particle in CRV
-    Int_t               _pdgId;           //PDG ID of the first MC particle in CRV
+    Double_t   totalEnergyDeposited = -1;
+    Double_t   minPathLayer = -1;
+    Double_t   maxPathLayer = -1;
+    Int_t      nHitCounters = -1;
+    XYZVectorF pos;   //position of the first MC particle in CRV
+    Int_t      sectorNumber = -1; //CRV sector number of the first MC particle in CR
+    Int_t      sectorType = -1;   //CRV sector type of the first MC particle in CRV
+    Int_t      pdgId = -1;           //PDG ID of the first MC particle in CRV
 
-    CrvSummaryMC(double totalEnergyDeposited, double minPathLayer,  double maxPathLayer, int nHitCounters, CLHEP::Hep3Vector pos, int crvSectorNumber, int crvSectorType, int pdgId) :
-      _totalEnergyDeposited(totalEnergyDeposited),
-      _minPathLayer(minPathLayer),
-      _maxPathLayer(maxPathLayer),
-      _nHitCounters(nHitCounters),
-      _pos(pos),
-      _crvSectorNumber(crvSectorNumber),
-      _crvSectorType(crvSectorType),
-      _pdgId(pdgId)
-    {}
-    CrvSummaryMC() :
-      _totalEnergyDeposited(0),
-      _minPathLayer(0),
-      _maxPathLayer(0),
-      _nHitCounters(0),
-      _crvSectorNumber(-1),
-      _crvSectorType(-1),
-      _pdgId(-99999)
+    CrvSummaryMC(){}
+    CrvSummaryMC(double totalEnergyDeposited, double minPathLayer,  double maxPathLayer, int nHitCounters, CLHEP::Hep3Vector ppos, int sectorNumber, int sectorType, int pdgId) :
+      totalEnergyDeposited(totalEnergyDeposited),
+      minPathLayer(minPathLayer),
+      maxPathLayer(maxPathLayer),
+      nHitCounters(nHitCounters),
+      pos(ppos),
+      sectorNumber(sectorNumber),
+      sectorType(sectorType),
+      pdgId(pdgId)
     {}
   };
-
 }
 #endif
