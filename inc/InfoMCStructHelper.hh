@@ -16,11 +16,11 @@
 #include "TrkAna/inc/TrkStrawHitInfoMC.hh"
 #include "TrkAna/inc/CaloClusterInfoMC.hh"
 #include "TrkAna/inc/MCStepInfo.hh"
+#include "TrkAna/inc/CrvHitInfoMC.hh"
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
 #include "Offline/MCDataProducts/inc/KalSeedMC.hh"
 #include "BTrk/BbrGeom/HepPoint.h"
 #include "Offline/MCDataProducts/inc/PrimaryParticle.hh"
-#include "Offline/CRVAnalysis/inc/CrvHitInfoMC.hh"
 
 #include <vector>
 #include <functional>
@@ -64,7 +64,6 @@ namespace mu2e {
       void fillVDInfo(KalSeed const& kseed, const KalSeedMC& kseedmc, std::vector<MCStepInfo>& vdinfos);
       void fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs);
       void fillCaloClusterInfoMC(CaloClusterMC const& ccmc, CaloClusterInfoMC& ccimc);
-      void fillCrvHitInfoMC(art::Ptr<CrvCoincidenceClusterMC> const& crvCoincMC, CrvHitInfoMC& crvHitInfoMC);
       void fillExtraMCStepInfos(KalSeedMC const& kseedmc, StepPointMCCollection const& mcsteps,
       MCStepInfos& mcsic, MCStepSummaryInfo& mcssi);
   };

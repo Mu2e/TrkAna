@@ -23,8 +23,8 @@
 using namespace std;
 class TrkAnaUtils {
   public:
-    TrkAnaUtils(TTree* tatree);
     TrkAnaUtils(TFile* myfile,const char* treename="TrkAnaNeg");
+    TrkAnaUtils(TTree* mytree);
     TrkAnaUtils(const char* filename,const char* treename);
     TrkAnaUtils(const char* treename="TrkAnaNeg");
     TFile const& File() const { return *myfile_; }
@@ -41,6 +41,7 @@ class TrkAnaUtils {
     void Draw(const char* lname,const char* cut="", const char* gopt="") const;
     void Project(const char* pname, const char* lname, const char* cut="") const;
     void Scan(const char* lname,const char* cut="") const;
+    void createEventList(const char* filename,TCut const& cut) const;
   private:
     void ListBranch(TBranch* branch, int idepth, int maxdepth) const;
     mutable TFile* myfile_;
@@ -211,3 +212,16 @@ void TrkAnaUtils::Scan(const char* lname,const char* cut="") const {
     std::cout << "No current tree; call UseTree to set current tree" << std::endl;
   }
 }
+
+void TrkAnaUtils::createEventList(const char* filename,TCut const& cut) const {
+  // enable the output
+  TTreePlayer* player = (TTreePlayer*)(mytree_->GetPlayer());
+  player->SetScanRedirect(true);
+  player->SetScanFileName(filename);
+  mytree_->SetScanField(0);
+  // create the output
+  mytree_->Scan("evtinfo.runid:evtinfo.subrunid:evtinfo.eventid","","col=#i:#i:#i");
+  player->SetScanRedirect(false);
+  mytree_->SetScanField(50);
+}
+

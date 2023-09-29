@@ -69,8 +69,6 @@ namespace mu2e
     int nnullambig =0;  // number of hits without any ambiguity assigned
     int nmat =0, nmatactive =0; // number materials (straw) assigned and used (active) to this fit
     int nseg =0;     // number of trajectory segments
-    float t0 =0;      // time this particle was estimated to cross z=0
-    float t0err =-1;   // error on t0
     float chisq =-1;   // Kalman fit chisquared
     float fitcon =-1;  // Kalman fit chisqured consistency
     float radlen;  // total radiation length of (active) material crossed by this particle inside the tracker

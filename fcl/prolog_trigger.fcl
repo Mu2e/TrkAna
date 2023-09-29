@@ -10,14 +10,13 @@ TrkAnaTrigger : {
         @table::DeM
           options : {
             @table::AllOpt
-            fillBestCrv : false
             fillHits : true
           }
       }
     supplements : []
     ExtraMCStepCollectionTags : []
     diagLevel : 2
-    FillCRV : false
+    FillCRVHits : false
     FillMCInfo : true
     FillCaloMC : false
     RecoCountTag : ""
@@ -28,8 +27,8 @@ TrkAnaTrigger : {
     FillTriggerInfo : false
     supplements : []
     PrimaryParticleTag: "compressDigiMCs"
-    SimParticleLabel: "compressDigiMCs"
-    MCTrajectoryLabel: "compressDigiMCs"
+    SimParticlesTag: "compressDigiMCs"
+    MCTrajectoriesTag: "compressDigiMCs"
     ExtraMCStepCollectionTags: [ ]
     InfoMCStructHelper : {
       SimParticleCollectionTag : "compressDigiMCs"

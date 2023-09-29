@@ -61,8 +61,6 @@ namespace mu2e {
       trkinfo.fitalg = 0;
 
     trkinfo.pdg = kseed.particle();
-    trkinfo.t0 = kseed.t0().t0();
-    trkinfo.t0err = kseed.t0().t0Err();
 
     fillTrkInfoHits(kseed, trkinfo);
 
@@ -420,14 +418,4 @@ namespace mu2e {
     }
   }
 
-  void InfoStructHelper::fillCrvHitInfo(art::Ptr<CrvCoincidenceCluster> const& crvCoinc, CrvHitInfoReco& crvHitInfo) {
-    crvHitInfo._crvSectorType = crvCoinc->GetCrvSectorType();
-    crvHitInfo._x = crvCoinc->GetAvgHitPos().x();
-    crvHitInfo._y = crvCoinc->GetAvgHitPos().y();
-    crvHitInfo._z = crvCoinc->GetAvgHitPos().z();
-    crvHitInfo._timeWindowStart = crvCoinc->GetStartTime();
-    crvHitInfo._timeWindowEnd = crvCoinc->GetEndTime();
-    crvHitInfo._PEs = crvCoinc->GetPEs();
-    crvHitInfo._nCoincidenceHits = crvCoinc->GetCrvRecoPulses().size();
-  }
 }

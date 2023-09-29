@@ -33,8 +33,16 @@
   <class name="mu2e::TrkQualInfo" />
   <class name="mu2e::EventWeightInfo" />
   <class name="mu2e::RecoQualInfo" />
-  <class name="art::Assns<mu2e::CrvCoincidenceCluster,mu2e::KalSeed,void>" />
-  <class name="art::Assns<mu2e::KalSeed,mu2e::CrvCoincidenceCluster,void>" />
-  <class name="art::Wrapper<art::Assns<mu2e::CrvCoincidenceCluster,mu2e::KalSeed,void> >" />
-  <class name="art::Wrapper<art::Assns<mu2e::KalSeed,mu2e::CrvCoincidenceCluster,void> >" />
+  <class name="mu2e::CrvHitInfoReco" />
+  <class name="std::vector<mu2e::CrvHitInfoReco>" />
+  <class name="mu2e::CrvHitInfoMC" />
+  <class name="std::vector<mu2e::CrvHitInfoMC>" />
+  <class name="mu2e::CrvPulseInfoReco" />
+  <class name="std::vector<mu2e::CrvPulseInfoReco>" />
+  <class name="mu2e::CrvWaveformInfo" />
+  <class name="std::vector<mu2e::CrvWaveformInfo>" />
+  <class name="mu2e::CrvPlaneInfoMC" />
+  <class name="std::vector<mu2e::CrvPlaneInfoMC>" />
+  <class name="mu2e::CrvSummaryReco" />
+  <class name="mu2e::CrvSummaryMC" />
 </lcgdict>

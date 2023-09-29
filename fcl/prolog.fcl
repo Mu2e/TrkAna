@@ -67,43 +67,6 @@ TrkPIDProducers : {
 }
 TrkPIDProducersPath : [ TrkPIDDeM, TrkPIDDeP ]
 
-BestCrv : {
-  module_type : BestCrvHitDeltaT
-  crvCoincidenceTag : "SelectRecoMC:CrvCoincidenceClusterFinder"
-}
-
-BestCrvDeM : @local::BestCrv
-BestCrvDeM.kalSeedTag : "KKDeM"
-BestCrvUeM : @local::BestCrv
-BestCrvUeM.kalSeedTag : "KKUeM"
-BestCrvDmuM : @local::BestCrv
-BestCrvDmuM.kalSeedTag : "KKDmuM"
-BestCrvUmuM : @local::BestCrv
-BestCrvUmuM.kalSeedTag : "KKUmuM"
-BestCrvDeP : @local::BestCrv
-BestCrvDeP.kalSeedTag : "KKDeP"
-BestCrvUeP : @local::BestCrv
-BestCrvUeP.kalSeedTag : "KKUeP"
-BestCrvDmuP : @local::BestCrv
-BestCrvDmuP.kalSeedTag : "KKDmuP"
-BestCrvUmuP : @local::BestCrv
-BestCrvUmuP.kalSeedTag : "KKUmuP"
-BestCrvLine : @local::BestCrv
-BestCrvLine.kalSeedTag : "KKLine"
-
-BestCrvProducers : {
-  BestCrvDeM : @local::BestCrvDeM
-  BestCrvUeM : @local::BestCrvUeM
-  BestCrvDeP : @local::BestCrvDeP
-  BestCrvUeP : @local::BestCrvUeP
-  BestCrvDmuM : @local::BestCrvDmuM
-  BestCrvDmuP : @local::BestCrvDmuP
-  BestCrvUmuM : @local::BestCrvUmuM
-  BestCrvUmuP : @local::BestCrvUmuP
-  BestCrvLine : @local::BestCrvLine
-}
-BestCrvProducersPath : [ BestCrvDeM, BestCrvUeM, BestCrvDmuM, BestCrvDeP, BestCrvUeP, BestCrvDmuP, BestCrvUmuM, BestCrvUmuP ]
-
 # DIO weighting for flat spectrum electrons
 DIOWeight: {
   module_type: DecayInOrbitWeight
@@ -141,11 +104,6 @@ AllOpt : { fillMC : true
   fillTrkPID : true
   fillHits : true
   genealogyDepth : -1
-  fillBestCrv : true
-
-  bestCrvModules : [ "BestCrv" ]
-  bestCrvInstances : [ "first" ]
-  bestCrvBranches : [ "bestcrv" ]
 }
 
 DeM : { input : "KK"
@@ -192,14 +150,14 @@ TrkAnaTreeMaker : {
   PBITag : "PBISim"
   PBTTag : "EWMProducer"
   PBTMCTag : "EWMProducer"
-  CrvCoincidenceModuleLabel : "SelectRecoMC:CrvCoincidenceClusterFinder"
-  CrvCoincidenceMCModuleLabel : "compressRecoMCs:CrvCoincidenceClusterMatchMC"
-  CrvRecoPulseLabel : "SelectRecoMC"
-  CrvStepLabel : "compressRecoMCs"
-  SimParticleLabel : "compressRecoMCs"
-  MCTrajectoryLabel : "compressRecoMCs"
-  CrvWaveformsModuleLabel : "compressRecoMCs"
-  CrvDigiModuleLabel : "SelectRecoMC"
+  CrvCoincidencesTag : "SelectRecoMC:CrvCoincidenceClusterFinder"
+  CrvCoincidenceMCsTag : "compressRecoMCs:CrvCoincidenceClusterMatchMC"
+  CrvRecoPulsesTag : "SelectRecoMC"
+  CrvStepsTag : "compressRecoMCs"
+  SimParticlesTag : "compressRecoMCs"
+  MCTrajectoriesTag : "compressRecoMCs"
+  CrvDigiMCsTag : "compressRecoMCs"
+  CrvDigisTag : "SelectRecoMC"
   CrvCoincidenceClusterMCAssnsTag : "CrvCoincidenceClusterMCAssns"
   CrvPlaneY : 2653
   FillMCInfo : true
@@ -209,8 +167,7 @@ TrkAnaTreeMaker : {
   FillTriggerInfo : true
   TriggerProcessName : "Mix"
   ProcessEmptyEvents : false
-  FillCRV : true
-  FillCRVHits : false
+  FillCRVHits : true
   FillCRVPulses : false
   PrimaryParticleTag : "compressRecoMCs"
   KalSeedMCAssns : "SelectRecoMC"
@@ -228,7 +185,6 @@ TrkAnaReco : {
     PBIWeight : @local::PBIWeight
     @table::TrkQualProducers
     @table::TrkPIDProducers
-    @table::BestCrvProducers
   }
 
   analyzers : {
@@ -251,7 +207,7 @@ TrkAnaReco : {
     genCountLogger : @local::genCountLogger
   }
 
-  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath, @sequence::BestCrvProducersPath ]
+  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath ]
   EndSequenceNoMC : [ TrkAnaNeg, TrkAnaPos ]
   EndSequence : [ TrkAnaNeg, TrkAnaPos, genCountLogger ]
 
