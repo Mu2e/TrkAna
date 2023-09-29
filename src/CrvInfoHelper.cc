@@ -41,7 +41,7 @@ namespace mu2e
       recoInfo.emplace_back(
           cluster.GetCrvSectorType(),
           tdet->toDetector(cluster.GetAvgHitPos()),
-          cluster.GetStartTime(), cluster.GetEndTime(),
+          cluster.GetStartTime(), cluster.GetEndTime(), cluster.GetAvgHitTime(),
           cluster.GetPEs(),
           cluster.GetCrvRecoPulses().size(),
           cluster.GetLayers().size(),
@@ -86,8 +86,8 @@ namespace mu2e
               gparentParticle->pdgId(),
               gparentParticle->startMomentum().e() - gparentParticle->startMomentum().m(),
               tdet->toDetector(gparentParticle->startPosition()),
-              tdet->toDetector(clusterMC.GetEarliestHitPos()),
-              clusterMC.GetEarliestHitTime(),
+              tdet->toDetector(clusterMC.GetAvgHitPos()),
+              clusterMC.GetAvgHitTime(),
               clusterMC.GetTotalEnergyDeposited());
         }
         else MCInfo.emplace_back();
@@ -242,8 +242,8 @@ namespace mu2e
             gparentParticle->pdgId(),
             gparentParticle->startMomentum().e() - gparentParticle->startMomentum().m(),
             tdet->toDetector(gparentParticle->startPosition()),
-            tdet->toDetector(earliestHitPos),
-            earliestHitTime,
+            tdet->toDetector(avgHitPos),
+            avgHitTime,
             visibleEnergyDeposited);
       }
       else

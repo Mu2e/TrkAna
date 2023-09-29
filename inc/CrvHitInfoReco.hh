@@ -13,23 +13,25 @@ namespace mu2e
   {
     Int_t               sectorType =-1;   //CRV sector type
     XYZVectorF          pos; //average position of counters
-    Float_t             timeWindowStart = -1; //first hit time
-    Float_t             timeWindowEnd = -1;   //last hit time
+    Float_t             timeStart = -1; //first hit time
+    Float_t             timeEnd = -1;   //last hit time
+    Float_t             time = -1; // average hit time
     Int_t               PEs = -1;                   //total number of PEs for this cluster
-    Int_t               nCoincidenceHits = -1;      //number of coincidence hits in this cluster
-    Int_t               nCoincidenceLayers = -1;      //number of coincidence layers in this cluster
+    Int_t               nHits = -1;      //number of coincidence hits in this cluster
+    Int_t               nLayers = -1;      //number of coincidence layers in this cluster
     Float_t             angle = -999;   //coincidence direction
 
     CrvHitInfoReco(){}
-    CrvHitInfoReco(int sectorType, CLHEP::Hep3Vector hpos, float timeWindowStart, float timeWindowEnd, int PEs, int nCoincidenceHits, int nCoincidenceLayers, float angle) :
+    CrvHitInfoReco(int sectorType, CLHEP::Hep3Vector hpos, float timeWindowStart, float timeWindowEnd, float timeAvg, int PEs, int nCoincidenceHits, int nCoincidenceLayers, float coincidenceAngle) :
       sectorType(sectorType),
       pos(hpos),
-      timeWindowStart(timeWindowStart),
-      timeWindowEnd(timeWindowEnd),
+      timeStart(timeWindowStart),
+      timeEnd(timeWindowEnd),
+      time(timeAvg),
       PEs(PEs),
-      nCoincidenceHits(nCoincidenceHits),
-      nCoincidenceLayers(nCoincidenceLayers),
-      angle(angle)
+      nHits(nCoincidenceHits),
+      nLayers(nCoincidenceLayers),
+      angle(coincidenceAngle)
     {}
   };
 
