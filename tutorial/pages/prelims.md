@@ -31,9 +31,11 @@ In this tutorial, we will be using the TrkAna dataset ```nts.mu2e.CeEndpointMix1
     * ```1BB```: the number of background hits was determined assuming one booster batch running
     * ```Signal```: only contains tracks that pass the signal trigger
 * ```MDC2020z1_best_v1_1_std_v04_01_00```:
-    * ```MDC2020z```: the SimJob [Musing](https://mu2ewiki.fnal.gov/wiki/Muse#Musings_.28published_muse_builds.29) that was used
+    * ```MDC2020z1```: the SimJob [Musing](https://mu2ewiki.fnal.gov/wiki/Muse#Musings_.28published_muse_builds.29) that was used
     * ```best```: using the "best" alignment uncertainties we can expect
     * ```v1_1```: the conditions database version used
+    * ```std```: the "standard" TrkAna tree
+    * ```v04_01_00```: the version of TrkAna used
 * ```tka```: the file type. Note that this is just a ROOT file
 
 More details on the MDC2020 campaign and generated datasets can be found [here](https://mu2ewiki.fnal.gov/wiki/MDC2020)
