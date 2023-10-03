@@ -9,6 +9,9 @@ In this exercise, you will:
 ## Contents
 
 * [Common Instructions](#Common-Instructions)
+    * [Logging In](#Logging-In)
+    * [Creating Your Work Area](#Creating-Your-Work-Area)
+    * [Getting the List of TrkAna Files](#Getting-the-List-of-TrkAna-Files)
 * [ROOT](#ROOT)
     * [ROOT Command Line](#ROOT-Command-Line)
     * [ROOT Macro](#ROOT-Macro)
@@ -42,7 +45,33 @@ muse setup TrkAna v04_01_00
 
 ### Getting the List of TrkAna Files
 
-[TODO]
+We will use a TrkAna dataset that has already been created by Production: ```nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka``` (see the [preliminary information](prelims.md#Simulation-Samples) for a breakdown of that the dataset name means.
+
+We can get a list of official TrkAna datasets with the following command:
+
+```
+setup mu2efiletools
+mu2eDatasetList --tier=nts --owner=mu2e --format=tka
+```
+
+You should see the dataset ```nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka``` in that list.
+
+Now we can get the list of files in this dataset like this:
+
+```
+setup dhtools
+samListLocations --defname=nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka
+```
+
+and you will see a list of files printed to the terminal output. You will notice that these all have ```tape``` in the directory. These files are on tape and nominally need to be copied to disk to be used in our jobs. Usually if these files have been used recently, then they will be on disk and you don't need to [prestage](https://mu2ewiki.fnal.gov/wiki/Prestage) them (which can take a while).
+
+For these exercises, we will just use whichever files are already on disk and we won't worry about analyzing the whole dataset. To get the list of files that are already on disk, we can use the ```-d``` option of ```samListLocations``` (note that the ```sam``` part of this command refers to [SAM](https://mu2ewiki.fnal.gov/wiki/SAM). We will also write a filelist for use later:
+
+```
+mkdir filelists
+setup dhtools
+samListLocations -d --defname=nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka > filelists/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.list
+```
 
 ## ROOT
 
