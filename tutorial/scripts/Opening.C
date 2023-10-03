@@ -1,6 +1,5 @@
-void Opening() {
+void Opening(TString filename) {
 
-  TString filename = "nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka";
   TString treename = "TrkAnaNeg/trkana";
 
   // Open the TrkAna ROOT file for reading

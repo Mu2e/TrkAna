@@ -1,6 +1,7 @@
+import sys # for simple input arguments
 import uproot # for reading in ROOT files
 
-filename="nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka"
+filename=sys.argv[1]
 treename="TrkAnaNeg/trkana"
 
 # Open the ROOT file and be read yto read in the trkana tree
