@@ -37,7 +37,7 @@ Once logged in, you should create a working area, move to it, and then setup a T
 mkdir your/new/working/area/
 cd your/new/working/area/
 setup mu2e
-muse setup TrkAna v04_00_00
+muse setup TrkAna v04_01_00
 ```
 
 ### Getting the List of TrkAna Files
