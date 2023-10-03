@@ -22,7 +22,7 @@ The columns of the ROOT TTree include fit information about the candidate track,
 
 ## Simulation Samples
 
-In this tutorial, we will be using the TrkAna dataset ```nts.mu2e.CeEndpointMix1BBSignal.MDC2020z_best_v1_1.tka```. The naming of the dataset is given by the [file naming convention](https://mu2ewiki.fnal.gov/wiki/FileNames). To break it down:
+In this tutorial, we will be using the TrkAna dataset ```nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka```. The naming of the dataset is given by the [file naming convention](https://mu2ewiki.fnal.gov/wiki/FileNames). To break it down:
 
 * ```nts```: ntuple containing simulation data
 * ```CeEndpointMix1BBSignal```: description of what the dataset contains
@@ -30,7 +30,7 @@ In this tutorial, we will be using the TrkAna dataset ```nts.mu2e.CeEndpointMix1
     * ```Mix```: background hits from pile-up was mixed in with the conversion electron hits
     * ```1BB```: the number of background hits was determined assuming one booster batch running
     * ```Signal```: only contains tracks that pass the signal trigger
-* ```MDC2020z_best_v1_1```:
+* ```MDC2020z1_best_v1_1_std_v04_01_00```:
     * ```MDC2020z```: the SimJob [Musing](https://mu2ewiki.fnal.gov/wiki/Muse#Musings_.28published_muse_builds.29) that was used
     * ```best```: using the "best" alignment uncertainties we can expect
     * ```v1_1```: the conditions database version used

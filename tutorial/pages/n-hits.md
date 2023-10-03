@@ -25,7 +25,7 @@ Note that the same type of branch exists also for the supplemental tracks: upstr
 In ROOT, we start by opening the ROOT file and getting the TrkAna tree:
 
 ```
-TFile* file = new TFile("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka", "READ");
+TFile* file = new TFile("nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka", "READ");
 TTree* trkana = (TTree*) file->Get("TrkAnaNeg/trkana");
 ```
 
@@ -95,7 +95,7 @@ import matplotlib.pyplot as plt
 We then open the TrkAna file and get ready to read the TrkAna tree:
 
 ```
-trkana = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka:TrkAnaNeg/trkana")
+trkana = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka:TrkAnaNeg/trkana")
 ```
 
 Next we filter the branches so that we just read in the ```dem``` branch using a regular expression:

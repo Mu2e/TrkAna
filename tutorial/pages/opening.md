@@ -36,15 +36,15 @@ This exercise is run using the ROOT command line.
 In our terminal, we open the TrkAna ROOT file like so:
 
 ```
-root -l nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka
+root -l nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka
 ```
 
 Doing a ```.ls``` will print the top-level directories:
 
 ```
 root [1] .ls
-TFile**         nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka
- TFile*         nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka
+TFile**         nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka
+ TFile*         nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka
   KEY: TDirectoryFile   TrkAnaNeg;1     TrkAnaNeg (TrkAnaTreeMaker) folder
   KEY: TDirectoryFile   TrkAnaPos;1     TrkAnaPos (TrkAnaTreeMaker) folder
   KEY: TDirectoryFile   genCountLogger;1        genCountLogger (GenEventCountReader) folder
@@ -108,7 +108,7 @@ Run the cell by pressing ctrl+enter.
 In the next cell we can open up the file and look at its contents like this:
 
 ```
-file = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka")
+file = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka")
 file.keys()
 ```
 
@@ -132,7 +132,7 @@ which will produce a lot of output since there are a lot of branches. These are 
 Note that getting the TrkAna tree can be done in a single step like this:
 
 ```
-trkana = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka:TrkAnaNeg/trkana")
+trkana = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka:TrkAnaNeg/trkana")
 ```
 
 With ```trkana``` defined we can now get its contents using the ```arrays()``` function. This function reads the data into an [awkward array](https://awkward-array.org/doc/main/). A brief note on this: in HEP we often have different numbers of physics objects in each event, and so they will now fit efficiently into fixed-length arrays. For example, if we want to store the straw hits in the tracker, there will be a different number in each event. Therefore we need to use "awkward" or "ragged" arrays, which requires the use of the awkward array package. This is the default library used by uproot to read branches.
@@ -174,7 +174,7 @@ A python script called ```Opening.py``` with the following content will perform 
 ```
 import uproot # for reading in ROOT files
 
-filename="nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka"
+filename="nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka"
 treename="TrkAnaNeg/trkana"
 
 # Open the ROOT file and be read yto read in the trkana tree

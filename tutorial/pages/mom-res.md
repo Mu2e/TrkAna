@@ -27,7 +27,7 @@ One important point: the ```demmcvd``` and the ```demfit``` arrays are not in lo
 In ROOT, let's open the file, get the tree, and create a TCanvas as before:
 
 ```
-TFile* file = new TFile("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka", "READ");
+TFile* file = new TFile("nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka", "READ");
 TTree* trkana = (TTree*) file->Get("TrkAnaNeg/trkana");
 
 TCanvas* c1 = new TCanvas("c1", "c1");
@@ -65,7 +65,7 @@ import uproot
 import matplotlib.pyplot as plt
 import awkward as ak
 
-trkana = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka:TrkAnaNeg/trkana")
+trkana = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka:TrkAnaNeg/trkana")
 
 fig, ax = plt.subplots(1,1)
 
