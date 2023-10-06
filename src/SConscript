@@ -23,6 +23,7 @@ mainlib = helper.make_mainlib ( [
     'art_Framework_Services_Registry',
     'art_Utilities',
     'mu2e_GlobalConstantsService',
+    'mu2e_GeometryService',
     'mu2e_KinKalGeom',
     'mu2e_Mu2eInterfaces',
     'mu2e_Mu2eUtilities',
@@ -32,10 +33,14 @@ mainlib = helper.make_mainlib ( [
     'mu2e_MCDataProducts',
     'mu2e_RecoDataProducts',
     'mu2e_CalorimeterGeom',
+    'mu2e_CosmicRayShieldGeom',
+    'mu2e_CRVResponse',
+    'mu2e_CRVReco',
+    'mu2e_CRVReco',
     'KinKal_Geometry',
     'KinKal_Trajectory',
     'KinKal_General'
-] )
+    ] )
 
 # Fixme: split into link lists for each module.
 helper.make_plugins( [
@@ -60,8 +65,8 @@ helper.make_plugins( [
     'mu2e_RecoDataProducts',
     'mu2e_Mu2eUtilities',
     'mu2e_GeneralUtilities',
+    'mu2e_CRVReco',
     'mu2e_BFieldGeom',
-    'mu2e_CRVAnalysis',
     'mu2e_TrkDiag',
     'mu2e_KinKalGeom',
     'KinKal_Geometry',

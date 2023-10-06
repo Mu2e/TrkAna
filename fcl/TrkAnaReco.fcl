@@ -14,13 +14,11 @@ physics :
   producers : {
 #    @table::TrkAnaReco.producers
     PBIWeight : @local::PBIWeight
-    @table::BestCrvProducers
   }
   analyzers : { @table::TrkAnaReco.analyzers }
 }
 
-#physics.TrkAnaTrigPath : [ @sequence::TrkAnaReco.MCTrigSequence, @sequence::TrkAnaReco.TrigSequence ]
-physics.TrkAnaTrigPath : [ PBIWeight, @sequence::BestCrvProducersPath ]
+physics.TrkAnaTrigPath : [ PBIWeight ]
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)
@@ -30,13 +28,13 @@ physics.analyzers.TrkAnaPos.candidate.options : @local::AllOpt
 # for hit level diagnostics, set diagLevel to 2
 physics.analyzers.TrkAnaNeg.diagLevel : 1
 physics.analyzers.TrkAnaNeg.FillMCInfo : true
-physics.analyzers.TrkAnaNeg.FillCRV : true
+physics.analyzers.TrkAnaNeg.FillCRVHits : true
 physics.analyzers.TrkAnaNeg.FillTriggerInfo : false
 physics.analyzers.TrkAnaNeg.FitType : LoopHelix
 
 physics.analyzers.TrkAnaPos.diagLevel : 1
 physics.analyzers.TrkAnaPos.FillMCInfo : true
-physics.analyzers.TrkAnaPos.FillCRV : true
+physics.analyzers.TrkAnaPos.FillCRVHits : true
 physics.analyzers.TrkAnaPos.FillTriggerInfo : false
 physics.analyzers.TrkAnaPos.FitType : LoopHelix
 

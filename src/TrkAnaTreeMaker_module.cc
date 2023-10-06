@@ -29,6 +29,7 @@
 #include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
 #include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMC.hh"
 #include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMCAssns.hh"
+#include "Offline/MCDataProducts/inc/CrvDigiMC.hh"
 #include "Offline/Mu2eUtilities/inc/fromStrings.hh"
 #include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "Offline/GeometryService/inc/GeomHandle.hh"
@@ -77,12 +78,12 @@
 #include "TrkAna/inc/TrkPIDInfo.hh"
 #include "TrkAna/inc/HelixInfo.hh"
 #include "TrkAna/inc/InfoStructHelper.hh"
+#include "TrkAna/inc/CrvInfoHelper.hh"
 #include "TrkAna/inc/InfoMCStructHelper.hh"
 #include "Offline/RecoDataProducts/inc/RecoQual.hh"
 #include "TrkAna/inc/RecoQualInfo.hh"
 #include "TrkAna/inc/BestCrvAssns.hh"
 #include "TrkAna/inc/MCStepInfo.hh"
-#include "Offline/CRVAnalysis/inc/CRVAnalysis.hh"
 
 // C++ includes.
 #include <iostream>
@@ -112,10 +113,6 @@ namespace mu2e {
         fhicl::Atom<bool> filltrkpid{Name("fillTrkPID"), Comment("Switch to turn on filling of the full TrkPIDInfo for this set of tracks"), false};
         fhicl::Atom<bool> required{Name("required"), Comment("True/false if you require this type of track in the event"), false};
         fhicl::Atom<int> genealogyDepth{Name("genealogyDepth"), Comment("The depth of the genealogy information you want to keep"), 1};
-        fhicl::OptionalSequence<std::string> bestCrvModules{Name("bestCrvModules"), Comment("Sequence of module labels that create the BestCrvAssns you want written out (use prefix if fcl parameter suffix (e.g. DeM) is defined)")};
-        fhicl::OptionalSequence<std::string> bestCrvInstances{Name("bestCrvInstances"), Comment("Sequence of instance names for modules that create multiple BestCrvAssns")};
-        fhicl::OptionalSequence<std::string> bestCrvBranches{Name("bestCrvBranches"), Comment("Sequence of branch names that will be created to store the bestcrv information")};
-        fhicl::Atom<bool> fillbestcrv{Name("fillBestCrv"), Comment("Switch to turn on filling of the bestcrv branch for this set of tracks"), false};
       };
 
       struct BranchConfig {
@@ -153,31 +150,31 @@ namespace mu2e {
         fhicl::Atom<std::string> fittype{Name("FitType"),Comment("Type of track Fit: LoopHelix, CentralHelix, KinematicLine, or Unknown"),"Unknown"};
         fhicl::Atom<bool> helices{Name("FillHelixInfo"),false};
         // CRV -- input tags
-        fhicl::Atom<std::string> crvCoincidenceModuleLabel{Name("CrvCoincidenceModuleLabel"), Comment("CrvCoincidenceModuleLabel")};
-        fhicl::Atom<std::string> crvRecoPulseLabel{Name("CrvRecoPulseLabel"), Comment("CrvRecoPulseLabel")};
-        fhicl::Atom<std::string> crvStepLabel{Name("CrvStepLabel"), Comment("CrvStepLabel")};
-        fhicl::Atom<std::string> crvWaveformsModuleLabel{ Name("CrvWaveformsModuleLabel"), Comment("CrvWaveformsModuleLabel")};
-        fhicl::Atom<std::string> crvDigiModuleLabel{ Name("CrvDigiModuleLabel"), Comment("CrvDigiModuleLabel")};
+        fhicl::Atom<art::InputTag> crvCoincidencesTag{Name("CrvCoincidencesTag"), Comment("Tag for CrvCoincidenceCluster Collection"), art::InputTag()};
+        fhicl::Atom<art::InputTag> crvRecoPulsesTag{Name("CrvRecoPulsesTag"), Comment("Tag for CrvRecopPulse Collection"), art::InputTag()};
+        fhicl::Atom<art::InputTag> crvStepsTag{Name("CrvStepsTag"), Comment("Tag for CrvStep Collection"), art::InputTag()};
+        fhicl::Atom<art::InputTag> crvDigiMCsTag{Name("CrvDigiMCsTag"), Comment("Tag for CrvDigiMC Collection"), art::InputTag()};
+        fhicl::Atom<art::InputTag> crvDigisTag{Name("CrvDigisTag"), Comment("Tag for CrvDigi Collection"), art::InputTag()};
         // CRV -- flags
-        fhicl::Atom<bool> crv{Name("FillCRV"),Comment("Flag for turning on bestcrv(mc) branches"), false};
-        fhicl::Atom<bool> crvhits{Name("FillCRVHits"), Comment("Flag for turning on crvinfo(mc), crvsummary(mc), and crvinfomcplane branches"), false};
+        fhicl::Atom<bool> crvhits{Name("FillCRVHits"),Comment("Flag for turning on crv CoincidenceClusterbranches"), false};
         fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
         // CRV -- other
-        fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters
+        fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters.  This belongs in KinKalGeom as an intersection plane, together with the rest of the CRV planes FIXME
         // MC truth
         fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
         fhicl::Table<InfoMCStructHelper::Config> infoMCStructHelper{Name("InfoMCStructHelper"), Comment("Configuration for the InfoMCStructHelper")};
         fhicl::Atom<art::InputTag> PBTMCTag{Name("PBTMCTag"), Comment("Tag for ProtonBunchTimeMC object") ,art::InputTag()};
-        fhicl::Atom<std::string> simParticleLabel{Name("SimParticleLabel"), Comment("SimParticleLabel")};
-        fhicl::Atom<std::string> mcTrajectoryLabel{Name("MCTrajectoryLabel"), Comment("MCTrajectoryLabel")};
+        fhicl::Atom<art::InputTag> simParticlesTag{Name("SimParticlesTag"), Comment("SimParticle Collection Tag")};
+        fhicl::Atom<art::InputTag> mcTrajectoriesTag{Name("MCTrajectoriesTag"), Comment("MCTrajectory Collection Tag")};
         fhicl::Atom<art::InputTag> primaryParticleTag{Name("PrimaryParticleTag"), Comment("Tag for PrimaryParticle"), art::InputTag()};
         fhicl::Atom<art::InputTag> kalSeedMCTag{Name("KalSeedMCAssns"), Comment("Tag for KalSeedMCAssn"), art::InputTag()};
+        // extra MC
         fhicl::OptionalSequence<art::InputTag> extraMCStepTags{Name("ExtraMCStepCollectionTags"), Comment("Input tags for any other StepPointMCCollections you want written out")};
         // Calo MC
         fhicl::Atom<bool> fillCaloMC{ Name("FillCaloMC"),Comment("Fill CaloMC information"), true};
         fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
         // CRV MC
-        fhicl::Atom<std::string> crvCoincidenceMCModuleLabel{Name("CrvCoincidenceMCModuleLabel"), Comment("CrvCoincidenceMCModuleLabel")};
+        fhicl::Atom<art::InputTag> crvCoincidenceMCsTag{Name("CrvCoincidenceMCsTag"), Comment("Tag for CrvCoincidenceClusterMC Collection"), art::InputTag()};
         fhicl::Atom<art::InputTag> crvMCAssnsTag{ Name("CrvCoincidenceClusterMCAssnsTag"), Comment("art::InputTag for CrvCoincidenceClusterMCAssns")};
         // Pre-processed analysis info; are these redundant with the branch config ?
         fhicl::Atom<bool> filltrkqual{Name("FillTrkQualInfo"),false};
@@ -204,10 +201,6 @@ namespace mu2e {
       EventInfo _einfo;
       EventInfoMC _einfomc;
       art::InputTag _PBITag, _PBTTag, _PBTMCTag;
-      std::vector<art::InputTag> _extraMCStepTags;
-      std::vector<art::Handle<StepPointMCCollection>> _extraMCStepCollections;
-      std::vector<std::vector<MCStepInfos*>> _extraMCStepInfos;
-      std::vector<std::vector<MCStepSummaryInfo*>> _extraMCStepSummaryInfos;
       // hit counting
       HitCount _hcnt;
       // track counting
@@ -236,9 +229,15 @@ namespace mu2e {
       // MC truth (fcl parameters)
       bool _fillmc;
       // MC truth inputs
+      std::vector<art::InputTag> _extraMCStepTags;
+      std::vector<art::Handle<StepPointMCCollection>> _extraMCStepCollections;
+      std::vector<std::vector<MCStepInfos*>> _extraMCStepInfos;
+      std::vector<std::vector<MCStepSummaryInfo*>> _extraMCStepSummaryInfos;
+      //
       art::Handle<PrimaryParticle> _pph;
       art::Handle<KalSeedMCAssns> _ksmcah;
-      art::InputTag _primaryParticleTag;
+      art::Handle<SimParticleCollection> _simParticles;
+      art::Handle<MCTrajectoryCollection> _mcTrajectories;
       // MC truth branches (outputs)
       std::vector<TrkInfoMC> _allMCTIs;
       std::map<BranchIndex, std::vector<SimInfo>> _allMCSimTIs;
@@ -255,39 +254,36 @@ namespace mu2e {
       // event weights
       std::vector<art::Handle<EventWeight> > _wtHandles;
       EventWeightInfo _wtinfo;
-      // CRV
-      // CRV -- fhicl parameters
-      bool _crv;
-      bool _crvhits;
-      bool _crvpulses;
-      std::string _crvCoincidenceModuleLabel;
-      std::string _crvCoincidenceMCModuleLabel;
-      std::string _crvRecoPulseLabel;
-      std::string _crvStepLabel;
-      std::string _crvWaveformsModuleLabel;
-      std::string _crvDigiModuleLabel;
-      art::InputTag _crvMCAssnsTag;
-      double _crvPlaneY;
       // CRV (inputs)
       std::map<BranchIndex, std::vector<art::Handle<BestCrvAssns>>> _allBestCrvAssns;
-      art::Handle<CrvCoincidenceClusterMCCollection> _crvCoincidenceMCCollHandle;
-      art::Handle<CrvCoincidenceClusterMCAssns> _crvMCAssnsHandle;
+      art::Handle<CrvCoincidenceClusterMCAssns>      _crvMCAssns;
+      art::Handle<CrvCoincidenceClusterCollection>   _crvCoincidences;
+      art::Handle<CrvCoincidenceClusterMCCollection> _crvCoincidenceMCs;
+      art::Handle<CrvRecoPulseCollection>            _crvRecoPulses;
+      art::Handle<CrvDigiMCCollection>               _crvDigiMCs;
+      art::Handle<CrvDigiCollection>                 _crvDigis;
+      art::Handle<CrvStepCollection>                 _crvSteps;
+      // CRV -- fhicl parameters
+      bool _crvhits, _crvpulses;
+      double _crvPlaneY;  // needs to move to KinKalGeom FIXME
       // CRV (output)
-      std::vector<CrvHitInfoReco> _crvinfo;
+      std::vector<CrvHitInfoReco> _crvhit;
       std::map<BranchIndex, std::vector<CrvHitInfoReco>> _allBestCrvs; // there can be more than one of these per candidate/supplement
-      std::vector<CrvHitInfoMC> _crvinfomc;
+      std::vector<CrvHitInfoMC> _crvhitmc;
       std::map<BranchIndex, std::vector<CrvHitInfoMC>> _allBestCrvMCs;
       CrvSummaryReco _crvsummary;
       CrvSummaryMC   _crvsummarymc;
-      std::vector<CrvPlaneInfoMC> _crvinfomcplane;
+      std::vector<CrvPlaneInfoMC> _crvhitmcplane;
       std::vector<CrvPulseInfoReco> _crvpulseinfo;
       std::vector<CrvWaveformInfo> _crvwaveforminfo;
       std::vector<CrvHitInfoMC> _crvpulseinfomc;
+      std::vector<CrvHitInfoReco> _crvrecoinfo;
       // helices
       HelixInfo _hinfo;
       // struct helpers
       InfoStructHelper _infoStructHelper;
       InfoMCStructHelper _infoMCStructHelper;
+      CrvInfoHelper _crvHelper;
       // branch structure
       Int_t _buffsize, _splitlevel;
       enum FType{Unknown=0,LoopHelix,CentralHelix,KinematicLine};
@@ -316,17 +312,7 @@ namespace mu2e {
     _fillmc(conf().fillmc()),
     _fillcalomc(conf().fillCaloMC()),
     // CRV
-    _crv(conf().crv()),
     _crvhits(conf().crvhits()),
-    _crvpulses(conf().crvpulses()),
-    _crvCoincidenceModuleLabel(conf().crvCoincidenceModuleLabel()),
-    _crvCoincidenceMCModuleLabel(conf().crvCoincidenceMCModuleLabel()),
-    _crvRecoPulseLabel(conf().crvRecoPulseLabel()),
-    _crvStepLabel(conf().crvStepLabel()),
-    _crvWaveformsModuleLabel(conf().crvWaveformsModuleLabel()),
-    _crvDigiModuleLabel(conf().crvDigiModuleLabel()),
-    _crvMCAssnsTag(conf().crvMCAssnsTag()),
-    _crvPlaneY(conf().crvPlaneY()),
     _infoMCStructHelper(conf().infoMCStructHelper()),
     _buffsize(conf().buffsize()),
     _splitlevel(conf().splitlevel())
@@ -392,19 +378,6 @@ namespace mu2e {
       std::vector<TrkStrawHitInfoMC> tshimc;
       _allTSHIMCs.push_back(tshimc);
 
-      if(_crv && i_branchConfig.options().fillbestcrv()) { // if we are filling in bestcrv information
-        std::vector<CrvHitInfoReco> bestcrv;
-        std::vector<CrvHitInfoMC> bestcrvmc;
-        std::vector<std::string> bestCrvBranchNames; // need to know how many bestcrv branches there will be per candidate/supplement
-        if (i_branchConfig.options().bestCrvBranches(bestCrvBranchNames)) {
-          for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < bestCrvBranchNames.size(); ++i_bestCrvBranch) {
-            bestcrv.push_back(CrvHitInfoReco()); // add empty structs to the vector so that ROOT can be given a location to find it
-            bestcrvmc.push_back(CrvHitInfoMC());
-          }
-          _allBestCrvs[i_branch] = bestcrv;
-          _allBestCrvMCs[i_branch] = bestcrvmc;
-        }
-      }
     }
   }
 
@@ -478,19 +451,6 @@ namespace mu2e {
         _trkana->Branch((branch+"tsh.").c_str(),&_allTSHIs.at(i_branch),_buffsize,_splitlevel);
         _trkana->Branch((branch+"tsm.").c_str(),&_allTSMIs.at(i_branch),_buffsize,_splitlevel);
       }
-      // want to be able to have more than one bestcrv branch for each candidate/supplement
-      if(_crv && i_branchConfig.options().fillbestcrv()) {
-        std::vector<std::string> bestCrvBranchNames;
-        if (i_branchConfig.options().bestCrvBranches(bestCrvBranchNames)) {
-          for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < bestCrvBranchNames.size(); ++i_bestCrvBranch) {
-            std::string bestCrvBranchName = bestCrvBranchNames.at(i_bestCrvBranch);
-            _trkana->Branch((branch+bestCrvBranchName+".").c_str(),&_allBestCrvs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
-            if (_fillmc) {
-              _trkana->Branch((branch+bestCrvBranchName+"mc.").c_str(),&_allBestCrvMCs.at(i_branch).at(i_bestCrvBranch),_buffsize,_splitlevel);
-            }
-          }
-        }
-      }
 
       // optionally add MC branches
       if(_fillmc && i_branchConfig.options().fillmc()){
@@ -528,24 +488,21 @@ namespace mu2e {
     }
     // calorimeter information for the downstream electron track
     // general CRV info
-    if(_crv) {
-      if (_crvhits) {
-        _trkana->Branch("crvsummary.",&_crvsummary,_buffsize,_splitlevel);
-        _trkana->Branch("crvinfo.",&_crvinfo,_buffsize,_splitlevel);
-        if(_crvpulses) {
-          _trkana->Branch("crvpulseinfo.",&_crvpulseinfo,_buffsize,_splitlevel);
-          _trkana->Branch("crvwaveforminfo.",&_crvwaveforminfo,_buffsize,_splitlevel);
-        }
+    if(_crvhits) {
+      // coincidence branches should be here FIXME
+      _trkana->Branch("crvsummary.",&_crvsummary,_buffsize,_splitlevel);
+      _trkana->Branch("crvhit.",&_crvhit,_buffsize,_splitlevel);
+      if(_crvpulses) {
+        _trkana->Branch("crvpulseinfo.",&_crvpulseinfo,_buffsize,_splitlevel);
+        _trkana->Branch("crvwaveforminfo.",&_crvwaveforminfo,_buffsize,_splitlevel);
       }
 
       if(_fillmc){
-        if (_crvhits) {
-          _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
-          _trkana->Branch("crvinfomc.",&_crvinfomc,_buffsize,_splitlevel);
-          _trkana->Branch("crvinfomcplane.",&_crvinfomcplane,_buffsize,_splitlevel);
-          if(_crvpulses) {
-            _trkana->Branch("crvpulseinfomc.",&_crvpulseinfomc,_buffsize,_splitlevel);
-          }
+        _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
+        _trkana->Branch("crvhitmc.",&_crvhitmc,_buffsize,_splitlevel);
+        _trkana->Branch("crvhitmcplane.",&_crvhitmcplane,_buffsize,_splitlevel);
+        if(_crvpulses) {
+          _trkana->Branch("crvpulseinfomc.",&_crvpulseinfomc,_buffsize,_splitlevel);
         }
       }
     }
@@ -633,26 +590,6 @@ namespace mu2e {
         }
       }
       _allTCHPCHs.push_back(trkpidCollHandle);
-
-      // BestCrv
-      if (i_branchConfig.options().fillbestcrv() && _crv) { // if we are filling in bestcrv information
-        std::vector<std::string> i_bestcrv_tags;
-        std::vector<std::string> i_bestcrv_instances;
-        std::vector<art::Handle<BestCrvAssns>> bestCrvAssnsHandles;
-        if (i_branchConfig.options().bestCrvModules(i_bestcrv_tags) && i_branchConfig.options().bestCrvInstances(i_bestcrv_instances)) { // get the module labels and instances names
-          // loop htrough the module lables
-          art::Handle<BestCrvAssns> bestCrvAssnsHandle;
-          for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < i_bestcrv_tags.size(); ++i_bestCrvBranch) {
-            art::InputTag bestCrvInputTag = i_bestcrv_tags.at(i_bestCrvBranch) + i_branchConfig.suffix() + ":" + i_bestcrv_instances.at(i_bestCrvBranch);
-            event.getByLabel(bestCrvInputTag,bestCrvAssnsHandle); // get the Assns for this module and this candidate/supplement
-            bestCrvAssnsHandles.push_back(bestCrvAssnsHandle); // add this handle to the vector of handles for this candidate/supplement
-          }
-        }
-        _allBestCrvAssns[i_branch] = bestCrvAssnsHandles;
-        if (_fillmc) {
-          event.getByLabel(_crvMCAssnsTag, _crvMCAssnsHandle);
-        }
-      }
     }
 
     // trigger information
@@ -663,6 +600,8 @@ namespace mu2e {
     if(_fillmc) { // get MC product collections
       event.getByLabel(_conf.primaryParticleTag(),_pph);
       event.getByLabel(_conf.kalSeedMCTag(),_ksmcah);
+      event.getByLabel(_conf.simParticlesTag(),_simParticles);
+      event.getByLabel(_conf.mcTrajectoriesTag(),_mcTrajectories);
       if(_fillcalomc)event.getByLabel(_conf.caloClusterMCTag(),_ccmcch);
     }
     // fill track counts
@@ -696,7 +635,6 @@ namespace mu2e {
         _infoStructHelper.fillHelixInfo(hptr, _hinfo);
       }
 
-
       // Now loop through all the branches (both candidate + supplements)...
       for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
         if (i_branch == _candidateIndex) { // ...but actually ignore candidate
@@ -729,16 +667,22 @@ namespace mu2e {
 
       // TODO we want MC information when we don't have a track
       // fill general CRV info
-      if(_crv){
-        if (_crvhits) {
-          CRVAnalysis::FillCrvHitInfoCollections(_crvCoincidenceModuleLabel, _crvCoincidenceMCModuleLabel,
-              _crvRecoPulseLabel, _crvStepLabel, _conf.simParticleLabel(),
-              _conf.mcTrajectoryLabel(), event, _crvinfo, _crvinfomc,
-              _crvsummary, _crvsummarymc, _crvinfomcplane, _crvPlaneY);
+      if(_crvhits){
+        event.getByLabel(_conf.crvCoincidencesTag(),_crvCoincidences);
+        event.getByLabel(_conf.crvRecoPulsesTag(),_crvRecoPulses);
+        event.getByLabel(_conf.crvStepsTag(),_crvSteps);
+        event.getByLabel(_conf.crvDigisTag(),_crvDigis);
+        if(_fillmc){
+          event.getByLabel(_conf.crvCoincidenceMCsTag(),_crvCoincidenceMCs);
+          event.getByLabel(_conf.crvDigiMCsTag(),_crvDigiMCs);
         }
+        _crvHelper.FillCrvHitInfoCollections(
+            _crvCoincidences, _crvCoincidenceMCs,
+            _crvRecoPulses, _crvSteps, _mcTrajectories,_crvhit, _crvhitmc,
+            _crvsummary, _crvsummarymc, _crvhitmcplane, _crvPlaneY);
         if(_crvpulses){
-          CRVAnalysis::FillCrvPulseInfoCollections(_crvRecoPulseLabel, _crvWaveformsModuleLabel, _crvDigiModuleLabel,
-              event, _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
+          _crvHelper.FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs, _crvDigis,
+              _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
         }
       }
       // fill this row in the TTree
@@ -866,30 +810,6 @@ namespace mu2e {
       }
     }
 
-    // BestCrv branches
-    if (_crv && branchConfig.options().fillbestcrv()) {
-      // get the list of bestcrv modules
-      std::vector<std::string> i_bestcrv_tags;
-      if (branchConfig.options().bestCrvModules(i_bestcrv_tags)) { // get the module labels
-        for (size_t i_bestCrvBranch = 0; i_bestCrvBranch < i_bestcrv_tags.size(); ++i_bestCrvBranch) {
-          auto hBestCrvAssns = _allBestCrvAssns.at(i_branch).at(i_bestCrvBranch);
-          if (hBestCrvAssns->size()>0) {
-            auto bestCrvCoinc = hBestCrvAssns->at(i_kseed).second;
-            _infoStructHelper.fillCrvHitInfo(bestCrvCoinc, _allBestCrvs.at(i_branch).at(i_bestCrvBranch));
-            if (_fillmc) {
-              // loop through data-MC assns and find bestCrvCoinc (which is an art::Ptr){
-              for (const auto& i_crvMCAssn : *_crvMCAssnsHandle) {
-                if (bestCrvCoinc == i_crvMCAssn.first) {
-                  auto bestCrvCoincMC = i_crvMCAssn.second;//art::Ptr<CrvCoincidenceClusterMC>(_crvCoincidenceMCCollHandle, bestCrvCoinc.key());
-                  _infoMCStructHelper.fillCrvHitInfoMC(bestCrvCoincMC, _allBestCrvMCs.at(i_branch).at(i_bestCrvBranch));
-                  break;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
 
     // all RecoQuals
     std::vector<Float_t> recoQuals; // for the output value
@@ -1036,16 +956,11 @@ namespace mu2e {
       _allTSMIs.at(i_branch).clear();
       _allTSHIMCs.at(i_branch).clear();
 
-      if (_allBranches.at(i_branch).options().fillbestcrv()) { // only clear the vectors if they exist
-        // we don't want to remove elements so use assign instead of clear
-        _allBestCrvs.at(i_branch).assign(_allBestCrvs.at(i_branch).size(), CrvHitInfoReco());
-        _allBestCrvMCs.at(i_branch).assign(_allBestCrvMCs.at(i_branch).size(), CrvHitInfoMC());
-      }
     }
     // clear vectors
-    _crvinfo.clear();
-    _crvinfomc.clear();
-    _crvinfomcplane.clear();
+    _crvhit.clear();
+    _crvhitmc.clear();
+    _crvhitmcplane.clear();
     _crvpulseinfo.clear();
     _crvwaveforminfo.clear();
     _crvpulseinfomc.clear();
