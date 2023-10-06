@@ -8,7 +8,7 @@ treename="TrkAnaNeg/trkana"
 
 dem_nhits=[]
 dem_nactive=[]
-print(filename, treename)
+
 for batch, report in uproot.iterate(files=filename+":"+treename, filter_name=["/dem[.]*/"], step_size="10 MB", report=True):
     print(report)
     dem_nhits = np.append(dem_nhits, batch['dem.nhits'])

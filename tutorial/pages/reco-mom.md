@@ -48,11 +48,20 @@ Depending on the type of track we are fitting, TrkAna will put the fit parameter
 
 ## ROOT
 
-In ROOT, we can open the ROOT file, get the TrkAna tree, and create a TCanvas as usual:
+In ROOT, get the TChain, and create a TCanvas as before:
 
 ```
-TFile* file = new TFile("nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka", "READ");
-TTree* trkana = (TTree*) file->Get("TrkAnaNeg/trkana");
+TChain* trkana = new TChain("TrkAnaNeg/trkana");
+
+std::ifstream input_filelist("filelists/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.list");
+if (input_filelist.is_open()) {
+  std::string filename;
+  while(std::getline(input_filelist,filename)) {
+    trkana->Add(filename.c_str());
+  }
+  input_filelist.close();
+}
+
 
 TCanvas* c1 = new TCanvas("c1", "c1");
 c1->SetGridx(true);
@@ -101,25 +110,29 @@ trkana->Draw("demfit.mom.R()>>hist2", "demfit.sid==0 && demlh.t0>=700" "HIST SAM
 
 ## Python
 
-In python, we will need to import awkward directly 
+In this exercise, we will start with looking at just one file before iterating through files like we did in the [last exercise](n-hits.md#Python). 
+
+Later, we will need to call some ```awkward``` functions directly so we will need to import it:
 
 ```
 import uproot
 import matplotlib.pyplot as plt
 import awkward as ak
+```
 
-trkana = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka:TrkAnaNeg/trkana")
+Now pick a file from your filelist and open it. Also get a figure and set of axes ready:
+
+```
+trkana = uproot.open(filename+":TrkAnaNeg/trkana")
 
 fig, ax = plt.subplots(1,1)
 ```
 
-Now let's read in just the ```demfit``` and ```demlh``` branches:
+We'll just read in just the ```demfit``` and ```demlh``` branches:
 
 ```
 branches = trkana.arrays(filter_name=["/demfit[.]*/", "/demlh[.]*/"])
 ```
-
-We want to plot the momentum
 
 If you look at the ```branches.fields```, you will see that we store the momentum in its x, y, and z components:
 
@@ -133,7 +146,7 @@ so we will have to calculate the magnitude of the momentum ourselves. (If you re
 Anyway, it is easy to add a column in python:
 
 ```
-batch['demfit.mom'] = (batch['demfit.mom.fCoordinates.fX']**2 + batch['demfit.mom.fCoordinates.fY']**2 + batch['demfit.mom.fCoordinates.fZ']**2)**0.5
+branches['demfit.mom'] = (branches['demfit.mom.fCoordinates.fX']**2 + branches['demfit.mom.fCoordinates.fY']**2 + branches['demfit.mom.fCoordinates.fZ']**2)**0.5
 ```
 
 If you try to plot this like we did before:
@@ -185,6 +198,24 @@ and to use it when plotting we need to use the bitwise ```&``` operator.
 
 ```
 ax.hist(ak.flatten(branches['demfit.mom'][(trk_ent_mask) & (time_cut_mask)], bins=100, range=(100,110), label='all tracks', histtype='step')
+```
+
+If you are iterating through multiple files, everything you did before plotting should go into your iterate loop:
+
+```
+# Have flat arrays ready to make histograms later
+demfit_ent_mom=[]
+demfit_ent_mom_timecut=[]
+for batch, report in uproot.iterate(files=wildcarded_dir+":TrkAnaNeg/trkana", filter_name=["/demfit[.]*/", "/demlh[.]*/"], step_size="10 MB", report=True):
+    print(report)
+
+    batch['demfit.mom'] = (batch['demfit.mom.fCoordinates.fX']**2 + batch['demfit.mom.fCoordinates.fY']**2 + batch['demfit.mom.fCoordinates.fZ']**2)**0.5
+
+    trk_ent_mask = (batch['demfit.sid']==0)
+    time_cut_mask = (batch['demlh.t0']>=700)
+
+    demfit_ent_mom = np.append(demfit_ent_mom, ak.flatten(batch['demfit.mom'][(trk_ent_mask)]))
+    demfit_ent_mom_timecut = np.append(demfit_ent_mom_timecut, ak.flatten(batch['demfit.mom'][(trk_ent_mask) & (time_cut_mask)]))
 ```
 
 
