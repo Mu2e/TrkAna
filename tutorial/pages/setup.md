@@ -34,7 +34,7 @@ where ```username``` is your FNAL username, and ```mu2egpvm0X``` is between ```m
 
 ### Creating Your Work Area
 
-Once logged in, you should create a working area, move to it, and then setup a TrkAna [Musing](https://mu2ewiki.fnal.gov/wiki/Muse#Musings_.28published_muse_builds.29) like this:
+Once logged in, you should create a working area following the instructions [here](https://mu2ewiki.fnal.gov/wiki/LoginTutorial#app_disk), move to it, and then setup a TrkAna [Musing](https://mu2ewiki.fnal.gov/wiki/Muse#Musings_.28published_muse_builds.29) like this:
 
 ```
 mkdir your/new/working/area/
