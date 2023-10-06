@@ -4,7 +4,8 @@
 
 In this exercise, you will:
 
-* learn about the ```dem``` branch that contains global track information, and
+* learn about the ```dem``` branch that contains global track information,
+* handle multiple TrkAna files, and
 * plot the number of hits on each track.
 
 ## Contents
@@ -22,11 +23,23 @@ Note that the same type of branch exists also for the supplemental tracks: upstr
 
 ## ROOT
 
-In ROOT, we start by opening the ROOT file and getting the TrkAna tree:
+In ROOT, in order to handle multiple files, we will use a [TChain](https://root.cern.ch/doc/v628/classTChain.html) which we can use like a TTree that we create like this:
 
 ```
-TFile* file = new TFile("nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka", "READ");
-TTree* trkana = (TTree*) file->Get("TrkAnaNeg/trkana");
+TChain* trkana = new TChain("TrkAnaNeg/trkana");
+```
+
+Now we need to add TrkAna files to this. Unfortunately, the ```Add()``` command does not accept wildcard in directories, so we have to loop through the filelist ourselves and add them one at a time:
+
+```
+std::ifstream input_filelist("filelists/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.list");
+if (input_filelist.is_open()) {
+  std::string filename;
+  while(std::getline(input_filelist,filename)) {
+    trkana->Add(filename.c_str());
+  }
+  input_filelist.close();
+}
 ```
 
 Then we create a [TCanvas](https://root.cern.ch/doc/v628/classTCanvas.html) to put the plot on:
@@ -85,26 +98,41 @@ leg->Draw()
 
 
 ## Python
-To make plots in python, we need to use matplotlib so we import it along with uproot:
+In python, to handle multiple files we will use uproot but will also need to use some functions from numpy so we will import that:
 
 ```
 import uproot
 import matplotlib.pyplot as plt
+import numpy as np
 ```
 
-We then open the TrkAna file and get ready to read the TrkAna tree:
+Then instead of opening a single TrkAna file, we will use ```uproot.iterate```. Before that, we need to make some arrays to keep track of the data we want to plot. In this exercise, we will plot the number of hits on each track:
 
 ```
-trkana = uproot.open("nts.brownd.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka:TrkAnaNeg/trkana")
+dem_nhits=[]
 ```
 
-Next we filter the branches so that we just read in the ```dem``` branch using a regular expression:
+Now we can iterate through the files like so, filtering the branches like we did in the [last exercise](opening.md#Python):
 
 ```
-branches = trkana.arrays(filter_name=["/dem[.]*"])
+for batch in uproot.iterate(files=wildcarded_dir+":TrkAnaNeg/trkana", filter_name=["/dem[.]*"], step_size='10 MB'):
+    dem_nhits = np.append(dem_nhits, batch['dem.nhits'])
 ```
 
-Next, we get a figure and a set of axes ready to be drawn on:
+where ```wildcarded_dir``` is string for the location of all the files. You can get this by looking in the filelist and replacing any unique parts of a filename with a ```*```. It will look something like ```/abs/path/to/datasets/*/*/*.tka```.
+
+The ```step_size='10MB'``` argument means that uproot will only read 10 MB of memory at time. The argument also accepts integers, which is interpreted as a number of entries in the TTree.
+
+One other option for ```uproot.iterate``` that you might want to use is to report every step. This can be done like so:
+
+```
+for batch, report in uproot.iterate(files=wildcarded_dir+":TrkAnaNeg/trkana", filter_name=["/dem[.]*"], step_size='10 MB', report=True):
+    print(report).
+    dem_nhits = np.append(dem_nhits, batch['dem.nhits'])
+```
+
+
+Now we can get to plotting. First, we get a figure and a set of axes ready to be drawn on:
 
 ```
 fig, ax = plt.subplots(1,1)
@@ -113,7 +141,7 @@ fig, ax = plt.subplots(1,1)
 We can then plot a histogram of the number of hits on each track like so:
 
 ```
-ax.hist(branches['dem.nhits'], bins=100, range=(0,100), label='total number of hits', histtype='step')
+ax.hist(dem_nhits, bins=100, range=(0,100), label='total number of hits', histtype='step')
 ```
 
 Now we can make the plot more informative with grid lines and axis labels:
@@ -124,10 +152,10 @@ ax.set_ylabel('Number of Tracks')
 ax.grid(True)
 ```
 
-You could also plot the number of hits that were actually used in the track fit ("active") on the same set of axes:
+You can also plot the number of hits that were actually used in the track fit ("active") on the same set of axes. You will need to make a ```dem_nactive``` array and fill it during the ```uproot.iterate``` loop, you can then do:
 
 ```
-ax.hist(branches['dem.nactive'], bins=100, range=(0,100), label='total number of used hits', histtype='step')
+ax.hist(dem_nactive, bins=100, range=(0,100), label='total number of used hits', histtype='step')
 ```
 
 Since we have two histograms, we should add a legend like so:

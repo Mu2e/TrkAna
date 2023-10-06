@@ -1,19 +1,23 @@
+import sys
 import uproot # for reading in ROOT files
 import matplotlib.pyplot as plt # for making plots
+import numpy as np
 
-filename="nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka"
+filename=sys.argv[1]
 treename="TrkAnaNeg/trkana"
 
-# Open the ROOT file and be read yto read in the trkana tree
-trkana = uproot.open(filename+":"+treename)
+dem_nhits=[]
+dem_nactive=[]
+print(filename, treename)
+for batch, report in uproot.iterate(files=filename+":"+treename, filter_name=["/dem[.]*/"], step_size="10 MB", report=True):
+    print(report)
+    dem_nhits = np.append(dem_nhits, batch['dem.nhits'])
+    dem_nactive = np.append(dem_nactive, batch['dem.nactive'])
 
-# Read in just the dem. branch
-branches = trkana.arrays(filter_name=["/dem[.]*/"])
 
 fig, ax = plt.subplots(1,1)
-
-ax.hist(branches['dem.nhits'], bins=100, range=(0,100), label='total number of hits', histtype='step')
-ax.hist(branches['dem.nactive'], bins=100, range=(0,100), label='total number of used hits', histtype='step')
+ax.hist(dem_nhits, bins=100, range=(0,100), label='total number of hits', histtype='step')
+ax.hist(dem_nactive, bins=100, range=(0,100), label='total number of used hits', histtype='step')
 
 ax.legend()
 ax.set_xlabel('Number of Hits')

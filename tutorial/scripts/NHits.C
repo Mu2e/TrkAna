@@ -1,13 +1,19 @@
 void NHits() {
 
-  TString filename = "nts.brownd.CeEndpointMix1BBSignal.MDC2020z_TKAv04.tka";
+  std::string filelist = "filelists/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.list";
   TString treename = "TrkAnaNeg/trkana";
 
-  // Open the TrkAna ROOT file for reading
-  TFile* file = new TFile(filename, "READ");
+  // Get the TChain ready
+  TChain* trkana = new TChain(treename);
 
-  // Get the TrkAna tree from the file
-  TTree* trkana = (TTree*) file->Get(treename);
+  std::ifstream input_filelist(filelist);
+  if (input_filelist.is_open()) {
+    std::string filename;
+    while(std::getline(input_filelist,filename)) {
+      trkana->Add(filename.c_str());
+    }
+    input_filelist.close();
+  }
 
   TCanvas* c1 = new TCanvas("c1", "c1");
   c1->SetGridx();
