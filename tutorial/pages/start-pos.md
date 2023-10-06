@@ -112,4 +112,4 @@ Here are some additional exercises, you might want to try:
 
 Last Page: [Plotting Local Track Information](mom-res.md)
 
-Next Page: [Plotting MC Truth Information of the Particle](geanealogy.md)
+Next Page: [Plotting MC Truth Information of Ancestor Particles](geanealogy.md)

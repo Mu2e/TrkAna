@@ -11,6 +11,7 @@ In this exercise, you will learn:
 * [Common Introduction](#Common-Introduction)
 * [ROOT](#ROOT)
 * [Python](#Python)
+* [Additional Exercises](#Additional-Exercises)
 
 ## Common Introduction
 
@@ -20,7 +21,10 @@ In this exercise, you will learn:
 
 ## Python
 
+## Additional Exercises
+Here are some additional exercises, you might want to try:
 
-Last Page: [Plotting Local Track Information](reco-mom.md)
+
+Last Page: [Plotting MC Truth Information of the Particle](start-pos.md)
 
 Next Page: [Plotting MC Truth Information of the Particle](e-loss.md)
