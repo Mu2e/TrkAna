@@ -37,7 +37,6 @@ mom_res_bin_width = 0.05
 n_mom_res_bins = int((max_mom_res - min_mom_res) / mom_res_bin_width)
 
 ax.hist(mom_res, bins=n_mom_res_bins, range=(min_mom_res,max_mom_res), label='all tracks', histtype='step', log=True)
-#ax.hist(ak.flatten(batch['demfit.mom'][(trk_ent_mask) & (time_cut_mask)]), bins=n_mom_res_bins, range=(min_mom_res,max_mom_res), label='t0>=700', histtype='step')
 
 ax.legend()
 ax.set_xlabel('Momentum Resolution at Tracker Entrance [MeV/c]')
