@@ -158,7 +158,7 @@ ax.hist(branches['demfit.mom'], bins=100, range=(100,110), label='all tracks', h
 you will get an error. That's because the ```demfit``` branch is an array, and the function doesn't like that. So we need to ```flatten``` it down to one dimension:
 
 ```
-ax.hist(ak.flatten(branches['demfit.mom'], bins=100, range=(100,110), label='all tracks', histtype='step')
+ax.hist(ak.flatten(branches['demfit.mom']), bins=100, range=(100,110), label='all tracks', histtype='step')
 ```
 
 Now you may notice that the peak is rather broad... That's because the ```demfit``` branch contains the fit information at the entrance, middle, and exit of the tracker.
