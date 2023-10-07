@@ -105,7 +105,7 @@ where ```sid``` is the surface id of the intersection we want to plot (```sid=0`
 We might also want to make a cut on some other track parameter. For example, in the Mu2e muon-to-electron conversion search we will apply a time cut to the tracks. Again, like for momentum, there is no "time" for the whole track and we have the time at each intersection. The time is part of the parameterization and is stored in the ```demlh``` branch:
 
 ```
-trkana->Draw("demfit.mom.R()>>hist2", "demfit.sid==0 && demlh.t0>=700" "HIST SAME");
+trkana->Draw("demfit.mom.R()>>hist2", "demfit.sid==0 && demlh.t0>=700", "HIST SAME");
 ```
 
 ## Python
