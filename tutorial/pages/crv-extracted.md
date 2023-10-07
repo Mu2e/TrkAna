@@ -1,4 +1,4 @@
-# [Plotting the Time Difference between a Track and CRV hit in the Extracted Position]
+# Plotting the Time Difference between a Track and CRV hit in the Extracted Position
 
 ## This tutorial is not complete yet. ##
 
