@@ -83,9 +83,6 @@ namespace mu2e {
 
     fillTrkInfoStraws(kseed, trkinfo);
 
-    if (trkinfos.size() > 1) {
-      std::cout << "Pushing back " << trkinfo.nhits << std::endl;
-    }
     trkinfos.push_back(trkinfo);
   }
 
@@ -226,10 +223,9 @@ namespace mu2e {
     }
   }
 
-  void InfoStructHelper::fillHitInfo(const KalSeed& kseed, std::vector<TrkStrawHitInfo>& tshinfos ) {
-    tshinfos.clear();
+  void InfoStructHelper::fillHitInfo(const KalSeed& kseed, std::vector<std::vector<TrkStrawHitInfo>>& all_tshinfos ) {
+    std::vector<TrkStrawHitInfo> tshinfos;
     // loop over hits
-
     static StrawHitFlag active(StrawHitFlag::active);
     const Tracker& tracker = *GeomHandle<Tracker>();
     for(std::vector<TrkStrawHitSeed>::const_iterator ihit=kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
@@ -315,6 +311,7 @@ namespace mu2e {
       }
       tshinfos.push_back(tshinfo);
     }
+    all_tshinfos.push_back(tshinfos);
   }
 
   void InfoStructHelper::fillMatInfo(const KalSeed& kseed, std::vector<TrkStrawMatInfo>& tminfos ) {

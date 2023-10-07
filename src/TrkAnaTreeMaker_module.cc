@@ -245,7 +245,7 @@ namespace mu2e {
       std::vector<CaloClusterInfoMC> _allMCTCHIs;
 
       // hit level info branches
-      std::vector<std::vector<TrkStrawHitInfo>> _allTSHIs;
+      std::map<BranchIndex, std::vector<std::vector<TrkStrawHitInfo>>> _allTSHIs;
       std::vector<std::vector<TrkStrawMatInfo>> _allTSMIs;
       std::vector<std::vector<TrkStrawHitInfoMC>> _allTSHIMCs;
 
@@ -362,8 +362,7 @@ namespace mu2e {
       TrkPIDInfo tpi;
       _allTPIs.push_back(tpi);
 
-      std::vector<TrkStrawHitInfo> tshi;
-      _allTSHIs.push_back(tshi);
+      _allTSHIs[i_branch] = std::vector<std::vector<TrkStrawHitInfo>>();
       std::vector<TrkStrawMatInfo> tsmi;
       _allTSMIs.push_back(tsmi);
       std::vector<TrkStrawHitInfoMC> tshimc;
@@ -612,6 +611,7 @@ namespace mu2e {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _allTIs.at(i_branch).clear();
       _allTFIs.at(i_branch).clear();
+      _allTSHIs.at(i_branch).clear();
 
       const auto& kseed_coll_h = _allKSCHs.at(i_branch);
       const auto& kseed_coll = *kseed_coll_h;
@@ -889,7 +889,6 @@ namespace mu2e {
       _allTPIs.at(i_branch).reset();
 
       // clear vectors
-      _allTSHIs.at(i_branch).clear();
       _allTSMIs.at(i_branch).clear();
       _allTSHIMCs.at(i_branch).clear();
 
