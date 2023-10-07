@@ -26,7 +26,7 @@ If you have any questions, comments, or feedback, then you can either post on th
 
 1. [Plotting MC Truth Information of Ancestor Particles](pages/genealogy.md): In this exercise, we will use the ```demmcsim``` branch to plot the starting position of the muons that generate conversion electrons, and the starting positions of decay-in-orbit electrons.
 
-Incomplete tutorials:
+Incomplete tutorials that have something useful:
 
 1. [Plotting the Time Difference between a Track and CRV hit in the Extracted Position](pages/crv-extracted.md): In this exercise, we will use the ```crvinfo``` branch to plot the time difference between a track and CRV hit in the extracted position. 
 
