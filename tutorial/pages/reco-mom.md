@@ -23,7 +23,7 @@ The TrkAna tree contains the results from the KinKal track fit. This is a piecew
 
 ### Track Fit Intersections
 
-Since KinKal is a piecewise fit, there is no value for the momentum of the whole track -- we can only  In Offline, we define surfaces and can ask "what were the parameters of the track when it intersected this surface?"
+Since KinKal is a piecewise fit, there is no value for the momentum of the whole track -- we can only ask this at points along the track. In Offline, we define surfaces and can ask "what were the parameters of the track when it intersected this surface?"
 
 In TrkAna, we can store the information from any number of surfaces. We currently pick three: the entrance, middle, and exit of the tracker. In order to allow for future expansion, we store the track information from all these locations as a vector in a single branch: ```demfit```.
 
