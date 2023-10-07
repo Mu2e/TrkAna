@@ -24,16 +24,15 @@ If you have any questions, comments, or feedback, then you can either post on th
 
 1. [Plotting MC Truth Information of the Particle](pages/start-pos.md): In this exercise, we will use the ```demmcsim``` branch to plot the starting position of the conversion electrons.
 
-The following are still work in progress...
+1. [Plotting MC Truth Information of Ancestor Particles](pages/genealogy.md): In this exercise, we will use the ```demmcsim``` branch to plot the starting position of the muons that generate conversion electrons, and the starting positions of decay-in-orbit electrons.
 
-1. [Plotting MC Truth Information of Ancestor Particles](pages/genealogy.md): In this exercise, we will use the ```demmcsim``` branch to plot information of the particle's parent and grandparent
-
-1. [Plotting the Simulated Energy Loss of Conversion Electrons in the Stopping Target and IPA](pages/tgt-ipa-e-loss.md)
-
-1. [Plotting the Time Difference between a Track and CRV hit in the Extracted Position](pages/crv-extracted.md)
 
 Potential future tutorials:
 
-1. [Making Your Own TrkAna Tree](pages/make-your-own.md):
+1. [Plotting the Simulated Energy Loss of Conversion Electrons in the Stopping Target and IPA](pages/tgt-ipa-e-loss.md): In this exercise, we will use the ```demmcsic_stoppingtarget``` and ```demmcsic_protonabsorber``` branches to plot the MC true energy loss of conversion electrons in the stopping target and inner proton absorber.
+
+1. [Plotting the Time Difference between a Track and CRV hit in the Extracted Position](pages/crv-extracted.md): In this exercise, we will use the ```crvinfo``` branch to plot the time difference between a track and CRV hit in the extracted position.
+
+1. [Making Your Own TrkAna Tree](pages/make-your-own.md): In this exercise, we will make our own TrkAna tree that has a different structure to the default.
 
 Next Page: [Preliminary Information](pages/prelims.md)
