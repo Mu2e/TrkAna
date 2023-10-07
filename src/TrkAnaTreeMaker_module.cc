@@ -207,7 +207,7 @@ namespace mu2e {
       std::vector<art::Handle<KalSeedCollection> > _allKSCHs;
       // track branches (outputs)
       std::map<BranchIndex, std::vector<TrkInfo>> _allTIs;
-      std::map<BranchIndex, std::vector<TrkFitInfo>> _allTFIs;
+      std::map<BranchIndex, std::vector<std::vector<TrkFitInfo>>> _allTFIs;
       std::map<BranchIndex, std::vector<LoopHelixInfo>> _allLHIs;
       std::map<BranchIndex, std::vector<CentralHelixInfo>> _allCHIs;
       std::map<BranchIndex, std::vector<KinematicLineInfo>> _allKLIs;
@@ -333,7 +333,7 @@ namespace mu2e {
       auto i_branchConfig = _allBranches.at(i_branch);
       _allTIs[i_branch] = std::vector<TrkInfo>();
       // fit sampling (KalIntersection) at a surface
-      _allTFIs[i_branch] = std::vector<TrkFitInfo>();
+      _allTFIs[i_branch] = std::vector<std::vector<TrkFitInfo>>();
       // fit-specific branches
       _allLHIs[i_branch] = std::vector<LoopHelixInfo>();
       _allCHIs[i_branch] = std::vector<CentralHelixInfo>();
@@ -611,6 +611,7 @@ namespace mu2e {
     // loop through all track types
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _allTIs.at(i_branch).clear();
+      _allTFIs.at(i_branch).clear();
 
       const auto& kseed_coll_h = _allKSCHs.at(i_branch);
       const auto& kseed_coll = *kseed_coll_h;
@@ -876,8 +877,6 @@ namespace mu2e {
 
   void TrkAnaTreeMaker::resetTrackBranches() {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
-      _allTFIs.at(i_branch).assign(_allTFIs.at(i_branch).size(), TrkFitInfo());       // we don't want to remove elements and have to use push_back again, so use assign instead of clear to put in empty TrkFitInfo struct
-
       _allTCHIs.at(i_branch).reset();
 
       _allMCTIs.at(i_branch).reset();

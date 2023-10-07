@@ -89,8 +89,8 @@ namespace mu2e {
     trkinfos.push_back(trkinfo);
   }
 
-  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed, std::vector<TrkFitInfo>& tfis) {
-    tfis.clear();
+  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed, std::vector<std::vector<TrkFitInfo>>& all_tfis) {
+    std::vector<TrkFitInfo> tfis;
     double tmin(std::numeric_limits<float>::max());
     double tmax(std::numeric_limits<float>::lowest());
     size_t imin(0), imax(0);
@@ -121,6 +121,7 @@ namespace mu2e {
       tfis[imin].early = true;
       tfis[imax].late = true;
     }
+    all_tfis.push_back(tfis);
   }
 
   void InfoStructHelper::fillLoopHelixInfo(const KalSeed& kseed, std::vector<LoopHelixInfo>& lhis) {
