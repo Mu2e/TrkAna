@@ -1,26 +1,6 @@
-# Plotting MC Truth Information of the Track
+# [Plotting the Time Difference between a Track and CRV hit in the Extracted Position]
 
-## Objectives
+## This tutorial is not complete yet. ##
 
-In this exercise, you will learn:
+For the time being there is an example script [here](https://github.com/brownd1978/TrkAna/blob/crvext/tutorial/scripts/CrvExtracted.C) that you way want to dig into.
 
-* ...
-
-## Contents
-
-* [Common Introduction](#Common-Introduction)
-* [ROOT](#ROOT)
-* [Python](#Python)
-
-## Common Introduction
-
-
-## ROOT
-
-
-## Python
-
-
-Last Page: [Plotting Local Track Information](reco-mom.md)
-
-Next Page: [Plotting MC Truth Information of the Particle](e-loss.md)
