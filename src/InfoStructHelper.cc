@@ -33,7 +33,8 @@ namespace mu2e {
     hitcount.ntpk = nrec._nshftpk;
   }
 
-  void InfoStructHelper::fillTrkInfo(const KalSeed& kseed,TrkInfo& trkinfo) {
+  void InfoStructHelper::fillTrkInfo(const KalSeed& kseed,std::vector<TrkInfo>& trkinfos) {
+    TrkInfo trkinfo;
     if(kseed.status().hasAllProperties(TrkFitFlag::kalmanConverged))
       trkinfo.status = 1;
     else if(kseed.status().hasAllProperties(TrkFitFlag::kalmanOK))
@@ -81,6 +82,11 @@ namespace mu2e {
     }
 
     fillTrkInfoStraws(kseed, trkinfo);
+
+    if (trkinfos.size() > 1) {
+      std::cout << "Pushing back " << trkinfo.nhits << std::endl;
+    }
+    trkinfos.push_back(trkinfo);
   }
 
   void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed, std::vector<TrkFitInfo>& tfis) {

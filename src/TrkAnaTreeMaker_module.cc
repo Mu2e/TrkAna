@@ -208,7 +208,7 @@ namespace mu2e {
       // track branches (inputs)
       std::vector<art::Handle<KalSeedCollection> > _allKSCHs;
       // track branches (outputs)
-      std::vector<TrkInfo> _allTIs;
+      std::map<BranchIndex, std::vector<TrkInfo>> _allTIs;
       std::map<BranchIndex, std::vector<TrkFitInfo>> _allTFIs;
       std::map<BranchIndex, std::vector<LoopHelixInfo>> _allLHIs;
       std::map<BranchIndex, std::vector<CentralHelixInfo>> _allCHIs;
@@ -339,8 +339,7 @@ namespace mu2e {
     // Create all the info structs
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       auto i_branchConfig = _allBranches.at(i_branch);
-      TrkInfo ti;
-      _allTIs.push_back(ti);
+      _allTIs[i_branch] = std::vector<TrkInfo>();
       // fit sampling (KalIntersection) at a surface
       _allTFIs[i_branch] = std::vector<TrkFitInfo>();
       // fit-specific branches
@@ -413,7 +412,7 @@ namespace mu2e {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string branch = i_branchConfig.branch();
-      _trkana->Branch((branch+".").c_str(),&_allTIs.at(i_branch));
+      _trkana->Branch((branch+".").c_str(),&_allTIs.at(i_branch),_buffsize,_splitlevel);
       _trkana->Branch((branch+"fit.").c_str(),&_allTFIs.at(i_branch),_buffsize,_splitlevel);
 // add traj-specific branches
       if(_ftype == LoopHelix )_trkana->Branch((branch+"lh.").c_str(),&_allLHIs.at(i_branch),_buffsize,_splitlevel);
@@ -618,6 +617,10 @@ namespace mu2e {
       _extraMCStepCollections.push_back(mcstepch);
     }
 
+    for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+      _allTIs.at(i_branch).clear();
+    }
+
     // loop through all candidate tracks
     const auto& candidateKSCH = _allKSCHs.at(_candidateIndex);
     const auto& candidateKSC = *candidateKSCH;
@@ -685,9 +688,11 @@ namespace mu2e {
               _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
         }
       }
-      // fill this row in the TTree
-      _trkana->Fill();
     }
+
+    // fill this row in the TTree
+    _trkana->Fill();
+
 
     if(_conf.pempty() && candidateKSC.size()==0) { // if we want to process empty events
       _trkana->Fill();
@@ -786,7 +791,6 @@ namespace mu2e {
     _infoStructHelper.fillTrkInfo(kseed,_allTIs.at(i_branch));
 
     // fit information at specific points:e
-
     _infoStructHelper.fillTrkFitInfo(kseed,_allTFIs.at(i_branch));
     if(_ftype == LoopHelix && kseed.loopHelixFit())_infoStructHelper.fillLoopHelixInfo(kseed,_allLHIs.at(i_branch));
     if(_ftype == CentralHelix && kseed.centralHelixFit())_infoStructHelper.fillCentralHelixInfo(kseed,_allCHIs.at(i_branch));
@@ -937,7 +941,6 @@ namespace mu2e {
 
   void TrkAnaTreeMaker::resetTrackBranches() {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
-      _allTIs.at(i_branch).reset();
       _allTFIs.at(i_branch).assign(_allTFIs.at(i_branch).size(), TrkFitInfo());       // we don't want to remove elements and have to use push_back again, so use assign instead of clear to put in empty TrkFitInfo struct
 
       _allTCHIs.at(i_branch).reset();
