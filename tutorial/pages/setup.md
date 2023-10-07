@@ -73,6 +73,10 @@ setup dhtools
 samListLocations -d --defname=nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka > filelists/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.list
 ```
 
+Other TrkAna datasets you might want to look at:
+* Cosmic Rays with Extracted Position: nts.mu2e.CosmicCRYExtractedTrk.MDC2020z1_best_v1_1_std_v04_01_00.tka
+    * this also contains the ```tsh``` tracker hit branches
+
 ## ROOT
 
 The ROOT exercises can be completed either on the command line or with a macro.
