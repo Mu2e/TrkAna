@@ -144,6 +144,8 @@ python3 Script.py
 
 ### Python Notebook
 
+WARNING: People have reported issues with getting the python notebook to work. We will look into it later
+
 If you want to use a python notebook for the python exercises, then you should log into to a mu2egpvm machine with a port forwarded:
 
 ```
