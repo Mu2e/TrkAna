@@ -72,7 +72,7 @@ root [4] trkana->Print()
 (...snip...)
 ```
 
-There are a lot of branches... These are documented [elsewhere](https://mu2ewiki.fnal.gov/wiki/TrkAna#Tree_Structure) but we will go through the important ones in later tutorial exercises.
+There are a lot of branches... These are documented [elsewhere](https://docs.google.com/spreadsheets/d/1IMZVgj74vxGTWqAFRtFEEcYChujJyc38VcopZh52jhc/edit) but we will go through the important ones in later tutorial exercises.
 
 We can ```Scan()``` through the tree to see information on each track. Here we are picking out the run id, subrun id, and event id of the event; and also the magnitude of the momentum of first fit result of the track (```demfit[0].mom.R()```):
 
@@ -125,7 +125,7 @@ trkana = file["TrkAnaNeg"]["trkana"]
 trkana.keys()
 ```
 
-which will produce a lot of output since there are a lot of branches. These are documented [elsewhere](https://mu2ewiki.fnal.gov/wiki/TrkAna#Tree_Structure) but we will go through the important ones in later tutorial exercises.
+which will produce a lot of output since there are a lot of branches. These are documented [elsewhere](https://docs.google.com/spreadsheets/d/1IMZVgj74vxGTWqAFRtFEEcYChujJyc38VcopZh52jhc/edit) but we will go through the important ones in later tutorial exercises.
 
 Note that getting the TrkAna tree can be done in a single step like this:
 
