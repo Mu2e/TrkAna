@@ -8,6 +8,11 @@ The exercises in this tutorial are designed to be self-paced and for both ROOT a
 
 If you have any questions, comments, or feedback, then you can either post on the ```#trkana``` channel of the [Mu2e Slack](https://mu2ewiki.fnal.gov/wiki/Slack), or [open a GitHub issue](https://github.com/Mu2e/TrkAna/issues)
 
+### Other useful links:
+
+* explanation of branches and leaves [spreadsheet](https://docs.google.com/spreadsheets/d/1IMZVgj74vxGTWqAFRtFEEcYChujJyc38VcopZh52jhc/edit)
+    * one tab for each major branch
+
 ## Contents
 
 1. [Preliminary Information](pages/prelims.md): In this exercise, we will get some preliminary information about TrkAna.
