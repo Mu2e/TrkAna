@@ -20,6 +20,7 @@
   <class name="mu2e::CentralHelixInfo" />
   <class name="mu2e::KinematicLineInfo" />
   <class name="std::vector<mu2e::LoopHelixInfo>" />
+  <class name="std::vector<std::vector<mu2e::LoopHelixInfo>>" />
   <class name="std::vector<mu2e::CentralHelixInfo>" />
   <class name="std::vector<mu2e::KinematicLineInfo>" />
   <class name="mu2e::SimInfo" />

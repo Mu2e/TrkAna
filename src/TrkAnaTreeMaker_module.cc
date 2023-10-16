@@ -208,7 +208,7 @@ namespace mu2e {
       // track branches (outputs)
       std::map<BranchIndex, std::vector<TrkInfo>> _allTIs;
       std::map<BranchIndex, std::vector<std::vector<TrkFitInfo>>> _allTFIs;
-      std::map<BranchIndex, std::vector<LoopHelixInfo>> _allLHIs;
+      std::map<BranchIndex, std::vector<std::vector<LoopHelixInfo>>> _allLHIs;
       std::map<BranchIndex, std::vector<CentralHelixInfo>> _allCHIs;
       std::map<BranchIndex, std::vector<KinematicLineInfo>> _allKLIs;
 
@@ -335,7 +335,7 @@ namespace mu2e {
       // fit sampling (KalIntersection) at a surface
       _allTFIs[i_branch] = std::vector<std::vector<TrkFitInfo>>();
       // fit-specific branches
-      _allLHIs[i_branch] = std::vector<LoopHelixInfo>();
+      _allLHIs[i_branch] = std::vector<std::vector<LoopHelixInfo>>();
       _allCHIs[i_branch] = std::vector<CentralHelixInfo>();
       _allKLIs[i_branch] = std::vector<KinematicLineInfo>();
 
@@ -611,6 +611,7 @@ namespace mu2e {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _allTIs.at(i_branch).clear();
       _allTFIs.at(i_branch).clear();
+      _allLHIs.at(i_branch).clear();
       _allTSHIs.at(i_branch).clear();
 
       const auto& kseed_coll_h = _allKSCHs.at(i_branch);

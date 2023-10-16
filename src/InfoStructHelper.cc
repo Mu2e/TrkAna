@@ -121,8 +121,8 @@ namespace mu2e {
     all_tfis.push_back(tfis);
   }
 
-  void InfoStructHelper::fillLoopHelixInfo(const KalSeed& kseed, std::vector<LoopHelixInfo>& lhis) {
-    lhis.clear();
+  void InfoStructHelper::fillLoopHelixInfo(const KalSeed& kseed, std::vector<std::vector<LoopHelixInfo>>& all_lhis) {
+    std::vector<LoopHelixInfo> lhis;
     for(auto const& kinter : kseed.intersections()) {
       auto lh = kinter.loopHelix();
       LoopHelixInfo lhi;
@@ -142,6 +142,7 @@ namespace mu2e {
       lhi.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
       lhis.push_back(lhi);
     }
+    all_lhis.push_back(lhis);
   }
   void InfoStructHelper::fillCentralHelixInfo(const KalSeed& kseed, std::vector<CentralHelixInfo>& chis) {
     chis.clear();
