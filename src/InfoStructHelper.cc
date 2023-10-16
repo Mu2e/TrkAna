@@ -144,8 +144,8 @@ namespace mu2e {
     }
     all_lhis.push_back(lhis);
   }
-  void InfoStructHelper::fillCentralHelixInfo(const KalSeed& kseed, std::vector<CentralHelixInfo>& chis) {
-    chis.clear();
+  void InfoStructHelper::fillCentralHelixInfo(const KalSeed& kseed, std::vector<std::vector<CentralHelixInfo>>& all_chis) {
+    std::vector<CentralHelixInfo> chis;
     for(auto const& kinter : kseed.intersections()) {
       auto ch = kinter.centralHelix();
       CentralHelixInfo chi;
@@ -165,9 +165,10 @@ namespace mu2e {
       chi.maxr = fabs(-1.0/ch.omega() - ch.d0());
       chis.push_back(chi);
     }
+    all_chis.push_back(chis);
   }
-  void InfoStructHelper::fillKinematicLineInfo(const KalSeed& kseed, std::vector<KinematicLineInfo>& klis) {
-     klis.clear();
+  void InfoStructHelper::fillKinematicLineInfo(const KalSeed& kseed, std::vector<std::vector<KinematicLineInfo>>& all_klis) {
+    std::vector<KinematicLineInfo> klis;
     for(auto const& kinter : kseed.intersections()) {
       auto kl = kinter.kinematicLine();
       KinematicLineInfo kli;
@@ -185,6 +186,7 @@ namespace mu2e {
       kli.t0err = sqrt(kl.paramVar(KinKal::KinematicLine::t0_));
       klis.push_back(kli);
     }
+    all_klis.push_back(klis);
  }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {

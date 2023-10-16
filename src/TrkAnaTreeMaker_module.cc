@@ -209,8 +209,8 @@ namespace mu2e {
       std::map<BranchIndex, std::vector<TrkInfo>> _allTIs;
       std::map<BranchIndex, std::vector<std::vector<TrkFitInfo>>> _allTFIs;
       std::map<BranchIndex, std::vector<std::vector<LoopHelixInfo>>> _allLHIs;
-      std::map<BranchIndex, std::vector<CentralHelixInfo>> _allCHIs;
-      std::map<BranchIndex, std::vector<KinematicLineInfo>> _allKLIs;
+      std::map<BranchIndex, std::vector<std::vector<CentralHelixInfo>>> _allCHIs;
+      std::map<BranchIndex, std::vector<std::vector<KinematicLineInfo>>> _allKLIs;
 
       std::vector<TrkCaloHitInfo> _allTCHIs;
       // quality branches (inputs)
@@ -336,8 +336,8 @@ namespace mu2e {
       _allTFIs[i_branch] = std::vector<std::vector<TrkFitInfo>>();
       // fit-specific branches
       _allLHIs[i_branch] = std::vector<std::vector<LoopHelixInfo>>();
-      _allCHIs[i_branch] = std::vector<CentralHelixInfo>();
-      _allKLIs[i_branch] = std::vector<KinematicLineInfo>();
+      _allCHIs[i_branch] = std::vector<std::vector<CentralHelixInfo>>();
+      _allKLIs[i_branch] = std::vector<std::vector<KinematicLineInfo>>();
 
       // mc truth info at VDs
       std::vector<MCStepInfo> allMCVDSteps;
@@ -612,6 +612,8 @@ namespace mu2e {
       _allTIs.at(i_branch).clear();
       _allTFIs.at(i_branch).clear();
       _allLHIs.at(i_branch).clear();
+      _allCHIs.at(i_branch).clear();
+      _allKLIs.at(i_branch).clear();
       _allTSHIs.at(i_branch).clear();
 
       const auto& kseed_coll_h = _allKSCHs.at(i_branch);
