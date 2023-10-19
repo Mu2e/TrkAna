@@ -8,6 +8,7 @@
   <class name="std::vector<mu2e::TrkStrawMatInfo>" />
   <class name="mu2e::MCStepInfo" />
   <class name="std::vector<mu2e::MCStepInfo>" />
+  <class name="std::vector<std::vector<mu2e::MCStepInfo>>" />
   <class name="mu2e::MCStepSummaryInfo" />
   <class name="mu2e::EventInfo" />
   <class name="mu2e::EventInfoMC" />
@@ -26,6 +27,7 @@
   <class name="std::vector<std::vector<mu2e::KinematicLineInfo>>" />
   <class name="mu2e::SimInfo" />
   <class name="std::vector<mu2e::SimInfo>" />
+  <class name="std::vector<std::vector<mu2e::SimInfo>>" />
   <class name="mu2e::HelixInfo" />
   <class name="mu2e::TrkCaloHitInfo" />
   <class name="std::vector<mu2e::TrkCaloHitInfo>" />
@@ -35,6 +37,7 @@
   <class name="std::vector<mu2e::TrkFitInfo>" />
   <class name="std::vector<std::vector<mu2e::TrkFitInfo>>" />
   <class name="mu2e::TrkInfoMC" />
+  <class name="std::vector<mu2e::TrkInfoMC>" />  
   <class name="mu2e::TrkQualInfo" />
   <class name="mu2e::EventWeightInfo" />
   <class name="mu2e::RecoQualInfo" />

@@ -109,6 +109,7 @@ AllOpt : { fillMC : true
 DeM : { input : "KK"
   branch : "dem"
   suffix : "DeM"
+  options : { fillMC : true   genealogyDepth : -1 }
 }
 UeM : { input : "KK"
   branch : "uem"
@@ -125,6 +126,7 @@ UmuM : { input : "KK"
 DeP : { input : "KK"
   branch : "dep"
   suffix : "DeP"
+  options : { fillMC : true   genealogyDepth : -1 }
 }
 UeP : { input : "KK"
   branch : "uep"

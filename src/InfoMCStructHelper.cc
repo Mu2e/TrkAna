@@ -49,9 +49,10 @@ namespace mu2e {
     _onSpill = (ewMarker.spillType() == EventWindowMarker::SpillType::onspill);
   }
 
-  void InfoMCStructHelper::fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
+  void InfoMCStructHelper::fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<TrkInfoMC>& all_trkinfomcs) {
     // use the primary match of the track
     // primary associated SimParticle
+    TrkInfoMC trkinfomc;
     if(kseedmc.simParticles().size() > 0){
       auto const& simp = kseedmc.simParticles().front();
       trkinfomc.valid = true;
@@ -60,6 +61,7 @@ namespace mu2e {
     }
 
     fillTrkInfoMCDigis(kseed, kseedmc, trkinfomc);
+    all_trkinfomcs.push_back(trkinfomc);
   }
 
   void InfoMCStructHelper::fillTrkInfoMCDigis(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
@@ -125,7 +127,8 @@ namespace mu2e {
     tshinfomc.doca = -1*dperp;
   }
 
-  void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<SimInfo>& siminfos, int n_generations) {
+  void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<std::vector<SimInfo>>& all_siminfos, int n_generations) {
+    std::vector<SimInfo> siminfos;
     auto trkprimaryptr = kseedmc.simParticle().simParticle(_spcH);
     auto trkprimary = trkprimaryptr->originParticle();
 
@@ -180,7 +183,7 @@ namespace mu2e {
         siminfos.push_back(sim_info);
       }
     }
-
+    all_siminfos.push_back(siminfos);
   }
 
 
@@ -205,8 +208,8 @@ namespace mu2e {
     siminfo.pos = XYZVectorF(det->toDetector(sp.startPosition()));
   }
 
-  void InfoMCStructHelper::fillVDInfo(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<MCStepInfo>& vdinfos) {
-    vdinfos.clear();
+  void InfoMCStructHelper::fillVDInfo(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<std::vector<MCStepInfo>>& all_vdinfos) {
+    std::vector<MCStepInfo> vdinfos;
     const auto& vdsteps = kseedmc._vdsteps;
     const auto& inters = kseed.intersections();
     double tmin = std::numeric_limits<float>::max();
@@ -256,6 +259,7 @@ namespace mu2e {
       vdinfos[imin].early = true;
       vdinfos[imax].late = true;
     }
+    all_vdinfos.push_back(vdinfos);
   }
 
   void InfoMCStructHelper::fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs) {

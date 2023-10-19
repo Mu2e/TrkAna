@@ -237,9 +237,9 @@ namespace mu2e {
       art::Handle<SimParticleCollection> _simParticles;
       art::Handle<MCTrajectoryCollection> _mcTrajectories;
       // MC truth branches (outputs)
-      std::vector<TrkInfoMC> _allMCTIs;
-      std::map<BranchIndex, std::vector<SimInfo>> _allMCSimTIs;
-      std::map<BranchIndex, std::vector<MCStepInfo>> _allMCVDInfos;
+      std::map<BranchIndex, std::vector<TrkInfoMC>> _allMCTIs;
+      std::map<BranchIndex, std::vector<std::vector<SimInfo>>> _allMCSimTIs;
+      std::map<BranchIndex, std::vector<std::vector<MCStepInfo>>> _allMCVDInfos;
       bool _fillcalomc;
       art::Handle<CaloClusterMCCollection> _ccmcch;
       std::vector<CaloClusterInfoMC> _allMCTCHIs;
@@ -340,15 +340,13 @@ namespace mu2e {
       _allKLIs[i_branch] = std::vector<std::vector<KinematicLineInfo>>();
 
       // mc truth info at VDs
-      std::vector<MCStepInfo> allMCVDSteps;
-      _allMCVDInfos[i_branch] = allMCVDSteps;
+      _allMCVDInfos[i_branch] = std::vector<std::vector<MCStepInfo>>();
 
       TrkCaloHitInfo tchi;
       _allTCHIs.push_back(tchi);
 
-      TrkInfoMC mcti;
-      _allMCTIs.push_back(mcti);
-      _allMCSimTIs[i_branch] = std::vector<SimInfo>();
+      _allMCTIs[i_branch] = std::vector<TrkInfoMC>();
+      _allMCSimTIs[i_branch] = std::vector<std::vector<SimInfo>>();
 
       if(_fillcalomc){
         CaloClusterInfoMC mctchi;
@@ -614,7 +612,12 @@ namespace mu2e {
       _allLHIs.at(i_branch).clear();
       _allCHIs.at(i_branch).clear();
       _allKLIs.at(i_branch).clear();
+
       _allTSHIs.at(i_branch).clear();
+
+      _allMCTIs.at(i_branch).clear();
+      _allMCVDInfos.at(i_branch).clear();
+      _allMCSimTIs.at(i_branch).clear();
 
       const auto& kseed_coll_h = _allKSCHs.at(i_branch);
       const auto& kseed_coll = *kseed_coll_h;
@@ -788,9 +791,9 @@ namespace mu2e {
       const PrimaryParticle& primary = *_pph;
       // use Assns interface to find the associated KalSeedMC; this uses ptrs
       auto kptr = art::Ptr<KalSeed>(ksch,i_kseed);
-      //        std::cout << "KalSeedMCMatch has " << _ksmcah->size() << " entries" << std::endl;
+      //      std::cout << "KalSeedMCMatch has " << _ksmcah->size() << " entries" << std::endl;
       for(auto iksmca = _ksmcah->begin(); iksmca!= _ksmcah->end(); iksmca++){
-        //        std::cout << "KalSeed Ptr " << kptr << " match Ptr " << iksmca->first << std::endl;
+        //        std::cout << "KalSeed Ptr " << kptr << " match Ptr " << iksmca->first << "?" << std::endl;
         if(iksmca->first == kptr) {
           auto const& kseedmc = *(iksmca->second);
           auto const& kseed = *kptr;
@@ -881,9 +884,6 @@ namespace mu2e {
   void TrkAnaTreeMaker::resetTrackBranches() {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _allTCHIs.at(i_branch).reset();
-
-      _allMCTIs.at(i_branch).reset();
-      _allMCSimTIs.at(i_branch).clear();       // we do want to remove elements since we may have different numbers of SimInfos
 
       if(_fillcalomc)_allMCTCHIs.at(i_branch).reset();
 
