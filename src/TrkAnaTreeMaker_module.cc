@@ -212,7 +212,7 @@ namespace mu2e {
       std::map<BranchIndex, std::vector<std::vector<CentralHelixInfo>>> _allCHIs;
       std::map<BranchIndex, std::vector<std::vector<KinematicLineInfo>>> _allKLIs;
 
-      std::vector<TrkCaloHitInfo> _allTCHIs;
+      std::map<BranchIndex, std::vector<TrkCaloHitInfo>> _allTCHIs;
       // quality branches (inputs)
       std::vector<std::vector<art::Handle<RecoQualCollection> > > _allRQCHs; // outer vector is for each track type, inner vector is all RecoQuals
       std::vector<art::Handle<TrkQualCollection> > _allTQCHs; // we will only allow one TrkQual object per track type to be fully written out
@@ -342,8 +342,7 @@ namespace mu2e {
       // mc truth info at VDs
       _allMCVDInfos[i_branch] = std::vector<std::vector<MCStepInfo>>();
 
-      TrkCaloHitInfo tchi;
-      _allTCHIs.push_back(tchi);
+      _allTCHIs[i_branch] = std::vector<TrkCaloHitInfo>();
 
       _allMCTIs[i_branch] = std::vector<TrkInfoMC>();
       _allMCSimTIs[i_branch] = std::vector<std::vector<SimInfo>>();
@@ -612,6 +611,7 @@ namespace mu2e {
       _allLHIs.at(i_branch).clear();
       _allCHIs.at(i_branch).clear();
       _allKLIs.at(i_branch).clear();
+      _allTCHIs.at(i_branch).clear();
 
       _allTSHIs.at(i_branch).clear();
 
@@ -883,7 +883,6 @@ namespace mu2e {
 
   void TrkAnaTreeMaker::resetTrackBranches() {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
-      _allTCHIs.at(i_branch).reset();
 
       if(_fillcalomc)_allMCTCHIs.at(i_branch).reset();
 

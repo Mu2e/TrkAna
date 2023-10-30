@@ -339,7 +339,8 @@ namespace mu2e {
     }
   }
 
-  void InfoStructHelper::fillCaloHitInfo(const KalSeed& kseed, TrkCaloHitInfo& tchinfo) {
+  void InfoStructHelper::fillCaloHitInfo(const KalSeed& kseed, std::vector<TrkCaloHitInfo>& all_tchinfos) {
+    TrkCaloHitInfo tchinfo;
     if (kseed.hasCaloCluster()) {
       auto const& tch = kseed.caloHit();
       auto const& cc = tch.caloCluster();
@@ -361,6 +362,7 @@ namespace mu2e {
       tchinfo.edep = cc->energyDep();
       tchinfo.edeperr = cc->energyDepErr();
     }
+    all_tchinfos.push_back(tchinfo);
   }
 
   void InfoStructHelper::fillTrkQualInfo(const TrkQual& tqual, TrkQualInfo& trkqualInfo) {
