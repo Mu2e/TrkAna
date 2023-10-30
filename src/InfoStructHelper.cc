@@ -317,8 +317,8 @@ namespace mu2e {
     all_tshinfos.push_back(tshinfos);
   }
 
-  void InfoStructHelper::fillMatInfo(const KalSeed& kseed, std::vector<TrkStrawMatInfo>& tminfos ) {
-    tminfos.clear();
+  void InfoStructHelper::fillMatInfo(const KalSeed& kseed, std::vector<std::vector<TrkStrawMatInfo>>& all_tminfos ) {
+    std::vector<TrkStrawMatInfo> tminfos;
     // loop over sites, pick out the materials
 
     for(const auto& i_straw : kseed.straws()) {
@@ -337,6 +337,7 @@ namespace mu2e {
 
       tminfos.push_back(tminfo);
     }
+    all_tminfos.push_back(tminfos);
   }
 
   void InfoStructHelper::fillCaloHitInfo(const KalSeed& kseed, std::vector<TrkCaloHitInfo>& all_tchinfos) {
