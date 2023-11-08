@@ -341,6 +341,7 @@ namespace mu2e {
       tchinfo.poca = tch._cpos;
       tchinfo.mom = tch._tmom;
       tchinfo.cdepth = tch._cdepth;
+      tchinfo.trkdepth = tch._trkdepth;
       tchinfo.doca = tch._udoca;
       tchinfo.dt = tch._udt;
       tchinfo.ptoca = tch._uptoca;
