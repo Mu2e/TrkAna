@@ -15,6 +15,7 @@ namespace mu2e
     XYZVectorF mom; // Track momentum vector at Point Of Closest Approach (POCA)
     float cdepth = -1000.0; // depth along crystal from POCA to the SiPM
     float trkdepth = -1000.0; // depth projected along the track
+    float dphidot = -1000.0; //  cosine of relative azimuth between momentum and POCA
     float doca = -1000.0; // DOCA of this hit
     float dt = -1000.0;
     float ptoca = -1000.0;
