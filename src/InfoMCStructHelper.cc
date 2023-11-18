@@ -14,10 +14,9 @@
 
 #include "Offline/GlobalConstantsService/inc/GlobalConstantsHandle.hh"
 #include "Offline/GlobalConstantsService/inc/ParticleDataList.hh"
+#include "Offline/GlobalConstantsService/inc/PhysicsParams.hh"
 #include "Offline/GeometryService/inc/GeomHandle.hh"
 #include "Offline/GeometryService/inc/DetectorSystem.hh"
-#include "Offline/ConditionsService/inc/ConditionsHandle.hh"
-#include "Offline/ConditionsService/inc/AcceleratorParams.hh"
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Event.h"
 
@@ -41,8 +40,7 @@ namespace mu2e {
 
   void InfoMCStructHelper::updateEvent(const art::Event& event) {
     event.getByLabel(_spctag,_spcH);
-    ConditionsHandle<AcceleratorParams> accPar("ignored");
-    _mbtime = accPar->deBuncherPeriod;
+    _mbtime = GlobalConstantsHandle<PhysicsParams>()->getNominalDRPeriod();
     art::Handle<EventWindowMarker> ewMarkerHandle;
     event.getByLabel(_ewMarkerTag, ewMarkerHandle);
     const EventWindowMarker& ewMarker(*ewMarkerHandle);
