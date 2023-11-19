@@ -6,13 +6,6 @@ BEGIN_PROLOG
 TrkAnaTrigger : {
   TrkAnaTT : {
     @table::TrkAnaTreeMaker
-      candidate : {
-        @table::DeM
-          options : {
-            @table::AllOpt
-            fillHits : true
-          }
-      }
     supplements : []
     ExtraMCStepCollectionTags : []
     diagLevel : 2
@@ -36,6 +29,32 @@ TrkAnaTrigger : {
       MaxVDDt : 5 # ns
     }
   }
+}
+TrkAnaTrigger : {
+  @table::TrkAnaTrigger
+  TrkAnaDeMTT : {
+    @table::TrkAnaTrigger.TrkAnaTT
+    candidate : {
+      @table::DeM
+      options : {
+        @table::AllOpt
+        fillHits : true
+      }
+    }
+  }
+
+  TrkAnaDePTT : {
+    @table::TrkAnaTrigger.TrkAnaTT
+    candidate : {
+      @table::DeP
+      options : {
+        @table::AllOpt
+        fillHits : true
+      }
+    }
+  }
+
+
 }
 
 END_PROLOG

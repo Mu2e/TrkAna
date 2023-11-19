@@ -126,24 +126,24 @@ namespace mu2e {
   }
 
   void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<SimInfo>& siminfos, int n_generations, int n_match) {
+    // interpret -1 as no llimit
+    if (n_generations == -1) {
+      n_generations = std::numeric_limits<int>::max();
+    }
+    if (n_match == -1 ) {
+      n_match = std::numeric_limits<int>::max();
+    }
     for(int imatch = 0 ; imatch < std::min(n_match,static_cast<int>(kseedmc.simParticles().size())); ++imatch) {
       auto trkprimaryptr = kseedmc.simParticle(imatch).simParticle(_spcH);
       auto trkprimary = trkprimaryptr->originParticle();
       auto current_sim_particle_ptr = trkprimaryptr;
       auto current_sim_particle = trkprimary;
-      if (n_generations == -1) { // means do all generations
-        n_generations = std::numeric_limits<int>::max();
-      }
 
       for (int i_generation = 0; i_generation < n_generations; ++i_generation) {
         SimInfo sim_info;
         fillSimInfo(current_sim_particle, sim_info);
         sim_info.trkrel = MCRelationship(current_sim_particle_ptr, trkprimaryptr);
         sim_info.rank = imatch;
-        if(i_generation == 0){
-          sim_info.nhits = kseedmc.simParticle(imatch)._nhits;
-          sim_info.nactive = kseedmc.simParticle(imatch)._nactive;
-        }
 
         auto bestprimarysp = primary.primarySimParticles().front();
         MCRelationship bestrel;
@@ -155,6 +155,11 @@ namespace mu2e {
           }
         }
         sim_info.prirel = bestrel;
+        // only count hits for direct contributors
+        if(i_generation == 0){
+          sim_info.nhits = kseedmc.simParticle(imatch)._nhits;
+          sim_info.nactive = kseedmc.simParticle(imatch)._nactive;
+        }
 
         siminfos.push_back(sim_info);
         if (current_sim_particle.parent().isNonnull()) {
