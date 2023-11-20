@@ -35,7 +35,8 @@ TrkAnaTrigger : {
   TrkAnaDeMTT : {
     @table::TrkAnaTrigger.TrkAnaTT
     candidate : {
-      @table::DeM
+      branch: "trk"
+      suffix : "DeM"
       options : {
         @table::AllOpt
         fillHits : true
@@ -46,7 +47,8 @@ TrkAnaTrigger : {
   TrkAnaDePTT : {
     @table::TrkAnaTrigger.TrkAnaTT
     candidate : {
-      @table::DeP
+      branch: "trk"
+      suffix : "DeP"
       options : {
         @table::AllOpt
         fillHits : true
