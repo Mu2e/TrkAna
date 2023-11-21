@@ -20,6 +20,7 @@ namespace mu2e
     Int_t proc = -1; // process code
     Int_t gen = -1; // generator code
     Float_t time = -1.0;  // Origin time of the SimParticle
+    Int_t index; // index into the SimInfo vector
     XYZVectorF mom = XYZVectorF();  // origin momentumof the SimParticle
     XYZVectorF pos = XYZVectorF();  // origin position of the SimParticle
     MCRelationship prirel = MCRelationship::none; // relationship to the event primary particles

@@ -160,7 +160,8 @@ namespace mu2e {
           sim_info.nhits = kseedmc.simParticle(imatch)._nhits;
           sim_info.nactive = kseedmc.simParticle(imatch)._nactive;
         }
-
+        // record the index this object will have
+        sim_info.index = siminfos.size();
         siminfos.push_back(sim_info);
         if (current_sim_particle.parent().isNonnull()) {
           current_sim_particle_ptr = current_sim_particle.parent();
@@ -189,6 +190,7 @@ namespace mu2e {
         auto trkprimaryptr = kseedmc.simParticle().simParticle(_spcH);
         sim_info.trkrel = MCRelationship(spp, trkprimaryptr);
         sim_info.prirel = MCRelationship(spp, spp);
+        sim_info.index = siminfos.size();
         siminfos.push_back(sim_info);
       }
     }
