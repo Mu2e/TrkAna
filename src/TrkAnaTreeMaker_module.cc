@@ -242,7 +242,7 @@ namespace mu2e {
       std::map<BranchIndex, std::vector<std::vector<MCStepInfo>>> _allMCVDInfos;
       bool _fillcalomc;
       art::Handle<CaloClusterMCCollection> _ccmcch;
-      std::vector<CaloClusterInfoMC> _allMCTCHIs;
+      std::map<BranchIndex, std::vector<CaloClusterInfoMC>> _allMCTCHIs;
 
       // hit level info branches
       std::map<BranchIndex, std::vector<std::vector<TrkStrawHitInfo>>> _allTSHIs;
@@ -348,8 +348,7 @@ namespace mu2e {
       _allMCSimTIs[i_branch] = std::vector<std::vector<SimInfo>>();
 
       if(_fillcalomc){
-        CaloClusterInfoMC mctchi;
-        _allMCTCHIs.push_back(mctchi);
+        _allMCTCHIs[i_branch] = std::vector<CaloClusterInfoMC>();
       }
 
       RecoQualInfo rqi;
@@ -619,6 +618,8 @@ namespace mu2e {
       _allMCVDInfos.at(i_branch).clear();
       _allMCSimTIs.at(i_branch).clear();
 
+      if(_fillcalomc) { _allMCTCHIs.at(i_branch).clear(); }
+
       const auto& kseed_coll_h = _allKSCHs.at(i_branch);
       const auto& kseed_coll = *kseed_coll_h;
       for (size_t i_kseed = 0; i_kseed < kseed_coll.size(); ++i_kseed) {
@@ -883,8 +884,6 @@ namespace mu2e {
 
   void TrkAnaTreeMaker::resetTrackBranches() {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
-
-      if(_fillcalomc)_allMCTCHIs.at(i_branch).reset();
 
       _allRQIs.at(i_branch).reset();
       _allTQIs.at(i_branch).reset();

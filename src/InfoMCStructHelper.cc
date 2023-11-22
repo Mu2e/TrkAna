@@ -272,7 +272,8 @@ namespace mu2e {
     }
   }
 
-  void InfoMCStructHelper::fillCaloClusterInfoMC(CaloClusterMC const& ccmc, CaloClusterInfoMC& ccimc) {
+  void InfoMCStructHelper::fillCaloClusterInfoMC(CaloClusterMC const& ccmc, std::vector<CaloClusterInfoMC>& ccimcs) {
+    CaloClusterInfoMC ccimc;
     auto const& edeps = ccmc.energyDeposits();
     ccimc.nsim = edeps.size();
     ccimc.etot = ccmc.totalEnergyDep();
@@ -283,6 +284,7 @@ namespace mu2e {
       ccimc.tprimary = primary.time();
       ccimc.prel = primary.rel();
     }
+    ccimcs.push_back(ccimc);
   }
 
   void InfoMCStructHelper::fillExtraMCStepInfos(KalSeedMC const& kseedmc, StepPointMCCollection const& mcsteps,
