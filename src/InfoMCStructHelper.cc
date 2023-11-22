@@ -262,14 +262,15 @@ namespace mu2e {
     all_vdinfos.push_back(vdinfos);
   }
 
-  void InfoMCStructHelper::fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs) {
-    tshinfomcs.clear();
+  void InfoMCStructHelper::fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<std::vector<TrkStrawHitInfoMC>>& all_tshinfomcs) {
+    std::vector<TrkStrawHitInfoMC> tshinfomcs;
 
     for(const auto& i_tshmc : kseedmc._tshmcs) {
       TrkStrawHitInfoMC tshinfomc;
       fillHitInfoMC(kseedmc, tshinfomc, i_tshmc);
       tshinfomcs.push_back(tshinfomc);
     }
+    all_tshinfomcs.push_back(tshinfomcs);
   }
 
   void InfoMCStructHelper::fillCaloClusterInfoMC(CaloClusterMC const& ccmc, std::vector<CaloClusterInfoMC>& ccimcs) {

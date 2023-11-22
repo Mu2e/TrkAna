@@ -247,7 +247,7 @@ namespace mu2e {
       // hit level info branches
       std::map<BranchIndex, std::vector<std::vector<TrkStrawHitInfo>>> _allTSHIs;
       std::map<BranchIndex, std::vector<std::vector<TrkStrawMatInfo>>> _allTSMIs;
-      std::vector<std::vector<TrkStrawHitInfoMC>> _allTSHIMCs;
+      std::map<BranchIndex, std::vector<std::vector<TrkStrawHitInfoMC>>> _allTSHIMCs;
 
       // event weights
       std::vector<art::Handle<EventWeight> > _wtHandles;
@@ -360,8 +360,7 @@ namespace mu2e {
 
       _allTSHIs[i_branch] = std::vector<std::vector<TrkStrawHitInfo>>();
       _allTSMIs[i_branch] = std::vector<std::vector<TrkStrawMatInfo>>();
-      std::vector<TrkStrawHitInfoMC> tshimc;
-      _allTSHIMCs.push_back(tshimc);
+      _allTSHIMCs[i_branch] = std::vector<std::vector<TrkStrawHitInfoMC>>();
 
     }
   }
@@ -613,6 +612,7 @@ namespace mu2e {
 
       _allTSHIs.at(i_branch).clear();
       _allTSMIs.at(i_branch).clear();
+      _allTSHIMCs.at(i_branch).clear();
 
       _allMCTIs.at(i_branch).clear();
       _allMCVDInfos.at(i_branch).clear();
@@ -888,10 +888,6 @@ namespace mu2e {
       _allRQIs.at(i_branch).reset();
       _allTQIs.at(i_branch).reset();
       _allTPIs.at(i_branch).reset();
-
-      // clear vectors
-      _allTSHIMCs.at(i_branch).clear();
-
     }
     // clear vectors
     _crvhit.clear();
