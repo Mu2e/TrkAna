@@ -341,6 +341,7 @@ namespace mu2e {
       tchinfo.poca = tch._cpos;
       tchinfo.mom = tch._tmom;
       tchinfo.cdepth = tch._cdepth;
+      tchinfo.trkdepth = tch._trkdepth;
       tchinfo.doca = tch._udoca;
       tchinfo.dt = tch._udt;
       tchinfo.ptoca = tch._uptoca;
@@ -353,6 +354,10 @@ namespace mu2e {
       tchinfo.csize = cc->size();
       tchinfo.edep = cc->energyDep();
       tchinfo.edeperr = cc->energyDepErr();
+      // compute relative azimuth dot product
+      auto rmomhat = XYZVectorF(tch._tmom.X(),tch._tmom.Y(),0.0).Unit();
+      auto rhohat = XYZVectorF(tch._cpos.X(),tch._cpos.Y(),0.0).Unit();
+      tchinfo.dphidot = rmomhat.Dot(rhohat);
     }
   }
 
