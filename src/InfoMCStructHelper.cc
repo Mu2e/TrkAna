@@ -123,39 +123,51 @@ namespace mu2e {
     tshinfomc.doca = -1*dperp;
   }
 
-  void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<SimInfo>& siminfos, int n_generations) {
-    auto trkprimaryptr = kseedmc.simParticle().simParticle(_spcH);
-    auto trkprimary = trkprimaryptr->originParticle();
-
-    auto current_sim_particle_ptr = trkprimaryptr;
-    auto current_sim_particle = trkprimary;
-    if (n_generations == -1) { // means do all generations
+  void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<SimInfo>& siminfos, int n_generations, int n_match) {
+    // interpret -1 as no llimit
+    if (n_generations == -1) {
       n_generations = std::numeric_limits<int>::max();
     }
+    if (n_match == -1 ) {
+      n_match = std::numeric_limits<int>::max();
+    }
+    for(int imatch = 0 ; imatch < std::min(n_match,static_cast<int>(kseedmc.simParticles().size())); ++imatch) {
+      auto trkprimaryptr = kseedmc.simParticle(imatch).simParticle(_spcH);
+      auto trkprimary = trkprimaryptr->originParticle();
+      auto current_sim_particle_ptr = trkprimaryptr;
+      auto current_sim_particle = trkprimary;
 
-    for (int i_generation = 0; i_generation < n_generations; ++i_generation) {
-      SimInfo sim_info;
-      fillSimInfo(current_sim_particle, sim_info);
-      sim_info.trkrel = MCRelationship(current_sim_particle_ptr, trkprimaryptr);
+      for (int i_generation = 0; i_generation < n_generations; ++i_generation) {
+        SimInfo sim_info;
+        fillSimInfo(current_sim_particle, sim_info);
+        sim_info.trkrel = MCRelationship(current_sim_particle_ptr, trkprimaryptr);
+        sim_info.rank = imatch;
 
-      auto bestprimarysp = primary.primarySimParticles().front();
-      MCRelationship bestrel;
-      for(auto const& spp : primary.primarySimParticles()){
-        MCRelationship mcrel(current_sim_particle_ptr, spp);
-        if(mcrel > bestrel){
-          bestrel = mcrel;
-          bestprimarysp = spp;
+        auto bestprimarysp = primary.primarySimParticles().front();
+        MCRelationship bestrel;
+        for(auto const& spp : primary.primarySimParticles()){
+          MCRelationship mcrel(current_sim_particle_ptr, spp);
+          if(mcrel > bestrel){
+            bestrel = mcrel;
+            bestprimarysp = spp;
+          }
         }
-      }
-      sim_info.prirel = bestrel;
-
-      siminfos.push_back(sim_info);
-      if (current_sim_particle.parent().isNonnull()) {
-        current_sim_particle_ptr = current_sim_particle.parent();
-        current_sim_particle = current_sim_particle_ptr->originParticle();
-      }
-      else {
-        break; // this particle doesn't have a parent
+        sim_info.prirel = bestrel;
+        // only count hits for direct contributors
+        if(i_generation == 0){
+          sim_info.nhits = kseedmc.simParticle(imatch)._nhits;
+          sim_info.nactive = kseedmc.simParticle(imatch)._nactive;
+        }
+        // record the index this object will have
+        sim_info.index = siminfos.size();
+        siminfos.push_back(sim_info);
+        if (current_sim_particle.parent().isNonnull()) {
+          current_sim_particle_ptr = current_sim_particle.parent();
+          current_sim_particle = current_sim_particle_ptr->originParticle();
+        }
+        else {
+          break; // this particle doesn't have a parent
+        }
       }
     }
 
@@ -173,12 +185,13 @@ namespace mu2e {
         }
       }
       if (!already_added) {
+        auto trkprimaryptr = kseedmc.simParticle().simParticle(_spcH);
         sim_info.trkrel = MCRelationship(spp, trkprimaryptr);
         sim_info.prirel = MCRelationship(spp, spp);
+        sim_info.index = siminfos.size();
         siminfos.push_back(sim_info);
       }
     }
-
   }
 
 
@@ -192,12 +205,11 @@ namespace mu2e {
   }
 
   void InfoMCStructHelper::fillSimInfo(const SimParticle& sp, SimInfo& siminfo) {
-
     GeomHandle<DetectorSystem> det;
-
     siminfo.valid = true;
+    if(sp.genParticle().isNonnull())siminfo.gen = sp.genParticle()->generatorId().id();
+    siminfo.proc = sp.creationCode();
     siminfo.pdg = sp.pdgId();
-    siminfo.gen = sp.creationCode();
     siminfo.time = sp.startGlobalTime();
     siminfo.mom = XYZVectorF(sp.startMomentum());
     siminfo.pos = XYZVectorF(det->toDetector(sp.startPosition()));

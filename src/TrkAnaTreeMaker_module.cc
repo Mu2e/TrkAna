@@ -113,6 +113,7 @@ namespace mu2e {
         fhicl::Atom<bool> filltrkpid{Name("fillTrkPID"), Comment("Switch to turn on filling of the full TrkPIDInfo for this set of tracks"), false};
         fhicl::Atom<bool> required{Name("required"), Comment("True/false if you require this type of track in the event"), false};
         fhicl::Atom<int> genealogyDepth{Name("genealogyDepth"), Comment("The depth of the genealogy information you want to keep"), 1};
+        fhicl::Atom<int> matchDepth{Name("matchDepth"), Comment("The depth into the MC true particle matching you want to keep"), 1};
       };
 
       struct BranchConfig {
@@ -854,7 +855,7 @@ namespace mu2e {
           _infoMCStructHelper.fillTrkInfoMC(kseed, kseedmc, _allMCTIs.at(i_branch));
           auto& mcvdis = _allMCVDInfos.at(i_branch);
           _infoMCStructHelper.fillVDInfo(kseed, kseedmc, mcvdis);
-          _infoMCStructHelper.fillAllSimInfos(kseedmc, primary, _allMCSimTIs.at(i_branch), branchConfig.options().genealogyDepth());
+          _infoMCStructHelper.fillAllSimInfos(kseedmc, primary, _allMCSimTIs.at(i_branch), branchConfig.options().genealogyDepth(), branchConfig.options().matchDepth());
 
           if(_conf.diag() > 1 || (_conf.fillhits() && branchConfig.options().fillhits())){
             _infoMCStructHelper.fillHitInfoMCs(kseedmc, _allTSHIMCs.at(i_branch));
