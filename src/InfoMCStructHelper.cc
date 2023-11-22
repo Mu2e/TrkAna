@@ -289,10 +289,10 @@ namespace mu2e {
   }
 
   void InfoMCStructHelper::fillExtraMCStepInfos(KalSeedMC const& kseedmc, StepPointMCCollection const& mcsteps,
-      MCStepInfos& mcsic, MCStepSummaryInfo& mcssi) {
+                                                std::vector<MCStepInfos>& mcsics, std::vector<MCStepSummaryInfo>& mcssis) {
+    MCStepInfos mcsic;
+    MCStepSummaryInfo mcssi;
     GeomHandle<DetectorSystem> det;
-    mcssi.reset();
-    mcsic.clear();
     MCStepInfo mcsi;
     // only count the extra steps associated with the primary MC truth match
     auto simp = kseedmc.simParticle().simParticle(_spcH);
@@ -333,5 +333,7 @@ namespace mu2e {
       mcsic.push_back(mcsi);
       mcssi.addStep(mcsi);
     }
+    mcsics.push_back(mcsic);
+    mcssis.push_back(mcssi);
   }
 }

@@ -97,6 +97,7 @@ namespace mu2e {
   using CLHEP::Hep3Vector;
   typedef KalSeedCollection::const_iterator KSCIter;
   typedef size_t BranchIndex;
+  typedef size_t StepCollIndex;
 
   class TrkAnaTreeMaker : public art::EDAnalyzer {
 
@@ -229,8 +230,8 @@ namespace mu2e {
       // MC truth inputs
       std::vector<art::InputTag> _extraMCStepTags;
       std::vector<art::Handle<StepPointMCCollection>> _extraMCStepCollections;
-      std::vector<std::vector<MCStepInfos*>> _extraMCStepInfos;
-      std::vector<std::vector<MCStepSummaryInfo*>> _extraMCStepSummaryInfos;
+      std::map<BranchIndex, std::map<StepCollIndex, std::vector<MCStepInfos>>> _extraMCStepInfos;
+      std::map<BranchIndex, std::map<StepCollIndex, std::vector<MCStepSummaryInfo>>> _extraMCStepSummaryInfos;
       //
       art::Handle<PrimaryParticle> _pph;
       art::Handle<KalSeedMCAssns> _ksmcah;
@@ -362,6 +363,14 @@ namespace mu2e {
       _allTSMIs[i_branch] = std::vector<std::vector<TrkStrawMatInfo>>();
       _allTSHIMCs[i_branch] = std::vector<std::vector<TrkStrawHitInfoMC>>();
 
+      if(_conf.extraMCStepTags(_extraMCStepTags)){
+        for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+          for (StepCollIndex i_extraMCStepTag = 0; i_extraMCStepTag < _extraMCStepTags.size(); ++i_extraMCStepTag) {
+            _extraMCStepInfos[i_branch][i_extraMCStepTag] = std::vector<MCStepInfos>();
+            _extraMCStepSummaryInfos[i_branch][i_extraMCStepTag] = std::vector<MCStepSummaryInfo>();
+          }
+        }
+      }
     }
   }
 
@@ -379,18 +388,6 @@ namespace mu2e {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string leafname = i_branchConfig.branch();
       _trkana->Branch(("tcnt.n"+leafname).c_str(),&_tcnt._counts[i_branch]);
-    }
-
-    // pre-set all the storage used by branches so it doesn't move
-    if(_conf.extraMCStepTags(_extraMCStepTags)){
-      for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
-        _extraMCStepInfos.push_back(std::vector<MCStepInfos*>(_extraMCStepTags.size()));
-        _extraMCStepSummaryInfos.push_back(std::vector<MCStepSummaryInfo*>(_extraMCStepTags.size()));
-        for(size_t iextra=0;iextra<_extraMCStepTags.size(); iextra++){
-          _extraMCStepInfos.at(i_branch).at(iextra) = new MCStepInfos;
-          _extraMCStepSummaryInfos.at(i_branch).at(iextra) = new MCStepSummaryInfo;
-        }
-      }
     }
 
     // create all track branches
@@ -450,17 +447,13 @@ namespace mu2e {
         }
         // configure extra MCStep branches for this track type
         if(_conf.extraMCStepTags(_extraMCStepTags)){
-          auto& mcsics = _extraMCStepInfos.at(i_branch);
-          auto& mcssis = _extraMCStepSummaryInfos.at(i_branch);
           for(size_t ixtra=0;ixtra < _extraMCStepTags.size(); ++ixtra) {
-            auto& mcsic = mcsics.at(ixtra);
-            auto& mcssi = mcssis.at(ixtra);
             auto const& tag = _extraMCStepTags[ixtra];
             auto inst = tag.instance();
             std::string  mcsiname = branch +"mcsic_" + inst;
             std::string  mcssiname = branch + "mcssi_" + inst;
-            _trkana->Branch(mcsiname.c_str(),mcsic,_buffsize,_splitlevel);
-            _trkana->Branch(mcssiname.c_str(),mcssi,_buffsize,_splitlevel);
+            _trkana->Branch(mcsiname.c_str(),&_extraMCStepInfos[i_branch][ixtra],_buffsize,_splitlevel);
+            _trkana->Branch(mcssiname.c_str(),&_extraMCStepSummaryInfos[i_branch][ixtra],_buffsize,_splitlevel);
           }
         }
       }
@@ -617,6 +610,11 @@ namespace mu2e {
       _allMCTIs.at(i_branch).clear();
       _allMCVDInfos.at(i_branch).clear();
       _allMCSimTIs.at(i_branch).clear();
+
+      for (StepCollIndex i_extraMCStepTag = 0; i_extraMCStepTag < _extraMCStepTags.size(); ++i_extraMCStepTag) {
+        _extraMCStepInfos.at(i_branch).at(i_extraMCStepTag).clear();
+        _extraMCStepSummaryInfos.at(i_branch).at(i_extraMCStepTag).clear();
+      }
 
       if(_fillcalomc) { _allMCTCHIs.at(i_branch).clear(); }
 
@@ -809,9 +807,9 @@ namespace mu2e {
           // fill extra MCStep info for this branch
           for(size_t ixt = 0; ixt < _extraMCStepTags.size(); ixt++){
             auto const& mcsc = *_extraMCStepCollections[ixt];
-            auto& mcsic = _extraMCStepInfos.at(i_branch).at(ixt);
+            auto& mcsic = _extraMCStepInfos[i_branch][ixt];
             auto& mcssi = _extraMCStepSummaryInfos.at(i_branch).at(ixt);
-            _infoMCStructHelper.fillExtraMCStepInfos(kseedmc,mcsc,*mcsic,*mcssi);
+            _infoMCStructHelper.fillExtraMCStepInfos(kseedmc,mcsc,mcsic,mcssi);
           }
           break;
         }

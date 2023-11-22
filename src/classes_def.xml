@@ -12,6 +12,7 @@
   <class name="std::vector<mu2e::MCStepInfo>" />
   <class name="std::vector<std::vector<mu2e::MCStepInfo>>" />
   <class name="mu2e::MCStepSummaryInfo" />
+  <class name="std::vector<mu2e::MCStepSummaryInfo>" />
   <class name="mu2e::EventInfo" />
   <class name="mu2e::EventInfoMC" />
   <class name="mu2e::helixpar" />
