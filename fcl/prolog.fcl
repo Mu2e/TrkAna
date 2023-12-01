@@ -173,6 +173,8 @@ TrkAnaTreeMaker : {
   ProcessEmptyEvents : false
   FillCRVHits : true
   FillCRVPulses : false
+  FillCaloMC : true
+  FillHelixInfo : false
   PrimaryParticleTag : "compressRecoMCs"
   KalSeedMCAssns : "SelectRecoMC"
   CaloClusterMCTag : "compressRecoMCs"
@@ -181,6 +183,7 @@ TrkAnaTreeMaker : {
     MinGoodMomFraction : 0.9
     MaxVDDt : 5 # ns
   }
+  ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
 }
 
 TrkAnaReco : {
@@ -192,23 +195,18 @@ TrkAnaReco : {
   }
 
   analyzers : {
-    TrkAnaNeg : { @table::TrkAnaTreeMaker
-      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
-    }
-    TrkAnaPos : { @table::TrkAnaTreeMaker
-      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
-    }
+    TrkAna : { @table::TrkAnaTreeMaker  }
+
     TrkAnaExt : { @table::TrkAnaTreeMaker
       branches : [ @local::Ext ]
-      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
     }
 
     genCountLogger : @local::genCountLogger
   }
 
   TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath ]
-  EndSequenceNoMC : [ TrkAnaNeg, TrkAnaPos ]
-  EndSequence : [ TrkAnaNeg, TrkAnaPos, genCountLogger ]
+  EndSequenceNoMC : [ TrkAna ]
+  EndSequence : [ TrkAna, genCountLogger ]
 
 }
 
