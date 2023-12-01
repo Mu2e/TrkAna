@@ -631,28 +631,37 @@ namespace mu2e {
           _infoStructHelper.fillHelixInfo(hptr, _hinfo);
         }
       }
+    }
 
-      // TODO we want MC information when we don't have a track
-      // fill general CRV info
-      if(_crvhits){
-        event.getByLabel(_conf.crvCoincidencesTag(),_crvCoincidences);
-        event.getByLabel(_conf.crvRecoPulsesTag(),_crvRecoPulses);
-        event.getByLabel(_conf.crvStepsTag(),_crvSteps);
-        event.getByLabel(_conf.crvDigisTag(),_crvDigis);
-        if(_fillmc){
-          event.getByLabel(_conf.crvCoincidenceMCsTag(),_crvCoincidenceMCs);
-          event.getByLabel(_conf.crvDigiMCsTag(),_crvDigiMCs);
-        }
-        _crvHelper.FillCrvHitInfoCollections(
-            _crvCoincidences, _crvCoincidenceMCs,
-            _crvRecoPulses, _crvSteps, _mcTrajectories,_crvhit, _crvhitmc,
-            _crvsummary, _crvsummarymc, _crvhitmcplane, _crvPlaneY);
-        if(_crvpulses){
-          _crvHelper.FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs, _crvDigis,
-              _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
-        }
+    // TODO we want MC information when we don't have a track
+    // fill general CRV info
+    if(_crvhits){
+      // clear vectors
+      _crvhit.clear();
+      _crvhitmc.clear();
+      _crvhitmcplane.clear();
+      _crvpulseinfo.clear();
+      _crvwaveforminfo.clear();
+      _crvpulseinfomc.clear();
+
+      event.getByLabel(_conf.crvCoincidencesTag(),_crvCoincidences);
+      event.getByLabel(_conf.crvRecoPulsesTag(),_crvRecoPulses);
+      event.getByLabel(_conf.crvStepsTag(),_crvSteps);
+      event.getByLabel(_conf.crvDigisTag(),_crvDigis);
+      if(_fillmc){
+        event.getByLabel(_conf.crvCoincidenceMCsTag(),_crvCoincidenceMCs);
+        event.getByLabel(_conf.crvDigiMCsTag(),_crvDigiMCs);
+      }
+      _crvHelper.FillCrvHitInfoCollections(
+                                           _crvCoincidences, _crvCoincidenceMCs,
+                                           _crvRecoPulses, _crvSteps, _mcTrajectories,_crvhit, _crvhitmc,
+                                           _crvsummary, _crvsummarymc, _crvhitmcplane, _crvPlaneY);
+      if(_crvpulses){
+        _crvHelper.FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs, _crvDigis,
+                                               _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
       }
     }
+
 
     // fill this row in the TTree
     _trkana->Fill();
@@ -887,13 +896,6 @@ namespace mu2e {
       _allTQIs.at(i_branch).reset();
       _allTPIs.at(i_branch).reset();
     }
-    // clear vectors
-    _crvhit.clear();
-    _crvhitmc.clear();
-    _crvhitmcplane.clear();
-    _crvpulseinfo.clear();
-    _crvwaveforminfo.clear();
-    _crvpulseinfomc.clear();
   }
 }  // end namespace mu2e
 
