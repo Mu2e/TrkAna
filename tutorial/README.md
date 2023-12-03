@@ -26,9 +26,9 @@ If you have any questions, comments, or feedback, then you can either post on th
 
 1. [Plotting Local Track Information](pages/reco-mom.md): In this exercise, we will use the ```demfit``` branches to plot the reconstructed track momentum at the entrance of the tracker with and without a time cut.
 
-Note that the tutorials below still need to be updated for version 5 TrkAna trees:
-
 1. [Plotting MC Truth Information of the Track](pages/mom-res.md): In this exercise, we will use the ```demmcvd``` branch to compare reconstructed and MC truth information to plot the momentum resolution at the entrance of the tracker.
+
+Note that the tutorials below still need to be updated for version 5 TrkAna trees:
 
 1. [Plotting MC Truth Information of the Particle](pages/start-pos.md): In this exercise, we will use the ```demmcsim``` branch to plot the starting position of the conversion electrons.
 
