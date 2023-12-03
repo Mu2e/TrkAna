@@ -188,7 +188,7 @@ Finally, we need to ```show``` the plot:
 plt.show()
 ```
 
-The last thing we want to do is apply an event-level cut (i.e. only plot the information from events that pass some condition). Here we will select events that have two downstream e-minus tracks. To do this we will create a mask:
+The last thing we want to do is apply an event-level cut (i.e. only plot the information from events that pass some condition). Here we will select events that have two downstream e-minus tracks. To do this we will create a "mask array", which is an array of the same shape and dimensionality as our data but containing either ```True``` or ```False```::
 
 ```
 tcnt_ndem2_mask = (batch['tcnt.ndem']==2)
