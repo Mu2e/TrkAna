@@ -206,7 +206,7 @@ batch[(tcnt_ndem2_mask)]['dem.nhits']
 One other option for ```uproot.iterate``` that you might want to use is to report every step. This can be done like so:
 
 ```
-for batch, report in uproot.iterate(files=wildcarded_dir+":TrkAna/trkana", filter_name=["/dem[.]*"], step_size='10 MB', report=True):
+for batch, report in uproot.iterate(files=wildcarded_dir+":TrkAna/trkana", filter_name=["/dem/"], step_size='10 MB', report=True):
     print(report).
     dem_nhits = np.append(dem_nhits, batch['dem.nhits'])
 ```
