@@ -97,13 +97,15 @@ dioLLWeight : {
 }
 genCountLogger: { module_type: GenEventCountReader }
 
-AllOpt : { fillMC : true
+AllOpt : {
+  fillMC : true
   trkqual : "TrkQual"
   fillTrkQual : true
   trkpid : "TrkPID"
   fillTrkPID : true
   fillHits : true
   genealogyDepth : -1
+  matchDepth : -1
 }
 
 DeM : { input : "KK"
