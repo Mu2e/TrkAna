@@ -213,6 +213,8 @@ namespace mu2e {
     siminfo.time = sp.startGlobalTime();
     siminfo.mom = XYZVectorF(sp.startMomentum());
     siminfo.pos = XYZVectorF(det->toDetector(sp.startPosition()));
+    siminfo.endmom = XYZVectorF(sp.endMomentum());
+    siminfo.endpos = XYZVectorF(det->toDetector(sp.endPosition()));
   }
 
   void InfoMCStructHelper::fillVDInfo(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<MCStepInfo>& vdinfos) {
