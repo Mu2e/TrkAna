@@ -97,6 +97,7 @@ namespace mu2e {
   using CLHEP::Hep3Vector;
   typedef KalSeedCollection::const_iterator KSCIter;
   typedef size_t BranchIndex;
+  typedef size_t StepCollIndex;
 
   class TrkAnaTreeMaker : public art::EDAnalyzer {
 
@@ -144,8 +145,7 @@ namespace mu2e {
         fhicl::Atom<std::string> trigProcessName{Name("TriggerProcessName"), Comment("Process name for Trigger")};
         fhicl::Atom<std::string> trigpathsuffix{Name("TriggerPathSuffix"), "_trigger"}; // all trigger paths have this in the name
         // core tracking
-        fhicl::Table<BranchConfig> candidate{Name("candidate"), Comment("Candidate physics track info")};
-        fhicl::OptionalSequence< fhicl::Table<BranchConfig> > supplements{Name("supplements"), Comment("Supplemental physics track info (TrkAna will find closest in time to candidate)")};
+        fhicl::Sequence<fhicl::Table<BranchConfig> > branches{Name("branches"), Comment("All the branches we want to write")};
         // Additional (optional) tracking information
         fhicl::Atom<bool> fillhits{Name("FillHitInfo"),Comment("Global switch to turn on/off hit-level info"), false};
         fhicl::Atom<std::string> fittype{Name("FitType"),Comment("Type of track Fit: LoopHelix, CentralHelix, KinematicLine, or Unknown"),"Unknown"};
@@ -193,8 +193,7 @@ namespace mu2e {
     private:
 
       Config _conf;
-      std::vector<BranchConfig> _allBranches; // candidates + supplements
-      BranchIndex _candidateIndex; // location in above vector that contains the candidate
+      std::vector<BranchConfig> _allBranches; // configurations for all track branches
 
       // main TTree
       TTree* _trkana;
@@ -209,17 +208,17 @@ namespace mu2e {
       // track branches (inputs)
       std::vector<art::Handle<KalSeedCollection> > _allKSCHs;
       // track branches (outputs)
-      std::vector<TrkInfo> _allTIs;
-      std::map<BranchIndex, std::vector<TrkFitInfo>> _allTFIs;
-      std::map<BranchIndex, std::vector<LoopHelixInfo>> _allLHIs;
-      std::map<BranchIndex, std::vector<CentralHelixInfo>> _allCHIs;
-      std::map<BranchIndex, std::vector<KinematicLineInfo>> _allKLIs;
+      std::map<BranchIndex, std::vector<TrkInfo>> _allTIs;
+      std::map<BranchIndex, std::vector<std::vector<TrkFitInfo>>> _allTFIs;
+      std::map<BranchIndex, std::vector<std::vector<LoopHelixInfo>>> _allLHIs;
+      std::map<BranchIndex, std::vector<std::vector<CentralHelixInfo>>> _allCHIs;
+      std::map<BranchIndex, std::vector<std::vector<KinematicLineInfo>>> _allKLIs;
 
-      std::vector<TrkCaloHitInfo> _allTCHIs;
+      std::map<BranchIndex, std::vector<TrkCaloHitInfo>> _allTCHIs;
       // quality branches (inputs)
-      std::vector<std::vector<art::Handle<RecoQualCollection> > > _allRQCHs; // outer vector is for each candidate/supplement, inner vector is all RecoQuals
-      std::vector<art::Handle<TrkQualCollection> > _allTQCHs; // we will only allow one TrkQual object per candidate/supplement to be fully written out
-      std::vector<art::Handle<TrkCaloHitPIDCollection> > _allTCHPCHs; // we will only allow one TrkCaloHitPID object per candidate/supplement to be fully written out
+      std::vector<std::vector<art::Handle<RecoQualCollection> > > _allRQCHs; // outer vector is for each track type, inner vector is all RecoQuals
+      std::vector<art::Handle<TrkQualCollection> > _allTQCHs; // we will only allow one TrkQual object per track type to be fully written out
+      std::vector<art::Handle<TrkCaloHitPIDCollection> > _allTCHPCHs; // we will only allow one TrkCaloHitPID object per track type to be fully written out
       // quality branches (outputs)
       std::vector<RecoQualInfo> _allRQIs;
       std::vector<TrkQualInfo> _allTQIs;
@@ -232,25 +231,25 @@ namespace mu2e {
       // MC truth inputs
       std::vector<art::InputTag> _extraMCStepTags;
       std::vector<art::Handle<StepPointMCCollection>> _extraMCStepCollections;
-      std::vector<std::vector<MCStepInfos*>> _extraMCStepInfos;
-      std::vector<std::vector<MCStepSummaryInfo*>> _extraMCStepSummaryInfos;
+      std::map<BranchIndex, std::map<StepCollIndex, std::vector<MCStepInfos>>> _extraMCStepInfos;
+      std::map<BranchIndex, std::map<StepCollIndex, std::vector<MCStepSummaryInfo>>> _extraMCStepSummaryInfos;
       //
       art::Handle<PrimaryParticle> _pph;
       art::Handle<KalSeedMCAssns> _ksmcah;
       art::Handle<SimParticleCollection> _simParticles;
       art::Handle<MCTrajectoryCollection> _mcTrajectories;
       // MC truth branches (outputs)
-      std::vector<TrkInfoMC> _allMCTIs;
-      std::map<BranchIndex, std::vector<SimInfo>> _allMCSimTIs;
-      std::map<BranchIndex, std::vector<MCStepInfo>> _allMCVDInfos;
+      std::map<BranchIndex, std::vector<TrkInfoMC>> _allMCTIs;
+      std::map<BranchIndex, std::vector<std::vector<SimInfo>>> _allMCSimTIs;
+      std::map<BranchIndex, std::vector<std::vector<MCStepInfo>>> _allMCVDInfos;
       bool _fillcalomc;
       art::Handle<CaloClusterMCCollection> _ccmcch;
-      std::vector<CaloClusterInfoMC> _allMCTCHIs;
+      std::map<BranchIndex, std::vector<CaloClusterInfoMC>> _allMCTCHIs;
 
       // hit level info branches
-      std::vector<std::vector<TrkStrawHitInfo>> _allTSHIs;
-      std::vector<std::vector<TrkStrawMatInfo>> _allTSMIs;
-      std::vector<std::vector<TrkStrawHitInfoMC>> _allTSHIMCs;
+      std::map<BranchIndex, std::vector<std::vector<TrkStrawHitInfo>>> _allTSHIs;
+      std::map<BranchIndex, std::vector<std::vector<TrkStrawMatInfo>>> _allTSMIs;
+      std::map<BranchIndex, std::vector<std::vector<TrkStrawHitInfoMC>>> _allTSHIMCs;
 
       // event weights
       std::vector<art::Handle<EventWeight> > _wtHandles;
@@ -269,7 +268,7 @@ namespace mu2e {
       double _crvPlaneY;  // needs to move to KinKalGeom FIXME
       // CRV (output)
       std::vector<CrvHitInfoReco> _crvhit;
-      std::map<BranchIndex, std::vector<CrvHitInfoReco>> _allBestCrvs; // there can be more than one of these per candidate/supplement
+      std::map<BranchIndex, std::vector<CrvHitInfoReco>> _allBestCrvs; // there can be more than one of these per track type
       std::vector<CrvHitInfoMC> _crvhitmc;
       std::map<BranchIndex, std::vector<CrvHitInfoMC>> _allBestCrvMCs;
       CrvSummaryReco _crvsummary;
@@ -295,7 +294,6 @@ namespace mu2e {
       void fillEventInfo(const art::Event& event);
       void fillTriggerBits(const art::Event& event,std::string const& process);
       void resetTrackBranches();
-      size_t findSupplementTrack(KalSeedCollection const& kcol,KalSeed const& candidate, bool sameColl);
       void fillAllInfos(const art::Handle<KalSeedCollection>& ksch, BranchIndex i_branch, size_t i_kseed);
 
       template <typename T, typename TI, typename TIA>
@@ -327,42 +325,32 @@ namespace mu2e {
       }
     }
 
-    // collect both candidate and supplement branches into one place
-    _allBranches.push_back(_conf.candidate());
-    _candidateIndex = 0;
-    std::vector<BranchConfig> supps;
-    if (_conf.supplements(supps)) {
-      for(const auto& i_supp : supps) {
-        _allBranches.push_back(i_supp);
-      }
+    // Put all the branch configurations together
+    for(const auto& branch_cfg : _conf.branches()){
+      _allBranches.push_back(branch_cfg);
     }
 
     // Create all the info structs
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       auto i_branchConfig = _allBranches.at(i_branch);
-      TrkInfo ti;
-      _allTIs.push_back(ti);
+      _allTIs[i_branch] = std::vector<TrkInfo>();
       // fit sampling (KalIntersection) at a surface
-      _allTFIs[i_branch] = std::vector<TrkFitInfo>();
+      _allTFIs[i_branch] = std::vector<std::vector<TrkFitInfo>>();
       // fit-specific branches
-      _allLHIs[i_branch] = std::vector<LoopHelixInfo>();
-      _allCHIs[i_branch] = std::vector<CentralHelixInfo>();
-      _allKLIs[i_branch] = std::vector<KinematicLineInfo>();
+      _allLHIs[i_branch] = std::vector<std::vector<LoopHelixInfo>>();
+      _allCHIs[i_branch] = std::vector<std::vector<CentralHelixInfo>>();
+      _allKLIs[i_branch] = std::vector<std::vector<KinematicLineInfo>>();
 
-      // candidate mc truth info at VDs
-      std::vector<MCStepInfo> allMCVDSteps;
-      _allMCVDInfos[i_branch] = allMCVDSteps;
+      // mc truth info at VDs
+      _allMCVDInfos[i_branch] = std::vector<std::vector<MCStepInfo>>();
 
-      TrkCaloHitInfo tchi;
-      _allTCHIs.push_back(tchi);
+      _allTCHIs[i_branch] = std::vector<TrkCaloHitInfo>();
 
-      TrkInfoMC mcti;
-      _allMCTIs.push_back(mcti);
-      _allMCSimTIs[i_branch] = std::vector<SimInfo>();
+      _allMCTIs[i_branch] = std::vector<TrkInfoMC>();
+      _allMCSimTIs[i_branch] = std::vector<std::vector<SimInfo>>();
 
       if(_fillcalomc){
-        CaloClusterInfoMC mctchi;
-        _allMCTCHIs.push_back(mctchi);
+        _allMCTCHIs[i_branch] = std::vector<CaloClusterInfoMC>();
       }
 
       RecoQualInfo rqi;
@@ -372,13 +360,18 @@ namespace mu2e {
       TrkPIDInfo tpi;
       _allTPIs.push_back(tpi);
 
-      std::vector<TrkStrawHitInfo> tshi;
-      _allTSHIs.push_back(tshi);
-      std::vector<TrkStrawMatInfo> tsmi;
-      _allTSMIs.push_back(tsmi);
-      std::vector<TrkStrawHitInfoMC> tshimc;
-      _allTSHIMCs.push_back(tshimc);
+      _allTSHIs[i_branch] = std::vector<std::vector<TrkStrawHitInfo>>();
+      _allTSMIs[i_branch] = std::vector<std::vector<TrkStrawMatInfo>>();
+      _allTSHIMCs[i_branch] = std::vector<std::vector<TrkStrawHitInfoMC>>();
 
+      if(_conf.extraMCStepTags(_extraMCStepTags)){
+        for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+          for (StepCollIndex i_extraMCStepTag = 0; i_extraMCStepTag < _extraMCStepTags.size(); ++i_extraMCStepTag) {
+            _extraMCStepInfos[i_branch][i_extraMCStepTag] = std::vector<MCStepInfos>();
+            _extraMCStepSummaryInfos[i_branch][i_extraMCStepTag] = std::vector<MCStepSummaryInfo>();
+          }
+        }
+      }
     }
   }
 
@@ -398,23 +391,11 @@ namespace mu2e {
       _trkana->Branch(("tcnt.n"+leafname).c_str(),&_tcnt._counts[i_branch]);
     }
 
-    // pre-set all the storage used by branches so it doesn't move
-    if(_conf.extraMCStepTags(_extraMCStepTags)){
-      for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
-        _extraMCStepInfos.push_back(std::vector<MCStepInfos*>(_extraMCStepTags.size()));
-        _extraMCStepSummaryInfos.push_back(std::vector<MCStepSummaryInfo*>(_extraMCStepTags.size()));
-        for(size_t iextra=0;iextra<_extraMCStepTags.size(); iextra++){
-          _extraMCStepInfos.at(i_branch).at(iextra) = new MCStepInfos;
-          _extraMCStepSummaryInfos.at(i_branch).at(iextra) = new MCStepSummaryInfo;
-        }
-      }
-    }
-
-    // create all candidate and supplement branches
+    // create all track branches
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string branch = i_branchConfig.branch();
-      _trkana->Branch((branch+".").c_str(),&_allTIs.at(i_branch));
+      _trkana->Branch((branch+".").c_str(),&_allTIs.at(i_branch),_buffsize,_splitlevel);
       _trkana->Branch((branch+"fit.").c_str(),&_allTFIs.at(i_branch),_buffsize,_splitlevel);
 // add traj-specific branches
       if(_ftype == LoopHelix )_trkana->Branch((branch+"lh.").c_str(),&_allLHIs.at(i_branch),_buffsize,_splitlevel);
@@ -465,19 +446,15 @@ namespace mu2e {
         if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){
           _trkana->Branch((branch+"tshmc.").c_str(),&_allTSHIMCs.at(i_branch),_buffsize,_splitlevel);
         }
-        // configure extra MCStep branches for this candidate
+        // configure extra MCStep branches for this track type
         if(_conf.extraMCStepTags(_extraMCStepTags)){
-          auto& mcsics = _extraMCStepInfos.at(i_branch);
-          auto& mcssis = _extraMCStepSummaryInfos.at(i_branch);
           for(size_t ixtra=0;ixtra < _extraMCStepTags.size(); ++ixtra) {
-            auto& mcsic = mcsics.at(ixtra);
-            auto& mcssi = mcssis.at(ixtra);
             auto const& tag = _extraMCStepTags[ixtra];
             auto inst = tag.instance();
             std::string  mcsiname = branch +"mcsic_" + inst;
             std::string  mcssiname = branch + "mcssi_" + inst;
-            _trkana->Branch(mcsiname.c_str(),mcsic,_buffsize,_splitlevel);
-            _trkana->Branch(mcssiname.c_str(),mcssi,_buffsize,_splitlevel);
+            _trkana->Branch(mcsiname.c_str(),&_extraMCStepInfos[i_branch][ixtra],_buffsize,_splitlevel);
+            _trkana->Branch(mcssiname.c_str(),&_extraMCStepSummaryInfos[i_branch][ixtra],_buffsize,_splitlevel);
           }
         }
       }
@@ -536,7 +513,6 @@ namespace mu2e {
     _wtHandles = createSpecialBranch(event, "evtwt", eventWeightHandles, _wtinfo, _wtinfo._weights, false);
 
     std::string process = _conf.trigProcessName();
-    // Get the KalSeedCollections for both the candidate and all supplements
     _allKSCHs.clear();
     _allRQCHs.clear();
     _allTQCHs.clear();
@@ -619,100 +595,79 @@ namespace mu2e {
       _extraMCStepCollections.push_back(mcstepch);
     }
 
-    // loop through all candidate tracks
-    const auto& candidateKSCH = _allKSCHs.at(_candidateIndex);
-    const auto& candidateKSC = *candidateKSCH;
-    for (size_t i_kseed = 0; i_kseed < candidateKSC.size(); ++i_kseed) {
-      resetTrackBranches(); // reset track branches here so that we don't get information from previous tracks in the next entry
+    // loop through all track types
+    for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+      _allTIs.at(i_branch).clear();
+      _allTFIs.at(i_branch).clear();
+      _allLHIs.at(i_branch).clear();
+      _allCHIs.at(i_branch).clear();
+      _allKLIs.at(i_branch).clear();
+      _allTCHIs.at(i_branch).clear();
 
-      bool skip_kseed = false; // there may be a reason we don't want to write this KalSeed out
+      _allTSHIs.at(i_branch).clear();
+      _allTSMIs.at(i_branch).clear();
+      _allTSHIMCs.at(i_branch).clear();
 
-      auto const& candidateKS = candidateKSC.at(i_kseed);
-      fillAllInfos(candidateKSCH, _candidateIndex, i_kseed); // fill the info structs for the candidate
-      if(_conf.helices()){
-        auto const& khassns = khaH.product();
-        // find the associated HelixSeed to this KalSeed using the assns.
-        auto hptr = (*khassns)[i_kseed].second;
-        _infoStructHelper.fillHelixInfo(hptr, _hinfo);
+      _allMCTIs.at(i_branch).clear();
+      _allMCVDInfos.at(i_branch).clear();
+      _allMCSimTIs.at(i_branch).clear();
+
+      for (StepCollIndex i_extraMCStepTag = 0; i_extraMCStepTag < _extraMCStepTags.size(); ++i_extraMCStepTag) {
+        _extraMCStepInfos.at(i_branch).at(i_extraMCStepTag).clear();
+        _extraMCStepSummaryInfos.at(i_branch).at(i_extraMCStepTag).clear();
       }
 
-      // Now loop through all the branches (both candidate + supplements)...
-      for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
-        if (i_branch == _candidateIndex) { // ...but actually ignore candidate
-          continue;
-        }
-        // check if supplement input collection is the same as the candidate input collections
-        bool sameColl = false;
-        if ( (_allBranches.at(_candidateIndex).input()+_allBranches.at(_candidateIndex).suffix())
-            == (_allBranches.at(i_branch).input()+_allBranches.at(i_branch).suffix()) ) {
-          sameColl = true;
-        }
-        const auto& i_supplementKSCH = _allKSCHs.at(i_branch);
-        const auto& i_supplementKSC = *i_supplementKSCH;
+      if(_fillcalomc) { _allMCTCHIs.at(i_branch).clear(); }
 
-        // If we require a supplement track of this type, and there are none...
-        if (i_supplementKSC.size()==0 && _allBranches.at(i_branch).options().required()) {
-          skip_kseed = true; // ...skip this KalSeed
-        }
+      const auto& kseed_coll_h = _allKSCHs.at(i_branch);
+      const auto& kseed_coll = *kseed_coll_h;
+      for (size_t i_kseed = 0; i_kseed < kseed_coll.size(); ++i_kseed) {
+        resetTrackBranches(); // reset track branches here so that we don't get information from previous tracks in the next entry
 
-        // find the supplement track closest in time
-        auto i_supplementKS = findSupplementTrack(i_supplementKSC,candidateKS,sameColl);
-        if(i_supplementKS < i_supplementKSC.size()) {
-          fillAllInfos(_allKSCHs.at(i_branch), i_branch, i_supplementKS);
+        fillAllInfos(kseed_coll_h, i_branch, i_kseed); // fill the info structs for this track
+        if(_conf.helices()){
+          auto const& khassns = khaH.product();
+          // find the associated HelixSeed to this KalSeed using the assns.
+          auto hptr = (*khassns)[i_kseed].second;
+          _infoStructHelper.fillHelixInfo(hptr, _hinfo);
         }
       }
-
-      if (skip_kseed) {
-        continue;
-      }
-
-      // TODO we want MC information when we don't have a track
-      // fill general CRV info
-      if(_crvhits){
-        event.getByLabel(_conf.crvCoincidencesTag(),_crvCoincidences);
-        event.getByLabel(_conf.crvRecoPulsesTag(),_crvRecoPulses);
-        event.getByLabel(_conf.crvStepsTag(),_crvSteps);
-        event.getByLabel(_conf.crvDigisTag(),_crvDigis);
-        if(_fillmc){
-          event.getByLabel(_conf.crvCoincidenceMCsTag(),_crvCoincidenceMCs);
-          event.getByLabel(_conf.crvDigiMCsTag(),_crvDigiMCs);
-        }
-        _crvHelper.FillCrvHitInfoCollections(
-            _crvCoincidences, _crvCoincidenceMCs,
-            _crvRecoPulses, _crvSteps, _mcTrajectories,_crvhit, _crvhitmc,
-            _crvsummary, _crvsummarymc, _crvhitmcplane, _crvPlaneY);
-        if(_crvpulses){
-          _crvHelper.FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs, _crvDigis,
-              _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
-        }
-      }
-      // fill this row in the TTree
-      _trkana->Fill();
     }
 
-    if(_conf.pempty() && candidateKSC.size()==0) { // if we want to process empty events
-      _trkana->Fill();
+    // TODO we want MC information when we don't have a track
+    // fill general CRV info
+    if(_crvhits){
+      // clear vectors
+      _crvhit.clear();
+      _crvhitmc.clear();
+      _crvhitmcplane.clear();
+      _crvpulseinfo.clear();
+      _crvwaveforminfo.clear();
+      _crvpulseinfomc.clear();
+
+      event.getByLabel(_conf.crvCoincidencesTag(),_crvCoincidences);
+      event.getByLabel(_conf.crvRecoPulsesTag(),_crvRecoPulses);
+      event.getByLabel(_conf.crvStepsTag(),_crvSteps);
+      event.getByLabel(_conf.crvDigisTag(),_crvDigis);
+      if(_fillmc){
+        event.getByLabel(_conf.crvCoincidenceMCsTag(),_crvCoincidenceMCs);
+        event.getByLabel(_conf.crvDigiMCsTag(),_crvDigiMCs);
+      }
+      _crvHelper.FillCrvHitInfoCollections(
+                                           _crvCoincidences, _crvCoincidenceMCs,
+                                           _crvRecoPulses, _crvSteps, _mcTrajectories,_crvhit, _crvhitmc,
+                                           _crvsummary, _crvsummarymc, _crvhitmcplane, _crvPlaneY);
+      if(_crvpulses){
+        _crvHelper.FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs, _crvDigis,
+                                               _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
+      }
     }
+
+
+    // fill this row in the TTree
+    _trkana->Fill();
   }
 
-  size_t TrkAnaTreeMaker::findSupplementTrack(KalSeedCollection const& kcol,const KalSeed& candidate, bool sameColl) {
-    size_t retval = kcol.size();
-
-    // loop over supplement tracks and find the closest
-    double candidate_time = candidate.t0().t0();
-    double closest_time = 999999999;
-    for(auto i_kseed=kcol.begin(); i_kseed != kcol.end(); i_kseed++) {
-      double supplement_time = i_kseed->t0().t0();
-      if( fabs(supplement_time - candidate_time) < fabs(closest_time-candidate_time)) {
-        if (sameColl && fabs(supplement_time - candidate_time)<1e-5) {
-          continue; // don't want the exact same track
-        }
-        closest_time = supplement_time;
-        retval = i_kseed - kcol.begin();
-      }
-    }
-    return retval;
-  }
 
   void TrkAnaTreeMaker::fillEventInfo( const art::Event& event) {
     // fill basic event information
@@ -787,7 +742,6 @@ namespace mu2e {
     _infoStructHelper.fillTrkInfo(kseed,_allTIs.at(i_branch));
 
     // fit information at specific points:e
-
     _infoStructHelper.fillTrkFitInfo(kseed,_allTFIs.at(i_branch));
     if(_ftype == LoopHelix && kseed.loopHelixFit())_infoStructHelper.fillLoopHelixInfo(kseed,_allLHIs.at(i_branch));
     if(_ftype == CentralHelix && kseed.centralHelixFit())_infoStructHelper.fillCentralHelixInfo(kseed,_allCHIs.at(i_branch));
@@ -846,9 +800,9 @@ namespace mu2e {
       const PrimaryParticle& primary = *_pph;
       // use Assns interface to find the associated KalSeedMC; this uses ptrs
       auto kptr = art::Ptr<KalSeed>(ksch,i_kseed);
-      //        std::cout << "KalSeedMCMatch has " << _ksmcah->size() << " entries" << std::endl;
+      //      std::cout << "KalSeedMCMatch has " << _ksmcah->size() << " entries" << std::endl;
       for(auto iksmca = _ksmcah->begin(); iksmca!= _ksmcah->end(); iksmca++){
-        //        std::cout << "KalSeed Ptr " << kptr << " match Ptr " << iksmca->first << std::endl;
+        //        std::cout << "KalSeed Ptr " << kptr << " match Ptr " << iksmca->first << "?" << std::endl;
         if(iksmca->first == kptr) {
           auto const& kseedmc = *(iksmca->second);
           auto const& kseed = *kptr;
@@ -863,9 +817,9 @@ namespace mu2e {
           // fill extra MCStep info for this branch
           for(size_t ixt = 0; ixt < _extraMCStepTags.size(); ixt++){
             auto const& mcsc = *_extraMCStepCollections[ixt];
-            auto& mcsic = _extraMCStepInfos.at(i_branch).at(ixt);
+            auto& mcsic = _extraMCStepInfos[i_branch][ixt];
             auto& mcssi = _extraMCStepSummaryInfos.at(i_branch).at(ixt);
-            _infoMCStructHelper.fillExtraMCStepInfos(kseedmc,mcsc,*mcsic,*mcssi);
+            _infoMCStructHelper.fillExtraMCStepInfos(kseedmc,mcsc,mcsic,mcssi);
           }
           break;
         }
@@ -938,33 +892,11 @@ namespace mu2e {
 
   void TrkAnaTreeMaker::resetTrackBranches() {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
-      _allTIs.at(i_branch).reset();
-      _allTFIs.at(i_branch).assign(_allTFIs.at(i_branch).size(), TrkFitInfo());       // we don't want to remove elements and have to use push_back again, so use assign instead of clear to put in empty TrkFitInfo struct
-
-      _allTCHIs.at(i_branch).reset();
-
-      _allMCTIs.at(i_branch).reset();
-      _allMCSimTIs.at(i_branch).clear();       // we do want to remove elements since we may have different numbers of SimInfos
-
-      if(_fillcalomc)_allMCTCHIs.at(i_branch).reset();
 
       _allRQIs.at(i_branch).reset();
       _allTQIs.at(i_branch).reset();
       _allTPIs.at(i_branch).reset();
-
-      // clear vectors
-      _allTSHIs.at(i_branch).clear();
-      _allTSMIs.at(i_branch).clear();
-      _allTSHIMCs.at(i_branch).clear();
-
     }
-    // clear vectors
-    _crvhit.clear();
-    _crvhitmc.clear();
-    _crvhitmcplane.clear();
-    _crvpulseinfo.clear();
-    _crvwaveforminfo.clear();
-    _crvpulseinfomc.clear();
   }
 }  // end namespace mu2e
 
