@@ -125,13 +125,8 @@ namespace mu2e {
     tshinfomc.doca = -1*dperp;
   }
 
-  void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<std::vector<SimInfo>>& all_siminfos, int n_generations) {
+  void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<std::vector<SimInfo>>& all_siminfos, int n_generations, int n_match) {
     std::vector<SimInfo> siminfos;
-    auto trkprimaryptr = kseedmc.simParticle().simParticle(_spcH);
-    auto trkprimary = trkprimaryptr->originParticle();
-
-    auto current_sim_particle_ptr = trkprimaryptr;
-    auto current_sim_particle = trkprimary;
 
     // interpret -1 as no llimit
     if (n_generations == -1) {
