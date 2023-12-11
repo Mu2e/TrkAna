@@ -54,8 +54,10 @@ trkana->Draw("demmcvd.mom.R()>>hist2", "demmcvd.sid==0", "HIST SAMES");
 If you check the number of entries in each histogram with ```hist->GetEntries()``` you will notice that they are different. This is because sometimes one array or the other is missing an intersection. So to get the momentum resolution (the difference between the two), we have to make sure we are comparing apples with apples:
 
 ```
-trkana->Draw("demfit[demmcvd.iinter].mom.R() - demmcvd.mom.R()", "demmcvd.sid==0", "HIST");
+trkana->Draw("demfit[][demmcvd[].iinter].mom.R() - demmcvd[].mom.R()", "demmcvd[].sid==0", "HIST");
 ```
+
+where the ```[]``` is to make the loop over the tracks explicit.
 
 As explained in the introduction to this exercise, the ```demfit``` and ```demmcvd``` branches can be out of sync and so we use the ```demmcvd.iinter``` to compare reco and MC at the same intersection. You can get a better idea of this issue by scanning the TTree for entries where they don't match:
 
