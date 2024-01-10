@@ -15,9 +15,9 @@ TrkQual : {
   module_type : TrackQuality
 }
 TrkQualNeg : @local::TrkQual
-TrkQualNeg.TrainingName : "TrkQualNeg"
+#TrkQualNeg.TrainingName : "TrkQualNeg"
 TrkQualPos : @local::TrkQual
-TrkQualPos.TrainingName : "TrkQualPos"
+#TrkQualPos.TrainingName : "TrkQualPos"
 
 TrkQualDeM           : @local::TrkQualNeg
 TrkQualDeM.KalSeedCollection : "KKDeM"
@@ -111,6 +111,7 @@ AllOpt : {
 DeM : { input : "KK"
   branch : "dem"
   suffix : "DeM"
+  trkQualTag : "TrkQualDeM"
 }
 UeM : { input : "KK"
   branch : "uem"

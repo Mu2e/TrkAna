@@ -81,7 +81,9 @@
 #include "TrkAna/inc/CrvInfoHelper.hh"
 #include "TrkAna/inc/InfoMCStructHelper.hh"
 #include "Offline/RecoDataProducts/inc/RecoQual.hh"
+#include "Offline/RecoDataProducts/inc/MVAResult.hh"
 #include "TrkAna/inc/RecoQualInfo.hh"
+#include "TrkAna/inc/MVAResultInfo.hh"
 #include "TrkAna/inc/BestCrvAssns.hh"
 #include "TrkAna/inc/MCStepInfo.hh"
 
@@ -123,6 +125,7 @@ namespace mu2e {
         fhicl::Atom<std::string> input{Name("input"), Comment("KalSeedCollection input tag (use prefix if fcl parameter suffix is defined)")};
         fhicl::Atom<std::string> branch{Name("branch"), Comment("Name of output branch")};
         fhicl::Atom<std::string> suffix{Name("suffix"), Comment("Fit suffix (e.g. DeM)"), ""};
+        fhicl::Atom<std::string> trkQualTag{Name("trkQualTag"), Comment("Input tag for MVAResultCollection to use for TrkQual"), ""};
         fhicl::Table<BranchOptConfig> options{Name("options"), Comment("Optional arguments for a branch")};
       };
 
@@ -220,10 +223,12 @@ namespace mu2e {
       std::vector<std::vector<art::Handle<RecoQualCollection> > > _allRQCHs; // outer vector is for each candidate/supplement, inner vector is all RecoQuals
       std::vector<art::Handle<TrkQualCollection> > _allTQCHs; // we will only allow one TrkQual object per candidate/supplement to be fully written out
       std::vector<art::Handle<TrkCaloHitPIDCollection> > _allTCHPCHs; // we will only allow one TrkCaloHitPID object per candidate/supplement to be fully written out
+      std::vector<art::Handle<MVAResultCollection> > _allTrkQualCHs;
       // quality branches (outputs)
       std::vector<RecoQualInfo> _allRQIs;
       std::vector<TrkQualInfo> _allTQIs;
       std::vector<TrkPIDInfo> _allTPIs;
+      std::vector<MVAResultInfo> _allTrkQualResults;
       // trigger information
       unsigned _trigbits;
       std::map<size_t,unsigned> _tmap; // map between path and trigger ID.  ID should come from trigger itself FIXME!
@@ -372,6 +377,9 @@ namespace mu2e {
       TrkPIDInfo tpi;
       _allTPIs.push_back(tpi);
 
+      MVAResultInfo tqr;
+      _allTrkQualResults.emplace_back(tqr);
+
       std::vector<TrkStrawHitInfo> tshi;
       _allTSHIs.push_back(tshi);
       std::vector<TrkStrawMatInfo> tsmi;
@@ -422,6 +430,7 @@ namespace mu2e {
       if(_ftype == KinematicLine )_trkana->Branch((branch+"kl.").c_str(),&_allKLIs.at(i_branch),_buffsize,_splitlevel);
       // TrkCaloHit: currently only 1
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
+      _trkana->Branch((branch+"mva").c_str(), &_allTrkQualResults.at(i_branch));
       if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
         int n_trkqual_vars = TrkQual::n_vars;
         for (int i_trkqual_var = 0; i_trkqual_var < n_trkqual_vars; ++i_trkqual_var) {
@@ -542,6 +551,7 @@ namespace mu2e {
     _allTQCHs.clear();
     _allTCHPCHs.clear();
     _allBestCrvAssns.clear();
+    _allTrkQualCHs.clear();
 
     art::Handle<KalHelixAssns> khaH;
     if(_conf.helices()){ // find associated Helices
@@ -556,6 +566,12 @@ namespace mu2e {
       art::InputTag kalSeedInputTag = i_branchConfig.input() + i_branchConfig.suffix();
       event.getByLabel(kalSeedInputTag,kalSeedCollHandle);
       _allKSCHs.push_back(kalSeedCollHandle);
+
+      art::Handle<MVAResultCollection> mvatrkQualCollHandle;
+      if (i_branchConfig.trkQualTag() != "") {
+        event.getByLabel(i_branchConfig.trkQualTag(),mvatrkQualCollHandle);
+      }
+      _allTrkQualCHs.emplace_back(mvatrkQualCollHandle);
 
       // also create the reco qual branches
       std::vector<art::Handle<RecoQualCollection> > recoQualCollHandles;
@@ -811,6 +827,11 @@ namespace mu2e {
       }
     }
 
+
+    const auto& trkQualHandle = _allTrkQualCHs.at(i_branch);
+    if (trkQualHandle.isValid()) { // might not have a valid handle
+      _allTrkQualResults.at(i_branch).result = trkQualHandle->at(i_kseed)._value;
+    }
 
     // all RecoQuals
     std::vector<Float_t> recoQuals; // for the output value
