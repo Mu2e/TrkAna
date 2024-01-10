@@ -74,7 +74,6 @@
 #include "TrkAna/inc/TrkStrawHitInfoMC.hh"
 #include "TrkAna/inc/TrkCaloHitInfo.hh"
 #include "TrkAna/inc/CaloClusterInfoMC.hh"
-#include "TrkAna/inc/TrkQualInfo.hh"
 #include "TrkAna/inc/TrkPIDInfo.hh"
 #include "TrkAna/inc/HelixInfo.hh"
 #include "TrkAna/inc/InfoStructHelper.hh"
@@ -109,8 +108,6 @@ namespace mu2e {
         using Comment=fhicl::Comment;
         fhicl::Atom<bool> fillmc{Name("fillMC"), Comment("Switch to turn on filling of MC information for this set of tracks"), false};
         fhicl::Atom<bool> fillhits{Name("fillHits"), Comment("Switch to turn on filling of hit-level information for this set of tracks"), false};
-        fhicl::OptionalAtom<std::string> trkqual{Name("trkqual"), Comment("TrkQualCollection input tag to be written out (use prefix if fcl parameter suffix (e.g. DeM) is defined)")};
-        fhicl::Atom<bool> filltrkqual{Name("fillTrkQual"), Comment("Switch to turn on filling of the full TrkQualInfo for this set of tracks"), false};
         fhicl::OptionalAtom<std::string> trkpid{Name("trkpid"), Comment("TrkCaloHitPIDCollection input tag to be written out (use prefix if fcl parameter suffix (e.g. DeM) is defined)")};
         fhicl::Atom<bool> filltrkpid{Name("fillTrkPID"), Comment("Switch to turn on filling of the full TrkPIDInfo for this set of tracks"), false};
         fhicl::Atom<bool> required{Name("required"), Comment("True/false if you require this type of track in the event"), false};
@@ -181,7 +178,6 @@ namespace mu2e {
         fhicl::Atom<art::InputTag> crvCoincidenceMCsTag{Name("CrvCoincidenceMCsTag"), Comment("Tag for CrvCoincidenceClusterMC Collection"), art::InputTag()};
         fhicl::Atom<art::InputTag> crvMCAssnsTag{ Name("CrvCoincidenceClusterMCAssnsTag"), Comment("art::InputTag for CrvCoincidenceClusterMCAssns")};
         // Pre-processed analysis info; are these redundant with the branch config ?
-        fhicl::Atom<bool> filltrkqual{Name("FillTrkQualInfo"),false};
         fhicl::Atom<bool> filltrkpid{Name("FillTrkPIDInfo"),false};
       };
       typedef art::EDAnalyzer::Table<Config> Parameters;
@@ -221,12 +217,10 @@ namespace mu2e {
       std::vector<TrkCaloHitInfo> _allTCHIs;
       // quality branches (inputs)
       std::vector<std::vector<art::Handle<RecoQualCollection> > > _allRQCHs; // outer vector is for each candidate/supplement, inner vector is all RecoQuals
-      std::vector<art::Handle<TrkQualCollection> > _allTQCHs; // we will only allow one TrkQual object per candidate/supplement to be fully written out
       std::vector<art::Handle<TrkCaloHitPIDCollection> > _allTCHPCHs; // we will only allow one TrkCaloHitPID object per candidate/supplement to be fully written out
       std::vector<art::Handle<MVAResultCollection> > _allTrkQualCHs;
       // quality branches (outputs)
       std::vector<RecoQualInfo> _allRQIs;
-      std::vector<TrkQualInfo> _allTQIs;
       std::vector<TrkPIDInfo> _allTPIs;
       std::vector<MVAResultInfo> _allTrkQualResults;
       // trigger information
@@ -372,8 +366,6 @@ namespace mu2e {
 
       RecoQualInfo rqi;
       _allRQIs.push_back(rqi);
-      TrkQualInfo tqi;
-      _allTQIs.push_back(tqi);
       TrkPIDInfo tpi;
       _allTPIs.push_back(tpi);
 
@@ -430,17 +422,7 @@ namespace mu2e {
       if(_ftype == KinematicLine )_trkana->Branch((branch+"kl.").c_str(),&_allKLIs.at(i_branch),_buffsize,_splitlevel);
       // TrkCaloHit: currently only 1
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
-      _trkana->Branch((branch+"mva").c_str(), &_allTrkQualResults.at(i_branch));
-      if (_conf.filltrkqual() && i_branchConfig.options().filltrkqual()) {
-        int n_trkqual_vars = TrkQual::n_vars;
-        for (int i_trkqual_var = 0; i_trkqual_var < n_trkqual_vars; ++i_trkqual_var) {
-          TrkQual::MVA_varindex i_index =TrkQual::MVA_varindex(i_trkqual_var);
-          std::string varname = TrkQual::varName(i_index);
-          _trkana->Branch((branch+"trkqual."+varname).c_str(), &_allTQIs.at(i_branch).trkqualvars[i_index]);
-        }
-        _trkana->Branch((branch+"trkqual.mvaout").c_str(), &_allTQIs.at(i_branch).mvaout);
-        _trkana->Branch((branch+"trkqual.mvastat").c_str(), &_allTQIs.at(i_branch).mvastat);
-      }
+      _trkana->Branch((branch+"trkqual").c_str(), &_allTrkQualResults.at(i_branch));
       if (_conf.filltrkpid() && i_branchConfig.options().filltrkpid()) {
         int n_trkpid_vars = TrkCaloHitPID::n_vars;
         for (int i_trkpid_var = 0; i_trkpid_var < n_trkpid_vars; ++i_trkpid_var) {
@@ -548,7 +530,6 @@ namespace mu2e {
     // Get the KalSeedCollections for both the candidate and all supplements
     _allKSCHs.clear();
     _allRQCHs.clear();
-    _allTQCHs.clear();
     _allTCHPCHs.clear();
     _allBestCrvAssns.clear();
     _allTrkQualCHs.clear();
@@ -567,11 +548,11 @@ namespace mu2e {
       event.getByLabel(kalSeedInputTag,kalSeedCollHandle);
       _allKSCHs.push_back(kalSeedCollHandle);
 
-      art::Handle<MVAResultCollection> mvatrkQualCollHandle;
+      art::Handle<MVAResultCollection> trkQualCollHandle;
       if (i_branchConfig.trkQualTag() != "") {
-        event.getByLabel(i_branchConfig.trkQualTag(),mvatrkQualCollHandle);
+        event.getByLabel(i_branchConfig.trkQualTag(),trkQualCollHandle);
       }
-      _allTrkQualCHs.emplace_back(mvatrkQualCollHandle);
+      _allTrkQualCHs.emplace_back(trkQualCollHandle);
 
       // also create the reco qual branches
       std::vector<art::Handle<RecoQualCollection> > recoQualCollHandles;
@@ -583,18 +564,6 @@ namespace mu2e {
         }
       }
       _allRQCHs.push_back(selectedRQCHs);
-
-      // TrkQual
-      std::string i_trkqual_tag;
-      art::Handle<TrkQualCollection> trkQualCollHandle;
-      if (i_branchConfig.options().trkqual(i_trkqual_tag) && i_branchConfig.options().filltrkqual() && _conf.filltrkqual()) {
-        art::InputTag trkQualInputTag = i_trkqual_tag + i_branchConfig.suffix();
-        event.getByLabel(trkQualInputTag,trkQualCollHandle);
-        if (trkQualCollHandle->size() != kalSeedCollHandle->size()) {
-          throw cet::exception("TrkAna") << "Sizes of KalSeedCollection and TrkQualCollection are inconsistent (" << kalSeedCollHandle->size() << " and " << trkQualCollHandle->size() << " respectively)";
-        }
-      }
-      _allTQCHs.push_back(trkQualCollHandle);
 
       // TrkCaloHitPID
       std::string i_trkpid_tag;
@@ -842,16 +811,6 @@ namespace mu2e {
       recoQuals.push_back(recoQualCalib);
     }
     _allRQIs.at(i_branch).setQuals(recoQuals);
-    // TrkQual
-    std::string trkqual_branch;
-    if(_conf.filltrkqual() && branchConfig.options().filltrkqual() && branchConfig.options().trkqual(trkqual_branch)) {
-      const auto& trkQualCollHandle = _allTQCHs.at(i_branch);
-      if (trkQualCollHandle.isValid()) { // we could have put an empty TrkQualCollection in, if we didn't want it
-        const auto& trkQualColl = *trkQualCollHandle;
-        const auto& trkQual = trkQualColl.at(i_kseed);
-        _infoStructHelper.fillTrkQualInfo(trkQual, _allTQIs.at(i_branch));
-      }
-    }
     // TrkCaloHitPID
     std::string trkpid_branch;
     if (_conf.filltrkpid() && branchConfig.options().filltrkpid() && branchConfig.options().trkpid(trkpid_branch)) {
@@ -970,7 +929,6 @@ namespace mu2e {
       if(_fillcalomc)_allMCTCHIs.at(i_branch).reset();
 
       _allRQIs.at(i_branch).reset();
-      _allTQIs.at(i_branch).reset();
       _allTPIs.at(i_branch).reset();
 
       // clear vectors

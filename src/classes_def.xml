@@ -30,7 +30,6 @@
   <class name="mu2e::TrkFitInfo" />
   <class name="std::vector<mu2e::TrkFitInfo>" />
   <class name="mu2e::TrkInfoMC" />
-  <class name="mu2e::TrkQualInfo" />
   <class name="mu2e::EventWeightInfo" />
   <class name="mu2e::RecoQualInfo" />
   <class name="mu2e::MVAResultInfo" />

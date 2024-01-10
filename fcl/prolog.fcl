@@ -99,8 +99,6 @@ genCountLogger: { module_type: GenEventCountReader }
 
 AllOpt : {
   fillMC : true
-  trkqual : "TrkQual"
-  fillTrkQual : true
   trkpid : "TrkPID"
   fillTrkPID : true
   fillHits : true
@@ -164,7 +162,6 @@ TrkAnaTreeMaker : {
   CrvCoincidenceClusterMCAssnsTag : "CrvCoincidenceClusterMCAssns"
   CrvPlaneY : 2653
   FillMCInfo : true
-  FillTrkQualInfo : true
   FillTrkPIDInfo : true
   FillHitInfo : false
   FillTriggerInfo : true

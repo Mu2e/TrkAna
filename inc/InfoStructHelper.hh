@@ -7,7 +7,6 @@
 #include "Offline/RecoDataProducts/inc/StrawHitIndex.hh"
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
 #include "Offline/RecoDataProducts/inc/StrawHitFlag.hh"
-#include "Offline/RecoDataProducts/inc/TrkQual.hh"
 #include "Offline/RecoDataProducts/inc/RecoCount.hh"
 #include "Offline/RecoDataProducts/inc/HelixSeed.hh"
 #include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
@@ -22,7 +21,6 @@
 #include "TrkAna/inc/TrkStrawHitInfo.hh"
 #include "TrkAna/inc/TrkStrawMatInfo.hh"
 #include "TrkAna/inc/TrkCaloHitInfo.hh"
-#include "TrkAna/inc/TrkQualInfo.hh"
 #include "TrkAna/inc/TrkPIDInfo.hh"
 #include "TrkAna/inc/HelixInfo.hh"
 #include "TrkAna/inc/CrvHitInfoReco.hh"
@@ -59,7 +57,6 @@ namespace mu2e {
     void fillHitInfo(const KalSeed& kseed, std::vector<TrkStrawHitInfo>& tshinfos );
     void fillMatInfo(const KalSeed& kseed, std::vector<TrkStrawMatInfo>& tminfos );
     void fillCaloHitInfo(const KalSeed& kseed, TrkCaloHitInfo& tchinfo );
-    void fillTrkQualInfo(const TrkQual& tqual, TrkQualInfo& trkqualInfo);
     void fillTrkPIDInfo(const TrkCaloHitPID& tchp, const KalSeed& kseed, TrkPIDInfo& trkpidInfo);
     void fillHelixInfo(art::Ptr<HelixSeed> const& hptr, HelixInfo& hinfo);
   };

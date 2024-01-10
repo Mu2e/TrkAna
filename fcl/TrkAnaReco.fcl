@@ -38,10 +38,8 @@ physics.analyzers.TrkAnaPos.FillCRVHits : true
 physics.analyzers.TrkAnaPos.FillTriggerInfo : false
 physics.analyzers.TrkAnaPos.FitType : LoopHelix
 
-physics.analyzers.TrkAnaNeg.FillTrkQualInfo : false
 physics.analyzers.TrkAnaNeg.FillTrkPIDInfo : false
 
-physics.analyzers.TrkAnaPos.FillTrkQualInfo : false
 physics.analyzers.TrkAnaPos.FillTrkPIDInfo : false
 
 
