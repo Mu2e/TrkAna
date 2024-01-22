@@ -68,6 +68,11 @@ namespace mu2e
     int planespan =0; // span between first and last plane
     int nnullambig =0;  // number of hits without any ambiguity assigned
     int nmat =0, nmatactive =0; // number materials (straw) assigned and used (active) to this fit
+    int nesel = 0; // number of active hits passing energy selection
+    int nrsel = 0; // number of active hits passing radius selection
+    int ntsel = 0; // number of active hits passing time selection
+    int nbkg = 0; // number of active hits passing background selection
+    int nsel = 0; // number of active hits passing all selections
     int nseg =0;     // number of trajectory segments
     float chisq =-1;   // Kalman fit chisquared
     float fitcon =-1;  // Kalman fit chisqured consistency
