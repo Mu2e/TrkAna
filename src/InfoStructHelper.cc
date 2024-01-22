@@ -361,16 +361,6 @@ namespace mu2e {
     }
   }
 
-  void InfoStructHelper::fillTrkQualInfo(const TrkQual& tqual, TrkQualInfo& trkqualInfo) {
-    int n_trkqual_vars = TrkQual::n_vars;
-    for (int i_trkqual_var = 0; i_trkqual_var < n_trkqual_vars; ++i_trkqual_var) {
-      TrkQual::MVA_varindex i_index = TrkQual::MVA_varindex(i_trkqual_var);
-      trkqualInfo.trkqualvars[i_trkqual_var] = tqual[i_index];
-    }
-    trkqualInfo.mvaout = tqual.MVAOutput();
-    trkqualInfo.mvastat = tqual.status();
-  }
-
 
   void InfoStructHelper::fillHelixInfo(art::Ptr<HelixSeed> const& hptr, HelixInfo& hinfo) {
     if(hptr.isNonnull()){

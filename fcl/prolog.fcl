@@ -3,37 +3,25 @@
 #include "Offline/fcl/TrkCaloDt.fcl"
 BEGIN_PROLOG
 # Track quality module
-# Example of how to add a new training through fcl
-# -- trainName is the name of the training
-# -- xmlFileName is the name of the XML file
-#  YourNewTrkQualConfig : { trainName : "YourNewTrkQual"
-#                     xmlFileName : "path/to/YourNewTrkQual.weights.xml"
-#             }
-#  TrkQualCatalog.mvaConfigs : [ @sequence::TrkQualCatalog.mvaConfigs, @local::YourNewTrkQualConfig  ]
-
 TrkQual : {
   module_type : TrackQuality
+  datFilename : "Offline/TrkDiag/data/TrkQual_ANN1_v1.dat"
 }
-TrkQualNeg : @local::TrkQual
-TrkQualNeg.TrainingName : "TrkQualNeg"
-TrkQualPos : @local::TrkQual
-TrkQualPos.TrainingName : "TrkQualPos"
-
-TrkQualDeM           : @local::TrkQualNeg
+TrkQualDeM           : @local::TrkQual
 TrkQualDeM.KalSeedCollection : "KKDeM"
-TrkQualUeM           : @local::TrkQualNeg
+TrkQualUeM           : @local::TrkQual
 TrkQualUeM.KalSeedCollection : "KKUeM"
-TrkQualDmuM          : @local::TrkQualNeg
+TrkQualDmuM          : @local::TrkQual
 TrkQualDmuM.KalSeedCollection : "KKDmuM"
-TrkQualUmuM          : @local::TrkQualNeg
+TrkQualUmuM          : @local::TrkQual
 TrkQualUmuM.KalSeedCollection : "KKUmuM"
-TrkQualDeP           : @local::TrkQualPos
+TrkQualDeP           : @local::TrkQual
 TrkQualDeP.KalSeedCollection : "KKDeP"
-TrkQualUeP           : @local::TrkQualPos
+TrkQualUeP           : @local::TrkQual
 TrkQualUeP.KalSeedCollection : "KKUeP"
-TrkQualDmuP          : @local::TrkQualPos
+TrkQualDmuP          : @local::TrkQual
 TrkQualDmuP.KalSeedCollection : "KKDmuP"
-TrkQualUmuP          : @local::TrkQualPos
+TrkQualUmuP          : @local::TrkQual
 TrkQualUmuP.KalSeedCollection : "KKUmuP"
 
 TrkQualProducers : {
@@ -99,8 +87,6 @@ genCountLogger: { module_type: GenEventCountReader }
 
 AllOpt : {
   fillMC : true
-  trkqual : "TrkQual"
-  fillTrkQual : true
   trkpid : "TrkPID"
   fillTrkPID : true
   fillHits : true
@@ -111,6 +97,7 @@ AllOpt : {
 DeM : { input : "KK"
   branch : "dem"
   suffix : "DeM"
+  trkQualTag : "TrkQualDeM"
 }
 UeM : { input : "KK"
   branch : "uem"
@@ -163,7 +150,6 @@ TrkAnaTreeMaker : {
   CrvCoincidenceClusterMCAssnsTag : "CrvCoincidenceClusterMCAssns"
   CrvPlaneY : 2653
   FillMCInfo : true
-  FillTrkQualInfo : true
   FillTrkPIDInfo : true
   FillHitInfo : false
   FillTriggerInfo : true
