@@ -5,16 +5,24 @@ void create_val_file() {
 
   TFile* file = new TFile("val-trkana.root", "RECREATE");
 
-  // Histograms to create
-  double min_mom = 0;
-  double max_mom = 1000;
-  int n_mom_bins = 1000;
-  TH1D* h_reco_mom_all = new TH1D("h_reco_mom_all", "h_reco_mom_all", n_mom_bins,min_mom,max_mom);
+  /////////////////////////////////////
+  // evtinfo Histograms
+  //
+  trkana->Draw("evtinfo.eventid>>h_evtinfo_eventid", "", "");
+  trkana->Draw("evtinfo.subrunid>>h_evtinfo_subrunid", "", "");
+  trkana->Draw("evtinfo.runid>>h_evtinfo_runid", "", "");
+  trkana->Draw("evtinfo.nprotons>>h_evtinfo_nprotons", "", "");
+  trkana->Draw("evtinfo.pbtime>>h_evtinfo_pbtime", "", "");
+  trkana->Draw("evtinfo.pbterr>>h_evtinfo_pbterr", "", "");
 
-  trkana->Draw("demfit.mom.R()>>h_reco_mom_all", "", "goff");
+  /////////////////////////////////////
+  // demfit Histograms
+  //
+  trkana->Draw("demfit.mom.R()>>h_demfit_mom_all", "", "goff");
+  trkana->Draw("demfit.mom.R()>>h_demfit_mom_ent", "demfit.sid==0", "goff");
+  trkana->Draw("demfit.mom.R()>>h_demfit_mom_mid", "demfit.sid==1", "goff");
+  trkana->Draw("demfit.mom.R()>>h_demfit_mom_xit", "demfit.sid==2", "goff");
 
-  h_reco_mom_all->Write();
-
+  file->Write();
   file->Close();
-
 }
