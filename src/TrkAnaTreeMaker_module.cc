@@ -508,6 +508,7 @@ namespace mu2e {
   }
 
   void TrkAnaTreeMaker::analyze(const art::Event& event) {
+    std::cout<<"=============== Event "<<event.id().event()<<"======================"<<std::endl;
     // reset event level structs
     _einfo.reset();
     _einfomc.reset();

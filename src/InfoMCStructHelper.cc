@@ -215,6 +215,24 @@ namespace mu2e {
     siminfo.pos = XYZVectorF(det->toDetector(sp.startPosition()));
     siminfo.endmom = XYZVectorF(sp.endMomentum());
     siminfo.endpos = XYZVectorF(det->toDetector(sp.endPosition()));
+    
+    //rmax calculation here:
+    //  make a LoopHelix by call to constructor
+    //  make momentum and position vectors
+    ROOT::Math::XYZTVector pos0(siminfo.pos.x(), siminfo.pos.y(), siminfo.pos.z(), sp.startGlobalTime());
+    ROOT::Math::PxPyPzMVector mom0(siminfo.mom.x(), siminfo.mom.y(), siminfo.mom.z(), sp.startMomentum().t());
+
+    // extract charge
+    int charge = -1*siminfo.pdg/fabs(siminfo.pdg); //TODO - this doesnt work for some particles??
+    // extact field
+    GeomHandle<BFieldManager> bfmgr;
+    XYZVectorF pos_in_Mu2e = XYZVectorF(sp.startPosition());
+    ROOT::Math::XYZVector bnom(bfmgr->getBField(pos_in_Mu2e).x(),bfmgr->getBField(pos_in_Mu2e).y(),bfmgr->getBField(pos_in_Mu2e).z());
+    
+    // make the loophelix
+    KinKal::LoopHelix lh(pos0, mom0, charge, bnom);
+    // calculate rmax and add maxr to siminfo
+    siminfo.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
   }
 
   void InfoMCStructHelper::fillVDInfo(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<MCStepInfo>& vdinfos) {

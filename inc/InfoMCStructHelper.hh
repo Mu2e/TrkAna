@@ -21,6 +21,8 @@
 #include "Offline/MCDataProducts/inc/KalSeedMC.hh"
 #include "BTrk/BbrGeom/HepPoint.h"
 #include "Offline/MCDataProducts/inc/PrimaryParticle.hh"
+#include "Offline/BFieldGeom/inc/BFieldManager.hh"
+#include "Offline/GeometryService/inc/GeomHandle.hh"
 
 #include <vector>
 #include <functional>

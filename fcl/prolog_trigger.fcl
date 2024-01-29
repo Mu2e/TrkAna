@@ -14,7 +14,7 @@ TrkAnaTrigger : {
     FillCaloMC : false
     RecoCountTag : ""
     FillTriggerInfo : true
-    FillTrkQualInfo : false
+    //FillTrkQualInfo : false
     FillTrkPIDInfo : false
     FillHitInfo : true
     FillTriggerInfo : false

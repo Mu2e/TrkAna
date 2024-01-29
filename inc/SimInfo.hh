@@ -27,6 +27,7 @@ namespace mu2e
     XYZVectorF endpos = XYZVectorF();  // end position of the SimParticle
     MCRelationship prirel = MCRelationship::none; // relationship to the event primary particles
     MCRelationship trkrel = MCRelationship::none; // relationship to the particle that created hits in the track
+    float maxr = 0.; // max radius calculated using the LoopHelix constructor
     void reset() { *this = SimInfo(); }
   };
 }
