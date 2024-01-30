@@ -233,6 +233,13 @@ namespace mu2e {
     KinKal::LoopHelix lh(pos0, mom0, charge, bnom);
     // calculate rmax and add maxr to siminfo
     siminfo.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
+    // add track parameters
+    siminfo.rad = lh.rad();
+    siminfo.lam = lh.lam();
+    siminfo.cx = lh.cx();
+    siminfo.cy = lh.cy();
+    siminfo.phi0= lh.phi0();
+    siminfo.t0 = lh.t0();
   }
 
   void InfoMCStructHelper::fillVDInfo(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<MCStepInfo>& vdinfos) {

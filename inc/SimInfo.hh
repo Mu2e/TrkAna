@@ -28,6 +28,7 @@ namespace mu2e
     MCRelationship prirel = MCRelationship::none; // relationship to the event primary particles
     MCRelationship trkrel = MCRelationship::none; // relationship to the particle that created hits in the track
     float maxr = 0.; // max radius calculated using the LoopHelix constructor
+    float rad=0,lam=0,cx=0,cy=0,phi0=0,t0=0; // truth track parameters
     void reset() { *this = SimInfo(); }
   };
 }
