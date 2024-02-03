@@ -223,7 +223,7 @@ namespace mu2e {
     ROOT::Math::PxPyPzMVector mom0(siminfo.mom.x(), siminfo.mom.y(), siminfo.mom.z(), sp.startMomentum().t());
 
     // extract charge
-    int charge = -1*siminfo.pdg/fabs(siminfo.pdg); //TODO - this doesnt work for some particles??
+    int charge = -1*siminfo.pdg/fabs(siminfo.pdg); //TODO - this doesnt work for some particles!!
     // extact field
     GeomHandle<BFieldManager> bfmgr;
     XYZVectorF pos_in_Mu2e = XYZVectorF(sp.startPosition());
