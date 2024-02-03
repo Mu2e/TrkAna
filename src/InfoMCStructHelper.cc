@@ -50,11 +50,34 @@ namespace mu2e {
   void InfoMCStructHelper::fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
     // use the primary match of the track
     // primary associated SimParticle
+    GeomHandle<DetectorSystem> det;
     if(kseedmc.simParticles().size() > 0){
       auto const& simp = kseedmc.simParticles().front();
       trkinfomc.valid = true;
       trkinfomc.nhits = simp._nhits; // number of hits from the primary particle
       trkinfomc.nactive = simp._nactive; // number of active hits from the primary particle
+      
+      static GlobalConstantsHandle<ParticleDataList> pdt;
+      auto charge = pdt->particle(simp._pdg).charge();
+
+      XYZVectorF mom = XYZVectorF(simp._mom);
+      XYZVectorF pos = XYZVectorF(det->toDetector(simp._pos));
+    
+      ROOT::Math::XYZTVector pos0(pos.x(), pos.y(), pos.z(), simp._time);
+      ROOT::Math::PxPyPzMVector mom0(mom.x(), mom.y(), mom.z(),  pdt->particle(simp._pdg).mass());
+
+      GeomHandle<BFieldManager> bfmgr;
+      XYZVectorF pos_in_Mu2e = XYZVectorF(simp._pos);
+      ROOT::Math::XYZVector bnom(bfmgr->getBField(pos_in_Mu2e).x(),bfmgr->getBField(pos_in_Mu2e).y(),bfmgr->getBField(pos_in_Mu2e).z());
+      
+      KinKal::LoopHelix lh(pos0, mom0, charge, bnom);
+      trkinfomc.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
+      trkinfomc.rad = lh.rad();
+      trkinfomc.lam = lh.lam();
+      trkinfomc.cx = lh.cx();
+      trkinfomc.cy = lh.cy();
+      trkinfomc.phi0= lh.phi0();
+      trkinfomc.t0 = lh.t0();
     }
 
     fillTrkInfoMCDigis(kseed, kseedmc, trkinfomc);
@@ -215,31 +238,6 @@ namespace mu2e {
     siminfo.pos = XYZVectorF(det->toDetector(sp.startPosition()));
     siminfo.endmom = XYZVectorF(sp.endMomentum());
     siminfo.endpos = XYZVectorF(det->toDetector(sp.endPosition()));
-    
-    //rmax calculation here:
-    //  make a LoopHelix by call to constructor
-    //  make momentum and position vectors
-    ROOT::Math::XYZTVector pos0(siminfo.pos.x(), siminfo.pos.y(), siminfo.pos.z(), sp.startGlobalTime());
-    ROOT::Math::PxPyPzMVector mom0(siminfo.mom.x(), siminfo.mom.y(), siminfo.mom.z(), sp.startMomentum().t());
-
-    // extract charge
-    int charge = -1*siminfo.pdg/fabs(siminfo.pdg); //TODO - this doesnt work for some particles!!
-    // extact field
-    GeomHandle<BFieldManager> bfmgr;
-    XYZVectorF pos_in_Mu2e = XYZVectorF(sp.startPosition());
-    ROOT::Math::XYZVector bnom(bfmgr->getBField(pos_in_Mu2e).x(),bfmgr->getBField(pos_in_Mu2e).y(),bfmgr->getBField(pos_in_Mu2e).z());
-    
-    // make the loophelix
-    KinKal::LoopHelix lh(pos0, mom0, charge, bnom);
-    // calculate rmax and add maxr to siminfo
-    siminfo.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
-    // add track parameters
-    siminfo.rad = lh.rad();
-    siminfo.lam = lh.lam();
-    siminfo.cx = lh.cx();
-    siminfo.cy = lh.cy();
-    siminfo.phi0= lh.phi0();
-    siminfo.t0 = lh.t0();
   }
 
   void InfoMCStructHelper::fillVDInfo(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<MCStepInfo>& vdinfos) {
