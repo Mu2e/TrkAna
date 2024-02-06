@@ -508,7 +508,6 @@ namespace mu2e {
   }
 
   void TrkAnaTreeMaker::analyze(const art::Event& event) {
-    
     // reset event level structs
     _einfo.reset();
     _einfomc.reset();
