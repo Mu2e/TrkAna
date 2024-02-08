@@ -17,6 +17,7 @@
 #include "Offline/GlobalConstantsService/inc/PhysicsParams.hh"
 #include "Offline/GeometryService/inc/GeomHandle.hh"
 #include "Offline/GeometryService/inc/DetectorSystem.hh"
+#include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Event.h"
 
@@ -67,7 +68,10 @@ namespace mu2e {
       ROOT::Math::PxPyPzMVector mom0(mom.x(), mom.y(), mom.z(),  pdt->particle(simp._pdg).mass());
 
       GeomHandle<BFieldManager> bfmgr;
-      XYZVectorF pos_in_Mu2e = XYZVectorF(simp._pos);
+      //XYZVectorF pos_in_Mu2e = XYZVectorF(simp._pos);
+      mu2e::GeomHandle<mu2e::Tracker> tracker;
+      auto tracker_origin = det->toMu2e(tracker->origin());
+      XYZVectorF pos_in_Mu2e = XYZVectorF(tracker_origin.x(),tracker_origin.y(),tracker_origin.z());
       ROOT::Math::XYZVector bnom(bfmgr->getBField(pos_in_Mu2e).x(),bfmgr->getBField(pos_in_Mu2e).y(),bfmgr->getBField(pos_in_Mu2e).z());
       
       KinKal::LoopHelix lh(pos0, mom0, charge, bnom);
