@@ -62,7 +62,8 @@ namespace mu2e {
       auto charge = pdt->particle(simp._pdg).charge();
 
       XYZVectorF mom = XYZVectorF(simp._mom);
-      XYZVectorF pos = XYZVectorF(det->toDetector(simp._pos));
+      CLHEP::Hep3Vector posInMu2e(simp._pos.x(),simp._pos.y(),simp._pos.z());
+      XYZVectorF pos = XYZVectorF(posInMu2e);
     
       ROOT::Math::XYZTVector pos0(pos.x(), pos.y(), pos.z(), simp._time);
       ROOT::Math::PxPyPzMVector mom0(mom.x(), mom.y(), mom.z(),  pdt->particle(simp._pdg).mass());
