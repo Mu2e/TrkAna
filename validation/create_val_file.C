@@ -3,7 +3,7 @@ void create_val_file() {
   TFile* trkana_file = new TFile("/pnfs/mu2e/tape/phy-nts/nts/mu2e/CeEndpointMix1BBSignal/MDC2020z1_best_v1_1_std_v04_01_00/tka/85/7b/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.001210_00000289.tka", "READ");
   TTree* trkana = (TTree*) trkana_file->Get("TrkAnaNeg/trkana");
 
-  TFile* file = new TFile("val-trkana.root", "RECREATE");
+  TFile* file = new TFile("val-trkana-v4.root", "RECREATE");
 
   // evtinfo histograms
   trkana->Draw("evtinfo.eventid>>h_evtinfo_eventid", "", "");
