@@ -61,19 +61,14 @@ namespace mu2e {
       static GlobalConstantsHandle<ParticleDataList> pdt;
       auto charge = pdt->particle(simp._pdg).charge();
 
-      XYZVectorF mom = XYZVectorF(simp._mom);
-      CLHEP::Hep3Vector posInMu2e(simp._pos.x(),simp._pos.y(),simp._pos.z());
-      XYZVectorF pos = XYZVectorF(posInMu2e);
-    
-      ROOT::Math::XYZTVector pos0(pos.x(), pos.y(), pos.z(), simp._time);
+      XYZTVectorF mom = XYZTVectorF(simp._mom);
+      ROOT::Math::XYZTVector pos0(simp._pos.x(), simp._pos.y(), simp._pos.z(), simp._pos.t());
       ROOT::Math::PxPyPzMVector mom0(mom.x(), mom.y(), mom.z(),  pdt->particle(simp._pdg).mass());
 
       GeomHandle<BFieldManager> bfmgr;
-      //XYZVectorF pos_in_Mu2e = XYZVectorF(simp._pos);
       mu2e::GeomHandle<mu2e::Tracker> tracker;
       auto tracker_origin = det->toMu2e(tracker->origin());
-      XYZVectorF pos_in_Mu2e = XYZVectorF(tracker_origin.x(),tracker_origin.y(),tracker_origin.z());
-      ROOT::Math::XYZVector bnom(bfmgr->getBField(pos_in_Mu2e).x(),bfmgr->getBField(pos_in_Mu2e).y(),bfmgr->getBField(pos_in_Mu2e).z());
+      ROOT::Math::XYZVector bnom(bfmgr->getBField(tracker_origin));
       
       KinKal::LoopHelix lh(pos0, mom0, charge, bnom);
       trkinfomc.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
@@ -237,12 +232,13 @@ namespace mu2e {
     siminfo.valid = true;
     if(sp.genParticle().isNonnull())siminfo.gen = sp.genParticle()->generatorId().id();
     siminfo.proc = sp.creationCode();
+    siminfo.stop = sp.stoppingCode();
     siminfo.pdg = sp.pdgId();
     siminfo.time = sp.startGlobalTime();
     siminfo.mom = XYZVectorF(sp.startMomentum());
     siminfo.pos = XYZVectorF(det->toDetector(sp.startPosition()));
-    siminfo.endmom = XYZVectorF(sp.endMomentum());
     siminfo.endpos = XYZVectorF(det->toDetector(sp.endPosition()));
+    siminfo.endmom = XYZVectorF(sp.endMomentum());
   }
 
   void InfoMCStructHelper::fillVDInfo(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<MCStepInfo>& vdinfos) {
