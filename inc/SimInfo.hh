@@ -18,6 +18,7 @@ namespace mu2e
     Int_t rank = -1; // rank of this particle, by # of associated hits
     Int_t pdg = -1; // true PDG code
     Int_t proc = -1; // process code
+    Int_t stopCode = -1; // stop process code
     Int_t gen = -1; // generator code
     Float_t time = -1.0;  // Origin time of the SimParticle
     Int_t index; // index into the SimInfo vector

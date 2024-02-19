@@ -232,7 +232,7 @@ namespace mu2e {
     siminfo.valid = true;
     if(sp.genParticle().isNonnull())siminfo.gen = sp.genParticle()->generatorId().id();
     siminfo.proc = sp.creationCode();
-    siminfo.stop = sp.stoppingCode();
+    siminfo.stopCode = sp.stoppingCode();
     siminfo.pdg = sp.pdgId();
     siminfo.time = sp.startGlobalTime();
     siminfo.mom = XYZVectorF(sp.startMomentum());
