@@ -173,7 +173,7 @@ TrkAnaTreeMaker : {
   FillTriggerInfo : true
   TriggerProcessName : "Mix"
   ProcessEmptyEvents : false
-  FillCRVHits : true
+  FillCRVCoincs : true
   FillCRVPulses : false
   FillCaloMC : true
   FillHelixInfo : false

@@ -157,7 +157,7 @@ namespace mu2e {
         fhicl::Atom<art::InputTag> crvDigiMCsTag{Name("CrvDigiMCsTag"), Comment("Tag for CrvDigiMC Collection"), art::InputTag()};
         fhicl::Atom<art::InputTag> crvDigisTag{Name("CrvDigisTag"), Comment("Tag for CrvDigi Collection"), art::InputTag()};
         // CRV -- flags
-        fhicl::Atom<bool> crvhits{Name("FillCRVHits"),Comment("Flag for turning on crv CoincidenceClusterbranches"), false};
+        fhicl::Atom<bool> fillcrvcoincs{Name("FillCRVCoincs"),Comment("Flag for turning on crv CoincidenceClusterbranches"), false};
         fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
         // CRV -- other
         fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters.  This belongs in KinKalGeom as an intersection plane, together with the rest of the CRV planes FIXME
@@ -264,10 +264,10 @@ namespace mu2e {
       art::Handle<CrvDigiCollection>                 _crvDigis;
       art::Handle<CrvStepCollection>                 _crvSteps;
       // CRV -- fhicl parameters
-      bool _crvhits, _crvpulses;
+      bool _fillcrvcoincs, _crvpulses;
       double _crvPlaneY;  // needs to move to KinKalGeom FIXME
       // CRV (output)
-      std::vector<CrvHitInfoReco> _crvhit;
+      std::vector<CrvHitInfoReco> _crvcoincs;
       std::map<BranchIndex, std::vector<CrvHitInfoReco>> _allBestCrvs; // there can be more than one of these per track type
       std::vector<CrvHitInfoMC> _crvhitmc;
       std::map<BranchIndex, std::vector<CrvHitInfoMC>> _allBestCrvMCs;
@@ -311,7 +311,7 @@ namespace mu2e {
     _fillmc(conf().fillmc()),
     _fillcalomc(conf().fillCaloMC()),
     // CRV
-    _crvhits(conf().crvhits()),
+    _fillcrvcoincs(conf().fillcrvcoincs()),
     _infoMCStructHelper(conf().infoMCStructHelper()),
     _buffsize(conf().buffsize()),
     _splitlevel(conf().splitlevel())
@@ -466,10 +466,10 @@ namespace mu2e {
     }
     // calorimeter information for the downstream electron track
     // general CRV info
-    if(_crvhits) {
+    if(_fillcrvcoincs) {
       // coincidence branches should be here FIXME
       _trkana->Branch("crvsummary.",&_crvsummary,_buffsize,_splitlevel);
-      _trkana->Branch("crvhit.",&_crvhit,_buffsize,_splitlevel);
+      _trkana->Branch("crvcoincs.",&_crvcoincs,_buffsize,_splitlevel);
       if(_crvpulses) {
         _trkana->Branch("crvpulseinfo.",&_crvpulseinfo,_buffsize,_splitlevel);
         _trkana->Branch("crvwaveforminfo.",&_crvwaveforminfo,_buffsize,_splitlevel);
@@ -636,9 +636,9 @@ namespace mu2e {
 
     // TODO we want MC information when we don't have a track
     // fill general CRV info
-    if(_crvhits){
+    if(_fillcrvcoincs){
       // clear vectors
-      _crvhit.clear();
+      _crvcoincs.clear();
       _crvhitmc.clear();
       _crvhitmcplane.clear();
       _crvpulseinfo.clear();
@@ -655,7 +655,7 @@ namespace mu2e {
       }
       _crvHelper.FillCrvHitInfoCollections(
                                            _crvCoincidences, _crvCoincidenceMCs,
-                                           _crvRecoPulses, _crvSteps, _mcTrajectories,_crvhit, _crvhitmc,
+                                           _crvRecoPulses, _crvSteps, _mcTrajectories,_crvcoincs, _crvhitmc,
                                            _crvsummary, _crvsummarymc, _crvhitmcplane, _crvPlaneY);
       if(_crvpulses){
         _crvHelper.FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs, _crvDigis,
