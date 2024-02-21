@@ -269,11 +269,11 @@ namespace mu2e {
       // CRV (output)
       std::vector<CrvHitInfoReco> _crvcoincs;
       std::map<BranchIndex, std::vector<CrvHitInfoReco>> _allBestCrvs; // there can be more than one of these per track type
-      std::vector<CrvHitInfoMC> _crvhitmc;
+      std::vector<CrvHitInfoMC> _crvcoincsmc;
       std::map<BranchIndex, std::vector<CrvHitInfoMC>> _allBestCrvMCs;
       CrvSummaryReco _crvsummary;
       CrvSummaryMC   _crvsummarymc;
-      std::vector<CrvPlaneInfoMC> _crvhitmcplane;
+      std::vector<CrvPlaneInfoMC> _crvcoincsmcplane;
       std::vector<CrvPulseInfoReco> _crvpulseinfo;
       std::vector<CrvWaveformInfo> _crvwaveforminfo;
       std::vector<CrvHitInfoMC> _crvpulseinfomc;
@@ -477,8 +477,8 @@ namespace mu2e {
 
       if(_fillmc){
         _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
-        _trkana->Branch("crvhitmc.",&_crvhitmc,_buffsize,_splitlevel);
-        _trkana->Branch("crvhitmcplane.",&_crvhitmcplane,_buffsize,_splitlevel);
+        _trkana->Branch("crvcoincsmc.",&_crvcoincsmc,_buffsize,_splitlevel);
+        _trkana->Branch("crvcoincsmcplane.",&_crvcoincsmcplane,_buffsize,_splitlevel);
         if(_crvpulses) {
           _trkana->Branch("crvpulseinfomc.",&_crvpulseinfomc,_buffsize,_splitlevel);
         }
@@ -639,8 +639,8 @@ namespace mu2e {
     if(_fillcrvcoincs){
       // clear vectors
       _crvcoincs.clear();
-      _crvhitmc.clear();
-      _crvhitmcplane.clear();
+      _crvcoincsmc.clear();
+      _crvcoincsmcplane.clear();
       _crvpulseinfo.clear();
       _crvwaveforminfo.clear();
       _crvpulseinfomc.clear();
@@ -655,8 +655,8 @@ namespace mu2e {
       }
       _crvHelper.FillCrvHitInfoCollections(
                                            _crvCoincidences, _crvCoincidenceMCs,
-                                           _crvRecoPulses, _crvSteps, _mcTrajectories,_crvcoincs, _crvhitmc,
-                                           _crvsummary, _crvsummarymc, _crvhitmcplane, _crvPlaneY);
+                                           _crvRecoPulses, _crvSteps, _mcTrajectories,_crvcoincs, _crvcoincsmc,
+                                           _crvsummary, _crvsummarymc, _crvcoincsmcplane, _crvPlaneY);
       if(_crvpulses){
         _crvHelper.FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs, _crvDigis,
                                                _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
