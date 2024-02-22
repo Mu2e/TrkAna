@@ -62,16 +62,23 @@ namespace mu2e {
       auto charge = pdt->particle(simp._pdg).charge();
 
       XYZTVectorF mom = XYZTVectorF(simp._mom);
-      ROOT::Math::XYZTVector pos0(simp._pos.x(), simp._pos.y(), simp._pos.z(), simp._pos.t());
+      CLHEP::Hep3Vector posInMu2e(simp._pos.x(), simp._pos.y(), simp._pos.z());
+      XYZVectorF pos = XYZVectorF(det->toDetector(posInMu2e));
+      ROOT::Math::XYZTVector pos0(pos.x(), pos.y(), pos.z(), simp._pos.t());
       ROOT::Math::PxPyPzMVector mom0(mom.x(), mom.y(), mom.z(),  pdt->particle(simp._pdg).mass());
 
       GeomHandle<BFieldManager> bfmgr;
       mu2e::GeomHandle<mu2e::Tracker> tracker;
       auto tracker_origin = det->toMu2e(tracker->origin());
-      ROOT::Math::XYZVector bnom(bfmgr->getBField(tracker_origin));
+      XYZVectorF pos3Vec = XYZVectorF(tracker_origin.x(),tracker_origin.y(),tracker_origin.z());
+      ROOT::Math::XYZVector bnom(bfmgr->getBField(pos3Vec).x(),bfmgr->getBField(pos3Vec).y(),bfmgr->getBField(pos3Vec).z());
+      //XYZVectorF pos_in_Mu2e = XYZVectorF(simp._pos);
+      //ROOT::Math::XYZVector bnom(bfmgr->getBField(pos_in_Mu2e).x(),bfmgr->getBField(pos_in_Mu2e).y(),bfmgr->getBField(pos_in_Mu2e).z());
+
       
       KinKal::LoopHelix lh(pos0, mom0, charge, bnom);
       trkinfomc.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
+      std::cout<<"maxr "<<sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad())<<std::endl;
       trkinfomc.rad = lh.rad();
       trkinfomc.lam = lh.lam();
       trkinfomc.cx = lh.cx();
@@ -117,7 +124,7 @@ namespace mu2e {
 
     const SimPartStub& simPart = kseedmc.simParticle(tshmc._spindex);
     tshinfomc.pdg = simPart._pdg;
-    tshinfomc.proc = simPart._proc;
+    tshinfomc.startCode = simPart._startCode;
     tshinfomc.gen = simPart._gid.id();
     tshinfomc.rel = simPart._rel;
     tshinfomc.earlyend = tshmc._earlyend._end;
@@ -231,7 +238,7 @@ namespace mu2e {
     GeomHandle<DetectorSystem> det;
     siminfo.valid = true;
     if(sp.genParticle().isNonnull())siminfo.gen = sp.genParticle()->generatorId().id();
-    siminfo.proc = sp.creationCode();
+    siminfo.startCode = sp.creationCode();
     siminfo.stopCode = sp.stoppingCode();
     siminfo.pdg = sp.pdgId();
     siminfo.time = sp.startGlobalTime();

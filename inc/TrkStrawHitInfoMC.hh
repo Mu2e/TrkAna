@@ -11,7 +11,7 @@ namespace mu2e
    struct TrkStrawHitInfoMC {
     Int_t pdg = -1;
     Int_t gen = -1;
-    Int_t proc = -1; // PDG particle code, generator code and process code of the particle which caused the electronics to cross threshold in simulation
+    Int_t startCode = -1; // PDG particle code, generator code and process code of the particle which caused the electronics to cross threshold in simulation
     Int_t ambig = -100;   // true left-right ambiguity = true angular momentum sign of the particle WRT the wire
     Int_t earlyend = -1;   // true end of the early signal (cal =0 or HV=1)
     MCRelationship rel = MCRelationship::none; // relationship (same, mother, daughter, sibling, unrelated) of this particle to the particle generating most of the hits on this track
