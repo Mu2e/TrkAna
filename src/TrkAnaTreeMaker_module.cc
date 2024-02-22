@@ -158,7 +158,7 @@ namespace mu2e {
         fhicl::Atom<art::InputTag> crvDigisTag{Name("CrvDigisTag"), Comment("Tag for CrvDigi Collection"), art::InputTag()};
         // CRV -- flags
         fhicl::Atom<bool> fillcrvcoincs{Name("FillCRVCoincs"),Comment("Flag for turning on crv CoincidenceClusterbranches"), false};
-        fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
+        fhicl::Atom<bool> fillcrvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulses(mc), crvwaveforminfo branches"), false};
         // CRV -- other
         fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters.  This belongs in KinKalGeom as an intersection plane, together with the rest of the CRV planes FIXME
         // MC truth
@@ -264,7 +264,7 @@ namespace mu2e {
       art::Handle<CrvDigiCollection>                 _crvDigis;
       art::Handle<CrvStepCollection>                 _crvSteps;
       // CRV -- fhicl parameters
-      bool _fillcrvcoincs, _crvpulses;
+      bool _fillcrvcoincs, _fillcrvpulses;
       double _crvPlaneY;  // needs to move to KinKalGeom FIXME
       // CRV (output)
       std::vector<CrvHitInfoReco> _crvcoincs;
@@ -274,9 +274,9 @@ namespace mu2e {
       CrvSummaryReco _crvsummary;
       CrvSummaryMC   _crvsummarymc;
       std::vector<CrvPlaneInfoMC> _crvcoincsmcplane;
-      std::vector<CrvPulseInfoReco> _crvpulseinfo;
+      std::vector<CrvPulseInfoReco> _crvpulses;
       std::vector<CrvWaveformInfo> _crvwaveforminfo;
-      std::vector<CrvHitInfoMC> _crvpulseinfomc;
+      std::vector<CrvHitInfoMC> _crvpulsesmc;
       std::vector<CrvHitInfoReco> _crvrecoinfo;
       // helices
       HelixInfo _hinfo;
@@ -312,6 +312,7 @@ namespace mu2e {
     _fillcalomc(conf().fillCaloMC()),
     // CRV
     _fillcrvcoincs(conf().fillcrvcoincs()),
+    _fillcrvpulses(conf().fillcrvpulses()),
     _infoMCStructHelper(conf().infoMCStructHelper()),
     _buffsize(conf().buffsize()),
     _splitlevel(conf().splitlevel())
@@ -470,8 +471,8 @@ namespace mu2e {
       // coincidence branches should be here FIXME
       _trkana->Branch("crvsummary.",&_crvsummary,_buffsize,_splitlevel);
       _trkana->Branch("crvcoincs.",&_crvcoincs,_buffsize,_splitlevel);
-      if(_crvpulses) {
-        _trkana->Branch("crvpulseinfo.",&_crvpulseinfo,_buffsize,_splitlevel);
+      if(_fillcrvpulses) {
+        _trkana->Branch("crvpulses.",&_crvpulses,_buffsize,_splitlevel);
         _trkana->Branch("crvwaveforminfo.",&_crvwaveforminfo,_buffsize,_splitlevel);
       }
 
@@ -479,8 +480,8 @@ namespace mu2e {
         _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
         _trkana->Branch("crvcoincsmc.",&_crvcoincsmc,_buffsize,_splitlevel);
         _trkana->Branch("crvcoincsmcplane.",&_crvcoincsmcplane,_buffsize,_splitlevel);
-        if(_crvpulses) {
-          _trkana->Branch("crvpulseinfomc.",&_crvpulseinfomc,_buffsize,_splitlevel);
+        if(_fillcrvpulses) {
+          _trkana->Branch("crvpulsesmc.",&_crvpulsesmc,_buffsize,_splitlevel);
         }
       }
     }
@@ -641,9 +642,9 @@ namespace mu2e {
       _crvcoincs.clear();
       _crvcoincsmc.clear();
       _crvcoincsmcplane.clear();
-      _crvpulseinfo.clear();
+      _crvpulses.clear();
       _crvwaveforminfo.clear();
-      _crvpulseinfomc.clear();
+      _crvpulsesmc.clear();
 
       event.getByLabel(_conf.crvCoincidencesTag(),_crvCoincidences);
       event.getByLabel(_conf.crvRecoPulsesTag(),_crvRecoPulses);
@@ -657,9 +658,9 @@ namespace mu2e {
                                            _crvCoincidences, _crvCoincidenceMCs,
                                            _crvRecoPulses, _crvSteps, _mcTrajectories,_crvcoincs, _crvcoincsmc,
                                            _crvsummary, _crvsummarymc, _crvcoincsmcplane, _crvPlaneY);
-      if(_crvpulses){
+      if(_fillcrvpulses){
         _crvHelper.FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs, _crvDigis,
-                                               _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
+                                               _crvpulses, _crvpulsesmc, _crvwaveforminfo);
       }
     }
 
