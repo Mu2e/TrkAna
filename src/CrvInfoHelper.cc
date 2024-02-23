@@ -37,12 +37,34 @@ namespace mu2e
     {
       const CrvCoincidenceCluster &cluster = crvCoincidences->at(i);
 
+      // Get the PEs per layer from the reco pulses
+      float PEsPerLayer_[4] = {0.}; // Four layers, each one initiliased to zero PEs in a static array
+      const std::vector<art::Ptr<CrvRecoPulse> > coincRecoPulses_ = cluster.GetCrvRecoPulses(); // Get the reco pulses from the coincidence 
+      for(size_t j=0; j<coincRecoPulses_.size(); j++) // Loop through the pulses
+      {
+        // Skip duplicate pulses (those with multiple peaks)
+        if(coincRecoPulses_.at(j)->GetRecoPulseFlags().test(CrvRecoPulseFlagEnums::duplicateNoFitPulse)) continue;
+        // Get layer number from the bar index associated with this reco pulse
+        const CRSScintillatorBarIndex &crvBarIndex = coincRecoPulses_.at(j)->GetScintillatorBarIndex(); 
+        const CRSScintillatorBar &crvCounter = CRS->getBar(crvBarIndex);
+        const CRSScintillatorBarId &crvCounterId = crvCounter.id();
+        int layerNumber = crvCounterId.getLayerNumber();
+        // Sum PEs for this coincidence, indexed by layer number
+        PEsPerLayer_[layerNumber] += coincRecoPulses_.at(j)->GetPEsNoFit(); // The coincidences were found using the NoFit option, so use that here as well  
+      }
+      // Sanity check for PEsPerLayer
+      float PEsPerLayerSum = 0.; 
+      for (size_t j=0; j<4; j++) PEsPerLayerSum += PEsPerLayer_[j];
+      float deltaPEs = abs(PEsPerLayerSum - cluster.GetPEs());
+      if (deltaPEs > 1e-3) std::cout<<"CrvInfoHelper warning: the sum of PEs per layer differs by " << deltaPEs << " from total PEs in the coincidence!"<<std::endl;
+
       //fill the Reco collection
       recoInfo.emplace_back(
           cluster.GetCrvSectorType(),
           tdet->toDetector(cluster.GetAvgHitPos()),
           cluster.GetStartTime(), cluster.GetEndTime(), cluster.GetAvgHitTime(),
           cluster.GetPEs(),
+          PEsPerLayer_, // PEsPerLayer array is not a member of the mu2e::CrvCoincidenceCluster class...
           cluster.GetCrvRecoPulses().size(),
           cluster.GetLayers().size(),
           cluster.GetSlope());
