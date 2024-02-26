@@ -35,7 +35,10 @@ namespace mu2e
       angle(coincidenceAngle)
     {
       // Copy PEsPerLayer array elements
-      for (int i = 0; i < 4; i++) this->PEsPerLayer[i] = PEsPerLayer[i];
+      for (int i = 0; i < 4; i++) 
+      {
+        this->PEsPerLayer[i] = PEsPerLayer[i];
+      }
     }
   };
 
