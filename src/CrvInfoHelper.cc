@@ -210,7 +210,7 @@ namespace mu2e
 
       //Reco pulses information
       int SiPM = crvRecoPulse->GetSiPMNumber();
-      int SiPMId = sipm_map.find(barIndex.asInt()*4 + SiPM)->second;
+      int SiPMId = sipm_map.find(barIndex.asInt()*CRVId::nChanPerBar + SiPM)->second;
       CLHEP::Hep3Vector HitPos = CrvHelper::GetCrvCounterPos(CRS, barIndex);
       recoInfo.emplace_back(HitPos, barIndex.asInt(), sectorNumber, SiPMId,
           crvRecoPulse->GetPEs(), crvRecoPulse->GetPEsPulseHeight(), crvRecoPulse->GetPulseHeight(),

@@ -8,6 +8,7 @@
 #include "TrkAna/inc/CrvSummaryMC.hh"
 #include "TrkAna/inc/CrvPlaneInfoMC.hh"
 #include "TrkAna/inc/CrvPulseInfoReco.hh"
+#include "Offline/DataProducts/inc/CRVId.hh"
 #include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
 #include "Offline/RecoDataProducts/inc/CrvRecoPulse.hh"
 #include "Offline/RecoDataProducts/inc/CrvDigi.hh"
@@ -76,10 +77,10 @@ namespace mu2e
         for(iter=counters.begin(); iter!=counters.end(); iter++)
         {
           const CRSScintillatorBarIndex &barIndex = (*iter)->index();
-          for(int SiPM=0; SiPM<4; SiPM++)
+          for(size_t SiPM=0; SiPM<CRVId::nChanPerBar; SiPM++)
           {
             if(!(*iter)->getBarDetail().hasCMB(SiPM%2)) continue;
-            sipm_map[barIndex.asInt()*4 + SiPM] = iSiPM;
+            sipm_map[barIndex.asInt()*CRVId::nChanPerBar + SiPM] = iSiPM;
             iSiPM++;
           }
         }
