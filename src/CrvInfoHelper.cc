@@ -52,11 +52,6 @@ namespace mu2e
         // Sum PEs for this coincidence, indexed by layer number
         PEsPerLayer_[layerNumber] += coincRecoPulses_.at(j)->GetPEsNoFit(); // The coincidences were found using the NoFit option, so use that here as well  
       }
-      // Sanity check for PEsPerLayer
-      float PEsPerLayerSum = 0.; 
-      for (size_t j=0; j<CRVId::nLayers; j++) PEsPerLayerSum += PEsPerLayer_[j];
-      float deltaPEs = abs(PEsPerLayerSum - cluster.GetPEs());
-      if (deltaPEs > 1e-3) std::cout<<"CrvInfoHelper warning: the sum of PEs per layer differs by " << deltaPEs << " from total PEs in the coincidence!"<<std::endl;
 
       //fill the Reco collection
       recoInfo.emplace_back(
