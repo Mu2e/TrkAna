@@ -2,6 +2,7 @@
 #define CrvHitInfoReco_hh
 
 #include "Offline/DataProducts/inc/GenVector.hh"
+#include "Offline/DataProducts/inc/CRVId.hh"
 #include "CLHEP/Vector/ThreeVector.h"
 #include <vector>
 #include "Rtypes.h"
@@ -17,7 +18,7 @@ namespace mu2e
     Float_t             timeEnd = -1;   //last hit time
     Float_t             time = -1; // average hit time
     Float_t             PEs = -1;   //total number of PEs for this cluster
-    Float_t             PEsPerLayer[4] = {-1};  // PEs per layer for this cluster
+    Float_t             PEsPerLayer[CRVId::nLayers] = {-1};  // PEs per layer for this cluster
     Int_t               nHits = -1;      //number of coincidence hits in this cluster
     Int_t               nLayers = -1;      //number of coincidence layers in this cluster
     Float_t             angle = -999;   //coincidence direction
@@ -35,7 +36,7 @@ namespace mu2e
       angle(coincidenceAngle)
     {
       // Copy PEsPerLayer array elements
-      for (int i = 0; i < 4; i++) 
+      for (size_t i=0; i<CRVId::nLayers; i++) 
       {
         this->PEsPerLayer[i] = PEsPerLayer[i];
       }

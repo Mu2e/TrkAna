@@ -38,7 +38,7 @@ namespace mu2e
       const CrvCoincidenceCluster &cluster = crvCoincidences->at(i);
 
       // Get the PEs per layer from the reco pulses
-      float PEsPerLayer_[4] = {0.}; // Four layers, each one initiliased to zero PEs in a static array
+      float PEsPerLayer_[CRVId::nLayers] = {0.}; // Four layers, each one initiliased to zero PEs in a static array
       const std::vector<art::Ptr<CrvRecoPulse> > coincRecoPulses_ = cluster.GetCrvRecoPulses(); // Get the reco pulses from the coincidence 
       for(size_t j=0; j<coincRecoPulses_.size(); j++) // Loop through the pulses
       {
@@ -54,7 +54,7 @@ namespace mu2e
       }
       // Sanity check for PEsPerLayer
       float PEsPerLayerSum = 0.; 
-      for (size_t j=0; j<4; j++) PEsPerLayerSum += PEsPerLayer_[j];
+      for (size_t j=0; j<CRVId::nLayers; j++) PEsPerLayerSum += PEsPerLayer_[j];
       float deltaPEs = abs(PEsPerLayerSum - cluster.GetPEs());
       if (deltaPEs > 1e-3) std::cout<<"CrvInfoHelper warning: the sum of PEs per layer differs by " << deltaPEs << " from total PEs in the coincidence!"<<std::endl;
 
