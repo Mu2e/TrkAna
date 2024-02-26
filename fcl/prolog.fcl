@@ -175,6 +175,7 @@ TrkAnaTreeMaker : {
   ProcessEmptyEvents : false
   FillCRVCoincs : true
   FillCRVPulses : false
+  FillCRVDigis : false
   FillCaloMC : true
   FillHelixInfo : false
   PrimaryParticleTag : "compressRecoMCs"

@@ -29,7 +29,7 @@ physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
 # for hit level diagnostics, set diagLevel to 2
 physics.analyzers.TrkAna.diagLevel : 1
 physics.analyzers.TrkAna.FillMCInfo : true
-physics.analyzers.TrkAna.FillCRVHits : true
+physics.analyzers.TrkAna.FillCRVCoincs : true
 physics.analyzers.TrkAna.FillTriggerInfo : false
 physics.analyzers.TrkAna.FitType : LoopHelix
 
