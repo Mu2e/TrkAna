@@ -158,7 +158,8 @@ namespace mu2e {
         fhicl::Atom<art::InputTag> crvDigisTag{Name("CrvDigisTag"), Comment("Tag for CrvDigi Collection"), art::InputTag()};
         // CRV -- flags
         fhicl::Atom<bool> fillcrvcoincs{Name("FillCRVCoincs"),Comment("Flag for turning on crv CoincidenceClusterbranches"), false};
-        fhicl::Atom<bool> fillcrvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulses(mc), crvdigis branches"), false};
+        fhicl::Atom<bool> fillcrvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulses(mc) branches"), false};
+        fhicl::Atom<bool> fillcrvdigis{Name("FillCRVDigis"),Comment("Flag for turning on crvdigis branch"), false};
         // CRV -- other
         fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters.  This belongs in KinKalGeom as an intersection plane, together with the rest of the CRV planes FIXME
         // MC truth
@@ -264,7 +265,7 @@ namespace mu2e {
       art::Handle<CrvDigiCollection>                 _crvDigis;
       art::Handle<CrvStepCollection>                 _crvSteps;
       // CRV -- fhicl parameters
-      bool _fillcrvcoincs, _fillcrvpulses;
+      bool _fillcrvcoincs, _fillcrvpulses, _fillcrvdigis;
       double _crvPlaneY;  // needs to move to KinKalGeom FIXME
       // CRV (output)
       std::vector<CrvHitInfoReco> _crvcoincs;
@@ -313,6 +314,7 @@ namespace mu2e {
     // CRV
     _fillcrvcoincs(conf().fillcrvcoincs()),
     _fillcrvpulses(conf().fillcrvpulses()),
+    _fillcrvdigis(conf().fillcrvdigis()),
     _infoMCStructHelper(conf().infoMCStructHelper()),
     _buffsize(conf().buffsize()),
     _splitlevel(conf().splitlevel())
@@ -473,9 +475,10 @@ namespace mu2e {
       _trkana->Branch("crvcoincs.",&_crvcoincs,_buffsize,_splitlevel);
       if(_fillcrvpulses) {
         _trkana->Branch("crvpulses.",&_crvpulses,_buffsize,_splitlevel);
+      }
+      if(_fillcrvdigis) {
         _trkana->Branch("crvdigis.",&_crvdigis,_buffsize,_splitlevel);
       }
-
       if(_fillmc){
         _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
         _trkana->Branch("crvcoincsmc.",&_crvcoincsmc,_buffsize,_splitlevel);
@@ -659,9 +662,14 @@ namespace mu2e {
                                            _crvRecoPulses, _crvSteps, _mcTrajectories,_crvcoincs, _crvcoincsmc,
                                            _crvsummary, _crvsummarymc, _crvcoincsmcplane, _crvPlaneY);
       if(_fillcrvpulses){
-        _crvHelper.FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs, _crvDigis,
-                                               _crvpulses, _crvpulsesmc, _crvdigis);
+        _crvHelper.FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs,
+                                              _crvpulses, _crvpulsesmc);
       }
+      if(_fillcrvdigis){
+        _crvHelper.FillCrvDigiInfoCollections(_crvRecoPulses, _crvDigis,                                         
+                                              _crvdigis);
+      }
+
     }
 
 

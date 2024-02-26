@@ -16,6 +16,8 @@
 #include "Offline/MCDataProducts/inc/SimParticle.hh"
 #include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMC.hh"
 #include "Offline/MCDataProducts/inc/MCTrajectory.hh"
+#include "Offline/CosmicRayShieldGeom/inc/CosmicRayShield.hh"
+#include "Offline/GeometryService/inc/GeomHandle.hh"
 #include "art/Framework/Principal/Handle.h"
 
 namespace mu2e
@@ -39,8 +41,12 @@ namespace mu2e
       void FillCrvPulseInfoCollections(
           art::Handle<CrvRecoPulseCollection> const& crvRecoPulses,
           art::Handle<CrvDigiMCCollection> const& crvDigiMCs,
+          CrvPulseInfoRecoCollection &recoInfo, CrvHitInfoMCCollection &MCInfo);
+
+      void FillCrvDigiInfoCollections(
+          art::Handle<CrvRecoPulseCollection> const& crvRecoPulses,
           art::Handle<CrvDigiCollection> const& crvDigis,
-          CrvPulseInfoRecoCollection &recoInfo, CrvHitInfoMCCollection &MCInfo, CrvWaveformInfoCollection &waveformInfo);
+          CrvWaveformInfoCollection &digiInfo);
 
     private:
       static const art::Ptr<SimParticle> &FindPrimaryParticle(const art::Ptr<SimParticle> &simParticle)
@@ -60,7 +66,25 @@ namespace mu2e
         const art::Ptr<SimParticle> &parentParticle = simParticle->hasParent() ? simParticle->parent() : simParticle;
         return parentParticle->hasParent() ? parentParticle->parent() : parentParticle;
       }
-
+      static const std::map<int,int> GetSiPMMap(GeomHandle<CosmicRayShield> &CRS) // Helper function for FillCrvDigiInfoCollections and FillCrvPulseInfoCollections
+      {
+        // Create SiPM map to extract sequantial SiPM IDs
+        const std::vector<std::shared_ptr<CRSScintillatorBar> > &counters = CRS->getAllCRSScintillatorBars();
+        std::vector<std::shared_ptr<CRSScintillatorBar> >::const_iterator iter;
+        int iSiPM = 0;
+        std::map<int,int> sipm_map;
+        for(iter=counters.begin(); iter!=counters.end(); iter++)
+        {
+          const CRSScintillatorBarIndex &barIndex = (*iter)->index();
+          for(int SiPM=0; SiPM<4; SiPM++)
+          {
+            if(!(*iter)->getBarDetail().hasCMB(SiPM%2)) continue;
+            sipm_map[barIndex.asInt()*4 + SiPM] = iSiPM;
+            iSiPM++;
+          }
+        }
+        return sipm_map;
+      }
       static const int _trajectorySimParticleId = 300001;  //only temporarily here for some tests
   };
 
