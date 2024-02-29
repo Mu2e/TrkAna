@@ -119,8 +119,6 @@ namespace mu2e {
   }
 
   void InfoMCStructHelper::fillHitInfoMC(const KalSeedMC& kseedmc, TrkStrawHitInfoMC& tshinfomc, const TrkStrawHitMC& tshmc) {
-    const Tracker& tracker = *GeomHandle<Tracker>();
-
     const SimPartStub& simPart = kseedmc.simParticle(tshmc._spindex);
     tshinfomc.pdg = simPart._pdg;
     tshinfomc.startCode = simPart._proc;
@@ -134,22 +132,18 @@ namespace mu2e {
     tshinfomc.edep = tshmc._energySum;
     tshinfomc.mom = std::sqrt(tshmc._mom.mag2());
     tshinfomc.cpos  = tshmc._cpos;
-
-    // find the step midpoint
-    const Straw& straw = tracker.getStraw(tshmc._strawId);
-    auto mcsep = tshmc._cpos-XYZVectorF(straw.getMidPoint());
-    auto wdir = XYZVectorF(straw.getDirection());
-    tshinfomc.len = mcsep.Dot(wdir);
-    auto mdir = tshmc._mom.Unit();
-    auto mcperp = mdir.Cross(wdir).Unit();
-    double dperp = mcperp.Dot(mcsep);
-    tshinfomc.twdot = mdir.Dot(wdir);
-    tshinfomc.dist = fabs(dperp);
-    auto wperp = wdir.Cross(mcperp);
-    tshinfomc.tau = mcsep.Dot(wperp);
-    tshinfomc.cdist = sqrt(tshinfomc.dist*tshinfomc.dist+tshinfomc.tau*tshinfomc.tau);
-    tshinfomc.ambig = dperp > 0 ? -1 : 1; // follow TrkPoca convention
-    tshinfomc.doca = -1*dperp;
+    tshinfomc.len = tshmc._wireLen;
+    tshinfomc.twdot = tshmc._wireDot;
+    tshinfomc.doca = tshmc._wireDOCA;
+    tshinfomc.dist = fabs(tshmc._wireDOCA);
+    tshinfomc.strawdoca = tshmc._strawDOCA;
+    tshinfomc.phi = tshmc._wirePhi;
+    tshinfomc.strawphi = tshmc._strawPhi;
+    tshinfomc.lang = fabs(fmod(tshmc._wirePhi,M_PI));
+    if (tshinfomc.lang > M_PI_2) tshinfomc.lang = M_PI - tshinfomc.lang;
+    tshinfomc.tau = tshmc._wireTau;
+    tshinfomc.cdist = sqrt(tshinfomc.doca*tshinfomc.doca+tshinfomc.tau*tshinfomc.tau);
+    tshinfomc.ambig = tshmc._wireDOCA > 0 ? 1 : -1;
   }
 
   void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<std::vector<SimInfo>>& all_siminfos, int n_generations, int n_match) {

@@ -5,7 +5,6 @@
 #include "TrkAna/inc/InfoStructHelper.hh"
 #include "Offline/RecoDataProducts/inc/TrkStrawHitSeed.hh"
 #include "KinKal/Trajectory/CentralHelix.hh"
-#include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "Offline/Mu2eKinKal/inc/WireHitState.hh"
 #include <cmath>
 #include <limits>
@@ -237,10 +236,8 @@ namespace mu2e {
     std::vector<TrkStrawHitInfo> tshinfos;
     // loop over hits
     static StrawHitFlag active(StrawHitFlag::active);
-    const Tracker& tracker = *GeomHandle<Tracker>();
     for(std::vector<TrkStrawHitSeed>::const_iterator ihit=kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
       TrkStrawHitInfo tshinfo;
-      auto const& straw = tracker.getStraw(ihit->strawId());
 
       tshinfo.state = ihit->_ambig;
       tshinfo.usetot = ihit->_kkshflag.hasAnyProperty(KKSHFlag::tot);
@@ -296,16 +293,11 @@ namespace mu2e {
       tshinfo.rdresidmvar   = ihit->_rdresidmvar;
       tshinfo.rdresidpvar   = ihit->_rdresidpvar;
 
-      // find nearest segment
-      auto ikseg = kseed.nearestSegment(ihit->_ptoca);
-      if(ikseg != kseed.segments().end()){
-        auto tdir(ikseg->momentum3().Unit());
-        tshinfo.wdot = tdir.Dot(straw.getDirection());
-      }
-      auto const& wiredir = straw.getDirection();
-      auto const& mid = straw.getMidPoint();
-      auto hpos = mid + wiredir*ihit->_wdist;
-      tshinfo.poca = XYZVectorF(hpos);
+      tshinfo.wdot = ihit->_wdot;
+      tshinfo.poca = ihit->_upoca;
+      tshinfo.ustrawdist = ihit->_ustrawdist;
+      tshinfo.ustrawphi = ihit->_ustrawphi;
+      tshinfo.uwirephi = ihit->_uwirephi;
 
       // count correlations with other TSH
       // OBSOLETE: replace this with a test for KinKal StrawHitClusters

@@ -26,6 +26,10 @@ namespace mu2e
     float twdot = -1000.0; // dot product between track and wire directions
     float tau = -1000.0; // threshold cluster distance to the wire along the perpedicular particle path
     float cdist = -1000.0; // threshold cluster distance to the wire
+    float phi = -1000.0; // cylindrical phi around wire of POCA
+    float lang = -1000.0; // lorentz angle of drift direction from POCA to wire
+    float strawdoca = -1000.0; // true transverse distance at POCA of the particle to the straw center
+    float strawphi = -1000.0; // cylindrical phi around straw center of POCA
     XYZVectorF cpos; // threshold cluster position
   };
 }
