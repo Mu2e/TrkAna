@@ -27,6 +27,11 @@ namespace mu2e
     Float_t twdot = -1000.0; // dot product between track and wire directions
     Float_t tau = -1000.0; // threshold cluster distance to the wire along the perpedicular particle path
     Float_t cdist = -1000.0; // threshold cluster distance to the wire
+    Float_t wiredoca = -1000.0;
+    Float_t strawdoca = -1000.0;
+    Float_t wirephi = -1000.0;
+    Float_t strawphi = -1000.0;
+    Float_t lang = -1000.0;
     XYZVectorF cpos; // threshold cluster position
   };
 }
