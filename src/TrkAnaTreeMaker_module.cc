@@ -465,8 +465,8 @@ namespace mu2e {
             auto& mcssi = mcssis.at(ixtra);
             auto const& tag = _extraMCStepTags[ixtra];
             auto inst = tag.instance();
-            std::string  mcsiname = branch +"mcsic_" + inst;
-            std::string  mcssiname = branch + "mcssi_" + inst;
+            std::string  mcsiname = branch +"mcsic_" + inst + ".";
+            std::string  mcssiname = branch + "mcssi_" + inst + ".";
             _trkana->Branch(mcsiname.c_str(),mcsic,_buffsize,_splitlevel);
             _trkana->Branch(mcssiname.c_str(),mcssi,_buffsize,_splitlevel);
           }
@@ -701,9 +701,9 @@ namespace mu2e {
 
   void TrkAnaTreeMaker::fillEventInfo( const art::Event& event) {
     // fill basic event information
-    _einfo.eventid = event.event();
-    _einfo.runid = event.run();
-    _einfo.subrunid = event.subRun();
+    _einfo.event = event.event();
+    _einfo.run = event.run();
+    _einfo.subrun = event.subRun();
     // currently no reco nproton estimate TODO
 
     auto PBThandle = event.getValidHandle<mu2e::ProtonBunchTime>(_PBTTag);

@@ -58,7 +58,8 @@ c1->SetGridy(true);
 We can then plot a histogram of the number of hits on each track like so:
 
 ```
-trkana->Draw("dem.nhits>>hist(100,0,100)", "", "goff");
+TH1D* hist = new TH1D("hist", "", 100,0,100)
+trkana->Draw("dem.nhits>>hist", "", "goff");
 ```
 
 where ```goff``` is the drawing option to now draw since we are still missing some important information: axis labels

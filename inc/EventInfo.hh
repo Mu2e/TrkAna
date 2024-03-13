@@ -8,9 +8,9 @@
 namespace mu2e
 {
   struct EventInfo {
-    int eventid = 0;
-    int runid = 0;
-    int subrunid = 0; // run/event identification
+    int event = 0;
+    int run = 0;
+    int subrun = 0; // run/event identification
     int nprotons = 0; // estimated # of protons on target for this microbunch
     float pbtime = 0.0;
     float  pbterr = 0.0; // estimated proton bunch time (and error)

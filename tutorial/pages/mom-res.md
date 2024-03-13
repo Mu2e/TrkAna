@@ -47,7 +47,8 @@ c1->SetGridy(true);
 We can first plot the reconstructed momentum and the MC truth information separately:
 
 ```
-trkana->Draw("demfit.mom.R()>>hist(100,100,110)", "demfit.sid==0", "HIST");
+TH1D* hist = new TH1D("hist", "", 100,100,110));
+trkana->Draw("demfit.mom.R()>>hist", "demfit.sid==0", "HIST");
 trkana->Draw("demmcvd.mom.R()>>hist2", "demmcvd.sid==0", "HIST SAMES");
 ```
 
