@@ -97,7 +97,7 @@ AllOpt : {
 DeM : { input : "KK"
   branch : "dem"
   suffix : "DeM"
-  options : { fillMC : true   genealogyDepth : -1 }
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   trkQualTag : "TrkQualDeM"
 }
 UeM : { input : "KK"
