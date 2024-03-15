@@ -157,8 +157,9 @@ namespace mu2e {
         fhicl::Atom<art::InputTag> crvDigiMCsTag{Name("CrvDigiMCsTag"), Comment("Tag for CrvDigiMC Collection"), art::InputTag()};
         fhicl::Atom<art::InputTag> crvDigisTag{Name("CrvDigisTag"), Comment("Tag for CrvDigi Collection"), art::InputTag()};
         // CRV -- flags
-        fhicl::Atom<bool> crvhits{Name("FillCRVHits"),Comment("Flag for turning on crv CoincidenceClusterbranches"), false};
-        fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
+        fhicl::Atom<bool> fillcrvcoincs{Name("FillCRVCoincs"),Comment("Flag for turning on crv CoincidenceClusterbranches"), false};
+        fhicl::Atom<bool> fillcrvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulses(mc) branches"), false};
+        fhicl::Atom<bool> fillcrvdigis{Name("FillCRVDigis"),Comment("Flag for turning on crvdigis branch"), false};
         // CRV -- other
         fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters.  This belongs in KinKalGeom as an intersection plane, together with the rest of the CRV planes FIXME
         // MC truth
@@ -264,19 +265,19 @@ namespace mu2e {
       art::Handle<CrvDigiCollection>                 _crvDigis;
       art::Handle<CrvStepCollection>                 _crvSteps;
       // CRV -- fhicl parameters
-      bool _crvhits, _crvpulses;
+      bool _fillcrvcoincs, _fillcrvpulses, _fillcrvdigis;
       double _crvPlaneY;  // needs to move to KinKalGeom FIXME
       // CRV (output)
-      std::vector<CrvHitInfoReco> _crvhit;
+      std::vector<CrvHitInfoReco> _crvcoincs;
       std::map<BranchIndex, std::vector<CrvHitInfoReco>> _allBestCrvs; // there can be more than one of these per track type
-      std::vector<CrvHitInfoMC> _crvhitmc;
+      std::vector<CrvHitInfoMC> _crvcoincsmc;
       std::map<BranchIndex, std::vector<CrvHitInfoMC>> _allBestCrvMCs;
       CrvSummaryReco _crvsummary;
       CrvSummaryMC   _crvsummarymc;
-      std::vector<CrvPlaneInfoMC> _crvhitmcplane;
-      std::vector<CrvPulseInfoReco> _crvpulseinfo;
-      std::vector<CrvWaveformInfo> _crvwaveforminfo;
-      std::vector<CrvHitInfoMC> _crvpulseinfomc;
+      std::vector<CrvPlaneInfoMC> _crvcoincsmcplane;
+      std::vector<CrvPulseInfoReco> _crvpulses;
+      std::vector<CrvWaveformInfo> _crvdigis;
+      std::vector<CrvHitInfoMC> _crvpulsesmc;
       std::vector<CrvHitInfoReco> _crvrecoinfo;
       // helices
       HelixInfo _hinfo;
@@ -311,7 +312,9 @@ namespace mu2e {
     _fillmc(conf().fillmc()),
     _fillcalomc(conf().fillCaloMC()),
     // CRV
-    _crvhits(conf().crvhits()),
+    _fillcrvcoincs(conf().fillcrvcoincs()),
+    _fillcrvpulses(conf().fillcrvpulses()),
+    _fillcrvdigis(conf().fillcrvdigis()),
     _infoMCStructHelper(conf().infoMCStructHelper()),
     _buffsize(conf().buffsize()),
     _splitlevel(conf().splitlevel())
@@ -466,21 +469,22 @@ namespace mu2e {
     }
     // calorimeter information for the downstream electron track
     // general CRV info
-    if(_crvhits) {
+    if(_fillcrvcoincs) {
       // coincidence branches should be here FIXME
       _trkana->Branch("crvsummary.",&_crvsummary,_buffsize,_splitlevel);
-      _trkana->Branch("crvhit.",&_crvhit,_buffsize,_splitlevel);
-      if(_crvpulses) {
-        _trkana->Branch("crvpulseinfo.",&_crvpulseinfo,_buffsize,_splitlevel);
-        _trkana->Branch("crvwaveforminfo.",&_crvwaveforminfo,_buffsize,_splitlevel);
+      _trkana->Branch("crvcoincs.",&_crvcoincs,_buffsize,_splitlevel);
+      if(_fillcrvpulses) {
+        _trkana->Branch("crvpulses.",&_crvpulses,_buffsize,_splitlevel);
       }
-
+      if(_fillcrvdigis) {
+        _trkana->Branch("crvdigis.",&_crvdigis,_buffsize,_splitlevel);
+      }
       if(_fillmc){
         _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
-        _trkana->Branch("crvhitmc.",&_crvhitmc,_buffsize,_splitlevel);
-        _trkana->Branch("crvhitmcplane.",&_crvhitmcplane,_buffsize,_splitlevel);
-        if(_crvpulses) {
-          _trkana->Branch("crvpulseinfomc.",&_crvpulseinfomc,_buffsize,_splitlevel);
+        _trkana->Branch("crvcoincsmc.",&_crvcoincsmc,_buffsize,_splitlevel);
+        _trkana->Branch("crvcoincsmcplane.",&_crvcoincsmcplane,_buffsize,_splitlevel);
+        if(_fillcrvpulses) {
+          _trkana->Branch("crvpulsesmc.",&_crvpulsesmc,_buffsize,_splitlevel);
         }
       }
     }
@@ -636,14 +640,14 @@ namespace mu2e {
 
     // TODO we want MC information when we don't have a track
     // fill general CRV info
-    if(_crvhits){
+    if(_fillcrvcoincs){
       // clear vectors
-      _crvhit.clear();
-      _crvhitmc.clear();
-      _crvhitmcplane.clear();
-      _crvpulseinfo.clear();
-      _crvwaveforminfo.clear();
-      _crvpulseinfomc.clear();
+      _crvcoincs.clear();
+      _crvcoincsmc.clear();
+      _crvcoincsmcplane.clear();
+      _crvpulses.clear();
+      _crvdigis.clear();
+      _crvpulsesmc.clear();
 
       event.getByLabel(_conf.crvCoincidencesTag(),_crvCoincidences);
       event.getByLabel(_conf.crvRecoPulsesTag(),_crvRecoPulses);
@@ -655,12 +659,17 @@ namespace mu2e {
       }
       _crvHelper.FillCrvHitInfoCollections(
                                            _crvCoincidences, _crvCoincidenceMCs,
-                                           _crvRecoPulses, _crvSteps, _mcTrajectories,_crvhit, _crvhitmc,
-                                           _crvsummary, _crvsummarymc, _crvhitmcplane, _crvPlaneY);
-      if(_crvpulses){
-        _crvHelper.FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs, _crvDigis,
-                                               _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
+                                           _crvRecoPulses, _crvSteps, _mcTrajectories,_crvcoincs, _crvcoincsmc,
+                                           _crvsummary, _crvsummarymc, _crvcoincsmcplane, _crvPlaneY);
+      if(_fillcrvpulses){
+        _crvHelper.FillCrvPulseInfoCollections(_crvRecoPulses, _crvDigiMCs,
+                                              _crvpulses, _crvpulsesmc);
       }
+      if(_fillcrvdigis){
+        _crvHelper.FillCrvDigiInfoCollections(_crvRecoPulses, _crvDigis,                                         
+                                              _crvdigis);
+      }
+
     }
 
 
