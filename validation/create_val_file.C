@@ -1,9 +1,9 @@
 void create_val_file(std::string filename = "") {
 
   TFile* trkana_file = new TFile(filename.c_str(), "READ");
-  TTree* trkana = (TTree*) trkana_file->Get("TrkAnaNeg/trkana");
+  TTree* trkana = (TTree*) trkana_file->Get("TrkAna/trkana");
 
-  TFile* file = new TFile("val-trkana-v4.root", "RECREATE");
+  TFile* file = new TFile("val-trkana-v5.root", "RECREATE");
 
   // evtinfo histograms
   trkana->Draw("evtinfo.event>>h_evtinfo_event", "", "");
@@ -27,10 +27,10 @@ void create_val_file(std::string filename = "") {
   trkana->Draw("demfit.mom.R()>>h_demfit_mom_xit_t0cut", "demfit.sid==2 && demlh.t0>=700", "goff");
 
   // resolution histograms
-  trkana->Draw("(demfit[demmcvd.iinter].mom.R() - demmcvd.mom.R())>>h_demfit_momres_all", "", "goff");
-  trkana->Draw("(demfit[demmcvd.iinter].mom.R() - demmcvd.mom.R())>>h_demfit_momres_ent", "demmcvd.sid==0", "goff");
-  trkana->Draw("(demfit[demmcvd.iinter].mom.R() - demmcvd.mom.R())>>h_demfit_momres_mid", "demmcvd.sid==1", "goff");
-  trkana->Draw("(demfit[demmcvd.iinter].mom.R() - demmcvd.mom.R())>>h_demfit_momres_xit", "demmcvd.sid==2", "goff");
+  trkana->Draw("(demfit[][demmcvd.iinter].mom.R() - demmcvd[].mom.R())>>h_demfit_momres_all", "", "goff");
+  trkana->Draw("(demfit[][demmcvd.iinter].mom.R() - demmcvd[].mom.R())>>h_demfit_momres_ent", "demmcvd[].sid==0", "goff");
+  trkana->Draw("(demfit[][demmcvd.iinter].mom.R() - demmcvd[].mom.R())>>h_demfit_momres_mid", "demmcvd[].sid==1", "goff");
+  trkana->Draw("(demfit[][demmcvd.iinter].mom.R() - demmcvd[].mom.R())>>h_demfit_momres_xit", "demmcvd[].sid==2", "goff");
 
   // trkcalohit histograms
   trkana->Draw("demtch.ctime>>h_demtch_ctime_all", "", "goff");
@@ -40,13 +40,13 @@ void create_val_file(std::string filename = "") {
 
   // crv histograms
   trkana->Draw("crvsummary.totalPEs>>h_crvsummary_totalPEs_all", "", "goff");
-  trkana->Draw("crvhit.pos.fCoordinates.fX>>h_crvhit_pos_x", "", "goff");
-  trkana->Draw("crvhit.pos.fCoordinates.fY>>h_crvhit_pos_y", "", "goff");
-  trkana->Draw("crvhit.pos.fCoordinates.fZ>>h_crvhit_pos_z", "", "goff");
-  trkana->Draw("crvhitmc.primary.fCoordinates.fX>>h_crvhitmc_primary_x", "", "goff");
-  trkana->Draw("crvhitmc.primary.fCoordinates.fY>>h_crvhitmc_primary_y", "", "goff");
-  trkana->Draw("crvhitmc.primary.fCoordinates.fZ>>h_crvhitmc_primary_z", "", "goff");
-  trkana->Draw("crvhitmc.depositedEnergy>>h_crvhitmc_depostedEnergy", "", "goff");
+  trkana->Draw("crvcoincs.pos.fCoordinates.fX>>h_crvhit_pos_x", "", "goff");
+  trkana->Draw("crvcoincs.pos.fCoordinates.fY>>h_crvhit_pos_y", "", "goff");
+  trkana->Draw("crvcoincs.pos.fCoordinates.fZ>>h_crvhit_pos_z", "", "goff");
+  trkana->Draw("crvcoincsmc.primary.fCoordinates.fX>>h_crvhitmc_primary_x", "", "goff");
+  trkana->Draw("crvcoincsmc.primary.fCoordinates.fY>>h_crvhitmc_primary_y", "", "goff");
+  trkana->Draw("crvcoincsmc.primary.fCoordinates.fZ>>h_crvhitmc_primary_z", "", "goff");
+  trkana->Draw("crvcoincsmc.depositedEnergy>>h_crvhitmc_depostedEnergy", "", "goff");
 
   // demmcsim histograms
   trkana->Draw("demmcsim.pos.x()>>h_demmcsim_pos_x_all", "", "goff");
