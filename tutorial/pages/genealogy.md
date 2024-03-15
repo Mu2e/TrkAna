@@ -47,7 +47,8 @@ c1->SetGridy(true);
 Now we can draw the X-Z starting position of the conversion electrons like this:
 
 ```
-  trkana->Draw("demmcsim.pos.x():demmcsim.pos.z()>>hist(1000,-20000,1000, 1000,-700,9000)", "demmcsim.prirel._rem==1 && demmcsim.prirel._rel==2", "COLZ");
+  TH2D* hist = new TH2D("hist", "", 1000,-20000,1000, 1000,-700,9000);
+  trkana->Draw("demmcsim.pos.x():demmcsim.pos.z()>>hist", "demmcsim.prirel._rem==1 && demmcsim.prirel._rel==2", "COLZ");
 ```
 where ```prirel._rel==2``` is for parent. You should see the S-bend of the transport solenoid and also the production solenoid.
 

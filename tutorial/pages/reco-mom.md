@@ -91,7 +91,8 @@ We want to plot the momentum of the tracks. If you ```Print()``` the ```demfit``
 We want to plot the magnitude of the momentum vector. We could calculate it ourselves from the components but in ROOT, we can use member functions of [XYZVectorF](https://root.cern.ch/doc/v628/namespaceROOT_1_1Math.html#a767e8c52a85dc9538fe00603961eab98). We will use ```R()``` function:
 
 ```
-trkana->Draw("demfit.mom.R()>>hist(100,100,110)", "", "HIST");
+TH1D* hist = new TH1D("hist", "", 100,100,110")
+trkana->Draw("demfit.mom.R()>>hist, "", "HIST");
 ```
 
 You may notice that the peak is rather broad... That's because we are plotting the reconstructed track momentum at all the intersections - the entrance, middle, and exit of the tracker. 
@@ -99,7 +100,7 @@ You may notice that the peak is rather broad... That's because we are plotting t
 To see just the track momentum at one of the intersections, we need to apply a cut using the second argument to the ```Draw()``` function:
 
 ```
-trkana->Draw("demfit.mom.R()>>hist(100,100,110)", "demfit.sid==0", "HIST")
+trkana->Draw("demfit.mom.R()>>hist", "demfit.sid==0", "HIST")
 ```
 
 where ```sid``` is the surface id of the intersection we want to plot (```sid=0``` is the entrance to the tracker).

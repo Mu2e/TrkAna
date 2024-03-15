@@ -41,9 +41,9 @@
   <class name="std::vector<std::vector<mu2e::TrkFitInfo>>" />
   <class name="mu2e::TrkInfoMC" />
   <class name="std::vector<mu2e::TrkInfoMC>" />  
-  <class name="mu2e::TrkQualInfo" />
   <class name="mu2e::EventWeightInfo" />
   <class name="mu2e::RecoQualInfo" />
+  <class name="mu2e::MVAResultInfo" />
   <class name="mu2e::CrvHitInfoReco" />
   <class name="std::vector<mu2e::CrvHitInfoReco>" />
   <class name="mu2e::CrvHitInfoMC" />

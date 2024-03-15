@@ -17,6 +17,7 @@
 #include "Offline/GlobalConstantsService/inc/PhysicsParams.hh"
 #include "Offline/GeometryService/inc/GeomHandle.hh"
 #include "Offline/GeometryService/inc/DetectorSystem.hh"
+#include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Event.h"
 
@@ -51,11 +52,33 @@ namespace mu2e {
     // use the primary match of the track
     // primary associated SimParticle
     TrkInfoMC trkinfomc;
+    GeomHandle<DetectorSystem> det;
     if(kseedmc.simParticles().size() > 0){
       auto const& simp = kseedmc.simParticles().front();
       trkinfomc.valid = true;
       trkinfomc.nhits = simp._nhits; // number of hits from the primary particle
       trkinfomc.nactive = simp._nactive; // number of active hits from the primary particle
+
+      static GlobalConstantsHandle<ParticleDataList> pdt;
+      auto charge = pdt->particle(simp._pdg).charge();
+
+      XYZTVectorF mom = XYZTVectorF(simp._mom);
+      ROOT::Math::XYZTVector pos0(simp._pos.x(), simp._pos.y(), simp._pos.z(), simp._pos.t());
+      ROOT::Math::PxPyPzMVector mom0(mom.x(), mom.y(), mom.z(),  pdt->particle(simp._pdg).mass());
+
+      GeomHandle<BFieldManager> bfmgr;
+      mu2e::GeomHandle<mu2e::Tracker> tracker;
+      auto tracker_origin = det->toMu2e(tracker->origin());
+      ROOT::Math::XYZVector bnom(bfmgr->getBField(tracker_origin));
+
+      KinKal::LoopHelix lh(pos0, mom0, charge, bnom);
+      trkinfomc.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
+      trkinfomc.rad = lh.rad();
+      trkinfomc.lam = lh.lam();
+      trkinfomc.cx = lh.cx();
+      trkinfomc.cy = lh.cy();
+      trkinfomc.phi0= lh.phi0();
+      trkinfomc.t0 = lh.t0();
     }
 
     fillTrkInfoMCDigis(kseed, kseedmc, trkinfomc);
@@ -215,12 +238,13 @@ namespace mu2e {
     siminfo.valid = true;
     if(sp.genParticle().isNonnull())siminfo.gen = sp.genParticle()->generatorId().id();
     siminfo.proc = sp.creationCode();
+    siminfo.stopCode = sp.stoppingCode();
     siminfo.pdg = sp.pdgId();
     siminfo.time = sp.startGlobalTime();
     siminfo.mom = XYZVectorF(sp.startMomentum());
     siminfo.pos = XYZVectorF(det->toDetector(sp.startPosition()));
-    siminfo.endmom = XYZVectorF(sp.endMomentum());
     siminfo.endpos = XYZVectorF(det->toDetector(sp.endPosition()));
+    siminfo.endmom = XYZVectorF(sp.endMomentum());
   }
 
   void InfoMCStructHelper::fillVDInfo(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<std::vector<MCStepInfo>>& all_vdinfos) {
