@@ -48,16 +48,17 @@ namespace mu2e {
     _onSpill = (ewMarker.spillType() == EventWindowMarker::SpillType::onspill);
   }
 
-  void InfoMCStructHelper::fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
+  void InfoMCStructHelper::fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<TrkInfoMC>& all_trkinfomcs) {
     // use the primary match of the track
     // primary associated SimParticle
+    TrkInfoMC trkinfomc;
     GeomHandle<DetectorSystem> det;
     if(kseedmc.simParticles().size() > 0){
       auto const& simp = kseedmc.simParticles().front();
       trkinfomc.valid = true;
       trkinfomc.nhits = simp._nhits; // number of hits from the primary particle
       trkinfomc.nactive = simp._nactive; // number of active hits from the primary particle
-      
+
       static GlobalConstantsHandle<ParticleDataList> pdt;
       auto charge = pdt->particle(simp._pdg).charge();
 
@@ -74,8 +75,6 @@ namespace mu2e {
       ROOT::Math::XYZVector bnom(bfmgr->getBField(pos3Vec).x(),bfmgr->getBField(pos3Vec).y(),bfmgr->getBField(pos3Vec).z());
       //XYZVectorF pos_in_Mu2e = XYZVectorF(simp._pos);
       //ROOT::Math::XYZVector bnom(bfmgr->getBField(pos_in_Mu2e).x(),bfmgr->getBField(pos_in_Mu2e).y(),bfmgr->getBField(pos_in_Mu2e).z());
-
-      
       KinKal::LoopHelix lh(pos0, mom0, charge, bnom);
       trkinfomc.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
       std::cout<<"maxr "<<sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad())<<std::endl;
@@ -88,6 +87,7 @@ namespace mu2e {
     }
 
     fillTrkInfoMCDigis(kseed, kseedmc, trkinfomc);
+    all_trkinfomcs.push_back(trkinfomc);
   }
 
   void InfoMCStructHelper::fillTrkInfoMCDigis(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc) {
@@ -153,7 +153,9 @@ namespace mu2e {
     tshinfomc.doca = -1*dperp;
   }
 
-  void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<SimInfo>& siminfos, int n_generations, int n_match) {
+  void InfoMCStructHelper::fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<std::vector<SimInfo>>& all_siminfos, int n_generations, int n_match) {
+    std::vector<SimInfo> siminfos;
+
     // interpret -1 as no llimit
     if (n_generations == -1) {
       n_generations = std::numeric_limits<int>::max();
@@ -222,6 +224,8 @@ namespace mu2e {
         siminfos.push_back(sim_info);
       }
     }
+
+    all_siminfos.push_back(siminfos);
   }
 
 
@@ -248,8 +252,8 @@ namespace mu2e {
     siminfo.endmom = XYZVectorF(sp.endMomentum());
   }
 
-  void InfoMCStructHelper::fillVDInfo(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<MCStepInfo>& vdinfos) {
-    vdinfos.clear();
+  void InfoMCStructHelper::fillVDInfo(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<std::vector<MCStepInfo>>& all_vdinfos) {
+    std::vector<MCStepInfo> vdinfos;
     const auto& vdsteps = kseedmc._vdsteps;
     const auto& inters = kseed.intersections();
     double tmin = std::numeric_limits<float>::max();
@@ -299,19 +303,22 @@ namespace mu2e {
       vdinfos[imin].early = true;
       vdinfos[imax].late = true;
     }
+    all_vdinfos.push_back(vdinfos);
   }
 
-  void InfoMCStructHelper::fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs) {
-    tshinfomcs.clear();
+  void InfoMCStructHelper::fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<std::vector<TrkStrawHitInfoMC>>& all_tshinfomcs) {
+    std::vector<TrkStrawHitInfoMC> tshinfomcs;
 
     for(const auto& i_tshmc : kseedmc._tshmcs) {
       TrkStrawHitInfoMC tshinfomc;
       fillHitInfoMC(kseedmc, tshinfomc, i_tshmc);
       tshinfomcs.push_back(tshinfomc);
     }
+    all_tshinfomcs.push_back(tshinfomcs);
   }
 
-  void InfoMCStructHelper::fillCaloClusterInfoMC(CaloClusterMC const& ccmc, CaloClusterInfoMC& ccimc) {
+  void InfoMCStructHelper::fillCaloClusterInfoMC(CaloClusterMC const& ccmc, std::vector<CaloClusterInfoMC>& ccimcs) {
+    CaloClusterInfoMC ccimc;
     auto const& edeps = ccmc.energyDeposits();
     ccimc.nsim = edeps.size();
     ccimc.etot = ccmc.totalEnergyDep();
@@ -322,13 +329,14 @@ namespace mu2e {
       ccimc.tprimary = primary.time();
       ccimc.prel = primary.rel();
     }
+    ccimcs.push_back(ccimc);
   }
 
   void InfoMCStructHelper::fillExtraMCStepInfos(KalSeedMC const& kseedmc, StepPointMCCollection const& mcsteps,
-      MCStepInfos& mcsic, MCStepSummaryInfo& mcssi) {
+                                                std::vector<MCStepInfos>& mcsics, std::vector<MCStepSummaryInfo>& mcssis) {
+    MCStepInfos mcsic;
+    MCStepSummaryInfo mcssi;
     GeomHandle<DetectorSystem> det;
-    mcssi.reset();
-    mcsic.clear();
     MCStepInfo mcsi;
     // only count the extra steps associated with the primary MC truth match
     auto simp = kseedmc.simParticle().simParticle(_spcH);
@@ -369,5 +377,7 @@ namespace mu2e {
       mcsic.push_back(mcsi);
       mcssi.addStep(mcsi);
     }
+    mcsics.push_back(mcsic);
+    mcssis.push_back(mcssi);
   }
 }

@@ -37,12 +37,29 @@ namespace mu2e
     {
       const CrvCoincidenceCluster &cluster = crvCoincidences->at(i);
 
+      // Get the PEs per layer from the reco pulses
+      std::array<float, CRVId::nLayers> PEsPerLayer_ = {0.}; // PEs per layer array, each element initiliased to zero
+      const std::vector<art::Ptr<CrvRecoPulse> > coincRecoPulses_ = cluster.GetCrvRecoPulses(); // Get the reco pulses from the coincidence 
+      for(size_t j=0; j<coincRecoPulses_.size(); j++) // Loop through the pulses
+      {
+        // Skip duplicate pulses (those with multiple peaks)
+        if(coincRecoPulses_.at(j)->GetRecoPulseFlags().test(CrvRecoPulseFlagEnums::duplicateNoFitPulse)) continue;
+        // Get layer number from the bar index associated with this reco pulse
+        const CRSScintillatorBarIndex &crvBarIndex = coincRecoPulses_.at(j)->GetScintillatorBarIndex(); 
+        const CRSScintillatorBar &crvCounter = CRS->getBar(crvBarIndex);
+        const CRSScintillatorBarId &crvCounterId = crvCounter.id();
+        int layerNumber = crvCounterId.getLayerNumber();
+        // Sum PEs for this coincidence, indexed by layer number
+        PEsPerLayer_[layerNumber] += coincRecoPulses_.at(j)->GetPEsNoFit(); // The coincidences were found using the NoFit option, so use that here as well  
+      }
+
       //fill the Reco collection
       recoInfo.emplace_back(
           cluster.GetCrvSectorType(),
           tdet->toDetector(cluster.GetAvgHitPos()),
           cluster.GetStartTime(), cluster.GetEndTime(), cluster.GetAvgHitTime(),
           cluster.GetPEs(),
+          PEsPerLayer_, // PEsPerLayer array is not a member of the mu2e::CrvCoincidenceCluster class...
           cluster.GetCrvRecoPulses().size(),
           cluster.GetLayers().size(),
           cluster.GetSlope());
@@ -171,29 +188,13 @@ namespace mu2e
   void CrvInfoHelper::FillCrvPulseInfoCollections (
       art::Handle<CrvRecoPulseCollection> const& crvRecoPulses,
       art::Handle<CrvDigiMCCollection> const& crvDigiMCs,
-      art::Handle<CrvDigiCollection> const& crvDigis,
-      CrvPulseInfoRecoCollection &recoInfo, CrvHitInfoMCCollection &MCInfo, CrvWaveformInfoCollection &waveformInfo){
+      CrvPulseInfoRecoCollection &recoInfo, CrvHitInfoMCCollection &MCInfo){
     GeomHandle<DetectorSystem> tdet;
 
     if(!crvRecoPulses.isValid()) return;
 
     GeomHandle<CosmicRayShield> CRS;
-
-    // Create SiPM map to extract sequantial SiPM IDs
-    const std::vector<std::shared_ptr<CRSScintillatorBar> > &counters = CRS->getAllCRSScintillatorBars();
-    std::vector<std::shared_ptr<CRSScintillatorBar> >::const_iterator iter;
-    int iSiPM = 0;
-    std::map<int,int> sipm_map;
-    for(iter=counters.begin(); iter!=counters.end(); iter++)
-    {
-      const CRSScintillatorBarIndex &barIndex = (*iter)->index();
-      for(int SiPM=0; SiPM<4; SiPM++)
-      {
-        if(!(*iter)->getBarDetail().hasCMB(SiPM%2)) continue;
-        sipm_map[barIndex.asInt()*4 + SiPM] = iSiPM;
-        iSiPM++;
-      }
-    }
+    const std::map<int,int> sipm_map = GetSiPMMap(CRS);
 
     // Loop through all reco pulses
     for(size_t recoPulseIndex=0; recoPulseIndex<crvRecoPulses->size(); recoPulseIndex++)
@@ -209,7 +210,7 @@ namespace mu2e
 
       //Reco pulses information
       int SiPM = crvRecoPulse->GetSiPMNumber();
-      int SiPMId = sipm_map.find(barIndex.asInt()*4 + SiPM)->second;
+      int SiPMId = sipm_map.find(barIndex.asInt()*CRVId::nChanPerBar + SiPM)->second;
       CLHEP::Hep3Vector HitPos = CrvHelper::GetCrvCounterPos(CRS, barIndex);
       recoInfo.emplace_back(HitPos, barIndex.asInt(), sectorNumber, SiPMId,
           crvRecoPulse->GetPEs(), crvRecoPulse->GetPEsPulseHeight(), crvRecoPulse->GetPulseHeight(),
@@ -250,14 +251,27 @@ namespace mu2e
         MCInfo.emplace_back();
     }
 
-    //    Fill waveforms struct
+  } //FillCrvPulseInfoCollections
+
+  // Fill digis struct 
+  void CrvInfoHelper::FillCrvDigiInfoCollections (
+      art::Handle<CrvRecoPulseCollection> const& crvRecoPulses,
+      art::Handle<CrvDigiCollection> const& crvDigis,
+      CrvWaveformInfoCollection &digiInfo){
+
+    if(!crvRecoPulses.isValid()) return;
+
+    GeomHandle<CosmicRayShield> CRS;
+    const std::map<int,int> sipm_map = GetSiPMMap(CRS);
+
+    // Fill digis/waveforminfo struct
     for(size_t j=0; j<crvDigis->size(); j++)
     {
       mu2e::CrvDigi const& digi(crvDigis->at(j));
       int SiPMId = sipm_map.find(digi.GetScintillatorBarIndex().asInt()*4 + digi.GetSiPMNumber())->second;
       for(size_t k=0; k<mu2e::CrvDigi::NSamples; k++)
-        waveformInfo.emplace_back(digi.GetADCs()[k], (digi.GetStartTDC()+k)*CRVDigitizationPeriod, SiPMId);
+        digiInfo.emplace_back(digi.GetADCs()[k], (digi.GetStartTDC()+k)*CRVDigitizationPeriod, SiPMId);
     }
-  } //FillCrvPulseInfoCollections
+  } // FillCrvDigiInfoCollections
 
 }

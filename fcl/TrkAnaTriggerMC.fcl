@@ -1,0 +1,79 @@
+#
+#  Run TrkAna on the output of the trigger, including MC truth matching
+#
+#include "Offline/fcl/standardServices.fcl"
+#include "TrkAna/fcl/prolog_trigger.fcl"
+process_name : TrkAnaTriggerMC
+services : @local::Services.Reco
+source : {
+  module_type : RootInput
+}
+
+physics : {
+  analyzers : {
+    TAtprDeM : {
+      @table::TrkAnaTrigger.TrkAnaDeMTT
+      FitType : LoopHelix
+      candidate : {
+        branch: "trk"
+        options : {
+          @table::AllOpt
+          fillHits : true
+        }
+        input : "TTKSF"
+        suffix : "DeM"
+      }
+      KalSeedMCAssns: "SelectRecoMCtprDeM"
+      SelectEvents : [  "globalTrigger:tprDeM_highP_stopTarg"  ]
+    }
+    TAcprDeM : {
+      @table::TrkAnaTrigger.TrkAnaDeMTT
+      FitType : LoopHelix
+      candidate : {
+        branch: "trk"
+        options : {
+          @table::AllOpt
+          fillHits : true
+        }
+        input : "TTCalSeedFit"
+        suffix : "Dem"
+      }
+      KalSeedMCAssns: "SelectRecoMCcprDeM"
+      SelectEvents : [ "globalTrigger:cprDeM_highP_stopTarg"  ]
+    }
+    TAtprDeP : {
+      @table::TrkAnaTrigger.TrkAnaDePTT
+      FitType : LoopHelix
+      candidate : {
+        branch: "trk"
+        options : {
+          @table::AllOpt
+          fillHits : true
+        }
+        input : "TTKSF"
+        suffix : "DeP"
+      }
+      KalSeedMCAssns: "SelectRecoMCtprDeP"
+      SelectEvents : [ "globalTrigger:tprDeP_highP_stopTarg"  ]
+    }
+    TAcprDeP : {
+      @table::TrkAnaTrigger.TrkAnaDePTT
+      FitType : LoopHelix
+      candidate : {
+        branch: "trk"
+        options : {
+          @table::AllOpt
+          fillHits : true
+        }
+        input : "TTCalSeedFit"
+        suffix : "Dep"
+      }
+      KalSeedMCAssns: "SelectRecoMCcprDeP"
+      #      SelectEvents : [  "globalTrigger:cprDeP_highP_stopTarg"  ]
+      SelectEvents : [  "globalTrigger:cprDeP_highP_stopTarg"  ]
+    }
+  }
+  EndPath : [TAtprDeM, TAcprDeM, TAtprDeP, TAcprDeP]
+}
+end_paths : [ EndPath ]
+services.TFileService.fileName: "nts.owner.trkana-triggerMC.version.sequencer.root"
