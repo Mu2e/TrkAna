@@ -25,9 +25,10 @@ physics.TrkAnaEndPath : [ TrkAnaExt ]
 # physics.analyzers.TrkAnaExt.candidate.options.fillTrkPID : false
 physics.analyzers.TrkAnaExt.FillTriggerInfo : false
 physics.analyzers.TrkAnaExt.FitType : KinematicLine
+physics.analyzers.TrkAnaExt.candidate.branch : "trk"
 
 # for hit level diagnostics, set diagLevel to 2
-physics.analyzers.TrkAnaExt.diagLevel : 2
+physics.analyzers.TrkAnaExt.diagLevel : 1
 physics.analyzers.TrkAnaExt.FillMCInfo : true
 physics.analyzers.TrkAnaExt.FillCRVCoincs : true
 

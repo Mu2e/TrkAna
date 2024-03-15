@@ -12,13 +12,13 @@ services : @local::Services.Reco
 physics :
 {
   producers : {
-#    @table::TrkAnaReco.producers
+    @table::TrkAnaReco.producers
     PBIWeight : @local::PBIWeight
   }
   analyzers : { @table::TrkAnaReco.analyzers }
 }
 
-physics.TrkAnaTrigPath : [ PBIWeight ]
+physics.TrkAnaTrigPath : [ PBIWeight, TrkQualDeM ]
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)
@@ -35,6 +35,5 @@ physics.analyzers.TrkAna.FitType : LoopHelix
 
 physics.analyzers.TrkAna.FillTrkQualInfo : false
 physics.analyzers.TrkAna.FillTrkPIDInfo : false
-
 
 services.TFileService.fileName: "nts.owner.trkana-reco.version.sequencer.root"

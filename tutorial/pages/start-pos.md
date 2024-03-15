@@ -54,7 +54,8 @@ c1->SetGridy(true);
 Now we can draw the X-Y starting position of the conversion electrons like this:
 
 ```
-  trkana->Draw("demmcsim.pos.y():demmcsim.pos.x()>>hist(200,-100,100, 200,-100,100)", "demmcsim.prirel._rem==0", "COLZ");
+  TH2D* hist = new TH2D("hist", "", 100-100,100, 200,-100,100)
+  trkana->Draw("demmcsim.pos.y():demmcsim.pos.x()>>hist", "demmcsim.prirel._rem==0", "COLZ");
 ```
 
 where ```COLZ``` tells ROOT to draw with a color map. Note that the coordinate system used by TrkAna is the detector coordinate system (origin = center of tracker) and not the global Mu2e coordinate system (origin = center of TS3).
