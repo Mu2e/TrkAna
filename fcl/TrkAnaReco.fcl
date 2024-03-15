@@ -33,7 +33,6 @@ physics.analyzers.TrkAna.FillCRVCoincs : true
 physics.analyzers.TrkAna.FillTriggerInfo : false
 physics.analyzers.TrkAna.FitType : LoopHelix
 
-physics.analyzers.TrkAna.FillTrkQualInfo : false
 physics.analyzers.TrkAna.FillTrkPIDInfo : false
 
 services.TFileService.fileName: "nts.owner.trkana-reco.version.sequencer.root"
