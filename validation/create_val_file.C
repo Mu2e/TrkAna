@@ -1,14 +1,14 @@
-void create_val_file() {
+void create_val_file(std::string filename = "") {
 
-  TFile* trkana_file = new TFile("/pnfs/mu2e/tape/phy-nts/nts/mu2e/CeEndpointMix1BBSignal/MDC2020z1_best_v1_1_std_v04_01_00/tka/85/7b/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.001210_00000289.tka", "READ");
+  TFile* trkana_file = new TFile(filename.c_str(), "READ");
   TTree* trkana = (TTree*) trkana_file->Get("TrkAnaNeg/trkana");
 
   TFile* file = new TFile("val-trkana-v4.root", "RECREATE");
 
   // evtinfo histograms
-  trkana->Draw("evtinfo.eventid>>h_evtinfo_eventid", "", "");
-  trkana->Draw("evtinfo.subrunid>>h_evtinfo_subrunid", "", "");
-  trkana->Draw("evtinfo.runid>>h_evtinfo_runid", "", "");
+  trkana->Draw("evtinfo.event>>h_evtinfo_event", "", "");
+  trkana->Draw("evtinfo.subrun>>h_evtinfo_subrun", "", "");
+  trkana->Draw("evtinfo.run>>h_evtinfo_run", "", "");
   trkana->Draw("evtinfo.nprotons>>h_evtinfo_nprotons", "", "");
   trkana->Draw("evtinfo.pbtime>>h_evtinfo_pbtime", "", "");
   trkana->Draw("evtinfo.pbterr>>h_evtinfo_pbterr", "", "");
