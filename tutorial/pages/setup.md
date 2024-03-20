@@ -40,10 +40,12 @@ Once logged in, you should create a working area following the instructions [her
 mkdir your/new/working/area/
 cd your/new/working/area/
 setup mu2e
-muse setup TrkAna v05_00_00rc
+muse setup TrkAna v05_00_00
 ```
 
 ### Getting the List of TrkAna Files
+
+<!-- For March 2024 we will generate our own TrkAna files
 
 We will use a TrkAna dataset that has already been created by Production: ```nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v05_00_00rc.tka``` (see the [preliminary information](prelims.md#Simulation-Samples) for a breakdown of that the dataset name means.
 
@@ -77,6 +79,7 @@ Other TrkAna datasets you might want to look at:
 * Cosmic Rays with Extracted Position: nts.mu2e.CosmicCRYExtractedTrk.MDC2020z1_best_v1_1_std_v05_00_00rc.tka
     * this also contains the ```tsh``` tracker hit branches
 
+-->
 ## ROOT
 
 The ROOT exercises can be completed either on the command line or with a macro.

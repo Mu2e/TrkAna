@@ -77,7 +77,6 @@ namespace mu2e {
       //ROOT::Math::XYZVector bnom(bfmgr->getBField(pos_in_Mu2e).x(),bfmgr->getBField(pos_in_Mu2e).y(),bfmgr->getBField(pos_in_Mu2e).z());
       KinKal::LoopHelix lh(pos0, mom0, charge, bnom);
       trkinfomc.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
-      std::cout<<"maxr "<<sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad())<<std::endl;
       trkinfomc.rad = lh.rad();
       trkinfomc.lam = lh.lam();
       trkinfomc.cx = lh.cx();
