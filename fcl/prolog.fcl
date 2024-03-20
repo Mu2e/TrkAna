@@ -97,6 +97,7 @@ AllOpt : {
 DeM : { input : "KK"
   branch : "dem"
   suffix : "DeM"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   trkQualTag : "TrkQualDeM"
 }
 UeM : { input : "KK"
@@ -114,6 +115,7 @@ UmuM : { input : "KK"
 DeP : { input : "KK"
   branch : "dep"
   suffix : "DeP"
+  options : { fillMC : true   genealogyDepth : -1 }
 }
 UeP : { input : "KK"
   branch : "uep"
@@ -135,6 +137,8 @@ Ext : { input : "KK"
 
 TrkAnaTreeMaker : {
   module_type : TrkAnaTreeMaker
+  branches : [ @local::DeM, @local::DeP, @local::UeM, @local::UeP,
+    @local::DmuM, @local::DmuP, @local::UmuM, @local::UmuP ]
   RecoCountTag : "SelectRecoMC"
   PBITag : "PBISim"
   PBTTag : "EWMProducer"
@@ -155,8 +159,11 @@ TrkAnaTreeMaker : {
   FillTriggerInfo : true
   TriggerProcessName : "Mix"
   ProcessEmptyEvents : false
-  FillCRVHits : true
+  FillCRVCoincs : true
   FillCRVPulses : false
+  FillCRVDigis : false
+  FillCaloMC : true
+  FillHelixInfo : false
   PrimaryParticleTag : "compressRecoMCs"
   KalSeedMCAssns : "SelectRecoMC"
   CaloClusterMCTag : "compressRecoMCs"
@@ -165,6 +172,7 @@ TrkAnaTreeMaker : {
     MinGoodMomFraction : 0.9
     MaxVDDt : 5 # ns
   }
+  ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
 }
 
 TrkAnaReco : {
@@ -176,28 +184,18 @@ TrkAnaReco : {
   }
 
   analyzers : {
-    TrkAnaNeg : { @table::TrkAnaTreeMaker
-      candidate : @local::DeM
-      supplements : [ @local::UeM, @local::DmuM ]
-      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
-    }
-    TrkAnaPos : { @table::TrkAnaTreeMaker
-      candidate : @local::DeP
-      supplements : [ @local::UeP, @local::DmuP ]
-      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
-    }
+    TrkAna : { @table::TrkAnaTreeMaker  }
+
     TrkAnaExt : { @table::TrkAnaTreeMaker
-      candidate : @local::Ext
-      supplements : [ ]
-      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
+      branches : [ @local::Ext ]
     }
 
     genCountLogger : @local::genCountLogger
   }
 
   TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath ]
-  EndSequenceNoMC : [ TrkAnaNeg, TrkAnaPos ]
-  EndSequence : [ TrkAnaNeg, TrkAnaPos, genCountLogger ]
+  EndSequenceNoMC : [ TrkAna ]
+  EndSequence : [ TrkAna, genCountLogger ]
 
 }
 
