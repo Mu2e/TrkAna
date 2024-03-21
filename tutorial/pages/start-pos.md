@@ -34,9 +34,9 @@ In this exercise, we will focus on the event primary and so have a cut like ```p
 In ROOT, let's open the file, get the tree, and create a TCanvas as before:
 
 ```
-TChain* trkana = new TChain("TrkAnaNeg/trkana");
+TChain* trkana = new TChain("TrkAna/trkana");
 
-std::ifstream input_filelist("filelists/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.list");
+std::ifstream input_filelist("filelists/nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.list");
 if (input_filelist.is_open()) {
   std::string filename;
   while(std::getline(input_filelist,filename)) {
@@ -73,7 +73,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import awkward as ak
 
-for batch, report in uproot.iterate(files=wildcarded_dir+":TrkAnaNeg/trkana", filter_name=["/demmcsim[.]*/"], step_size="10 MB", report=True):
+for batch, report in uproot.iterate(files=wildcarded_dir+":TrkAna/trkana", filter_name=["/demmcsim[.]*/"], step_size="10 MB", report=True):
     print(report)
 
 

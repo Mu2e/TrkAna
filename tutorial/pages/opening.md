@@ -37,15 +37,15 @@ This exercise is run using the ROOT command line.
 In our terminal, we can open the TrkAna ROOT file like so:
 
 ```
-root -l /pnfs/mu2e/..../nts.mu2e.CeEndpointMix...MDC2020z1....tka
+root -l /pnfs/mu2e/..../nts.mu2e.CeEndpointMix...Tutorial_2024_03....tka
 ```
 
 Doing a ```.ls``` will print the top-level directories:
 
 ```
 root [1] .ls
-TFile**         nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v05_00_00rc.tka
- TFile*         nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v05_00_00rc.tka
+TFile**         nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.tka
+ TFile*         nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.tka
   KEY: TDirectoryFile   TrkAna;1     TrkAna (TrkAnaTreeMaker) folder
   KEY: TDirectoryFile   genCountLogger;1        genCountLogger (GenEventCountReader) folder
 ```

@@ -32,7 +32,7 @@ TChain* trkana = new TChain("TrkAna/trkana");
 Now we need to add TrkAna files to this. Unfortunately, the ```Add()``` command does not accept wildcards in directories, so we have to loop through the filelist ourselves and add them one at a time:
 
 ```
-std::ifstream input_filelist("filelists/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v05_00_00rc.list");
+std::ifstream input_filelist("filelists/nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.list");
 if (input_filelist.is_open()) {
   std::string filename;
   while(std::getline(input_filelist,filename)) {

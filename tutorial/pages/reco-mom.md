@@ -55,7 +55,7 @@ In ROOT, get the TChain, and create a TCanvas as before:
 ```
 TChain* trkana = new TChain("TrkAna/trkana");
 
-std::ifstream input_filelist("filelists/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v05_00_00rc.list");
+std::ifstream input_filelist("filelists/nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.list");
 if (input_filelist.is_open()) {
   std::string filename;
   while(std::getline(input_filelist,filename)) {
