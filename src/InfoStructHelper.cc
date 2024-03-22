@@ -28,8 +28,9 @@ namespace mu2e {
     hitcount.nbkg = nrec._nshfbkg;
   }
 
-  void InfoStructHelper::fillTrkInfo(const KalSeed& kseed,TrkInfo& trkinfo) {
-    trkinfo.reset();
+  void InfoStructHelper::fillTrkInfo(const KalSeed& kseed,std::vector<TrkInfo>& trkinfos) {
+    TrkInfo trkinfo;
+
     if(kseed.status().hasAllProperties(TrkFitFlag::kalmanConverged))
       trkinfo.status = 1;
     else if(kseed.status().hasAllProperties(TrkFitFlag::kalmanOK))
@@ -77,10 +78,12 @@ namespace mu2e {
     }
 
     fillTrkInfoStraws(kseed, trkinfo);
+
+    trkinfos.push_back(trkinfo);
   }
 
-  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed, std::vector<TrkFitInfo>& tfis) {
-    tfis.clear();
+  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed, std::vector<std::vector<TrkFitInfo>>& all_tfis) {
+    std::vector<TrkFitInfo> tfis;
     double tmin(std::numeric_limits<float>::max());
     double tmax(std::numeric_limits<float>::lowest());
     size_t imin(0), imax(0);
@@ -111,10 +114,11 @@ namespace mu2e {
       tfis[imin].early = true;
       tfis[imax].late = true;
     }
+    all_tfis.push_back(tfis);
   }
 
-  void InfoStructHelper::fillLoopHelixInfo(const KalSeed& kseed, std::vector<LoopHelixInfo>& lhis) {
-    lhis.clear();
+  void InfoStructHelper::fillLoopHelixInfo(const KalSeed& kseed, std::vector<std::vector<LoopHelixInfo>>& all_lhis) {
+    std::vector<LoopHelixInfo> lhis;
     for(auto const& kinter : kseed.intersections()) {
       auto lh = kinter.loopHelix();
       LoopHelixInfo lhi;
@@ -134,9 +138,10 @@ namespace mu2e {
       lhi.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
       lhis.push_back(lhi);
     }
+    all_lhis.push_back(lhis);
   }
-  void InfoStructHelper::fillCentralHelixInfo(const KalSeed& kseed, std::vector<CentralHelixInfo>& chis) {
-    chis.clear();
+  void InfoStructHelper::fillCentralHelixInfo(const KalSeed& kseed, std::vector<std::vector<CentralHelixInfo>>& all_chis) {
+    std::vector<CentralHelixInfo> chis;
     for(auto const& kinter : kseed.intersections()) {
       auto ch = kinter.centralHelix();
       CentralHelixInfo chi;
@@ -156,9 +161,10 @@ namespace mu2e {
       chi.maxr = fabs(-1.0/ch.omega() - ch.d0());
       chis.push_back(chi);
     }
+    all_chis.push_back(chis);
   }
-  void InfoStructHelper::fillKinematicLineInfo(const KalSeed& kseed, std::vector<KinematicLineInfo>& klis) {
-     klis.clear();
+  void InfoStructHelper::fillKinematicLineInfo(const KalSeed& kseed, std::vector<std::vector<KinematicLineInfo>>& all_klis) {
+    std::vector<KinematicLineInfo> klis;
     for(auto const& kinter : kseed.intersections()) {
       auto kl = kinter.kinematicLine();
       KinematicLineInfo kli;
@@ -176,6 +182,7 @@ namespace mu2e {
       kli.t0err = sqrt(kl.paramVar(KinKal::KinematicLine::t0_));
       klis.push_back(kli);
     }
+    all_klis.push_back(klis);
  }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
@@ -226,10 +233,9 @@ namespace mu2e {
     }
   }
 
-  void InfoStructHelper::fillHitInfo(const KalSeed& kseed, std::vector<TrkStrawHitInfo>& tshinfos ) {
-    tshinfos.clear();
+  void InfoStructHelper::fillHitInfo(const KalSeed& kseed, std::vector<std::vector<TrkStrawHitInfo>>& all_tshinfos ) {
+    std::vector<TrkStrawHitInfo> tshinfos;
     // loop over hits
-
     static StrawHitFlag active(StrawHitFlag::active);
     const Tracker& tracker = *GeomHandle<Tracker>();
     for(std::vector<TrkStrawHitSeed>::const_iterator ihit=kseed.hits().begin(); ihit != kseed.hits().end(); ++ihit) {
@@ -315,10 +321,11 @@ namespace mu2e {
       }
       tshinfos.push_back(tshinfo);
     }
+    all_tshinfos.push_back(tshinfos);
   }
 
-  void InfoStructHelper::fillMatInfo(const KalSeed& kseed, std::vector<TrkStrawMatInfo>& tminfos ) {
-    tminfos.clear();
+  void InfoStructHelper::fillMatInfo(const KalSeed& kseed, std::vector<std::vector<TrkStrawMatInfo>>& all_tminfos ) {
+    std::vector<TrkStrawMatInfo> tminfos;
     // loop over sites, pick out the materials
 
     for(const auto& i_straw : kseed.straws()) {
@@ -337,9 +344,11 @@ namespace mu2e {
 
       tminfos.push_back(tminfo);
     }
+    all_tminfos.push_back(tminfos);
   }
 
-  void InfoStructHelper::fillCaloHitInfo(const KalSeed& kseed, TrkCaloHitInfo& tchinfo) {
+  void InfoStructHelper::fillCaloHitInfo(const KalSeed& kseed, std::vector<TrkCaloHitInfo>& all_tchinfos) {
+    TrkCaloHitInfo tchinfo;
     if (kseed.hasCaloCluster()) {
       auto const& tch = kseed.caloHit();
       auto const& cc = tch.caloCluster();
@@ -366,6 +375,7 @@ namespace mu2e {
       auto rhohat = XYZVectorF(tch._cpos.X(),tch._cpos.Y(),0.0).Unit();
       tchinfo.dphidot = rmomhat.Dot(rhohat);
     }
+    all_tchinfos.push_back(tchinfo);
   }
 
 

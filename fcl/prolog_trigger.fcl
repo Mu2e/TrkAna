@@ -9,7 +9,7 @@ TrkAnaTrigger : {
     supplements : []
     ExtraMCStepCollectionTags : []
     diagLevel : 2
-    FillCRVHits : false
+    FillCRVCoincs : false
     FillMCInfo : true
     FillCaloMC : false
     RecoCountTag : ""

@@ -40,12 +40,14 @@ Once logged in, you should create a working area following the instructions [her
 mkdir your/new/working/area/
 cd your/new/working/area/
 setup mu2e
-muse setup TrkAna v04_01_00
+muse setup TrkAna v05_00_00
 ```
 
 ### Getting the List of TrkAna Files
 
-We will use a TrkAna dataset that has already been created by Production: ```nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka``` (see the [preliminary information](prelims.md#Simulation-Samples) for a breakdown of that the dataset name means.
+<!-- For March 2024 we will generate our own TrkAna files
+
+We will use a TrkAna dataset that has already been created by Production: ```nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.tka``` (see the [preliminary information](prelims.md#Simulation-Samples) for a breakdown of that the dataset name means.
 
 We can get a list of official TrkAna datasets with the following command:
 
@@ -54,13 +56,13 @@ setup mu2efiletools
 mu2eDatasetList --tier=nts --owner=mu2e --format=tka
 ```
 
-You should see the dataset ```nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka``` in that list.
+You should see the dataset ```nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.tka``` in that list.
 
 Now we can get the list of files in this dataset like this:
 
 ```
 setup dhtools
-samListLocations --defname=nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka
+samListLocations --defname=nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.tka
 ```
 
 and you will see a list of files printed to the terminal output. You will notice that these all have ```tape``` in the directory. These files are on tape and nominally need to be copied to disk to be used in our jobs. Usually if these files have been used recently, then they will be on disk and you don't need to [prestage](https://mu2ewiki.fnal.gov/wiki/Prestage) them (which can take a while).
@@ -70,13 +72,10 @@ For these exercises, we will just use whichever files are already on disk and we
 ```
 mkdir filelists
 setup dhtools
-samListLocations -d --defname=nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.tka > filelists/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.list
+samListLocations -d --defname=nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.tka > filelists/nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.list
 ```
 
-Other TrkAna datasets you might want to look at:
-* Cosmic Rays with Extracted Position: nts.mu2e.CosmicCRYExtractedTrk.MDC2020z1_best_v1_1_std_v04_01_00.tka
-    * this also contains the ```tsh``` tracker hit branches
-
+-->
 ## ROOT
 
 The ROOT exercises can be completed either on the command line or with a macro.
@@ -136,15 +135,13 @@ You exit the command line by pressing Ctrl+D.
 
 ### Python Script
 
-To use a python script, open up a file in your favorite text editor and type in the commands in the exercises. Assuming you name it ```Script.py```, which can then be run on the command line with:
+To use a python script, open up a file in your favorite text editor and type in the commands in the exercises. Assuming you name it ```Script.py```, you can then run the script on the command line with:
 
 ```
 python3 Script.py
 ```
 
 ### Python Notebook
-
-WARNING: People have reported issues with getting the python notebook to work. We will look into it later
 
 If you want to use a python notebook for the python exercises, then you should log into to a mu2egpvm machine with a port forwarded:
 
@@ -160,7 +157,7 @@ Then you can start your notebook like this:
 jupyter-notebook --no-browser --port=YYYY
 ```
 
-and copy the URL that is printed, into your local browser. You then type commands into each cell and presst Ctrl+Enter to execute the commands in that cell.
+and copy the URL that is printed into your local browser. You then type commands into each cell and presst Ctrl+Enter to execute the commands in that cell.
 
 
 Last Page: [Preliminary Information](prelims.md)

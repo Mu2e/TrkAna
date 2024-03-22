@@ -17,22 +17,22 @@ In this exercise, you will:
 
 ## Common Introduction
 
-Each entry in the TrkAna tree corresponds to a single candidate track. Information about the candidate track as a whole is stored in the ```dem``` branch. The leaves of the ```dem``` branch are defined [here](https://github.com/Mu2e/TrkAna/blob/v04_01_00/inc/TrkInfo.hh#L57).
+Each entry in the TrkAna tree corresponds to a Mu2e event. Information about the all the downstream e-minus tracks in the event are stored in the ```dem``` branch. The leaves of the ```dem``` branch are defined [here](https://github.com/Mu2e/TrkAna/blob/v05_00_00rc/inc/TrkInfo.hh#L57).
 
-Note that the same type of branch exists also for the supplemental tracks: upstream e-minus (```uem``` branch), and downstream mu-minus (```dmm``` branch).
+The ```dem``` branch is an array.
 
 ## ROOT
 
-In ROOT, in order to handle multiple files, we will use a [TChain](https://root.cern.ch/doc/v628/classTChain.html) which we can use like a TTree that we create like this:
+In ROOT, in order to handle multiple files, we will use a [TChain](https://root.cern.ch/doc/v628/classTChain.html) which we can use like a TTree. We create a TChain like this:
 
 ```
-TChain* trkana = new TChain("TrkAnaNeg/trkana");
+TChain* trkana = new TChain("TrkAna/trkana");
 ```
 
-Now we need to add TrkAna files to this. Unfortunately, the ```Add()``` command does not accept wildcard in directories, so we have to loop through the filelist ourselves and add them one at a time:
+Now we need to add TrkAna files to this. Unfortunately, the ```Add()``` command does not accept wildcards in directories, so we have to loop through the filelist ourselves and add them one at a time:
 
 ```
-std::ifstream input_filelist("filelists/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.list");
+std::ifstream input_filelist("filelists/nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.list");
 if (input_filelist.is_open()) {
   std::string filename;
   while(std::getline(input_filelist,filename)) {
@@ -55,7 +55,7 @@ c1->SetGridx(true);
 c1->SetGridy(true);
 ```
 
-We can then plot a histogram of the number of hits on each track like so:
+ROOT will automatically loop through the ```dem``` array so we can plot a histogram of the number of hits in all tracks like so:
 
 ```
 TH1D* hist = new TH1D("hist", "", 100,0,100)
@@ -97,39 +97,57 @@ leg->AddEntry(hist2, "total number of active hits", "l")
 leg->Draw()
 ```
 
+The last thing we want to do is apply an event-level cut (i.e. only plot the information from events that pass some condition). Here we will select events that have two downstream e-minus tracks. To do this we apply the cut to the second argument of the ```Draw()``` function:
+
+trkana->Draw("dem.nactive>>hist3", "tcnt.ndem==2", "goff");
+
+
 
 ## Python
-In python, to handle multiple files we will use uproot but will also need to use some functions from numpy so we will import that:
+In python, to handle multiple files we will use uproot but will also need to use some functions from numpy and awkward so we import those too:
 
 ```
 import uproot
 import matplotlib.pyplot as plt
 import numpy as np
+import awkward as ak
 ```
 
-Then instead of opening a single TrkAna file, we will use ```uproot.iterate```. Before that, we need to make some arrays to keep track of the data we want to plot. In this exercise, we will plot the number of hits on each track:
+To plot data from multiple TrkAna files, we will use ```uproot.iterate```. We can use it similarly to the ```arrays()``` function in the [last exercise](opening.md#Python) where we filter on the branches we want. To show the structure of things, we will first print the ```dem.nhits``` arrays:
 
 ```
-dem_nhits=[]
+for batch in uproot.iterate(files=wildcarded_dir+":TrkAna/trkana", filter_name=["/tcnt/", "/dem/"], step_size='10 MB'):
+    print(batch['dem.nhits'])
 ```
+where ```wildcarded_dir``` is string for the location of all the files. You can get this by looking in the filelist and replacing any unique parts of a filename with a ```*```. It will look something like ```/abs/path/to/datasets/*/*/*.tka```. The ```step_size='10MB'``` argument means that uproot will only read 10 MB of memory at time. The argument also accepts integers, which is interpreted as a number of entries in the TTree.
 
-Now we can iterate through the files like so, filtering the branches like we did in the [last exercise](opening.md#Python):
 
-```
-for batch in uproot.iterate(files=wildcarded_dir+":TrkAnaNeg/trkana", filter_name=["/dem[.]*"], step_size='10 MB'):
-    dem_nhits = np.append(dem_nhits, batch['dem.nhits'])
-```
-
-where ```wildcarded_dir``` is string for the location of all the files. You can get this by looking in the filelist and replacing any unique parts of a filename with a ```*```. It will look something like ```/abs/path/to/datasets/*/*/*.tka```.
-
-The ```step_size='10MB'``` argument means that uproot will only read 10 MB of memory at time. The argument also accepts integers, which is interpreted as a number of entries in the TTree.
-
-One other option for ```uproot.iterate``` that you might want to use is to report every step. This can be done like so:
+The output will be something like: 
 
 ```
-for batch, report in uproot.iterate(files=wildcarded_dir+":TrkAnaNeg/trkana", filter_name=["/dem[.]*"], step_size='10 MB', report=True):
-    print(report).
-    dem_nhits = np.append(dem_nhits, batch['dem.nhits'])
+[[37], [26], [51], [51], [59], [45], ..., [25], [42], [50], [27], [17], [33]]
+```
+where you will see that we have an array of arrays.
+
+In order to make a histogram, we need to "flatten" the awkward arrays so that we have one array:
+
+```
+for batch in uproot.iterate(files=wildcarded_dir+":TrkAna/trkana", filter_name=["/tcnt/", "/dem/"], step_size='10 MB'):
+    print(ak.flatten(batch['dem.nhits']))
+```
+
+which will produce output like this:
+
+```
+[37, 26, 51, 51, 59, 45, 36, 54, 23, ..., 47, 44, 41, 25, 42, 50, 27, 17, 33]
+```
+
+Now that we know how to put everything into one array, we can iterate and build up an array of all the hits like this:
+
+```
+dem_nhits=[] # create an array to store the results
+for batch in uproot.iterate(files=wildcarded_dir+":TrkAna/trkana", filter_name=["/tcnt/", "/dem/"], step_size='10 MB'):
+    dem_nhits = np.append(dem_nhits, ak.flatten(batch['dem.nhits'])) # append to the array
 ```
 
 
@@ -171,13 +189,36 @@ Finally, we need to ```show``` the plot:
 plt.show()
 ```
 
+The last thing we want to do is apply an event-level cut (i.e. only plot the information from events that pass some condition). Here we will select events that have two downstream e-minus tracks. To do this we will create a "mask array", which is an array of the same shape and dimensionality as our data but containing either ```True``` or ```False```::
+
+```
+tcnt_ndem2_mask = (batch['tcnt.ndem']==2)
+```
+
+this is just an array of booleans. (You can ```print(tcnt_ndem2_mask)``` to see this).
+
+Then we use the mask like this:
+
+```
+batch[(tcnt_ndem2_mask)]['dem.nhits']
+```
+
+
+One other option for ```uproot.iterate``` that you might want to use is to report every step. This can be done like so:
+
+```
+for batch, report in uproot.iterate(files=wildcarded_dir+":TrkAna/trkana", filter_name=["/dem/"], step_size='10 MB', report=True):
+    print(report).
+    dem_nhits = np.append(dem_nhits, batch['dem.nhits'])
+```
 
 
 ## Additional Exercises
 
 If you like, try some of the following:
 
-* plot the number of hits on the upstream e-minus, and downstream mu-minus tracks
+* plot the number of hits on other track types
+* make some different event-level cuts
 * inspect the leaves on the ```dem``` branch and plot something else
 
 
