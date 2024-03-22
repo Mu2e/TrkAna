@@ -12,64 +12,31 @@ source : {
 physics : {
   analyzers : {
     TAtprDeM : {
-      @table::TrkAnaTrigger.TrkAnaDeMTT
+      @table::TrkAnaTrigger.TrkAnaTT
       FitType : LoopHelix
-      candidate : {
-        branch: "trk"
-        options : {
-          @table::AllOpt
-          fillHits : true
-        }
-        input : "TTKSF"
-        suffix : "DeM"
-      }
+      branches : [ @local::TrkAnaTrigger.TTtprDeM ]
       KalSeedMCAssns: "SelectRecoMCtprDeM"
       SelectEvents : [  "globalTrigger:tprDeM_highP_stopTarg"  ]
     }
     TAcprDeM : {
-      @table::TrkAnaTrigger.TrkAnaDeMTT
+      @table::TrkAnaTrigger.TrkAnaTT
       FitType : LoopHelix
-      candidate : {
-        branch: "trk"
-        options : {
-          @table::AllOpt
-          fillHits : true
-        }
-        input : "TTCalSeedFit"
-        suffix : "Dem"
-      }
+      branches : [ @local::TrkAnaTrigger.TTcprDeM ]
       KalSeedMCAssns: "SelectRecoMCcprDeM"
       SelectEvents : [ "globalTrigger:cprDeM_highP_stopTarg"  ]
     }
     TAtprDeP : {
-      @table::TrkAnaTrigger.TrkAnaDePTT
+      @table::TrkAnaTrigger.TrkAnaTT
       FitType : LoopHelix
-      candidate : {
-        branch: "trk"
-        options : {
-          @table::AllOpt
-          fillHits : true
-        }
-        input : "TTKSF"
-        suffix : "DeP"
-      }
+      branches : [ @local::TrkAnaTrigger.TTtprDeP ]
       KalSeedMCAssns: "SelectRecoMCtprDeP"
       SelectEvents : [ "globalTrigger:tprDeP_highP_stopTarg"  ]
     }
     TAcprDeP : {
-      @table::TrkAnaTrigger.TrkAnaDePTT
+      @table::TrkAnaTrigger.TrkAnaTT
       FitType : LoopHelix
-      candidate : {
-        branch: "trk"
-        options : {
-          @table::AllOpt
-          fillHits : true
-        }
-        input : "TTCalSeedFit"
-        suffix : "Dep"
-      }
+      branches : [ @local::TrkAnaTrigger.TTcprDeP ]
       KalSeedMCAssns: "SelectRecoMCcprDeP"
-      #      SelectEvents : [  "globalTrigger:cprDeP_highP_stopTarg"  ]
       SelectEvents : [  "globalTrigger:cprDeP_highP_stopTarg"  ]
     }
   }

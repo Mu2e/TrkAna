@@ -6,56 +6,47 @@ BEGIN_PROLOG
 TrkAnaTrigger : {
   TrkAnaTT : {
     @table::TrkAnaTreeMaker
-    supplements : []
-    ExtraMCStepCollectionTags : []
     diagLevel : 2
     FillCRVCoincs : false
-    FillMCInfo : true
     FillCaloMC : false
     RecoCountTag : ""
     FillTriggerInfo : true
     FillTrkPIDInfo : false
     FillHitInfo : true
-    FillTriggerInfo : false
-    supplements : []
     PrimaryParticleTag: "compressDigiMCs"
     SimParticlesTag: "compressDigiMCs"
     MCTrajectoriesTag: "compressDigiMCs"
-    ExtraMCStepCollectionTags: [ ]
+    ExtraMCStepCollectionTags: []
     InfoMCStructHelper : {
-      SimParticleCollectionTag : "compressDigiMCs"
       MinGoodMomFraction : 0.9
       MaxVDDt : 5 # ns
+      SimParticleCollectionTag : "compressDigiMCs"
     }
   }
-}
-TrkAnaTrigger : {
-  @table::TrkAnaTrigger
-  TrkAnaDeMTT : {
-    @table::TrkAnaTrigger.TrkAnaTT
-    candidate : {
-      branch: "trk"
-      suffix : "DeM"
-      options : {
-        @table::AllOpt
-        fillHits : true
-      }
-    }
+  TTtprDeM : {
+    input : "TTKSF"
+    branch : "trk"
+    suffix : "DeM"
+    options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   }
-
-  TrkAnaDePTT : {
-    @table::TrkAnaTrigger.TrkAnaTT
-    candidate : {
-      branch: "trk"
-      suffix : "DeP"
-      options : {
-        @table::AllOpt
-        fillHits : true
-      }
-    }
+  TTtprDeP : {
+    input : "TTKSF"
+    branch : "trk"
+    suffix : "DeP"
+    options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   }
-
-
+  TTcprDeM : {
+    input : "TTCalSeedFit"
+    branch : "trk"
+    suffix : "Dem"
+    options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
+  }
+  TTcprDeP : {
+    input : "TTCalSeedFit"
+    branch : "trk"
+    suffix : "Dep"
+    options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
+  }
 }
 
 END_PROLOG
