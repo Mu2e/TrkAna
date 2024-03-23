@@ -45,7 +45,6 @@ muse setup TrkAna v05_00_00
 
 ### Getting the List of TrkAna Files
 
-<!-- For March 2024 we will generate our own TrkAna files
 
 We will use a TrkAna dataset that has already been created by Production: ```nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.tka``` (see the [preliminary information](prelims.md#Simulation-Samples) for a breakdown of that the dataset name means.
 
@@ -75,7 +74,6 @@ setup dhtools
 samListLocations -d --defname=nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.tka > filelists/nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.list
 ```
 
--->
 ## ROOT
 
 The ROOT exercises can be completed either on the command line or with a macro.
