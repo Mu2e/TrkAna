@@ -16,11 +16,11 @@ for batch, report in uproot.iterate(files=filename+":"+treename, filter_name=["/
     print(report)
     batch['demfit_mom'] = np.sqrt((batch['demfit']['mom']['fCoordinates']['fX'])**2 + (batch['demfit']['mom']['fCoordinates']['fY'])**2 + (batch['demfit']['mom']['fCoordinates']['fZ'])**2)
 
-    demfit_all_mom = np.append(demfit_ent_mom, ak.flatten(batch['demfit_mom']))
+    demfit_all_mom = np.append(demfit_ent_mom, ak.flatten(batch['demfit_mom'], axis=None))
     trk_ent_mask = (batch['demfit']['sid']==0)
     time_cut_mask = (batch['demlh']['t0']>=700)
 
-    demfit_ent_mom = np.append(demfit_ent_mom, ak.flatten(batch[(trk_ent_mask)]['demfit_mom']))
+    demfit_ent_mom = np.append(demfit_ent_mom, ak.flatten(batch[(trk_ent_mask)]['demfit_mom'], axis=None))
     demfit_ent_mom_timecut = np.append(demfit_ent_mom_timecut, ak.flatten(batch[(trk_ent_mask) & (time_cut_mask)]['demfit_mom'], axis=None))
 
 fig, ax = plt.subplots(1,1)
