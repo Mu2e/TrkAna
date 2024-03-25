@@ -155,7 +155,7 @@ branches['demfit_mom'] = np.sqrt((batch['demfit']['mom']['fCoordinates']['fX'])*
 We can plot this like we did before:
 
 ```
-ax.hist(ak.flatten(branches['demfit_mom']), bins=100, range=(100,110), label='all tracks', histtype='step')
+ax.hist(ak.flatten(branches['demfit_mom'], axis=None), bins=100, range=(100,110), label='all tracks', histtype='step')
 ```
 
 Now you may notice that the peak is rather broad... That's because the ```demfit``` branch contains the fit information at the entrance, middle, and exit of the tracker.
@@ -175,7 +175,7 @@ If you print this, you will see:
 Now we need to use this mask when plotting:
 
 ```
-ax.hist(ak.flatten(branches[(trk_ent_mask)]['demfit_mom'], bins=100, range=(100,110), label='ent fits', histtype='step')
+ax.hist(ak.flatten(branches[(trk_ent_mask)]['demfit_mom'], axis=None), bins=100, range=(100,110), label='ent fits', histtype='step')
 
 ax.set_xlabel('Reconstructed Momentum at Tracker Entrance [MeV/c]')
 ax.set_ylabel('Number of Tracks')
@@ -212,8 +212,8 @@ for batch, report in uproot.iterate(files=wildcarded_dir+":TrkAna/trkana", filte
     trk_ent_mask = (batch['demfit']['sid']==0)
     time_cut_mask = (batch['demlh']['t0']>=700)
 
-    demfit_ent_mom = np.append(demfit_ent_mom, ak.flatten(batch[(trk_ent_mask)]['demfit_mom']))
-    demfit_ent_mom_timecut = np.append(demfit_ent_mom_timecut, ak.flatten(batch[(trk_ent_mask) & (time_cut_mask)]['demfit_mom']))
+    demfit_ent_mom = np.append(demfit_ent_mom, ak.flatten(batch[(trk_ent_mask)]['demfit_mom'], axis=None))
+    demfit_ent_mom_timecut = np.append(demfit_ent_mom_timecut, ak.flatten(batch[(trk_ent_mask) & (time_cut_mask)]['demfit_mom'], axis=None))
 ```
 
 
