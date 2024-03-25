@@ -3,7 +3,7 @@
 
 #include "TrkAna/inc/RootVectors.hh"
 #include "Offline/DataProducts/inc/CRVId.hh"
-namespace CLHEP {class Hep3Vector }
+namespace CLHEP {class Hep3Vector; }
 #include <vector>
 #include <array>
 

@@ -5,8 +5,8 @@ namespace mu2e {
       int primaryPdgId, float primaryE, CLHEP::Hep3Vector primaryPos,
       int parentPdgId, float parentE, CLHEP::Hep3Vector parentPos,
       int gparentPdgId, float gparentE, CLHEP::Hep3Vector gparentPos,
-      CLHEP::Hep3Vector pos, float time, float depositedEnergy);
-  valid(valid),
+      CLHEP::Hep3Vector pos, float time, float depositedEnergy) :
+    valid(valid),
     pdgId(pdgId),
     primaryPdgId(primaryPdgId),
     primaryE(primaryE),
@@ -20,5 +20,5 @@ namespace mu2e {
     pos(pos),
     time(time),
     depositedEnergy(depositedEnergy)
-    {}
+  {}
 }

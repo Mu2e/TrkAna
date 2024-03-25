@@ -1,6 +1,6 @@
 #ifndef CrvHitInfoMC_hh
 #define CrvHitInfoMC_hh
-namespace CLHEP {class Hep3Vector }
+namespace CLHEP {class Hep3Vector; }
 #include <vector>
 #include "TrkAna/inc/RootVectors.hh"
 

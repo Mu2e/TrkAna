@@ -2,7 +2,7 @@
 #define CrvSummaryMC_hh
 
 #include "TrkAna/inc/RootVectors.hh"
-namespace CLHEP {class Hep3Vector }
+namespace CLHEP {class Hep3Vector; }
 namespace mu2e
 {
   struct CrvSummaryMC
