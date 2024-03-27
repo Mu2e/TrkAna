@@ -202,6 +202,7 @@ namespace mu2e {
         if (ihit->strawHitState()==WireHitState::null) {
           ++trkinfo.nnullambig;
         }
+        trkinfo.avgedep += ihit->_edep;
         // count active hits by flag state
         if(ihit->flag().hasAllProperties(StrawHitFlag::energysel))trkinfo.nesel++;
         if(ihit->flag().hasAllProperties(StrawHitFlag::radsel))trkinfo.nrsel++;
@@ -218,6 +219,7 @@ namespace mu2e {
       trkinfo.nplanes = planes.size();
       trkinfo.planespan = abs(maxplane-minplane);
     }
+    trkinfo.avgedep /= trkinfo.nactive;
   }
 
   void InfoStructHelper::fillTrkInfoStraws(const KalSeed& kseed, TrkInfo& trkinfo) {

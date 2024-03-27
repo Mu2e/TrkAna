@@ -79,6 +79,7 @@ namespace mu2e
     float radlen;  // total radiation length of (active) material crossed by this particle inside the tracker
     float firsthit =0, lasthit =0;  // first and last hit (time or distance)
     float maxgap =-1, avggap =-1; // fit trajectory gaps
+    float avgedep = 0; // average active hit edep;
     void reset() { *this = TrkInfo(); }
   };
 
