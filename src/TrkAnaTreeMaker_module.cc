@@ -63,7 +63,6 @@
 // mu2e tracking
 #include "Offline/BTrkData/inc/TrkStrawHit.hh"
 // diagnostics
-#include "TrkAna/inc/TrkComp.hh"
 #include "TrkAna/inc/HitCount.hh"
 #include "TrkAna/inc/TrkCount.hh"
 #include "TrkAna/inc/EventInfo.hh"
@@ -654,7 +653,7 @@ namespace mu2e {
                                               _crvpulses, _crvpulsesmc);
       }
       if(_fillcrvdigis){
-        _crvHelper.FillCrvDigiInfoCollections(_crvRecoPulses, _crvDigis,                                         
+        _crvHelper.FillCrvDigiInfoCollections(_crvRecoPulses, _crvDigis,
                                               _crvdigis);
       }
 

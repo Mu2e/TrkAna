@@ -3,7 +3,9 @@
 //
 #ifndef TrkStrawHitInfoHH
 #define TrkStrawHitInfoHH
-#include "Offline/DataProducts/inc/GenVector.hh"
+
+
+//#include "TrkAna/inc/RootVectors.hh"
 #include "Offline/DataProducts/inc/TrkTypes.hh"
 namespace mu2e
 {
