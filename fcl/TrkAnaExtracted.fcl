@@ -20,10 +20,8 @@ physics.TrkAnaTrigPath : [ ]
 physics.TrkAnaEndPath : [ TrkAnaExt ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)
-## physics.analyzers.TrkAnaExt.branches[0].options : @local::AllOpt
 physics.analyzers.TrkAnaExt.branches[0].options.fillMC : true
 physics.analyzers.TrkAnaExt.branches[0].options.genealogyDepth : 5
-## physics.analyzers.TrkAnaExt.branches[0].options.fillTrkPID : false
 physics.analyzers.TrkAnaExt.FillTriggerInfo : false
 physics.analyzers.TrkAnaExt.FitType : KinematicLine
 
