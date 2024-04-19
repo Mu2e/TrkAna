@@ -141,6 +141,7 @@ namespace mu2e {
     tshinfomc.strawphi = tshmc._strawPhi;
     tshinfomc.lang = fabs(fmod(tshmc._wirePhi,M_PI));
     if (tshinfomc.lang > M_PI_2) tshinfomc.lang = M_PI - tshinfomc.lang;
+    tshinfomc.lang = M_PI_2 - tshinfomc.lang; // currently in tshinfo lang is calculated perpendicular to drift direction
     tshinfomc.tau = tshmc._wireTau;
     tshinfomc.cdist = sqrt(tshinfomc.doca*tshinfomc.doca+tshinfomc.tau*tshinfomc.tau);
     tshinfomc.ambig = tshmc._wireDOCA > 0 ? 1 : -1;
