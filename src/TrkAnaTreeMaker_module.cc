@@ -205,7 +205,7 @@ namespace mu2e {
       // track counting
       TrkCount _tcnt;
       // track branches (inputs)
-      std::vector<art::Handle<KalSeedCollection> > _allKSCHs;
+      std::vector<art::Handle<KalSeedPtrCollection> > _allKSPCHs;
       // track branches (outputs)
       std::map<BranchIndex, std::vector<TrkInfo>> _allTIs;
       std::map<BranchIndex, std::vector<std::vector<TrkFitInfo>>> _allTFIs;
@@ -295,7 +295,7 @@ namespace mu2e {
       void fillEventInfo(const art::Event& event);
       void fillTriggerBits(const art::Event& event,std::string const& process);
       void resetTrackBranches();
-      void fillAllInfos(const art::Handle<KalSeedCollection>& ksch, BranchIndex i_branch, size_t i_kseed);
+      void fillAllInfos(const art::Handle<KalSeedPtrCollection>& kspch, BranchIndex i_branch, size_t i_kseedptr);
 
       template <typename T, typename TI, typename TIA>
         std::vector<art::Handle<T> > createSpecialBranch(const art::Event& event, const std::string& branchname,
@@ -510,7 +510,7 @@ namespace mu2e {
     _wtHandles = createSpecialBranch(event, "evtwt", eventWeightHandles, _wtinfo, _wtinfo._weights, false);
 
     std::string process = _conf.trigProcessName();
-    _allKSCHs.clear();
+    _allKSPCHs.clear();
     _allRQCHs.clear();
     _allTCHPCHs.clear();
     _allBestCrvAssns.clear();
@@ -525,10 +525,10 @@ namespace mu2e {
 
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
-      art::Handle<KalSeedCollection> kalSeedCollHandle;
-      art::InputTag kalSeedInputTag = i_branchConfig.input() + i_branchConfig.suffix();
-      event.getByLabel(kalSeedInputTag,kalSeedCollHandle);
-      _allKSCHs.push_back(kalSeedCollHandle);
+      art::Handle<KalSeedPtrCollection> kalSeedPtrCollHandle;
+      art::InputTag kalSeedPtrInputTag = i_branchConfig.input() + i_branchConfig.suffix();
+      event.getByLabel(kalSeedPtrInputTag,kalSeedPtrCollHandle);
+      _allKSPCHs.push_back(kalSeedPtrCollHandle);
 
       art::Handle<MVAResultCollection> trkQualCollHandle;
       if (i_branchConfig.trkQualTag() != "") {
@@ -541,8 +541,8 @@ namespace mu2e {
       std::vector<art::Handle<RecoQualCollection> > selectedRQCHs;
       selectedRQCHs = createSpecialBranch(event, i_branchConfig.branch()+"qual", recoQualCollHandles, _allRQIs.at(i_branch), _allRQIs.at(i_branch)._qualsAndCalibs, true, i_branchConfig.suffix());
       for (const auto& i_selectedRQCH : selectedRQCHs) {
-        if (i_selectedRQCH->size() != kalSeedCollHandle->size()) {
-          throw cet::exception("TrkAna") << "Sizes of KalSeedCollection and this RecoQualCollection are inconsistent (" << kalSeedCollHandle->size() << " and " << i_selectedRQCH->size() << " respectively)";
+        if (i_selectedRQCH->size() != kalSeedPtrCollHandle->size()) {
+          throw cet::exception("TrkAna") << "Sizes of KalSeedPtrCollection and this RecoQualCollection are inconsistent (" << kalSeedPtrCollHandle->size() << " and " << i_selectedRQCH->size() << " respectively)";
         }
       }
       _allRQCHs.push_back(selectedRQCHs);
@@ -553,8 +553,8 @@ namespace mu2e {
       if (i_branchConfig.options().trkpid(i_trkpid_tag) && i_branchConfig.options().filltrkpid() && _conf.filltrkpid()) {
         art::InputTag trkpidInputTag = i_trkpid_tag + i_branchConfig.suffix();
         event.getByLabel(trkpidInputTag,trkpidCollHandle);
-        if (trkpidCollHandle->size() != kalSeedCollHandle->size()) {
-          throw cet::exception("TrkAna") << "Sizes of KalSeedCollection and TrkCaloHitPIDCollection are inconsistent (" << kalSeedCollHandle->size() << " and " << trkpidCollHandle->size() << " respectively)";
+        if (trkpidCollHandle->size() != kalSeedPtrCollHandle->size()) {
+          throw cet::exception("TrkAna") << "Sizes of KalSeedPtrCollection and TrkCaloHitPIDCollection are inconsistent (" << kalSeedPtrCollHandle->size() << " and " << trkpidCollHandle->size() << " respectively)";
         }
       }
       _allTCHPCHs.push_back(trkpidCollHandle);
@@ -574,7 +574,7 @@ namespace mu2e {
     }
     // fill track counts
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
-      _tcnt._counts[i_branch] = (_allKSCHs.at(i_branch))->size();
+      _tcnt._counts[i_branch] = (_allKSPCHs.at(i_branch))->size();
     }
 
     // find extra MCStep collections
@@ -610,16 +610,16 @@ namespace mu2e {
 
       if(_fillcalomc) { _allMCTCHIs.at(i_branch).clear(); }
 
-      const auto& kseed_coll_h = _allKSCHs.at(i_branch);
-      const auto& kseed_coll = *kseed_coll_h;
-      for (size_t i_kseed = 0; i_kseed < kseed_coll.size(); ++i_kseed) {
+      const auto& kseedptr_coll_h = _allKSPCHs.at(i_branch);
+      const auto& kseedptr_coll = *kseedptr_coll_h;
+      for (size_t i_kseedptr = 0; i_kseedptr < kseedptr_coll.size(); ++i_kseedptr) {
         resetTrackBranches(); // reset track branches here so that we don't get information from previous tracks in the next entry
 
-        fillAllInfos(kseed_coll_h, i_branch, i_kseed); // fill the info structs for this track
+        fillAllInfos(kseedptr_coll_h, i_branch, i_kseedptr); // fill the info structs for this track
         if(_conf.helices()){
           auto const& khassns = khaH.product();
           // find the associated HelixSeed to this KalSeed using the assns.
-          auto hptr = (*khassns)[i_kseed].second;
+          auto hptr = (*khassns)[i_kseedptr].second;
           _infoStructHelper.fillHelixInfo(hptr, _hinfo);
         }
       }
@@ -731,9 +731,10 @@ namespace mu2e {
     }
   }
 
-  void TrkAnaTreeMaker::fillAllInfos(const art::Handle<KalSeedCollection>& ksch, BranchIndex i_branch, size_t i_kseed) {
+  void TrkAnaTreeMaker::fillAllInfos(const art::Handle<KalSeedPtrCollection>& kspch, BranchIndex i_branch, size_t i_kseedptr) {
 
-    const auto& kseed = ksch->at(i_kseed);
+    const auto& kseedptr = (kspch->at(i_kseedptr));
+    const auto& kseed = *kseedptr;
     // general info
     _infoStructHelper.fillTrkInfo(kseed,_allTIs.at(i_branch));
 
@@ -764,15 +765,15 @@ namespace mu2e {
 
     const auto& trkQualHandle = _allTrkQualCHs.at(i_branch);
     if (trkQualHandle.isValid()) { // might not have a valid handle
-      _allTrkQualResults.at(i_branch).result = trkQualHandle->at(i_kseed)._value;
+      _allTrkQualResults.at(i_branch).result = trkQualHandle->at(i_kseedptr)._value;
     }
 
     // all RecoQuals
     std::vector<Float_t> recoQuals; // for the output value
     for (const auto& i_recoQualHandle : _allRQCHs.at(i_branch)) {
-      Float_t recoQual = i_recoQualHandle->at(i_kseed)._value;
+      Float_t recoQual = i_recoQualHandle->at(i_kseedptr)._value;
       recoQuals.push_back(recoQual);
-      Float_t recoQualCalib = i_recoQualHandle->at(i_kseed)._calib;
+      Float_t recoQualCalib = i_recoQualHandle->at(i_kseedptr)._calib;
       recoQuals.push_back(recoQualCalib);
     }
     _allRQIs.at(i_branch).setQuals(recoQuals);
@@ -782,7 +783,7 @@ namespace mu2e {
       const auto& tchpcolH = _allTCHPCHs.at(i_branch);
       if (tchpcolH.isValid()) {
         const auto& tchpcol = *tchpcolH;
-        auto const& tpid = tchpcol.at(i_kseed);
+        auto const& tpid = tchpcol.at(i_kseedptr);
         _infoStructHelper.fillTrkPIDInfo(tpid, kseed, _allTPIs.at(i_branch));
       }
     }
@@ -790,13 +791,11 @@ namespace mu2e {
     if(_fillmc && branchConfig.options().fillmc()) {
       const PrimaryParticle& primary = *_pph;
       // use Assns interface to find the associated KalSeedMC; this uses ptrs
-      auto kptr = art::Ptr<KalSeed>(ksch,i_kseed);
       //      std::cout << "KalSeedMCMatch has " << _ksmcah->size() << " entries" << std::endl;
       for(auto iksmca = _ksmcah->begin(); iksmca!= _ksmcah->end(); iksmca++){
-        //        std::cout << "KalSeed Ptr " << kptr << " match Ptr " << iksmca->first << "?" << std::endl;
-        if(iksmca->first == kptr) {
+        //        std::cout << "KalSeed Ptr " << kseedptr << " match Ptr " << iksmca->first << "?" << std::endl;
+        if(iksmca->first == kseedptr) {
           auto const& kseedmc = *(iksmca->second);
-          auto const& kseed = *kptr;
           _infoMCStructHelper.fillTrkInfoMC(kseed, kseedmc, _allMCTIs.at(i_branch));
           auto& mcvdis = _allMCVDInfos.at(i_branch);
           _infoMCStructHelper.fillVDInfo(kseed, kseedmc, mcvdis);
