@@ -1,0 +1,10 @@
+#include "TrkAna/fcl/TrkAnaReco.fcl"
+
+physics.producers.MergeKalSeeds : {
+      module_type : MergeKalSeeds
+      KalSeedCollections : ["KKDeM", "KKDeP", "KKUeM", "KKUeP", "KKDmuM", "KKDmuP", "KKUmuM", "KKUmuP" ]
+}
+
+physics.analyzers.TrkAna.branches : [ {input : "MergeKalSeeds" branch : "trk" } ]
+
+physics.TrkAnaTrigPath : [ MergeKalSeeds, PBIWeight, TrkQualDeM ]
