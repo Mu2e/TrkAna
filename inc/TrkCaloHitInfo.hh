@@ -27,7 +27,11 @@ namespace mu2e
     float ctimeerr = -1000.0;
     float csize = -1000.0;
     float edep = -1000.0;
-    float edeperr = -1000.0;    // reconstructed cluster properties
+    float edeperr = -1000.0;
+    float cposX = -1000.0;
+    float cposY = -1000.0;
+    float cposZ = -1000.0;
+    float cposR = -1000.0; // reconstructed cluster properties
     void reset() { *this = TrkCaloHitInfo(); }
   };
 }

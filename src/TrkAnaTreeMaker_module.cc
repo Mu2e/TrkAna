@@ -74,6 +74,7 @@
 #include "TrkAna/inc/TrkStrawHitInfoMC.hh"
 #include "TrkAna/inc/TrkCaloHitInfo.hh"
 #include "TrkAna/inc/CaloClusterInfoMC.hh"
+#include "TrkAna/inc/CaloClusterInfoReco.hh"
 #include "TrkAna/inc/TrkQualInfo.hh"
 #include "TrkAna/inc/TrkPIDInfo.hh"
 #include "TrkAna/inc/HelixInfo.hh"
@@ -156,7 +157,9 @@ namespace mu2e {
         fhicl::Atom<art::InputTag> crvStepsTag{Name("CrvStepsTag"), Comment("Tag for CrvStep Collection"), art::InputTag()};
         fhicl::Atom<art::InputTag> crvDigiMCsTag{Name("CrvDigiMCsTag"), Comment("Tag for CrvDigiMC Collection"), art::InputTag()};
         fhicl::Atom<art::InputTag> crvDigisTag{Name("CrvDigisTag"), Comment("Tag for CrvDigi Collection"), art::InputTag()};
-        // CRV -- flags
+        //Calorimeter -- input tag
+	fhicl::Atom<art::InputTag> caloRecoTag{Name("CaloRecoTag"), Comment("Tag for CaloClusterCollection"), art::InputTag()};
+	// CRV -- flags
         fhicl::Atom<bool> crvhits{Name("FillCRVHits"),Comment("Flag for turning on crv CoincidenceClusterbranches"), false};
         fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
         // CRV -- other
@@ -264,6 +267,8 @@ namespace mu2e {
       art::Handle<CrvDigiMCCollection>               _crvDigiMCs;
       art::Handle<CrvDigiCollection>                 _crvDigis;
       art::Handle<CrvStepCollection>                 _crvSteps;
+      //Calorimeter (inputs)
+      art::Handle<CaloClusterCollection>             _caloCluster;
       // CRV -- fhicl parameters
       bool _crvhits, _crvpulses;
       double _crvPlaneY;  // needs to move to KinKalGeom FIXME
@@ -279,6 +284,9 @@ namespace mu2e {
       std::vector<CrvWaveformInfo> _crvwaveforminfo;
       std::vector<CrvHitInfoMC> _crvpulseinfomc;
       std::vector<CrvHitInfoReco> _crvrecoinfo;
+      //Calorimeter (output)
+      std::vector<CaloClusterInfoReco> _calorecoinfo;
+      bool _caloinfo = true; //to be implemented
       // helices
       HelixInfo _hinfo;
       // struct helpers
@@ -507,6 +515,10 @@ namespace mu2e {
         }
       }
     }
+    //general Calorimeter informations on clusters
+    if(_caloinfo){
+      _trkana->Branch("calorecoinfo.",&_calorecoinfo, _buffsize,_splitlevel);
+    }
     // helix info
     if(_conf.helices()) _trkana->Branch("helixinfo.",&_hinfo,_buffsize,_splitlevel);
   }
@@ -686,6 +698,11 @@ namespace mu2e {
               _crvpulseinfo, _crvpulseinfomc, _crvwaveforminfo);
         }
       }
+      //fill general Calorimeter info
+      if(_caloinfo){
+      	event.getByLabel(_conf.caloRecoTag(),_caloCluster);
+	_infoStructHelper.fillCaloCluInfo(_caloCluster, _calorecoinfo);
+      }
       // fill this row in the TTree
       _trkana->Fill();
     }
@@ -810,7 +827,6 @@ namespace mu2e {
           << " +- " << cc->energyDepErr() << std::endl;
       }
     }
-
 
     // all RecoQuals
     std::vector<Float_t> recoQuals; // for the output value
@@ -965,6 +981,7 @@ namespace mu2e {
     _crvpulseinfo.clear();
     _crvwaveforminfo.clear();
     _crvpulseinfomc.clear();
+    _calorecoinfo.clear();
   }
 }  // end namespace mu2e
 

@@ -14,6 +14,7 @@
 #include "TrkAna/inc/EventWeightInfo.hh"
 #include "TrkAna/inc/RecoQualInfo.hh"
 #include "TrkAna/inc/CaloClusterInfoMC.hh"
+#include "TrkAna/inc/CaloClusterInfoReco.hh"
 #include "TrkAna/inc/CrvHitInfoReco.hh"
 #include "TrkAna/inc/CrvHitInfoMC.hh"
 #include "TrkAna/inc/CrvWaveformInfo.hh"

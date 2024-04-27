@@ -7,6 +7,9 @@
 #include "KinKal/Trajectory/CentralHelix.hh"
 #include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "Offline/Mu2eKinKal/inc/WireHitState.hh"
+#include "art/Framework/Principal/Handle.h"
+#include "Offline/RecoDataProducts/inc/CaloHit.hh"
+#include "Offline/RecoDataProducts/inc/CaloCluster.hh"
 #include <cmath>
 #include <limits>
 
@@ -354,10 +357,34 @@ namespace mu2e {
       tchinfo.csize = cc->size();
       tchinfo.edep = cc->energyDep();
       tchinfo.edeperr = cc->energyDepErr();
+      tchinfo.cposX = cc->cog3Vector().getX();
+      tchinfo.cposY = cc->cog3Vector().getY(); 
+      tchinfo.cposZ = cc->cog3Vector().getZ(); 
+      tchinfo.cposR = cc->cog3Vector().getR(); 
       // compute relative azimuth dot product
       auto rmomhat = XYZVectorF(tch._tmom.X(),tch._tmom.Y(),0.0).Unit();
       auto rhohat = XYZVectorF(tch._cpos.X(),tch._cpos.Y(),0.0).Unit();
       tchinfo.dphidot = rmomhat.Dot(rhohat);
+    }
+  }
+  void InfoStructHelper::fillCaloCluInfo(art::Handle<CaloClusterCollection> caloClustersHandle, std::vector<CaloClusterInfoReco>& all_caloinfo){
+    CaloClusterInfoReco caloinfo;
+    const CaloClusterCollection& caloClusters(*caloClustersHandle);
+
+    int ncluster = caloClustersHandle -> size();
+    caloinfo.nclu = ncluster;
+    for(int iclu = 0; iclu< ncluster; iclu++){
+      caloinfo.cposX = caloClusters[iclu].cog3Vector().getX();
+      caloinfo.cposY = caloClusters[iclu].cog3Vector().getY();
+      caloinfo.cposZ = caloClusters[iclu].cog3Vector().getZ();
+      caloinfo.cposR = caloClusters[iclu].cog3Vector().getR();
+      caloinfo.edep = caloClusters[iclu].energyDep();
+      caloinfo.edepErr = caloClusters[iclu].energyDepErr();
+      caloinfo.time = caloClusters[iclu].time();
+      caloinfo.timeErr = caloClusters[iclu].timeErr();
+      caloinfo.diskId = caloClusters[iclu].diskID();
+
+      all_caloinfo.push_back(caloinfo);
     }
   }
 
