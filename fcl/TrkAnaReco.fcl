@@ -18,7 +18,7 @@ physics :
   analyzers : { @table::TrkAnaReco.analyzers }
 }
 
-physics.TrkAnaTrigPath : [ PBIWeight, TrkQualDeM ]
+physics.TrkAnaTrigPath : [ @sequence::MergeKKProducersPath, PBIWeight, TrkQualDeM ]
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)

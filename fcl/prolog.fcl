@@ -94,42 +94,74 @@ AllOpt : {
   matchDepth : -1
 }
 
-DeM : { input : "KK"
+# With move to using KalSeedPtr need to "merge" KalSeeds so that we get KalSeedPtr collections
+MergeKK : { module_type : MergeKalSeeds }
+MergeKKDeM           : @local::MergeKK
+MergeKKDeM.KalSeedCollections : [ "KKDeM" ]
+MergeKKUeM           : @local::MergeKK
+MergeKKUeM.KalSeedCollections : [ "KKUeM" ]
+MergeKKDmuM          : @local::MergeKK
+MergeKKDmuM.KalSeedCollections : [ "KKDmuM" ]
+MergeKKUmuM          : @local::MergeKK
+MergeKKUmuM.KalSeedCollections : [ "KKUmuM" ]
+MergeKKDeP           : @local::MergeKK
+MergeKKDeP.KalSeedCollections : [ "KKDeP" ]
+MergeKKUeP           : @local::MergeKK
+MergeKKUeP.KalSeedCollections : [ "KKUeP" ]
+MergeKKDmuP          : @local::MergeKK
+MergeKKDmuP.KalSeedCollections : [ "KKDmuP" ]
+MergeKKUmuP          : @local::MergeKK
+MergeKKUmuP.KalSeedCollections : [ "KKUmuP" ]
+
+MergeKKProducers : {
+  MergeKKDeM : @local::MergeKKDeM
+  MergeKKUeM : @local::MergeKKUeM
+  MergeKKDeP : @local::MergeKKDeP
+  MergeKKUeP : @local::MergeKKUeP
+  MergeKKDmuM : @local::MergeKKDmuM
+  MergeKKDmuP : @local::MergeKKDmuP
+  MergeKKUmuM : @local::MergeKKUmuM
+  MergeKKUmuP : @local::MergeKKUmuP
+}
+MergeKKProducersPath : [ MergeKKDeM, MergeKKUeM, MergeKKDmuM, MergeKKDeP, MergeKKUeP, MergeKKDmuP, MergeKKUmuM, MergeKKUmuP ]
+
+
+DeM : { input : "MergeKK"
   branch : "dem"
   suffix : "DeM"
   options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   trkQualTag : "TrkQualDeM"
 }
-UeM : { input : "KK"
+UeM : { input : "MergeKK"
   branch : "uem"
   suffix : "UeM"
 }
-DmuM : { input : "KK"
+DmuM : { input : "MergeKK"
   branch : "dmm"
   suffix : "DmuM"
 }
-UmuM : { input : "KK"
+UmuM : { input : "MergeKK"
   branch : "umm"
   suffix : "UmuM"
 }
-DeP : { input : "KK"
+DeP : { input : "MergeKK"
   branch : "dep"
   suffix : "DeP"
   options : { fillMC : true   genealogyDepth : -1 }
 }
-UeP : { input : "KK"
+UeP : { input : "MergeKK"
   branch : "uep"
   suffix : "UeP"
 }
-DmuP : { input : "KK"
+DmuP : { input : "MergeKK"
   branch : "dmp"
   suffix : "DmuP"
 }
-UmuP : { input : "KK"
+UmuP : { input : "MergeKK"
   branch : "ump"
   suffix : "UmuP"
 }
-Ext : { input : "KK"
+Ext : { input : "MergeKK"
   branch : "kl"
   suffix : "Line"
 }
@@ -181,6 +213,7 @@ TrkAnaReco : {
     PBIWeight : @local::PBIWeight
     @table::TrkQualProducers
     @table::TrkPIDProducers
+    @table::MergeKKProducers
   }
 
   analyzers : {
