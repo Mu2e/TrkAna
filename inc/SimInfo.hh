@@ -26,8 +26,8 @@ namespace mu2e
     XYZVectorF pos = XYZVectorF();  // origin position of the SimParticle
     XYZVectorF endmom = XYZVectorF();  // end momentumof the SimParticle
     XYZVectorF endpos = XYZVectorF();  // end position of the SimParticle
-    MCRelationship prirel = MCRelationship::none; // relationship to the event primary particles
-    MCRelationship trkrel = MCRelationship::none; // relationship to the particle that created hits in the track
+    MCRelationship prirel = MCRelationship(); // relationship to the event primary particles
+    MCRelationship trkrel = MCRelationship(); // relationship to the particle that created hits in the track
     void reset() { *this = SimInfo(); }
   };
 }

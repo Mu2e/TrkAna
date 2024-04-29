@@ -23,28 +23,16 @@ TrkAnaTrigger : {
       SimParticleCollectionTag : "compressDigiMCs"
     }
   }
-  TTtprDeM : {
+  TTtprDe : {
     input : "TTKSF"
     branch : "trk"
-    suffix : "DeM"
+    suffix : "De"
     options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   }
-  TTtprDeP : {
-    input : "TTKSF"
-    branch : "trk"
-    suffix : "DeP"
-    options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
-  }
-  TTcprDeM : {
+  TTcprDe : {
     input : "TTCalSeedFit"
     branch : "trk"
-    suffix : "Dem"
-    options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
-  }
-  TTcprDeP : {
-    input : "TTCalSeedFit"
-    branch : "trk"
-    suffix : "Dep"
+    suffix : "De"
     options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   }
 }
