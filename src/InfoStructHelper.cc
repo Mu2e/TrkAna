@@ -10,6 +10,7 @@
 #include "art/Framework/Principal/Handle.h"
 #include "Offline/RecoDataProducts/inc/CaloHit.hh"
 #include "Offline/RecoDataProducts/inc/CaloCluster.hh"
+#include "Offline/RecoDataProducts/inc/CaloRecoDigi.hh"
 #include <cmath>
 #include <limits>
 
@@ -357,11 +358,7 @@ namespace mu2e {
       tchinfo.csize = cc->size();
       tchinfo.edep = cc->energyDep();
       tchinfo.edeperr = cc->energyDepErr();
-      tchinfo.cposX = cc->cog3Vector().getX();
-      tchinfo.cposY = cc->cog3Vector().getY(); 
-      tchinfo.cposZ = cc->cog3Vector().getZ(); 
-      tchinfo.cposR = cc->cog3Vector().getR(); 
-      // compute relative azimuth dot product
+      tchinfo.cpos = cc->cog3Vector();
       auto rmomhat = XYZVectorF(tch._tmom.X(),tch._tmom.Y(),0.0).Unit();
       auto rhohat = XYZVectorF(tch._cpos.X(),tch._cpos.Y(),0.0).Unit();
       tchinfo.dphidot = rmomhat.Dot(rhohat);
@@ -369,20 +366,32 @@ namespace mu2e {
   }
   void InfoStructHelper::fillCaloCluInfo(art::Handle<CaloClusterCollection> caloClustersHandle, std::vector<CaloClusterInfoReco>& all_caloinfo){
     CaloClusterInfoReco caloinfo;
+
     const CaloClusterCollection& caloClusters(*caloClustersHandle);
+    const Calorimeter& cal = *(GeomHandle<Calorimeter>());
 
     int ncluster = caloClustersHandle -> size();
     caloinfo.nclu = ncluster;
     for(int iclu = 0; iclu< ncluster; iclu++){
-      caloinfo.cposX = caloClusters[iclu].cog3Vector().getX();
-      caloinfo.cposY = caloClusters[iclu].cog3Vector().getY();
-      caloinfo.cposZ = caloClusters[iclu].cog3Vector().getZ();
-      caloinfo.cposR = caloClusters[iclu].cog3Vector().getR();
+      caloinfo.cpos = caloClusters[iclu].cog3Vector();
       caloinfo.edep = caloClusters[iclu].energyDep();
       caloinfo.edepErr = caloClusters[iclu].energyDepErr();
       caloinfo.time = caloClusters[iclu].time();
       caloinfo.timeErr = caloClusters[iclu].timeErr();
       caloinfo.diskId = caloClusters[iclu].diskID();
+      caloinfo.isSplit = caloClusters[iclu].isSplit();
+      int ncrystals = caloClusters[iclu].caloHitsPtrVector().size(); 
+      caloinfo.ncry = ncrystals;
+
+      for(int icry =0; icry<ncrystals; icry++){
+	caloinfo.cryId.push_back(caloClusters[iclu].caloHitsPtrVector()[icry].get()->crystalID());
+	caloinfo.cryEdep.push_back(caloClusters[iclu].caloHitsPtrVector()[icry].get()->energyDep());
+	caloinfo.cryEdepErr.push_back( caloClusters[iclu].caloHitsPtrVector()[icry].get()->energyDepErr());
+	caloinfo.cryTime.push_back(caloClusters[iclu].caloHitsPtrVector()[icry].get()->time());
+	caloinfo.cryTimeErr.push_back( caloClusters[iclu].caloHitsPtrVector()[icry].get()->timeErr());
+	caloinfo.cryPos.push_back(cal.geomUtil().mu2eToDiskFF(caloClusters[iclu].diskID(), cal.crystal(caloClusters[iclu].caloHitsPtrVector()[icry].get()->crystalID()).position()));
+
+      }
 
       all_caloinfo.push_back(caloinfo);
     }

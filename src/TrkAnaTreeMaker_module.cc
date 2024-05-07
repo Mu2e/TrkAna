@@ -157,13 +157,15 @@ namespace mu2e {
         fhicl::Atom<art::InputTag> crvStepsTag{Name("CrvStepsTag"), Comment("Tag for CrvStep Collection"), art::InputTag()};
         fhicl::Atom<art::InputTag> crvDigiMCsTag{Name("CrvDigiMCsTag"), Comment("Tag for CrvDigiMC Collection"), art::InputTag()};
         fhicl::Atom<art::InputTag> crvDigisTag{Name("CrvDigisTag"), Comment("Tag for CrvDigi Collection"), art::InputTag()};
-        //Calorimeter -- input tag
-	fhicl::Atom<art::InputTag> caloRecoTag{Name("CaloRecoTag"), Comment("Tag for CaloClusterCollection"), art::InputTag()};
 	// CRV -- flags
         fhicl::Atom<bool> crvhits{Name("FillCRVHits"),Comment("Flag for turning on crv CoincidenceClusterbranches"), false};
         fhicl::Atom<bool> crvpulses{Name("FillCRVPulses"),Comment("Flag for turning on crvpulseinfo(mc), crvwaveforminfo branches"), false};
         // CRV -- other
         fhicl::Atom<double> crvPlaneY{Name("CrvPlaneY"),2751.485};  //y of center of the top layer of the CRV-T counters.  This belongs in KinKalGeom as an intersection plane, together with the rest of the CRV planes FIXME
+        //Calorimeter -- input tag
+	fhicl::Atom<art::InputTag> caloClusterRecoTag{Name("CaloClusterRecoTag"), Comment("Tag for CaloClusterCollection"), art::InputTag()};
+	//Calorimeter -- flag
+	fhicl::Atom<bool> caloinfo{Name("FillCaloClusterInfo"), Comment("Flag for turning on Calorimeter cluster info"), true};
         // MC truth
         fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
         fhicl::Table<InfoMCStructHelper::Config> infoMCStructHelper{Name("InfoMCStructHelper"), Comment("Configuration for the InfoMCStructHelper")};
@@ -269,6 +271,7 @@ namespace mu2e {
       art::Handle<CrvStepCollection>                 _crvSteps;
       //Calorimeter (inputs)
       art::Handle<CaloClusterCollection>             _caloCluster;
+      bool _caloinfo;
       // CRV -- fhicl parameters
       bool _crvhits, _crvpulses;
       double _crvPlaneY;  // needs to move to KinKalGeom FIXME
@@ -286,7 +289,6 @@ namespace mu2e {
       std::vector<CrvHitInfoReco> _crvrecoinfo;
       //Calorimeter (output)
       std::vector<CaloClusterInfoReco> _calorecoinfo;
-      bool _caloinfo = true; //to be implemented
       // helices
       HelixInfo _hinfo;
       // struct helpers
@@ -320,6 +322,8 @@ namespace mu2e {
     _PBTMCTag(conf().PBTMCTag()),
     _fillmc(conf().fillmc()),
     _fillcalomc(conf().fillCaloMC()),
+    //CALORIMETER
+    _caloinfo(conf().caloinfo()),
     // CRV
     _crvhits(conf().crvhits()),
     _infoMCStructHelper(conf().infoMCStructHelper()),
@@ -700,7 +704,7 @@ namespace mu2e {
       }
       //fill general Calorimeter info
       if(_caloinfo){
-      	event.getByLabel(_conf.caloRecoTag(),_caloCluster);
+      	event.getByLabel(_conf.caloClusterRecoTag(),_caloCluster);
 	_infoStructHelper.fillCaloCluInfo(_caloCluster, _calorecoinfo);
       }
       // fill this row in the TTree
