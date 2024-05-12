@@ -358,7 +358,6 @@ namespace mu2e {
       tchinfo.csize = cc->size();
       tchinfo.edep = cc->energyDep();
       tchinfo.edeperr = cc->energyDepErr();
-      tchinfo.cpos = cc->cog3Vector();
       // compute relative azimuth dot product
       auto rmomhat = XYZVectorF(tch._tmom.X(),tch._tmom.Y(),0.0).Unit();
       auto rhohat = XYZVectorF(tch._cpos.X(),tch._cpos.Y(),0.0).Unit();
