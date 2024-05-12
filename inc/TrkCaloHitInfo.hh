@@ -28,7 +28,6 @@ namespace mu2e
     float csize = -1000.0;
     float edep = -1000.0;
     float edeperr = -1000.0;
-    XYZVectorF cpos;
    // reconstructed cluster properties
     void reset() { *this = TrkCaloHitInfo(); }
   };
