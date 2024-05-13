@@ -165,7 +165,7 @@ namespace mu2e {
         //Calorimeter -- input tag
 	fhicl::Atom<art::InputTag> caloClusterRecoTag{Name("CaloClusterRecoTag"), Comment("Tag for CaloClusterCollection"), art::InputTag()};
 	//Calorimeter -- flag
-	fhicl::Atom<bool> caloinfo{Name("FillCaloClusterInfo"), Comment("Flag for turning on Calorimeter cluster info"), true};
+	fhicl::Atom<bool> caloinfo{Name("FillCaloClusterInfo"), Comment("Flag for turning on Calorimeter cluster info"), false};
         // MC truth
         fhicl::Atom<bool> fillmc{Name("FillMCInfo"),Comment("Global switch to turn on/off MC info"),true};
         fhicl::Table<InfoMCStructHelper::Config> infoMCStructHelper{Name("InfoMCStructHelper"), Comment("Configuration for the InfoMCStructHelper")};
