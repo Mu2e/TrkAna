@@ -2,7 +2,6 @@
 #include "TrkAna/inc/TrkStrawHitInfo.hh"
 #include "TrkAna/inc/TrkStrawMatInfo.hh"
 #include "TrkAna/inc/EventInfo.hh"
-#include "TrkAna/inc/helixpar.hh"
 #include "TrkAna/inc/HelixInfo.hh"
 #include "TrkAna/inc/HitCount.hh"
 #include "TrkAna/inc/TrkCount.hh"
@@ -10,7 +9,6 @@
 #include "TrkAna/inc/SimInfo.hh"
 #include "TrkAna/inc/MCStepInfo.hh"
 #include "TrkAna/inc/TrkCaloHitInfo.hh"
-#include "TrkAna/inc/TrkQualInfo.hh"
 #include "TrkAna/inc/EventWeightInfo.hh"
 #include "TrkAna/inc/RecoQualInfo.hh"
 #include "TrkAna/inc/CaloClusterInfoMC.hh"
@@ -22,4 +20,4 @@
 #include "TrkAna/inc/CrvPulseInfoReco.hh"
 #include "TrkAna/inc/CrvSummaryReco.hh"
 #include "TrkAna/inc/CrvSummaryMC.hh"
-
+#include "TrkAna/inc/MVAResultInfo.hh"
