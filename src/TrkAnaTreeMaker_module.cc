@@ -408,7 +408,7 @@ namespace mu2e {
       if(_ftype == KinematicLine )_trkana->Branch((branch+"kl.").c_str(),&_allKLIs.at(i_branch),_buffsize,_splitlevel);
       // TrkCaloHit: currently only 1
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
-      _trkana->Branch((branch+"trkqual").c_str(), &_allTrkQualResults.at(i_branch));
+      _trkana->Branch((branch+"trkqual.").c_str(), &_allTrkQualResults.at(i_branch));
       if (_conf.filltrkpid() && i_branchConfig.options().filltrkpid()) {
         int n_trkpid_vars = TrkCaloHitPID::n_vars;
         for (int i_trkpid_var = 0; i_trkpid_var < n_trkpid_vars; ++i_trkpid_var) {
