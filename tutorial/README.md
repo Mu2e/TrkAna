@@ -28,6 +28,8 @@ Note that the tutorials below still need to be updated for version 5 TrkAna tree
 
 1. [Plotting MC Truth Information of Ancestor Particles](pages/genealogy.md): In this exercise, we will use the ```demmcsim``` branch to plot the starting position of the muons that generate conversion electrons, and the starting positions of decay-in-orbit electrons.
 
+1. [How to Create a ROOT MakeClass](pages/makeclass.md): Brief instructions on how to generate a ROOT MakeClass
+
 Incomplete tutorials that have something useful:
 
 1. [Plotting the Time Difference between a Track and CRV hit in the Extracted Position](pages/crv-extracted.md): In this exercise, we will use the ```crvinfo``` branch to plot the time difference between a track and CRV hit in the extracted position. 
