@@ -4,8 +4,7 @@
 //
 #ifndef TrkCaloHitInfo_HH
 #define TrkCaloHitInfo_HH
-#include "Rtypes.h"
-#include "Offline/DataProducts/inc/GenVector.hh"
+#include "TrkAna/inc/RootVectors.hh"
 namespace mu2e
 {
   struct TrkCaloHitInfo {
@@ -27,8 +26,7 @@ namespace mu2e
     float ctimeerr = -1000.0;
     float csize = -1000.0;
     float edep = -1000.0;
-    float edeperr = -1000.0;
-   // reconstructed cluster properties
+    float edeperr = -1000.0;    // reconstructed cluster properties
     void reset() { *this = TrkCaloHitInfo(); }
   };
 }

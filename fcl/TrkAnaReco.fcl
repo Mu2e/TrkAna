@@ -12,37 +12,27 @@ services : @local::Services.Reco
 physics :
 {
   producers : {
-#    @table::TrkAnaReco.producers
+    @table::TrkAnaReco.producers
     PBIWeight : @local::PBIWeight
   }
   analyzers : { @table::TrkAnaReco.analyzers }
 }
 
-physics.TrkAnaTrigPath : [ PBIWeight ]
+physics.TrkAnaTrigPath : [ @sequence::MergeKKProducersPath, PBIWeight, TrkQualDeM ]
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)
-physics.analyzers.TrkAnaNeg.candidate.options : @local::AllOpt
-physics.analyzers.TrkAnaPos.candidate.options : @local::AllOpt
+# TODO: add these options back
+#physics.analyzers.TrkAnaNeg.candidate.options : @local::AllOpt
+#physics.analyzers.TrkAnaPos.candidate.options : @local::AllOpt
 
 # for hit level diagnostics, set diagLevel to 2
-physics.analyzers.TrkAnaNeg.diagLevel : 1
-physics.analyzers.TrkAnaNeg.FillMCInfo : true
-physics.analyzers.TrkAnaNeg.FillCRVHits : true
-physics.analyzers.TrkAnaNeg.FillTriggerInfo : false
-physics.analyzers.TrkAnaNeg.FitType : LoopHelix
+physics.analyzers.TrkAna.diagLevel : 1
+physics.analyzers.TrkAna.FillMCInfo : true
+physics.analyzers.TrkAna.FillCRVCoincs : true
+physics.analyzers.TrkAna.FillTriggerInfo : false
+physics.analyzers.TrkAna.FitType : LoopHelix
 
-physics.analyzers.TrkAnaPos.diagLevel : 1
-physics.analyzers.TrkAnaPos.FillMCInfo : true
-physics.analyzers.TrkAnaPos.FillCRVHits : true
-physics.analyzers.TrkAnaPos.FillTriggerInfo : false
-physics.analyzers.TrkAnaPos.FitType : LoopHelix
-
-physics.analyzers.TrkAnaNeg.FillTrkQualInfo : false
-physics.analyzers.TrkAnaNeg.FillTrkPIDInfo : false
-
-physics.analyzers.TrkAnaPos.FillTrkQualInfo : false
-physics.analyzers.TrkAnaPos.FillTrkPIDInfo : false
-
+physics.analyzers.TrkAna.FillTrkPIDInfo : false
 
 services.TFileService.fileName: "nts.owner.trkana-reco.version.sequencer.root"

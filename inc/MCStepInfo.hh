@@ -4,6 +4,8 @@
 #ifndef MCStepInfo_HH
 #define MCStepInfo_HH
 #include <vector>
+#include "TrkAna/inc/RootVectors.hh"
+
 namespace mu2e {
   struct MCStepInfo {
     int vid=-1; // volume Id or VirtualDetector Id of this step

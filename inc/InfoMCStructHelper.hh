@@ -21,6 +21,10 @@
 #include "Offline/MCDataProducts/inc/KalSeedMC.hh"
 #include "BTrk/BbrGeom/HepPoint.h"
 #include "Offline/MCDataProducts/inc/PrimaryParticle.hh"
+#include "Offline/BFieldGeom/inc/BFieldManager.hh"
+#include "Offline/GeometryService/inc/GeomHandle.hh"
+#include "Offline/GlobalConstantsService/inc/GlobalConstantsHandle.hh"
+#include "Offline/GlobalConstantsService/inc/ParticleDataList.hh"
 
 #include <vector>
 #include <functional>
@@ -57,15 +61,15 @@ namespace mu2e {
       InfoMCStructHelper(const Config& conf);
       void updateEvent(const art::Event& event);
 
-      void fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
+      void fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<TrkInfoMC>& all_trkinfomcs);
       void fillTrkInfoMCDigis(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
       void fillHitInfoMC(const KalSeedMC& kseedmc, TrkStrawHitInfoMC& tshinfomc, const TrkStrawHitMC& tshmc);
-      void fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<SimInfo>& siminfos, int n_generations, int n_match);
-      void fillVDInfo(KalSeed const& kseed, const KalSeedMC& kseedmc, std::vector<MCStepInfo>& vdinfos);
-      void fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<TrkStrawHitInfoMC>& tshinfomcs);
-      void fillCaloClusterInfoMC(CaloClusterMC const& ccmc, CaloClusterInfoMC& ccimc);
+      void fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<std::vector<SimInfo>>& all_siminfos, int n_generations, int n_match);
+      void fillVDInfo(KalSeed const& kseed, const KalSeedMC& kseedmc, std::vector<std::vector<MCStepInfo>>& all_vdinfos);
+      void fillHitInfoMCs(const KalSeedMC& kseedmc, std::vector<std::vector<TrkStrawHitInfoMC>>& all_tshinfomcs);
+      void fillCaloClusterInfoMC(CaloClusterMC const& ccmc, std::vector<CaloClusterInfoMC>& ccimc);
       void fillExtraMCStepInfos(KalSeedMC const& kseedmc, StepPointMCCollection const& mcsteps,
-      MCStepInfos& mcsic, MCStepSummaryInfo& mcssi);
+                                std::vector<MCStepInfos>& mcsics, std::vector<MCStepSummaryInfo>& mcssis);
   };
 }
 
