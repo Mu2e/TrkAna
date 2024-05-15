@@ -7,6 +7,7 @@
 #include "Offline/RecoDataProducts/inc/StrawHitIndex.hh"
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
 #include "Offline/RecoDataProducts/inc/StrawHitFlag.hh"
+#include "Offline/RecoDataProducts/inc/TrkQual.hh"
 #include "Offline/RecoDataProducts/inc/RecoCount.hh"
 #include "Offline/RecoDataProducts/inc/HelixSeed.hh"
 #include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
@@ -15,15 +16,18 @@
 #include "Offline/GeometryService/inc/DetectorSystem.hh"
 #include "Offline/GeometryService/inc/GeomHandle.hh"
 #include "Offline/CalorimeterGeom/inc/DiskCalorimeter.hh"
+#include "art/Framework/Principal/Handle.h"
 
 #include "TrkAna/inc/HitCount.hh"
 #include "TrkAna/inc/TrkInfo.hh"
 #include "TrkAna/inc/TrkStrawHitInfo.hh"
 #include "TrkAna/inc/TrkStrawMatInfo.hh"
 #include "TrkAna/inc/TrkCaloHitInfo.hh"
+#include "TrkAna/inc/TrkQualInfo.hh"
 #include "TrkAna/inc/TrkPIDInfo.hh"
 #include "TrkAna/inc/HelixInfo.hh"
 #include "TrkAna/inc/CrvHitInfoReco.hh"
+#include "TrkAna/inc/CaloClusterInfoReco.hh"
 
 #include <vector>
 #include <functional>
@@ -46,17 +50,19 @@ namespace mu2e {
     void fillHitCount(const StrawHitFlagCollection& flags, HitCount& hitcount);
     void fillHitCount(RecoCount const& nrec, HitCount& hitcount);
 
-    void fillTrkInfo(const KalSeed& kseed,std::vector<TrkInfo>& trkinfo);
-    void fillTrkFitInfo(const KalSeed& kseed,std::vector<std::vector<TrkFitInfo>>& trkfitinfos);
+    void fillTrkInfo(const KalSeed& kseed,TrkInfo& trkinfo);
+    void fillTrkFitInfo(const KalSeed& kseed,std::vector<TrkFitInfo>& trkfitinfos);
     void fillTrkInfoHits(const KalSeed& kseed,TrkInfo& trkinfo);
     void fillTrkInfoStraws(const KalSeed& kseed,TrkInfo& trkinfo);
-    void fillLoopHelixInfo(const KalSeed& kseed, std::vector<std::vector<LoopHelixInfo>>& lhis);
-    void fillCentralHelixInfo(const KalSeed& kseed, std::vector<std::vector<CentralHelixInfo>>& chis);
-    void fillKinematicLineInfo(const KalSeed& kseed, std::vector<std::vector<KinematicLineInfo>>& klis);
+    void fillLoopHelixInfo(const KalSeed& kseed, std::vector<LoopHelixInfo>& lhis);
+    void fillCentralHelixInfo(const KalSeed& kseed, std::vector<CentralHelixInfo>& chis);
+    void fillKinematicLineInfo(const KalSeed& kseed, std::vector<KinematicLineInfo>& klis);
 
-    void fillHitInfo(const KalSeed& kseed, std::vector<std::vector<TrkStrawHitInfo>>& tshinfos );
-    void fillMatInfo(const KalSeed& kseed, std::vector<std::vector<TrkStrawMatInfo>>& tminfos );
-    void fillCaloHitInfo(const KalSeed& kseed, std::vector<TrkCaloHitInfo>& tchinfo );
+    void fillHitInfo(const KalSeed& kseed, std::vector<TrkStrawHitInfo>& tshinfos );
+    void fillMatInfo(const KalSeed& kseed, std::vector<TrkStrawMatInfo>& tminfos );
+    void fillCaloHitInfo(const KalSeed& kseed, TrkCaloHitInfo& tchinfo );
+    void fillCaloCluInfo(art::Handle<CaloClusterCollection> caloClustersHandle, std::vector<CaloClusterInfoReco>& all_caloinfo);
+    void fillTrkQualInfo(const TrkQual& tqual, TrkQualInfo& trkqualInfo);
     void fillTrkPIDInfo(const TrkCaloHitPID& tchp, const KalSeed& kseed, TrkPIDInfo& trkpidInfo);
     void fillHelixInfo(art::Ptr<HelixSeed> const& hptr, HelixInfo& hinfo);
   };

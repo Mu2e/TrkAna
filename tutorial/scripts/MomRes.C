@@ -1,7 +1,7 @@
 void MomRes() {
 
-  std::string filelist = "filelists/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v05_00_00rc.list";
-  TString treename = "TrkAna/trkana";
+  std::string filelist = "filelists/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.list";
+  TString treename = "TrkAnaNeg/trkana";
 
   // Get the TChain ready
   TChain* trkana = new TChain(treename);

@@ -3,25 +3,37 @@
 #include "Offline/fcl/TrkCaloDt.fcl"
 BEGIN_PROLOG
 # Track quality module
+# Example of how to add a new training through fcl
+# -- trainName is the name of the training
+# -- xmlFileName is the name of the XML file
+#  YourNewTrkQualConfig : { trainName : "YourNewTrkQual"
+#                     xmlFileName : "path/to/YourNewTrkQual.weights.xml"
+#             }
+#  TrkQualCatalog.mvaConfigs : [ @sequence::TrkQualCatalog.mvaConfigs, @local::YourNewTrkQualConfig  ]
+
 TrkQual : {
   module_type : TrackQuality
-  datFilename : "Offline/TrkDiag/data/TrkQual_ANN1_v1.dat"
 }
-TrkQualDeM           : @local::TrkQual
+TrkQualNeg : @local::TrkQual
+TrkQualNeg.TrainingName : "TrkQualNeg"
+TrkQualPos : @local::TrkQual
+TrkQualPos.TrainingName : "TrkQualPos"
+
+TrkQualDeM           : @local::TrkQualNeg
 TrkQualDeM.KalSeedCollection : "KKDeM"
-TrkQualUeM           : @local::TrkQual
+TrkQualUeM           : @local::TrkQualNeg
 TrkQualUeM.KalSeedCollection : "KKUeM"
-TrkQualDmuM          : @local::TrkQual
+TrkQualDmuM          : @local::TrkQualNeg
 TrkQualDmuM.KalSeedCollection : "KKDmuM"
-TrkQualUmuM          : @local::TrkQual
+TrkQualUmuM          : @local::TrkQualNeg
 TrkQualUmuM.KalSeedCollection : "KKUmuM"
-TrkQualDeP           : @local::TrkQual
+TrkQualDeP           : @local::TrkQualPos
 TrkQualDeP.KalSeedCollection : "KKDeP"
-TrkQualUeP           : @local::TrkQual
+TrkQualUeP           : @local::TrkQualPos
 TrkQualUeP.KalSeedCollection : "KKUeP"
-TrkQualDmuP          : @local::TrkQual
+TrkQualDmuP          : @local::TrkQualPos
 TrkQualDmuP.KalSeedCollection : "KKDmuP"
-TrkQualUmuP          : @local::TrkQual
+TrkQualUmuP          : @local::TrkQualPos
 TrkQualUmuP.KalSeedCollection : "KKUmuP"
 
 TrkQualProducers : {
@@ -87,6 +99,8 @@ genCountLogger: { module_type: GenEventCountReader }
 
 AllOpt : {
   fillMC : true
+  trkqual : "TrkQual"
+  fillTrkQual : true
   trkpid : "TrkPID"
   fillTrkPID : true
   fillHits : true
@@ -94,74 +108,39 @@ AllOpt : {
   matchDepth : -1
 }
 
-# With move to using KalSeedPtr need to "merge" KalSeeds so that we get KalSeedPtr collections
-MergeKK : { module_type : MergeKalSeeds }
-MergeKKDeM           : @local::MergeKK
-MergeKKDeM.KalSeedCollections : [ "KKDeM" ]
-MergeKKUeM           : @local::MergeKK
-MergeKKUeM.KalSeedCollections : [ "KKUeM" ]
-MergeKKDmuM          : @local::MergeKK
-MergeKKDmuM.KalSeedCollections : [ "KKDmuM" ]
-MergeKKUmuM          : @local::MergeKK
-MergeKKUmuM.KalSeedCollections : [ "KKUmuM" ]
-MergeKKDeP           : @local::MergeKK
-MergeKKDeP.KalSeedCollections : [ "KKDeP" ]
-MergeKKUeP           : @local::MergeKK
-MergeKKUeP.KalSeedCollections : [ "KKUeP" ]
-MergeKKDmuP          : @local::MergeKK
-MergeKKDmuP.KalSeedCollections : [ "KKDmuP" ]
-MergeKKUmuP          : @local::MergeKK
-MergeKKUmuP.KalSeedCollections : [ "KKUmuP" ]
-
-MergeKKProducers : {
-  MergeKKDeM : @local::MergeKKDeM
-  MergeKKUeM : @local::MergeKKUeM
-  MergeKKDeP : @local::MergeKKDeP
-  MergeKKUeP : @local::MergeKKUeP
-  MergeKKDmuM : @local::MergeKKDmuM
-  MergeKKDmuP : @local::MergeKKDmuP
-  MergeKKUmuM : @local::MergeKKUmuM
-  MergeKKUmuP : @local::MergeKKUmuP
-}
-MergeKKProducersPath : [ MergeKKDeM, MergeKKUeM, MergeKKDmuM, MergeKKDeP, MergeKKUeP, MergeKKDmuP, MergeKKUmuM, MergeKKUmuP ]
-
-
-DeM : { input : "MergeKK"
+DeM : { input : "KK"
   branch : "dem"
   suffix : "DeM"
-  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
-  trkQualTag : "TrkQualDeM"
 }
-UeM : { input : "MergeKK"
+UeM : { input : "KK"
   branch : "uem"
   suffix : "UeM"
 }
-DmuM : { input : "MergeKK"
+DmuM : { input : "KK"
   branch : "dmm"
   suffix : "DmuM"
 }
-UmuM : { input : "MergeKK"
+UmuM : { input : "KK"
   branch : "umm"
   suffix : "UmuM"
 }
-DeP : { input : "MergeKK"
+DeP : { input : "KK"
   branch : "dep"
   suffix : "DeP"
-  options : { fillMC : true   genealogyDepth : -1 }
 }
-UeP : { input : "MergeKK"
+UeP : { input : "KK"
   branch : "uep"
   suffix : "UeP"
 }
-DmuP : { input : "MergeKK"
+DmuP : { input : "KK"
   branch : "dmp"
   suffix : "DmuP"
 }
-UmuP : { input : "MergeKK"
+UmuP : { input : "KK"
   branch : "ump"
   suffix : "UmuP"
 }
-Ext : { input : "MergeKK"
+Ext : { input : "KK"
   branch : "kl"
   suffix : "Line"
 }
@@ -169,8 +148,6 @@ Ext : { input : "MergeKK"
 
 TrkAnaTreeMaker : {
   module_type : TrkAnaTreeMaker
-  branches : [ @local::DeM, @local::DeP, @local::UeM, @local::UeP,
-    @local::DmuM, @local::DmuP, @local::UmuM, @local::UmuP ]
   RecoCountTag : "SelectRecoMC"
   PBITag : "PBISim"
   PBTTag : "EWMProducer"
@@ -186,25 +163,23 @@ TrkAnaTreeMaker : {
   CrvCoincidenceClusterMCAssnsTag : "CrvCoincidenceClusterMCAssns"
   CrvPlaneY : 2653
   FillMCInfo : true
+  FillTrkQualInfo : true
   FillTrkPIDInfo : true
   FillHitInfo : false
   FillTriggerInfo : true
   TriggerProcessName : "Mix"
   ProcessEmptyEvents : false
-  FillCRVCoincs : true
+  FillCRVHits : true
   FillCRVPulses : false
-  FillCRVDigis : false
-  FillCaloMC : true
-  FillHelixInfo : false
   PrimaryParticleTag : "compressRecoMCs"
   KalSeedMCAssns : "SelectRecoMC"
   CaloClusterMCTag : "compressRecoMCs"
+  CaloClusterRecoTag : "CaloClusterMaker"
   InfoMCStructHelper : {
     SimParticleCollectionTag : "compressRecoMCs"
     MinGoodMomFraction : 0.9
     MaxVDDt : 5 # ns
   }
-  ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
 }
 
 TrkAnaReco : {
@@ -213,22 +188,31 @@ TrkAnaReco : {
     PBIWeight : @local::PBIWeight
     @table::TrkQualProducers
     @table::TrkPIDProducers
-    @table::MergeKKProducers
   }
 
   analyzers : {
-    TrkAna : { @table::TrkAnaTreeMaker  }
-
+    TrkAnaNeg : { @table::TrkAnaTreeMaker
+      candidate : @local::DeM
+      supplements : [ @local::UeM, @local::DmuM ]
+      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
+    }
+    TrkAnaPos : { @table::TrkAnaTreeMaker
+      candidate : @local::DeP
+      supplements : [ @local::UeP, @local::DmuP ]
+      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
+    }
     TrkAnaExt : { @table::TrkAnaTreeMaker
-      branches : [ @local::Ext ]
+      candidate : @local::Ext
+      supplements : [ ]
+      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
     }
 
     genCountLogger : @local::genCountLogger
   }
 
   TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath ]
-  EndSequenceNoMC : [ TrkAna ]
-  EndSequence : [ TrkAna, genCountLogger ]
+  EndSequenceNoMC : [ TrkAnaNeg, TrkAnaPos ]
+  EndSequence : [ TrkAnaNeg, TrkAnaPos, genCountLogger ]
 
 }
 

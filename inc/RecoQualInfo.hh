@@ -4,6 +4,7 @@
 //
 #ifndef RecoQualInfo_HH
 #define RecoQualInfo_HH
+#include "Rtypes.h"
 #include <string>
 namespace mu2e
 {
@@ -37,7 +38,7 @@ namespace mu2e
       return leaves;
     }
 
-    void setQuals(const std::vector<float>& qualsAndCalibs) {
+    void setQuals(const std::vector<Float_t>& qualsAndCalibs) {
       for (unsigned int i_qual = 0; i_qual < qualsAndCalibs.size(); ++i_qual) {
         _qualsAndCalibs[i_qual] = qualsAndCalibs.at(i_qual);
       }
@@ -49,8 +50,8 @@ namespace mu2e
       }
     }
 
-    int n_quals;
-    float _qualsAndCalibs[MAX_QUALS];
+    Int_t n_quals;
+    Float_t _qualsAndCalibs[MAX_QUALS];
   };
 }
 #endif

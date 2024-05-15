@@ -4,6 +4,7 @@
 //
 #ifndef EventWeightInfo_HH
 #define EventWeightInfo_HH
+#include "Rtypes.h"
 #include <string>
 namespace mu2e
 {
@@ -30,7 +31,7 @@ namespace mu2e
       return leaves;
     }
 
-    void setWeights(const std::vector<float>& weights) {
+    void setWeights(const std::vector<Float_t>& weights) {
       for (unsigned int i_weight = 0; i_weight < weights.size(); ++i_weight) {
         _weights[i_weight] = weights.at(i_weight);
       }
@@ -42,8 +43,8 @@ namespace mu2e
       }
     }
 
-    int n_weights;
-    float _weights[MAX_WEIGHTS];
+    Int_t n_weights;
+    Float_t _weights[MAX_WEIGHTS];
   };
 }
 #endif

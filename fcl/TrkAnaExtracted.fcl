@@ -20,15 +20,16 @@ physics.TrkAnaTrigPath : [ ]
 physics.TrkAnaEndPath : [ TrkAnaExt ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)
-physics.analyzers.TrkAnaExt.branches[0].options.fillMC : true
-physics.analyzers.TrkAnaExt.branches[0].options.genealogyDepth : 5
+physics.analyzers.TrkAnaExt.candidate.options : @local::AllOpt
+physics.analyzers.TrkAnaExt.candidate.options.fillTrkQual : false
+physics.analyzers.TrkAnaExt.candidate.options.fillTrkPID : false
 physics.analyzers.TrkAnaExt.FillTriggerInfo : false
 physics.analyzers.TrkAnaExt.FitType : KinematicLine
 
 # for hit level diagnostics, set diagLevel to 2
-physics.analyzers.TrkAnaExt.diagLevel : 1
+physics.analyzers.TrkAnaExt.diagLevel : 2
 physics.analyzers.TrkAnaExt.FillMCInfo : true
-physics.analyzers.TrkAnaExt.FillCRVCoincs : true
+physics.analyzers.TrkAnaExt.FillCRVHits : true
 
 services.GeometryService.inputFile: "Production/JobConfig/cosmic/geom_cosmic_extracted.txt"
 services.TFileService.fileName: "nts.owner.trkanaextracted-reco.version.sequencer.root"

@@ -2,14 +2,15 @@
 #define CrvWaveformInfo_hh
 
 #include <vector>
+#include "Rtypes.h"
 
 namespace mu2e
 {
   struct CrvWaveformInfo   //information about CRV waveforms
   {
-    float adc = -1;
-    float time = -1;
-    int   SiPMId = -1;
+    Float_t adc = -1;
+    Float_t time = -1;
+    Int_t   SiPMId = -1;
     CrvWaveformInfo(){}
     CrvWaveformInfo(float adc, float time, int SiPMId) :
       adc(adc),
