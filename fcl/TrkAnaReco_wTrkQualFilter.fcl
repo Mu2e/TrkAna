@@ -53,11 +53,11 @@ physics.analyzers.TrkAnaPos.candidate.options : @local::AllOpt
 # for hit level diagnostics, set diagLevel to 2
 physics.analyzers.TrkAnaNeg.diagLevel : 1
 physics.analyzers.TrkAnaNeg.FillMCInfo : true
-physics.analyzers.TrkAnaNeg.FillCRVCoincs : true
+physics.analyzers.TrkAnaNeg.FillCRVHits : true
 physics.analyzers.TrkAnaNeg.FillTriggerInfo : true
 physics.analyzers.TrkAnaPos.diagLevel : 1
 physics.analyzers.TrkAnaPos.FillMCInfo : true
-physics.analyzers.TrkAnaPos.FillCRVCoincs : true
+physics.analyzers.TrkAnaPos.FillCRVHits : true
 physics.analyzers.TrkAnaPos.FillTriggerInfo : true
 
 services.TFileService.fileName: "nts.owner.trkana-reco.version.sequencer.root"

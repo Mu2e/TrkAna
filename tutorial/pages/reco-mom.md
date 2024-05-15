@@ -43,9 +43,7 @@ KinKal supports three different track parameterizations:
 * KinematicLine: straight-line tracks like cosmic rays
 * CentralHelix: curved tracks like cosmic rays with magnetic field on
 
-Depending on the type of track we are fitting, TrkAna will put the fit parameters (and their uncertainties) in the ```demlh```, ```demkl```, or ```demch```.
-
-Note that the ```demfit``` branch is an array of arrays. Since a Mu2e event could contain more than one ```dem``` track, each will have an array of fit results. 
+Depending on the type of track we are fitting, TrkAna will put the fit parameters (and their uncertainties) in the ```demlh```, ```demkl```, or ```demch```. 
 
 
 ## ROOT
@@ -53,9 +51,9 @@ Note that the ```demfit``` branch is an array of arrays. Since a Mu2e event coul
 In ROOT, get the TChain, and create a TCanvas as before:
 
 ```
-TChain* trkana = new TChain("TrkAna/trkana");
+TChain* trkana = new TChain("TrkAnaNeg/trkana");
 
-std::ifstream input_filelist("filelists/nts.mu2e.CeEndpointMix1BBSignal.Tutorial_2024_03.list");
+std::ifstream input_filelist("filelists/nts.mu2e.CeEndpointMix1BBSignal.MDC2020z1_best_v1_1_std_v04_01_00.list");
 if (input_filelist.is_open()) {
   std::string filename;
   while(std::getline(input_filelist,filename)) {
@@ -91,8 +89,7 @@ We want to plot the momentum of the tracks. If you ```Print()``` the ```demfit``
 We want to plot the magnitude of the momentum vector. We could calculate it ourselves from the components but in ROOT, we can use member functions of [XYZVectorF](https://root.cern.ch/doc/v628/namespaceROOT_1_1Math.html#a767e8c52a85dc9538fe00603961eab98). We will use ```R()``` function:
 
 ```
-TH1D* hist = new TH1D("hist", "", 100,100,110")
-trkana->Draw("demfit.mom.R()>>hist, "", "HIST");
+trkana->Draw("demfit.mom.R()>>hist(100,100,110)", "", "HIST");
 ```
 
 You may notice that the peak is rather broad... That's because we are plotting the reconstructed track momentum at all the intersections - the entrance, middle, and exit of the tracker. 
@@ -100,7 +97,7 @@ You may notice that the peak is rather broad... That's because we are plotting t
 To see just the track momentum at one of the intersections, we need to apply a cut using the second argument to the ```Draw()``` function:
 
 ```
-trkana->Draw("demfit.mom.R()>>hist", "demfit.sid==0", "HIST")
+trkana->Draw("demfit.mom.R()>>hist(100,100,110)", "demfit.sid==0", "HIST")
 ```
 
 where ```sid``` is the surface id of the intersection we want to plot (```sid=0``` is the entrance to the tracker).
@@ -126,7 +123,7 @@ import awkward as ak
 Now pick a file from your filelist and open it. Also get a figure and set of axes ready:
 
 ```
-trkana = uproot.open(filename+":TrkAna/trkana")
+trkana = uproot.open(filename+":TrkAnaNeg/trkana")
 
 fig, ax = plt.subplots(1,1)
 ```
@@ -134,48 +131,55 @@ fig, ax = plt.subplots(1,1)
 We'll just read in just the ```demfit``` and ```demlh``` branches:
 
 ```
-branches = trkana.arrays(filter_name=["/demfit/", "/demlh/"])
+branches = trkana.arrays(filter_name=["/demfit[.]*/", "/demlh[.]*/"])
 ```
 
-If you look at the ```branches['demfit']['mom']['fCoordinates'].fields```, you will see that we store the momentum in its x, y, and z components:
+If you look at the ```branches.fields```, you will see that we store the momentum in its x, y, and z components:
 
 ```
-print(branches['demfit']['mom']['fCoordinates'].fields)
-['fX', 'fY', 'fZ']
+print(branches.fields)
+['demfit.mom.fCoordinates.fX', 'demfit.mom.fCoordinates.fY', 'demfit.mom.fCoordinates.fZ', 'demfit.pos.fCoordinates.fX', 'demfit.pos.fCoordinates.fY', 'demfit.pos.fCoordinates.fZ', 'demfit.time', 'demfit.momerr', 'demfit.inbounds', 'demfit.gap', 'demfit.early', 'demfit.late', 'demfit.sid', 'demfit.sindex']
 ```
 
 so we will have to calculate the magnitude of the momentum ourselves. (If you read through the ROOT example, you will have seen that the momentum can be easily obtained with ```demfit.mom.R()```. It is not currently possible to call the ```R()``` function (or an equivalent) in python but we are looking into [vector](https://github.com/scikit-hep/vector) as a possible tool). 
 
-Anyway, it is easy to add a column in python even if it is an array of arrays:
+Anyway, it is easy to add a column in python:
 
 ```
-branches['demfit_mom'] = np.sqrt((batch['demfit']['mom']['fCoordinates']['fX'])**2 + (batch['demfit']['mom']['fCoordinates']['fY'])**2 + (batch['demfit']['mom']['fCoordinates']['fZ'])**2)
+branches['demfit.mom'] = (branches['demfit.mom.fCoordinates.fX']**2 + branches['demfit.mom.fCoordinates.fY']**2 + branches['demfit.mom.fCoordinates.fZ']**2)**0.5
 ```
 
-We can plot this like we did before:
+If you try to plot this like we did before:
 
 ```
-ax.hist(ak.flatten(branches['demfit_mom'], axis=None), bins=100, range=(100,110), label='all tracks', histtype='step')
+ax.hist(branches['demfit.mom'], bins=100, range=(100,110), label='all tracks', histtype='step')
+```
+
+you will get an error. That's because the ```demfit``` branch is an array, and the function doesn't like that. So we need to ```flatten``` it down to one dimension:
+
+```
+ax.hist(ak.flatten(branches['demfit.mom']), bins=100, range=(100,110), label='all tracks', histtype='step')
 ```
 
 Now you may notice that the peak is rather broad... That's because the ```demfit``` branch contains the fit information at the entrance, middle, and exit of the tracker.
 
-To plot just the momentum at the tracker entrance, we need to make another mask:
+To plot just the momentum at the tracker entrance, we need to make a "mask array", which is an array of the same shape and dimensionality as our data but containing either ```True``` or ```False```:
 
 ```
-trk_ent_mask = (branches['demfit']['sid']==0)
+trk_ent_mask = (branches['demfit.sid']==0)
 ```
 
-If you print this, you will see:
-```
-[[[True, False, False]], [[True, ..., False]], ..., [[True, False, False]]]
-```
+To see what I mean about the dimensionality and shape you can ```print``` them:
 
+```
+print(branches['demfit.sid'])
+print(trk_ent_mask)
+```
 
 Now we need to use this mask when plotting:
 
 ```
-ax.hist(ak.flatten(branches[(trk_ent_mask)]['demfit_mom'], axis=None), bins=100, range=(100,110), label='ent fits', histtype='step')
+ax.hist(ak.flatten(branches['demfit.mom'][(trk_ent_mask)], bins=100, range=(100,110), label='all tracks', histtype='step')
 
 ax.set_xlabel('Reconstructed Momentum at Tracker Entrance [MeV/c]')
 ax.set_ylabel('Number of Tracks')
@@ -187,16 +191,14 @@ plt.show()
 We might also want to make a cut on some other track parameter. For example, in the Mu2e muon-to-electron conversion search we will apply a time cut to the tracks. Again, like for momentum, there is no "time" for the whole track and we have the time at each intersection. The time is part of the parameterization and is stored in the ```demlh``` branch. Let's make a mask for it:
 
 ```
-time_cut_mask = (branches['demlh']['t0']>=700)
+time_cut_mask = (branches['demlh.t0']>=700)
 ```
 
 and to use it when plotting we need to use the bitwise ```&``` operator.
 
 ```
-ax.hist(ak.flatten(branches[(trk_ent_mask) & (time_cut_mask)]['demfit_mom'], axis=None), bins=100, range=(100,110), label='ent fits with t>=700', histtype='step')
+ax.hist(ak.flatten(branches['demfit.mom'][(trk_ent_mask) & (time_cut_mask)], bins=100, range=(100,110), label='all tracks', histtype='step')
 ```
-
-Note that here we need to pass the argument ```axis=None``` to ```ak.flatten``` to force a one-dimensional array.
 
 If you are iterating through multiple files, everything you did before plotting should go into your iterate loop:
 
@@ -204,16 +206,16 @@ If you are iterating through multiple files, everything you did before plotting 
 # Have flat arrays ready to make histograms later
 demfit_ent_mom=[]
 demfit_ent_mom_timecut=[]
-for batch, report in uproot.iterate(files=wildcarded_dir+":TrkAna/trkana", filter_name=["/demfit[.]*/", "/demlh[.]*/"], step_size="10 MB", report=True):
+for batch, report in uproot.iterate(files=wildcarded_dir+":TrkAnaNeg/trkana", filter_name=["/demfit[.]*/", "/demlh[.]*/"], step_size="10 MB", report=True):
     print(report)
 
-    batch['demfit_mom'] = np.sqrt(batch['demfit']['mom']['fCoordinates']['fX']**2 + batch['demfit']['mom']['fCoordinates']['fY']**2 + batch['demfit']['mom']['fCoordinates']['fZ']**2 )
+    batch['demfit.mom'] = (batch['demfit.mom.fCoordinates.fX']**2 + batch['demfit.mom.fCoordinates.fY']**2 + batch['demfit.mom.fCoordinates.fZ']**2)**0.5
 
-    trk_ent_mask = (batch['demfit']['sid']==0)
-    time_cut_mask = (batch['demlh']['t0']>=700)
+    trk_ent_mask = (batch['demfit.sid']==0)
+    time_cut_mask = (batch['demlh.t0']>=700)
 
-    demfit_ent_mom = np.append(demfit_ent_mom, ak.flatten(batch[(trk_ent_mask)]['demfit_mom'], axis=None))
-    demfit_ent_mom_timecut = np.append(demfit_ent_mom_timecut, ak.flatten(batch[(trk_ent_mask) & (time_cut_mask)]['demfit_mom'], axis=None))
+    demfit_ent_mom = np.append(demfit_ent_mom, ak.flatten(batch['demfit.mom'][(trk_ent_mask)]))
+    demfit_ent_mom_timecut = np.append(demfit_ent_mom_timecut, ak.flatten(batch['demfit.mom'][(trk_ent_mask) & (time_cut_mask)]))
 ```
 
 

@@ -5,29 +5,26 @@ import numpy as np
 import awkward as ak
 
 filename=sys.argv[1]
-treename="TrkAna/trkana"
+treename="TrkAnaNeg/trkana"
 
 trk_ent_mom=[]
 mc_trk_ent_mom=[]
-for batch, report in uproot.iterate(files=filename+":"+treename, filter_name=["/demfit/", "/demlh/", "/demmcvd/"], step_size="10 MB", report=True):
+for batch, report in uproot.iterate(files=filename+":"+treename, filter_name=["/demfit[.]*/", "/demlh[.]*/", "/demmcvd[.]*/"], step_size="10 MB", report=True):
     print(report)
 
-    batch['demfit_mom'] = np.sqrt((batch['demfit']['mom']['fCoordinates']['fX'])**2 + (batch['demfit']['mom']['fCoordinates']['fY'])**2 + (batch['demfit']['mom']['fCoordinates']['fZ'])**2)
-    batch['demmcvd_mom'] = np.sqrt(batch['demmcvd']['mom']['fCoordinates']['fX']**2 + batch['demmcvd']['mom']['fCoordinates']['fY']**2 + batch['demmcvd']['mom']['fCoordinates']['fZ']**2)
+    batch['demfit.mom'] = (batch['demfit.mom.fCoordinates.fX']**2 + batch['demfit.mom.fCoordinates.fY']**2 + batch['demfit.mom.fCoordinates.fZ']**2)**0.5
+    batch['demmcvd.mom'] = (batch['demmcvd.mom.fCoordinates.fX']**2 + batch['demmcvd.mom.fCoordinates.fY']**2 + batch['demmcvd.mom.fCoordinates.fZ']**2)**0.5
 
+    trk_ent_mask = (batch['demfit.sid']==0)
+    has_trk_ent = ak.flatten(ak.any(trk_ent_mask, axis=1, keepdims=True))
 
-    trk_ent_mask = (batch['demfit']['sid']==0)
-    print(trk_ent_mask)
-    has_trk_ent = ak.any(trk_ent_mask, axis=2, keepdims=True)
-    print(has_trk_ent)
-
-    mc_trk_ent_mask = (batch['demmcvd']['sid']==0)
-    has_mc_trk_ent = ak.any(mc_trk_ent_mask, axis=2, keepdims=True)
+    mc_trk_ent_mask = (batch['demmcvd.sid']==0)
+    has_mc_trk_ent = ak.flatten(ak.any(mc_trk_ent_mask, axis=1, keepdims=True))
 
     has_both = (has_trk_ent) & (has_mc_trk_ent)
 
-    trk_ent_mom = np.append(trk_ent_mom, ak.flatten(batch[(has_both) & (trk_ent_mask)]['demfit_mom'], axis=None))
-    mc_trk_ent_mom = np.append(mc_trk_ent_mom, ak.flatten(batch['demmcvd_mom'][(has_both) & (mc_trk_ent_mask)], axis=None))
+    trk_ent_mom = np.append(trk_ent_mom, ak.flatten(batch['demfit.mom'][(has_both) & (trk_ent_mask)]))
+    mc_trk_ent_mom = np.append(mc_trk_ent_mom, ak.flatten(batch['demmcvd.mom'][(has_both) & (mc_trk_ent_mask)]))
 
 
 fig, ax = plt.subplots(1,1)

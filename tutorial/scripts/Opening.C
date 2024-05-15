@@ -1,6 +1,6 @@
 void Opening(TString filename) {
 
-  TString treename = "TrkAna/trkana";
+  TString treename = "TrkAnaNeg/trkana";
 
   // Open the TrkAna ROOT file for reading
   TFile* file = new TFile(filename, "READ");
@@ -9,5 +9,5 @@ void Opening(TString filename) {
   TTree* trkana = (TTree*) file->Get(treename);
 
   trkana->Print();
-  trkana->Scan("evtinfo.runid:evtinfo.subrunid:evtinfo.eventid:tcnt.ndem");
+  trkana->Scan("evtinfo.runid:evtinfo.subrunid:evtinfo.eventid:demfit[0].mom.R()");
 }
