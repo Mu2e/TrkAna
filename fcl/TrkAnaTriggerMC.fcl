@@ -10,6 +10,16 @@ source : {
 }
 
 physics : {
+  producers : {
+    MergeTTKSFDe : {
+      module_type : MergeKalSeeds
+      KalSeedCollections : ["TTKSFDe"]
+    }
+    MergeTTCalSeedFitDe : {
+      module_type : MergeKalSeeds
+      KalSeedCollections : ["TTCalSeedFitDe"]
+    }
+  }
   analyzers : {
     TAtprDe : {
       @table::TrkAnaTrigger.TrkAnaTT
@@ -25,8 +35,20 @@ physics : {
       KalSeedMCAssns: "SelectRecoMCcprDe"
       SelectEvents : [ "globalTrigger:cprDe_highP_stopTarg"  ]
     }
+    #    TAmprDe : {
+    #      @table::TrkAnaTrigger.TrkAnaTT
+    #      FitType : LoopHelix
+    #      branches : [ @local::TrkAnaTrigger.TTmprDe ]
+    #      KalSeedMCAssns: "SelectRecoMCmprDe"
+    #      SelectEvents : [ "globalTrigger:mprDe_highP_stopTarg"  ]
+    #    }
   }
+  #  EndPath : [TAtprDe, TAcprDe, TAmprDe]
   EndPath : [TAtprDe, TAcprDe]
+  TTKSFDePath : [
+  TrigPath : [ "MergeTTKSFDe", "MergeTTCalSeedFitDe" ]
 }
+
 end_paths : [ EndPath ]
+physics.trigger_paths : [ "TrigPath" ]
 services.TFileService.fileName: "nts.owner.trkana-triggerMC.version.sequencer.root"
