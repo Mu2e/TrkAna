@@ -112,6 +112,8 @@ MergeKKDmuP          : @local::MergeKK
 MergeKKDmuP.KalSeedCollections : [ "KKDmuP" ]
 MergeKKUmuP          : @local::MergeKK
 MergeKKUmuP.KalSeedCollections : [ "KKUmuP" ]
+MergeKKLine          : @local::MergeKK
+MergeKKLine.KalSeedCollections : [ "KKLine" ]
 
 MergeKKProducers : {
   MergeKKDeM : @local::MergeKKDeM
@@ -122,8 +124,10 @@ MergeKKProducers : {
   MergeKKDmuP : @local::MergeKKDmuP
   MergeKKUmuM : @local::MergeKKUmuM
   MergeKKUmuP : @local::MergeKKUmuP
+  MergeKKLine : @local::MergeKKLine
 }
 MergeKKProducersPath : [ MergeKKDeM, MergeKKUeM, MergeKKDmuM, MergeKKDeP, MergeKKUeP, MergeKKDmuP, MergeKKUmuM, MergeKKUmuP ]
+MergeKKNoFieldPath : [ MergeKKLine ]
 
 
 DeM : { input : "MergeKK"

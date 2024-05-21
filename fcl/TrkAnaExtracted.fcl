@@ -16,7 +16,7 @@ physics :
   }
   analyzers : { @table::TrkAnaReco.analyzers }
 }
-physics.TrkAnaTrigPath : [ ]
+physics.TrkAnaTrigPath : [ @sequence::MergeKKNoFieldPath ]
 physics.TrkAnaEndPath : [ TrkAnaExt ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)
