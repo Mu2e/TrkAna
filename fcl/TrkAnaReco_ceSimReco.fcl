@@ -2,10 +2,9 @@
 
 process_name : TrkAnaCeSimReco
 
-physics.analyzers.TrkAna.supplements : [  ]
-
+physics.analyzers.TrkAna.branches : [ @local::DeM ]
 physics.analyzers.TrkAna.FillTriggerInfo : false
-physics.TrkAnaTrigPath : [ PBIWeight, TrkQualDeM, TrkPIDDeM ]
+physics.TrkAnaTrigPath : [ MergeKKDeM, PBIWeight, TrkQualDeM, TrkPIDDeM ]
 physics.TrkAnaEndPath : [ TrkAna, genCountLogger ]
 
 services.TFileService.fileName: "nts.owner.trkana-ce-sim-reco.version.sequencer.root"
