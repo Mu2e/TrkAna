@@ -19,6 +19,14 @@ physics : {
       module_type : MergeKalSeeds
       KalSeedCollections : ["TTCalSeedFitDe"]
     }
+    MergeTTAprKSFDe : {
+      module_type : MergeKalSeeds
+      KalSeedCollections : ["TTAprKSF"]
+    }
+    MergeTTMprKSFDe : {
+      module_type : MergeKalSeeds
+      KalSeedCollections : ["TTMprKSFDe"]
+    }
   }
   analyzers : {
     TAtprDe : {
@@ -38,17 +46,24 @@ physics : {
       TriggerProcessName : "globalTrigger"
 
     }
-    #    TAmprDe : {
-    #      @table::TrkAnaTrigger.TrkAnaTT
-    #      FitType : LoopHelix
-    #      branches : [ @local::TrkAnaTrigger.TTmprDe ]
-    #      KalSeedMCAssns: "SelectRecoMCmprDe"
-    #      SelectEvents : [ "globalTrigger:mprDe_highP_stopTarg"  ]
-    #    }
+    TAaprDe : {
+      @table::TrkAnaTrigger.TrkAnaTT
+      FitType : LoopHelix
+      branches : [ @local::TrkAnaTrigger.TTaprDe ]
+      KalSeedMCAssns: "SelectRecoMCaprDe"
+      SelectEvents : [ "globalTrigger:apr_highP_stopTarg"  ]
+      TriggerProcessName : "globalTrigger"
+    }
+    TAmprDe : {
+      @table::TrkAnaTrigger.TrkAnaTT
+      FitType : LoopHelix
+      branches : [ @local::TrkAnaTrigger.TTmprDe ]
+      KalSeedMCAssns: "SelectRecoMCmprDe"
+      SelectEvents : [ "globalTrigger:mprDe_highP_stopTarg"  ]
+    }
   }
-  #  EndPath : [TAtprDe, TAcprDe, TAmprDe]
-  EndPath : [TAtprDe, TAcprDe]
-  TrigPath : [ "MergeTTKSFDe", "MergeTTCalSeedFitDe" ]
+  EndPath : [TAtprDe, TAcprDe, TAaprDe, TAmprDe ]
+  TrigPath : [ "MergeTTKSFDe", "MergeTTCalSeedFitDe", "MergeTTAprKSFDe", "MergeTTMprKSFDe"]
 }
 
 end_paths : [ EndPath ]

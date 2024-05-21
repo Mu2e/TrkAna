@@ -35,6 +35,18 @@ TrkAnaTrigger : {
     suffix : "De"
     options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   }
+  TTaprDe : {
+    input : "MergeTTAprKSF"
+    branch : "trk"
+    suffix : "De"
+    options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
+  }
+  TTmprDe : {
+    input : "MergeTTMprKSF"
+    branch : "trk"
+    suffix : "De"
+    options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
+  }
 }
 
 END_PROLOG
