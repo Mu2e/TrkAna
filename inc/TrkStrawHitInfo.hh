@@ -36,6 +36,9 @@ namespace mu2e
     float rdresid = 0, rdresidmvar = -1.0, rdresidpvar = -1.0; // reference distance residual and associated measurement and parameter variances
     float wdot = 0; // cosine of the angle between the track and wire
     XYZVectorF poca; // POCA
+    float uwirephi = 0; // cylindrical phi around wire of uPOCA
+    float ustrawdist = 0; // unsigned uDOCA to straw center
+    float ustrawphi = 0; // cylindrical phi around straw center of uPOCA
     // not sure if we still want these
     bool dhit = false;
     bool dactive = false;
