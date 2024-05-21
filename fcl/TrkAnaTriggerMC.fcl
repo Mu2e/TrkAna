@@ -10,6 +10,24 @@ source : {
 }
 
 physics : {
+  producers : {
+    MergeTTKSFDe : {
+      module_type : MergeKalSeeds
+      KalSeedCollections : ["TTKSFDe"]
+    }
+    MergeTTCalSeedFitDe : {
+      module_type : MergeKalSeeds
+      KalSeedCollections : ["TTCalSeedFitDe"]
+    }
+    MergeTTAprKSFDe : {
+      module_type : MergeKalSeeds
+      KalSeedCollections : ["TTAprKSF"]
+    }
+    MergeTTMprKSFDe : {
+      module_type : MergeKalSeeds
+      KalSeedCollections : ["TTMprKSFDe"]
+    }
+  }
   analyzers : {
     TAtprDe : {
       @table::TrkAnaTrigger.TrkAnaTT
@@ -17,6 +35,7 @@ physics : {
       branches : [ @local::TrkAnaTrigger.TTtprDe ]
       KalSeedMCAssns: "SelectRecoMCtprDe"
       SelectEvents : [  "globalTrigger:tprDe_highP_stopTarg"  ]
+      TriggerProcessName : "globalTrigger"
     }
     TAcprDe : {
       @table::TrkAnaTrigger.TrkAnaTT
@@ -24,9 +43,29 @@ physics : {
       branches : [ @local::TrkAnaTrigger.TTcprDe ]
       KalSeedMCAssns: "SelectRecoMCcprDe"
       SelectEvents : [ "globalTrigger:cprDe_highP_stopTarg"  ]
+      TriggerProcessName : "globalTrigger"
+
+    }
+    TAaprDe : {
+      @table::TrkAnaTrigger.TrkAnaTT
+      FitType : LoopHelix
+      branches : [ @local::TrkAnaTrigger.TTaprDe ]
+      KalSeedMCAssns: "SelectRecoMCaprDe"
+      SelectEvents : [ "globalTrigger:apr_highP_stopTarg"  ]
+      TriggerProcessName : "globalTrigger"
+    }
+    TAmprDe : {
+      @table::TrkAnaTrigger.TrkAnaTT
+      FitType : LoopHelix
+      branches : [ @local::TrkAnaTrigger.TTmprDe ]
+      KalSeedMCAssns: "SelectRecoMCmprDe"
+      SelectEvents : [ "globalTrigger:mprDe_highP_stopTarg"  ]
     }
   }
-  EndPath : [TAtprDe, TAcprDe]
+  EndPath : [TAtprDe, TAcprDe, TAaprDe, TAmprDe ]
+  TrigPath : [ "MergeTTKSFDe", "MergeTTCalSeedFitDe", "MergeTTAprKSFDe", "MergeTTMprKSFDe"]
 }
+
 end_paths : [ EndPath ]
+physics.trigger_paths : [ "TrigPath" ]
 services.TFileService.fileName: "nts.owner.trkana-triggerMC.version.sequencer.root"
