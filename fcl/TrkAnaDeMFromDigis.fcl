@@ -22,6 +22,10 @@ physics :
     @table::Reconstruction.producers
     @table::TrkAnaReco.producers
     @table::Mu2eKinKal.producers
+    MergeKKDeM : {
+      module_type : MergeKalSeeds
+      KalSeedCollections : ["KKDeM"]
+    }
   }
   filters : {
     @table::CalPatRec.filters
@@ -35,6 +39,7 @@ physics :
     CalTimePeakFinderMu, CalHelixFinderDmu,
     MHDeM,
     KKDeM,
+    MergeKKDeM,
     @sequence::Reconstruction.MCReco
   ]
   analyzers : {
@@ -47,7 +52,7 @@ physics :
       FillHitInfo : true
       FillTriggerInfo : false
       branches :  [
-        { input: "KK"
+        { input: "MergeKK"
           branch : "trk"
           suffix : "DeM"
           options : { fillMC : true   genealogyDepth : -1 }
