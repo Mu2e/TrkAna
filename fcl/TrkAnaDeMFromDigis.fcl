@@ -22,6 +22,21 @@ physics :
     @table::Reconstruction.producers
     @table::TrkAnaReco.producers
     @table::Mu2eKinKal.producers
+    MergeKKDeM : {
+      module_type : MergeKalSeeds
+      KalSeedCollections : ["KKDeM"]
+      # optionally only merge selected candidates
+      # a simple selector is used here, but any selector implemented as a tool can be used
+      Selector : {
+        tool_type : SimpleKalSeedSelector
+        MinimumMomentum : 95.0 # MeV/c
+        MaximumMomentum : 110.0 #MeV/c
+        MinimumFitConsistency : 1e-6
+        MinDeltaNHitFraction : 0.05 # Consider a 5% difference in hit count to be 'significant', and call the track more hits 'better'.  Otherwise, use fit quality to determine 'better'
+      }
+      # optionall select only the 'best' single candidate per event, where 'best' is defined by the selector
+      SelectBest : true
+    }
   }
   filters : {
     @table::CalPatRec.filters
@@ -35,6 +50,7 @@ physics :
     CalTimePeakFinderMu, CalHelixFinderDmu,
     MHDeM,
     KKDeM,
+    MergeKKDeM,
     @sequence::Reconstruction.MCReco
   ]
   analyzers : {
@@ -47,7 +63,7 @@ physics :
       FillHitInfo : true
       FillTriggerInfo : false
       branches :  [
-        { input: "KK"
+        { input: "MergeKK"
           branch : "trk"
           suffix : "DeM"
           options : { fillMC : true   genealogyDepth : -1 }
