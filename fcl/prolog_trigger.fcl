@@ -35,10 +35,10 @@ TrkAnaTrigger : {
     suffix : "De"
     options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   }
-  TTaprDe : {
+  TTapr : {
     input : "MergeTTAprKSF"
     branch : "trk"
-    suffix : "De"
+    suffix : ""
     options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   }
   TTmprDe : {
