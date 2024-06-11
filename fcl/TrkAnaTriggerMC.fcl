@@ -19,7 +19,7 @@ physics : {
       module_type : MergeKalSeeds
       KalSeedCollections : ["TTCalSeedFitDe"]
     }
-    MergeTTAprKSFDe : {
+    MergeTTAprKSF : {
       module_type : MergeKalSeeds
       KalSeedCollections : ["TTAprKSF"]
     }
@@ -46,11 +46,11 @@ physics : {
       TriggerProcessName : "globalTrigger"
 
     }
-    TAaprDe : {
+    TAapr : {
       @table::TrkAnaTrigger.TrkAnaTT
       FitType : LoopHelix
-      branches : [ @local::TrkAnaTrigger.TTaprDe ]
-      KalSeedMCAssns: "SelectRecoMCaprDe"
+      branches : [ @local::TrkAnaTrigger.TTapr ]
+      KalSeedMCAssns: "SelectRecoMCapr"
       SelectEvents : [ "globalTrigger:apr_highP_stopTarg"  ]
       TriggerProcessName : "globalTrigger"
     }
@@ -62,8 +62,8 @@ physics : {
       SelectEvents : [ "globalTrigger:mprDe_highP_stopTarg"  ]
     }
   }
-  EndPath : [TAtprDe, TAcprDe, TAaprDe, TAmprDe ]
-  TrigPath : [ "MergeTTKSFDe", "MergeTTCalSeedFitDe", "MergeTTAprKSFDe", "MergeTTMprKSFDe"]
+  EndPath : [TAtprDe, TAcprDe, TAapr, TAmprDe ]
+  TrigPath : [ "MergeTTKSFDe", "MergeTTCalSeedFitDe", "MergeTTAprKSF", "MergeTTMprKSFDe"]
 }
 
 end_paths : [ EndPath ]
