@@ -10,3 +10,4 @@ TrkAna is an event-based ntuple for Mu2e analyses. Each entry in the ntuple corr
 * [spreadsheet explaining branch and leaf names](https://docs.google.com/spreadsheets/d/1IMZVgj74vxGTWqAFRtFEEcYChujJyc38VcopZh52jhc/edit)
 * [version history of TrkAna](https://mu2ewiki.fnal.gov/wiki/TrkAna#Version_History_.2F_TrkAna_Musings)
 * [tutorial](tutorial/README.md) (some but not all updated for v5)
+* [instructions for developers](https://mu2ewiki.fnal.gov/wiki/TrkAna#For_Developers)
