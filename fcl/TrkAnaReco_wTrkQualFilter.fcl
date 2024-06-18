@@ -33,8 +33,11 @@ physics.producers.TrkQualNegDeM.TrainingName : "TrkQualNeg"
 physics.TrkAnaTrigPath : [ @sequence::TrkAnaReco.TrigSequence, trkQualFilter ]
 physics.TrkAnaNegTrigPath : [ @sequence::TrkAnaReco.TrigSequence, TrkQualNegDeM, trkQualNegFilter ]
 #physics.TrkAnaBothTrigPath : [ @sequence::physics.TrkAnaTrigPath, @sequence::physics.TrkAnaNegTrigPath ]
+# I'm not sure how to handle TrkAnaNegTrigPath.
+physics.trigger_paths : [ TrkAnaTrigPath ]
 
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
+physics.end_paths : [ TrkAnaEndPath ]
 
 # Take events that pass one filter
 physics.analyzers.TrkAnaNeg.SelectEvents : [ TrkAnaTrigPath ]

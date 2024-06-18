@@ -1,5 +1,6 @@
 #include "TrkAna/fcl/TrkAnaReco.fcl"
 
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequenceNoMC ]
+physics.end_paths : [ TrkAnaEndPath ]
 
 services.TFileService.fileName: "nts.owner.trkana-reco-ensemble-mc.version.sequencer.root"

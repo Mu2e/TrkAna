@@ -9,6 +9,7 @@ physics.producers.BestCrv6PEsDeM : @local::BestCrvDeM
 physics.producers.BestCrv6PEsDeM.crvCoincidenceTag : "SelectRecoMC:CrvCoincidenceClusterFinder6PEs"
 
 physics.TrkAnaTrigPath : [ @sequence::physics.TrkAnaTrigPath, BestCrv6PEsDeM ]
+physics.trigger_paths : [ TrkAnaTrigPath ]
 
 // Then add them to TrkAna (NB DeM suffix not needed)
 physics.analyzers.TrkAnaNeg.candidate.options.bestCrvModules : [ "BestCrv", "BestCrv6PEs" ]

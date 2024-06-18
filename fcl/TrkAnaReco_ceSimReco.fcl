@@ -7,4 +7,7 @@ physics.analyzers.TrkAna.FillTriggerInfo : false
 physics.TrkAnaTrigPath : [ MergeKKDeM, PBIWeight, TrkQualDeM, TrkPIDDeM ]
 physics.TrkAnaEndPath : [ TrkAna, genCountLogger ]
 
+physics.trigger_paths : [ TrkAnaTrigPath ]
+physics.end_paths : [ TrkAnaEndPath ]
+
 services.TFileService.fileName: "nts.owner.trkana-ce-sim-reco.version.sequencer.root"

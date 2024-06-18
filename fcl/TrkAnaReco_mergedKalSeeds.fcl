@@ -8,3 +8,4 @@ physics.producers.MergeKalSeeds : {
 physics.analyzers.TrkAna.branches : [ {input : "MergeKalSeeds" branch : "trk" } ]
 
 physics.TrkAnaTrigPath : [ MergeKalSeeds, PBIWeight, TrkQualDeM ]
+physics.trigger_paths : [ TrkAnaTrigPath ]

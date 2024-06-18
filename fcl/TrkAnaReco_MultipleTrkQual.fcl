@@ -4,3 +4,4 @@
 physics.producers.TrkQualNewDeP : @local::TrkQualDeP
 physics.producers.TrkQualNewDeP.TrainingName : "TrkQualPosNew"
 physics.TrkAnaTrigPath : [ @sequence::TrkAnaReco.TrigSequence, TrkQualNewDeP ]
+physics.trigger_paths : [ TrkAnaTrigPath ]
