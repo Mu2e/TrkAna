@@ -19,6 +19,9 @@ physics :
 physics.TrkAnaTrigPath : [ @sequence::MergeKKNoFieldPath ]
 physics.TrkAnaEndPath : [ TrkAnaExt ]
 
+physics.trigger_paths : [ TrkAnaTrigPath ]
+physics.end_paths : [ TrkAnaEndPath ]
+
 # Include more information (MC, full TrkQual and TrkPID branches)
 physics.analyzers.TrkAnaExt.branches[0].options.fillMC : true
 physics.analyzers.TrkAnaExt.branches[0].options.genealogyDepth : 5

@@ -21,6 +21,9 @@ physics :
 physics.TrkAnaTrigPath : [ @sequence::MergeKKProducersPath, PBIWeight, TrkQualDeM ]
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
 
+physics.trigger_paths : [ TrkAnaTrigPath ]
+physics.end_paths : [ TrkAnaEndPath ]
+
 # Include more information (MC, full TrkQual and TrkPID branches)
 # TODO: add these options back
 #physics.analyzers.TrkAnaNeg.candidate.options : @local::AllOpt
