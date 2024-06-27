@@ -37,7 +37,7 @@ class EvtNtuple_util:
     """
     # import code and extract branch
     tree = self.ImportTree()
-    branch = tree.arrays(filter_name="/"+str(leafname)+"/")
+    branch = self.ImportBranches(tree, [leafname])
 
     # register the vector class
     vector.register_awkward()
