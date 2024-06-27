@@ -22,13 +22,12 @@ class EvtNtuple_util:
     self.Array = input_tree.arrays(library='ak')
     return self.Array
 
-  def ImportBranches(self, leafnames):
+  def ImportBranches(self, tree, leafnames):
       """ import list of branches from trkana"""
-      trkana = uproot.open(self.filename+":"+str(self.treename)+"/"+str(self.branchname))
       list_names = []
       for i, leafname  in enumerate(leafnames):
           list_names.append("/"+str(leafname)+"/")
-      branches = trkana.arrays(filter_name=list_names)
+      branches = tree.arrays(filter_name=list_names)
       return branches
       
   def GetVectorXYZ(self, leafname, vectorreq, sid=0):
@@ -37,8 +36,8 @@ class EvtNtuple_util:
     https://vector.readthedocs.io/en/latest/api/vector._methods.html 
     """
     # import code and extract branch
-    trkana = self.ImportTree()
-    branch = trkana.arrays(filter_name="/"+str(leafname)+"/")
+    tree = self.ImportTree()
+    branch = tree.arrays(filter_name="/"+str(leafname)+"/")
 
     # register the vector class
     vector.register_awkward()
