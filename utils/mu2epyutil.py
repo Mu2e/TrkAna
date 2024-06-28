@@ -13,6 +13,11 @@ class EvtNtuple_util:
     self.branchname = branchname
     self.Array = ak.Array
   
+  def ImportFileList(self):
+    """ import list of files """
+    #TODO
+    return 0
+    
   def ImportTree(self):
     """ import root tree """
     input_file = uproot.open(self.filename)
