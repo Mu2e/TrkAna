@@ -1,5 +1,8 @@
 import uproot
 import awkward as ak
+import matplotlib.pyplot as plt
+import math
+import numpy as np
 import vector
 
 class EvtNtuple_util:
@@ -42,7 +45,7 @@ class EvtNtuple_util:
     # register the vector class
     vector.register_awkward()
 
-    # take just the ent
+    # take the chosen position to evaluate (nominally entrance)
     trk_ent_mask = (branch[str(leafname)]['sid']==sid)
 
     # apply mask
@@ -56,5 +59,57 @@ class EvtNtuple_util:
     }, with_name="Vector3D")
     
     return trkvect3D
+  
+  def PlotValueHist(self, leafname, vectorreq, sid, low, hi, xaxis_label, scale='linear'):
+    """ make basic plot of magnitude of leafname value at tracker ent, mid or ext (specify sid) """
     
+    # import code and extract branch
+    tree = self.ImportTree()
+    branch = self.ImportBranches(tree, [leafname])
+
+    # take the chosen position to evaluate
+    trk_mask = (branch[str(leafname)]['sid']==sid)
+
+    # apply mask
+    values = branch[(trk_mask)]
+    
+    fig, ax = plt.subplots(1,1)
+    n, bins, patches = ax.hist(ak.flatten(values, axis=None), bins=100, range=(int(low), int(hi)), histtype='step',color='r')
+
+    bin_centers = 0.5 * (bins[:-1] + bins[1:])
+    yerrs = []
+    for i, j in enumerate(n):
+      yerrs.append(math.sqrt(j))
+    plt.errorbar(bin_centers, n, yerr=np.sqrt(n), fmt='r.')
+
+    # add in style features:
+    ax.set_yscale(str(scale))
+    ax.set_xlabel(str(xaxis_label))
+    ax.set_ylabel('# events per bin')
+    ax.grid(True)
+    #ax.legend()
+    plt.show()
+    
+    
+  def PlotMagValueHist(self, leafname, vectorreq, sid, low, hi, xaxis_label, scale='log'):
+    """ make basic plot of magnitude of leafname value at tracker ent, mid or ext (specify sid) """
+    
+    vect = self.GetVectorXYZ(leafname, vectorreq, sid)
+
+    fig, ax = plt.subplots(1,1)
+    n, bins, patches = ax.hist(ak.flatten(vect.mag, axis=None), bins=100, range=(int(low), int(hi)), histtype='step',color='r')
+
+    bin_centers = 0.5 * (bins[:-1] + bins[1:])
+    yerrs = []
+    for i, j in enumerate(n):
+      yerrs.append(math.sqrt(j))
+    plt.errorbar(bin_centers, n, yerr=np.sqrt(n), fmt='r.')
+
+    # add in style features:
+    ax.set_yscale(str(scale))
+    ax.set_xlabel(str(xaxis_label))
+    ax.set_ylabel('# events per bin')
+    ax.grid(True)
+    #ax.legend()
+    plt.show()
 
