@@ -139,14 +139,17 @@ DeM : { input : "MergeKK"
 UeM : { input : "MergeKK"
   branch : "uem"
   suffix : "UeM"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
 DmuM : { input : "MergeKK"
   branch : "dmm"
   suffix : "DmuM"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
 UmuM : { input : "MergeKK"
   branch : "umm"
   suffix : "UmuM"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
 DeP : { input : "MergeKK"
   branch : "dep"
@@ -156,6 +159,7 @@ DeP : { input : "MergeKK"
 UeP : { input : "MergeKK"
   branch : "uep"
   suffix : "UeP"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
 DmuP : { input : "MergeKK"
   branch : "dmp"
@@ -164,10 +168,12 @@ DmuP : { input : "MergeKK"
 UmuP : { input : "MergeKK"
   branch : "ump"
   suffix : "UmuP"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
 Ext : { input : "MergeKK"
   branch : "kl"
   suffix : "Line"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
 
 
