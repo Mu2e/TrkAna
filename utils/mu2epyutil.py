@@ -7,15 +7,18 @@ import vector
 
 class EvtNtuple_util:
   """ class to help users import a trkana tree and branch """
-  def __init__(self, filename, treename="TrkAna", branchname="trkana"):
+  def __init__(self, filename, treename="TrkAna", branchname="trkana", filelist=[]):
     self.filename= filename
+    self.filelist=filelist
     self.treename = treename
     self.branchname = branchname
     self.Array = ak.Array
   
-  def ImportFileList(self):
+  def ImportFileList(self, filepath, leafname):
     """ import list of files """
-    #TODO
+    for batch in uproot.iterate(files=filepath):
+      tree = batch[str(leafname)]
+      print(tree)
     return 0
     
   def ImportTree(self):

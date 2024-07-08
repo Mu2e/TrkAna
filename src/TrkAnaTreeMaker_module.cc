@@ -218,12 +218,15 @@ namespace mu2e {
 
       std::vector<std::vector<art::Handle<RecoQualCollection> > > _allRQCHs; // outer vector is for each track type, inner vector is all RecoQuals
       std::vector<art::Handle<TrkCaloHitPIDCollection> > _allTCHPCHs; // we will only allow one TrkCaloHitPID object per track type to be fully written out
-      std::vector<art::Handle<MVAResultCollection> > _allTrkQualCHs;
+      std::vector<art::Handle<MVAResultCollection> > _allTrkQualCHs; 
+      //std::map<BranchIndex, std::vector<std::vector<MVAResultInfo>>>  _allTrkQualCHsNew; //TODO - understand the differences
 
       // quality branches (outputs)
       std::vector<RecoQualInfo> _allRQIs;
       std::vector<TrkPIDInfo> _allTPIs;
       std::vector<MVAResultInfo> _allTrkQualResults;
+      std::map<BranchIndex, std::vector<std::vector<MVAResultInfo>>> _allTrkQualResultsNew;
+    
       // trigger information
       unsigned _trigbits;
       std::map<size_t,unsigned> _tmap; // map between path and trigger ID.  ID should come from trigger itself FIXME!
@@ -366,6 +369,7 @@ namespace mu2e {
       _allTSHIMCs[i_branch] = std::vector<std::vector<TrkStrawHitInfoMC>>();
 
       MVAResultInfo tqr;
+      _allTrkQualResultsNew[i_branch] = std::vector<std::vector<MVAResultInfo>>();
       _allTrkQualResults.emplace_back(tqr);
 
 
@@ -409,6 +413,7 @@ namespace mu2e {
       // TrkCaloHit: currently only 1
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
       _trkana->Branch((branch+"trkqual.").c_str(), &_allTrkQualResults.at(i_branch));
+      _trkana->Branch((branch+"trkqualnew.").c_str(),&_allTrkQualResultsNew.at(i_branch),_buffsize,_splitlevel);
       if (_conf.filltrkpid() && i_branchConfig.options().filltrkpid()) {
         int n_trkpid_vars = TrkCaloHitPID::n_vars;
         for (int i_trkpid_var = 0; i_trkpid_var < n_trkpid_vars; ++i_trkpid_var) {
@@ -515,6 +520,7 @@ namespace mu2e {
     _allTCHPCHs.clear();
     _allBestCrvAssns.clear();
     _allTrkQualCHs.clear();
+    //_allTrkQualCHsNew.clear();
 
     art::Handle<KalHelixAssns> khaH;
     if(_conf.helices()){ // find associated Helices
@@ -535,6 +541,7 @@ namespace mu2e {
         event.getByLabel(i_branchConfig.trkQualTag(),trkQualCollHandle);
       }
       _allTrkQualCHs.emplace_back(trkQualCollHandle);
+      //_allTrkQualCHsNew.at(i_branch).emplace_back(trkQualCollHandle);
 
       // also create the reco qual branches
       std::vector<art::Handle<RecoQualCollection> > recoQualCollHandles;
@@ -766,6 +773,8 @@ namespace mu2e {
     const auto& trkQualHandle = _allTrkQualCHs.at(i_branch);
     if (trkQualHandle.isValid()) { // might not have a valid handle
       _allTrkQualResults.at(i_branch).result = trkQualHandle->at(i_kseedptr)._value;
+      //float r = trkQualHandle->at(i_kseedptr)._value;
+      _allTrkQualResultsNew.at(i_branch).push_back(_allTrkQualResults);
     }
 
     // all RecoQuals
