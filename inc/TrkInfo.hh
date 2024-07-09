@@ -7,7 +7,7 @@
 #ifndef TrkInfo_HH
 #define TrkInfo_HH
 #include "TrkAna/inc/RootVectors.hh"
-#include "Offline/KinKalGeom/inc/SurfaceId.hh"
+#include "Offline/DataProducts/inc/SurfaceId.hh"
 namespace mu2e
 {
   // generic information about the track fit at a particular place/time

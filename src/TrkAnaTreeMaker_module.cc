@@ -33,7 +33,7 @@
 #include "Offline/Mu2eUtilities/inc/fromStrings.hh"
 #include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "Offline/GeometryService/inc/GeomHandle.hh"
-#include "Offline/KinKalGeom/inc/SurfaceId.hh"
+#include "Offline/DataProducts/inc/SurfaceId.hh"
 // Framework includes.
 #include "art/Framework/Core/EDAnalyzer.h"
 #include "art/Framework/Principal/Event.h"
