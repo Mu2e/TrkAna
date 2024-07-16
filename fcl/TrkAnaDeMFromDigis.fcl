@@ -64,9 +64,8 @@ physics :
       FillHitInfo : true
       FillTriggerInfo : false
       branches :  [
-        { input: "MergeKK"
+        { input: "MergeKKDeM"
           branch : "trk"
-          suffix : "DeM"
           options : { fillMC : true   genealogyDepth : -1 }
         }
       ]
