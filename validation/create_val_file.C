@@ -1,9 +1,9 @@
-void create_val_file(std::string filename = "") {
+void create_val_file(std::string filename, std::string outfilename) {
 
   TFile* trkana_file = new TFile(filename.c_str(), "READ");
   TTree* trkana = (TTree*) trkana_file->Get("TrkAna/trkana");
 
-  TFile* file = new TFile("val-trkana-v5.root", "RECREATE");
+  TFile* file = new TFile(outfilename.c_str(), "RECREATE");
 
   // evtinfo histograms
   trkana->Draw("evtinfo.event>>h_evtinfo_event", "", "");
