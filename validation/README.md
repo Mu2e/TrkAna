@@ -7,7 +7,7 @@ Before making any changes, create a TrkAna file and run the validation script. T
 ```
 mu2e -c TrkAna/fcl/TrkAnaReco.fcl -S filelist.txt --TFileName nts.trkana.before.root
 
-root -l -b validation/create_val_file.C\(\"nts.trkana.before.root\", \"val.trkana.before.root\"")
+root -l -b TrkAna/validation/create_val_file.C\(\"nts.trkana.before.root\",\"val.trkana.before.root\"\)
 ```
 
 Then make your changes, rebuild the code and then re-run:
@@ -15,7 +15,7 @@ Then make your changes, rebuild the code and then re-run:
 ```
 mu2e -c TrkAna/fcl/TrkAnaReco.fcl -S filelist.txt --TFileName nts.trkana.after.root
 
-root -l -b validation/create_val_file.C\(\"nts.trkana.after.root\", \"val.trkana.after.root\"")
+root -l -b TrkAna/validation/create_val_file.C\(\"nts.trkana.after.root\",\"val.trkana.after.root\"\)
 ```
 
 Finally, to compare the two sets of histograms we use [valCompare](https://mu2ewiki.fnal.gov/wiki/Validation#valCompare)
