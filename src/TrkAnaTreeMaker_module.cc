@@ -108,7 +108,7 @@ namespace mu2e {
         using Comment=fhicl::Comment;
         fhicl::Atom<bool> fillmc{Name("fillMC"), Comment("Switch to turn on filling of MC information for this set of tracks"), false};
         fhicl::Atom<bool> fillhits{Name("fillHits"), Comment("Switch to turn on filling of hit-level information for this set of tracks"), false};
-        fhicl::OptionalAtom<std::string> trkpid{Name("trkpid"), Comment("TrkCaloHitPIDCollection input tag to be written out (use prefix if fcl parameter suffix (e.g. DeM) is defined)")};
+        fhicl::OptionalAtom<std::string> trkpid{Name("trkpid"), Comment("TrkCaloHitPIDCollection input tag to be written out")};
         fhicl::Atom<bool> filltrkpid{Name("fillTrkPID"), Comment("Switch to turn on filling of the full TrkPIDInfo for this set of tracks"), false};
         fhicl::Atom<bool> required{Name("required"), Comment("True/false if you require this type of track in the event"), false};
         fhicl::Atom<int> genealogyDepth{Name("genealogyDepth"), Comment("The depth of the genealogy information you want to keep"), 1};
@@ -119,9 +119,8 @@ namespace mu2e {
         using Name=fhicl::Name;
         using Comment=fhicl::Comment;
 
-        fhicl::Atom<std::string> input{Name("input"), Comment("KalSeedCollection input tag (use prefix if fcl parameter suffix is defined)")};
+        fhicl::Atom<std::string> input{Name("input"), Comment("KalSeedCollection input tag")};
         fhicl::Atom<std::string> branch{Name("branch"), Comment("Name of output branch")};
-        fhicl::Atom<std::string> suffix{Name("suffix"), Comment("Fit suffix (e.g. DeM)"), ""};
         fhicl::Atom<std::string> trkQualTag{Name("trkQualTag"), Comment("Input tag for MVAResultCollection to use for TrkQual"), ""};
         fhicl::Table<BranchOptConfig> options{Name("options"), Comment("Optional arguments for a branch")};
       };
@@ -519,14 +518,14 @@ namespace mu2e {
     art::Handle<KalHelixAssns> khaH;
     if(_conf.helices()){ // find associated Helices
       BranchConfig i_branchConfig = _allBranches.at(0);
-      art::InputTag kalSeedInputTag = i_branchConfig.input() + i_branchConfig.suffix();
+      art::InputTag kalSeedInputTag = i_branchConfig.input();
       event.getByLabel(kalSeedInputTag,khaH);
     }
 
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       art::Handle<KalSeedPtrCollection> kalSeedPtrCollHandle;
-      art::InputTag kalSeedPtrInputTag = i_branchConfig.input() + i_branchConfig.suffix();
+      art::InputTag kalSeedPtrInputTag = i_branchConfig.input();
       event.getByLabel(kalSeedPtrInputTag,kalSeedPtrCollHandle);
       _allKSPCHs.push_back(kalSeedPtrCollHandle);
 
@@ -539,7 +538,7 @@ namespace mu2e {
       // also create the reco qual branches
       std::vector<art::Handle<RecoQualCollection> > recoQualCollHandles;
       std::vector<art::Handle<RecoQualCollection> > selectedRQCHs;
-      selectedRQCHs = createSpecialBranch(event, i_branchConfig.branch()+"qual", recoQualCollHandles, _allRQIs.at(i_branch), _allRQIs.at(i_branch)._qualsAndCalibs, true, i_branchConfig.suffix());
+      selectedRQCHs = createSpecialBranch(event, i_branchConfig.branch()+"qual", recoQualCollHandles, _allRQIs.at(i_branch), _allRQIs.at(i_branch)._qualsAndCalibs, true);
       for (const auto& i_selectedRQCH : selectedRQCHs) {
         if (i_selectedRQCH->size() != kalSeedPtrCollHandle->size()) {
           throw cet::exception("TrkAna") << "Sizes of KalSeedPtrCollection and this RecoQualCollection are inconsistent (" << kalSeedPtrCollHandle->size() << " and " << i_selectedRQCH->size() << " respectively)";
@@ -551,7 +550,7 @@ namespace mu2e {
       std::string i_trkpid_tag;
       art::Handle<TrkCaloHitPIDCollection> trkpidCollHandle;
       if (i_branchConfig.options().trkpid(i_trkpid_tag) && i_branchConfig.options().filltrkpid() && _conf.filltrkpid()) {
-        art::InputTag trkpidInputTag = i_trkpid_tag + i_branchConfig.suffix();
+        art::InputTag trkpidInputTag = i_trkpid_tag;
         event.getByLabel(trkpidInputTag,trkpidCollHandle);
         if (trkpidCollHandle->size() != kalSeedPtrCollHandle->size()) {
           throw cet::exception("TrkAna") << "Sizes of KalSeedPtrCollection and TrkCaloHitPIDCollection are inconsistent (" << kalSeedPtrCollHandle->size() << " and " << trkpidCollHandle->size() << " respectively)";

@@ -130,49 +130,40 @@ MergeKKProducersPath : [ MergeKKDeM, MergeKKUeM, MergeKKDmuM, MergeKKDeP, MergeK
 MergeKKNoFieldPath : [ MergeKKLine ]
 
 
-DeM : { input : "MergeKK"
+DeM : { input : "MergeKKDeM"
   branch : "dem"
-  suffix : "DeM"
   options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   trkQualTag : "TrkQualDeM"
 }
-UeM : { input : "MergeKK"
+UeM : { input : "MergeKKUeM"
   branch : "uem"
-  suffix : "UeM"
   options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
-DmuM : { input : "MergeKK"
+DmuM : { input : "MergeKKDmuM"
   branch : "dmm"
-  suffix : "DmuM"
   options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
-UmuM : { input : "MergeKK"
+UmuM : { input : "MergeKKUmuM"
   branch : "umm"
-  suffix : "UmuM"
   options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
-DeP : { input : "MergeKK"
+DeP : { input : "MergeKKDeP"
   branch : "dep"
-  suffix : "DeP"
   options : { fillMC : true   genealogyDepth : -1 }
 }
-UeP : { input : "MergeKK"
+UeP : { input : "MergeKKUeP"
   branch : "uep"
-  suffix : "UeP"
   options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
-DmuP : { input : "MergeKK"
+DmuP : { input : "MergeKKDmuP"
   branch : "dmp"
-  suffix : "DmuP"
 }
-UmuP : { input : "MergeKK"
+UmuP : { input : "MergeKKUmuP"
   branch : "ump"
-  suffix : "UmuP"
   options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
-Ext : { input : "MergeKK"
+Ext : { input : "MergeKKExt"
   branch : "kl"
-  suffix : "Line"
   options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
 
