@@ -162,7 +162,7 @@ UmuP : { input : "MergeKKUmuP"
   branch : "ump"
   options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
-Ext : { input : "MergeKKExt"
+Ext : { input : "MergeKKLine"
   branch : "kl"
   options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
