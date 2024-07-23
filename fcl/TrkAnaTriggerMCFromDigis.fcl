@@ -20,6 +20,17 @@ physics.producers.SelectRecoMCCprDe : {
   KalSeedCollections  : [ "TTCalSeedFitDe" ]
   HelixSeedCollections  : ["TTCalHelixMergerDe" ]
 }
+physics.producers.SelectRecoMCApr : {
+  @table::CommonMCTrigger.TTSelectRecoMC
+  KalSeedCollections  : [ "TTAprKSF" ]
+  HelixSeedCollections  : ["TTAprHelixMerger" ]
+}
+
+physics.producers.SelectRecoMCMprDe : {
+  @table::CommonMCTrigger.TTSelectRecoMC
+  KalSeedCollections  : [ "TTMprKSFDe" ]
+  HelixSeedCollections  : ["TTMprHelixMergerDe" ]
+}
 physics.producers.MergeTTKSFDe : {
   module_type : MergeKalSeeds
   KalSeedCollections : ["TTKSFDe"]
@@ -28,11 +39,21 @@ physics.producers.MergeTTCalSeedFitDe : {
   module_type : MergeKalSeeds
   KalSeedCollections : ["TTCalSeedFitDe"]
 }
+physics.producers.MergeTTAprKSF : {
+  module_type : MergeKalSeeds
+  KalSeedCollections : ["TTAprKSF"]
+}
+physics.producers.MergeTTMprKSFDe : {
+  module_type : MergeKalSeeds
+  KalSeedCollections : ["TTMprKSFDe"]
+}
 #
 #  Add these to the sequences
 #
 physics.tprDe_highP_stopTarg : [ @sequence::physics.tprDe_highP_stopTarg, SelectRecoMCTprDe, MergeTTKSFDe]
 physics.cprDe_highP_stopTarg : [ @sequence::physics.cprDe_highP_stopTarg, SelectRecoMCCprDe, MergeTTCalSeedFitDe ]
+physics.mprDe_highP_stopTarg : [ @sequence::physics.mprDe_highP_stopTarg, SelectRecoMCMprDe, MergeTTMprKSFDe]
+physics.apr_highP_stopTarg   : [ @sequence::physics.apr_highP_stopTarg,   SelectRecoMCApr,   MergeTTAprKSF]
 
 physics.analyzers.TAtprDe : {
   @table::TrkAnaTrigger.TrkAnaTT
@@ -51,6 +72,22 @@ physics.analyzers.TAcprDe : {
   SelectEvents : [ "globalTrigger:cprDe_highP_stopTarg"  ]
   TriggerProcessName : "globalTrigger"
 }
+physics.analyzers.TAapr : {
+  @table::TrkAnaTrigger.TrkAnaTT
+  FitType : LoopHelix
+  branches : [ @local::TrkAnaTrigger.TTapr ]
+  KalSeedMCAssns: "SelectRecoMCApr"
+  SelectEvents : [ "globalTrigger:apr_highP_stopTarg"  ]
+  TriggerProcessName : "globalTrigger"
+}
+physics.analyzers.TAmprDe : {
+  @table::TrkAnaTrigger.TrkAnaTT
+  FitType : LoopHelix
+  branches : [ @local::TrkAnaTrigger.TTmprDe ]
+  KalSeedMCAssns: "SelectRecoMCMprDe"
+  SelectEvents : [ "globalTrigger:mprDe_highP_stopTarg"  ]
+  TriggerProcessName : "globalTrigger"
+}
 
 # this next produces additional hit-level payload to support MC truth matching.
 # It produces functionally equivalent output as the standard module but is slower, so don't use this script for timing studies
@@ -61,7 +98,7 @@ physics.producers.TTmakePH.StrawHitSelectionBits : ["EnergySelection","TimeSelec
 physics.producers.TTmakePH.StrawHitMask          : ["Dead"]
 #
 services.ProditionsService.strawElectronics.overrideDbTimeOffsets : true
-physics.EndPath : [TAtprDe, TAcprDe ]
+physics.EndPath : [TAtprDe, TAcprDe, TAapr, TAmprDe ]
 physics.end_paths : [ EndPath ]
 #
 # DB config is needed to run the trigger, and must be consistent with the digis you're processing, see the MDC2020 wiki page for details
