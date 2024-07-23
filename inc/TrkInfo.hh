@@ -36,9 +36,11 @@ namespace mu2e
   };
 
   struct LoopHelixInfo {
-    // max radius (assuming geometric extrapolation).  This member is deprecated
+    //  These members are deprecated
     // in favor of explicit extrapolation to the OPA
-    float maxr = 0;
+    float maxr = 0; // max radius (assuming geometric extrapolation).
+    float d0 = 0; // d0 (unsigned!)
+    float tanDip = 0; // tanDip
     // loop helix parameters
     float rad=0,lam=0,cx=0,cy=0,phi0=0,t0=0;
     float raderr=0,lamerr=0,cxerr=0,cyerr=0,phi0err=0,t0err=0;
