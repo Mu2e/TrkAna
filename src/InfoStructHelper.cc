@@ -138,7 +138,9 @@ namespace mu2e {
       lhi.phi0err = sqrt(lh.paramVar(KinKal::LoopHelix::phi0_));
       lhi.t0err = sqrt(lh.paramVar(KinKal::LoopHelix::t0_));
       // deprecated!
-      lhi.maxr =sqrt(lh.cx()*lh.cx()+lh.cy()*lh.cy())+fabs(lh.rad());
+      lhi.maxr = lh.maxAxisDist();
+      lhi.d0 = lh.minAxisDist();
+      lhi.tanDip = 1.0/tan(lh.direction(lh.t0()).Theta());
       lhis.push_back(lhi);
     }
     all_lhis.push_back(lhis);
