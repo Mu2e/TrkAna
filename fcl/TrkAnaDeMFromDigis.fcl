@@ -1,5 +1,10 @@
 # Minimal job to reconstructed downstream electrons from digis and analyze the output with TrkAna
-# Run this on digi datasets (for example dig.mu2e.CeEndpointMix1BBSignal.MDC2020r_best_v1_0.art)
+# #include this script in a subscript which specifies the database (ie
+##include "TrkAna/fcl/TrkAnaDeMFromDigis.fcl"
+#services.DbService.purpose: MDC2020_best
+#services.DbService.version: v1_3
+#services.DbService.verbose : 2
+# and run that on digi datasets (for example dig.mu2e.CeEndpointMix1BBSignal.MDC2020r_best_v1_0.art)
 #include "Offline/fcl/minimalMessageService.fcl"
 #include "Offline/fcl/standardServices.fcl"
 #include "Production/JobConfig/reco/prolog.fcl"
@@ -82,6 +87,7 @@ outputs : {
 }
 #include "Production/JobConfig/reco/epilog.fcl"
 #include "Production/Validation/database.fcl"
+#include "Production/JobConfig/reco/MakeSurfaceSteps.fcl"
 # Override provenance of some objects since this job doesn't run CompressRecoMCs
 physics.producers.CaloHitTruthMatch.primaryParticle : "compressDigiMCs"
 physics.producers.CaloHitTruthMatch.caloShowerSimCollection : "compressDigiMCs"
@@ -96,7 +102,3 @@ physics.producers.KKDeM.ModuleSettings.SaveAllFits : true
 physics.end_paths : [ EndPath ]
 services.TimeTracker.printSummary: true
 services.TFileService.fileName: "nts.owner.TADeMDigis.version.sequence.root"
-
-services.DbService.purpose: MDC2020_best
-services.DbService.version: v1_3
-services.DbService.verbose : 2
