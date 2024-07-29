@@ -16,6 +16,8 @@ If you have any questions, comments, or feedback, then you can either post on th
 
 1. [Opening and Inspecting a TrkAna ROOT file](pages/opening.md): In this exercise, we will open and inspect the TrkAna ROOT files.
 
+1. [How to get more information](pages/helper.md): On this page are instructions to use the ```ntuplehelper```
+
 1. [Plotting Global Track Information](pages/n-hits.md): In this exercise, we will use the ```dem``` branch to plot the number of hits on a track. We will also apply an event-level cut on the number of dem tracks.
 
 1. [Plotting Local Track Information](pages/reco-mom.md): In this exercise, we will use the ```demfit``` branches to plot the reconstructed track momentum at the entrance of the tracker with and without a time cut.
