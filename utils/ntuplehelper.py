@@ -1,5 +1,6 @@
 #!/bin/python3
 
+import os
 import argparse
 
 class ntuplehelper:
@@ -17,15 +18,15 @@ class ntuplehelper:
                         }
 
     # A dictionary of branch name to header file containing the struct
-    branch_struct_dict = { 'evtinfo' : "TrkAna/inc/EventInfo.hh",
-                           'evtinfomc' : "TrkAna/inc/EventInfo.hh",
-                           'hcnt' : "TrkAna/inc/HitCount.hh",
-                           'tcnt' : "TrkAna/inc/TrkCount.hh",
-                           'trk' : "TrkAna/inc/TrkInfo.hh",
-                           'trkfit' : "TrkAna/inc/TrkInfo.hh",
-                           'trkmc' : "TrkAna/inc/TrkInfo.hh",
-                           'trkmcsim' : "TrkAna/inc/SimInfo.hh",
-                           'trktch' : "TrkAna/inc/TrkCaloHitInfo.hh",
+    branch_struct_dict = { 'evtinfo' : "EventInfo.hh",
+                           'evtinfomc' : "EventInfo.hh",
+                           'hcnt' : "HitCount.hh",
+                           'tcnt' : "TrkCount.hh",
+                           'trk' : "TrkInfo.hh",
+                           'trkfit' : "TrkInfo.hh",
+                           'trkmc' : "TrkInfo.hh",
+                           'trkmcsim' : "SimInfo.hh",
+                           'trktch' : "TrkCaloHitInfo.hh",
                           }
 
     def check_track_type(self, branch):
@@ -60,7 +61,7 @@ class ntuplehelper:
             try:
                 struct_file = self.branch_struct_dict[branch_to_search]
                 found = False;
-                with open(struct_file, 'r') as f:
+                with open(os.environ.get("TRKANA_INC")+"/TrkAna/inc/"+struct_file, 'r') as f:
                     lines = f.readlines()
                     for row in lines:
                         if (row.find(" "+leaf+" ") != -1) or (row.find(" "+leaf+";") != -1): # add spaces around leaf so that we don't find substrings
