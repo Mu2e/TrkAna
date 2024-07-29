@@ -12,3 +12,6 @@ nthelp.whatis('crvcoincs.timeStart')
 nthelp.whatis('crvsummarymc.minPathLayer')
 nthelp.whatis('crvcoincsmc.gparent')
 nthelp.whatis('crvcoincsmcplane.dir')
+
+nthelp.whatis('evtinfomc.pbtime')
+nthelp.whatis('evtinfo.event')

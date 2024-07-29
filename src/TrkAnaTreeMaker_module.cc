@@ -66,6 +66,7 @@
 #include "TrkAna/inc/HitCount.hh"
 #include "TrkAna/inc/TrkCount.hh"
 #include "TrkAna/inc/EventInfo.hh"
+#include "TrkAna/inc/EventInfoMC.hh"
 #include "TrkAna/inc/TrkInfo.hh"
 #include "TrkAna/inc/SimInfo.hh"
 #include "TrkAna/inc/EventWeightInfo.hh"

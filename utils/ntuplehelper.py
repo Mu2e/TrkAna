@@ -18,8 +18,8 @@ class nthelp:
                         }
 
     # A dictionary of branch name to header file containing the struct
-    branch_struct_dict = { 'evtinfo' : "EventInfo.hh",
-                           'evtinfomc' : "EventInfo.hh",
+    branch_struct_dict = { 'evtinfo' : "EventInfo",
+                           'evtinfomc' : "EventInfoMC",
                            'hcnt' : "HitCount.hh",
                            'tcnt' : "TrkCount.hh",
                            'trk' : "TrkInfo.hh",
@@ -68,22 +68,33 @@ class nthelp:
             leaf = ""
             if len(tokens)>1:
                 leaf = tokens[1]
-            print(branch_to_search+"."+leaf)
+            branch_output = branch;
+            leaf_output = branch + "." + leaf + ": ";
             try:
-                struct_file = self.branch_struct_dict[branch_to_search]
+                struct = self.branch_struct_dict[branch_to_search]
+                struct_file = struct;
+                if (".hh" not in struct_file):
+                    struct_file += ".hh"
                 found = False;
                 with open(os.environ.get("TRKANA_INC")+"/TrkAna/inc/"+struct_file, 'r') as f:
                     lines = f.readlines()
                     for row in lines:
+                        if (row.find("// "+struct) != -1):
+                            #print(row)
+                            branch_output += row.replace("// "+struct, "").replace('\n', ''); # remove the trailing newline as well
+
                         if (row.find(" "+leaf+" ") != -1) or (row.find(" "+leaf+";") != -1): # add spaces around leaf so that we don't find substrings
-                            print(row)
+#                            print(row)
+                            leaf_output += row.replace("\t", "")
                             found = True
                             break
                 if not found:
-                    print(leaf+" could not be found...")
+                    print(leaf+" could not be found...\n")
             except KeyError:
-                print(branch_to_search+" is not in branch_struct_dict...")
+                print(branch_to_search+" is not in branch_struct_dict...\n")
 
+            print(branch_output)
+            print(leaf_output)
 # A main function so that this can be run on the command line
 def main():
     parser = argparse.ArgumentParser(
