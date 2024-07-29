@@ -26,7 +26,7 @@ class nthelp:
                            'trkfit' : "TrkInfo.hh",
                            'trkmc' : "TrkInfo.hh",
                            'trkmcsim' : "SimInfo",
-                           'trktch' : "TrkCaloHitInfo.hh",
+                           'trktch' : "TrkCaloHitInfo",
                            'trktsh' : "TrkStrawHitInfo.hh",
                            'trktshmc' : "TrkStrawHitInfoMC.hh",
                            'trktsm' : "TrkStrawMatInfo.hh",
@@ -76,7 +76,7 @@ class nthelp:
             branch_output = i_branch;
             if (explanation != ""):
                 branch_output += " ("+track_type+" = "+explanation+")"
-                branch_to_search = branch.replace(track_type, "trk") # we have keyed all the different track-related branches to "trk" in e.g. branch_struct_dict
+                branch_to_search = i_branch.replace(track_type, "trk") # we have keyed all the different track-related branches to "trk" in e.g. branch_struct_dict
 
             leaf_output = "";
             leaf_explanations = {};
@@ -85,6 +85,7 @@ class nthelp:
                 struct_file = struct;
                 if (".hh" not in struct_file):
                     struct_file += ".hh"
+#                print(struct_file)
                 with open(os.environ.get("TRKANA_INC")+"/TrkAna/inc/"+struct_file, 'r') as f:
                     lines = f.readlines()
                     for row in lines:
