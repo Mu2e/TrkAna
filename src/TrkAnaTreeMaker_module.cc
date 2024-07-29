@@ -85,6 +85,7 @@
 #include "TrkAna/inc/MVAResultInfo.hh"
 #include "TrkAna/inc/BestCrvAssns.hh"
 #include "TrkAna/inc/MCStepInfo.hh"
+#include "TrkAna/inc/MCStepSummaryInfo.hh"
 
 // C++ includes.
 #include <iostream>

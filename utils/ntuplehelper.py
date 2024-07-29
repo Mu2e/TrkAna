@@ -30,8 +30,8 @@ class nthelp:
                            'trktsh' : "TrkStrawHitInfo",
                            'trktshmc' : "TrkStrawHitInfoMC",
                            'trktsm' : "TrkStrawMatInfo",
-                           'trkmcsci' : "MCStepInfo.hh",
-                           'trkmcssi' : "MCStepInfo.hh",
+                           'trkmcsci' : "MCStepInfo",
+                           'trkmcssi' : "MCStepSummaryInfo",
                            "crvsummary" : "CrvSummaryReco",
                            "crvsummarymc" : "CrvSummaryMC",
                            "crvcoincs" : "CrvHitInfoReco",
@@ -97,7 +97,8 @@ class nthelp:
                         for i_leaf in leaves:
                             if (row.find(" "+i_leaf+" ") != -1) or (row.find(" "+i_leaf+";") != -1): # add spaces around leaf so that we don't find substrings
                                 #                            print(row)
-                                leaf_explanations[i_leaf] = row
+                                if i_leaf not in leaf_explanations: # we want to only take the first occurance
+                                    leaf_explanations[i_leaf] = row
             except KeyError:
                 print(branch_to_search+" is not in branch_struct_dict...\n")
 
