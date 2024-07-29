@@ -27,14 +27,25 @@ class ntuplehelper:
                            'trkmc' : "TrkInfo.hh",
                            'trkmcsim' : "SimInfo.hh",
                            'trktch' : "TrkCaloHitInfo.hh",
+                           'trktsh' : "TrkStrawHitInfo.hh",
+                           'trktshmc' : "TrkStrawHitInfoMC.hh",
+                           'trktsm' : "TrkStrawMatInfo.hh",
+                           'trkmcsci' : "MCStepInfo.hh",
+                           'trkmcssi' : "MCStepInfo.hh",
+                           "crvsummary" : "CrvSummaryReco.hh",
+                           "crvsummarymc" : "CrvSummaryMC.hh",
+                           "crvcoincs" : "CrvHitInfoReco.hh",
+                           "crvcoincsmc" : "CrvHitInfoMC.hh",
+                           "crvcoincsmcplane" : "CrvPlaneInfoMC.hh"
                           }
 
     def check_track_type(self, branch):
         retval = ["", ""]
-        for key in self.track_types_dict:
-            if key in branch: # branch could be "demmc" but key will be "dem"
-                retval = [key, self.track_types_dict[key]]
-                break
+        if "crv" not in branch: # "umm" is matching "crvsummary"
+            for key in self.track_types_dict:
+                if key in branch: # branch could be "demmc" but key will be "dem"
+                    retval = [key, self.track_types_dict[key]]
+                    break
 
         return retval
 
