@@ -1,6 +1,8 @@
 #ifndef CrvSummaryMC_hh
 #define CrvSummaryMC_hh
 
+// CrvSummaryMC: branch that provides a summary of the CRV MC true information
+
 #include "TrkAna/inc/RootVectors.hh"
 namespace CLHEP {class Hep3Vector; }
 namespace mu2e

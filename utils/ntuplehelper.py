@@ -32,8 +32,8 @@ class nthelp:
                            'trktsm' : "TrkStrawMatInfo",
                            'trkmcsci' : "MCStepInfo.hh",
                            'trkmcssi' : "MCStepInfo.hh",
-                           "crvsummary" : "CrvSummaryReco.hh",
-                           "crvsummarymc" : "CrvSummaryMC.hh",
+                           "crvsummary" : "CrvSummaryReco",
+                           "crvsummarymc" : "CrvSummaryMC",
                            "crvcoincs" : "CrvHitInfoReco.hh",
                            "crvcoincsmc" : "CrvHitInfoMC.hh",
                            "crvcoincsmcplane" : "CrvPlaneInfoMC.hh"
