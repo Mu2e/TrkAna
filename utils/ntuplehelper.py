@@ -34,9 +34,9 @@ class nthelp:
                            'trkmcssi' : "MCStepInfo.hh",
                            "crvsummary" : "CrvSummaryReco",
                            "crvsummarymc" : "CrvSummaryMC",
-                           "crvcoincs" : "CrvHitInfoReco.hh",
-                           "crvcoincsmc" : "CrvHitInfoMC.hh",
-                           "crvcoincsmcplane" : "CrvPlaneInfoMC.hh"
+                           "crvcoincs" : "CrvHitInfoReco",
+                           "crvcoincsmc" : "CrvHitInfoMC",
+                           "crvcoincsmcplane" : "CrvPlaneInfoMC"
                           }
 
     def check_track_type(self, branch):

@@ -1,6 +1,8 @@
 #ifndef CrvHitInfoReco_hh
 #define CrvHitInfoReco_hh
 
+// CrvHitInfoReco: information about a cluster of CRV coincidence triplets
+
 #include "TrkAna/inc/RootVectors.hh"
 #include "Offline/DataProducts/inc/CRVId.hh"
 namespace CLHEP {class Hep3Vector; }
@@ -10,7 +12,7 @@ namespace CLHEP {class Hep3Vector; }
 namespace mu2e
 {
 
-  struct CrvHitInfoReco   //information about a cluster of CRV coincidence triplets
+  struct CrvHitInfoReco
   {
     int               sectorType =-1;   //CRV sector type
     XYZVectorF          pos; //average position of counters
