@@ -1,5 +1,5 @@
 //
-// EventInfoMC: event-level information in simulation
+// EventInfoMC: branch to store MC event-level information
 // Dave Brown (LBNL)
 //
 #ifndef EventInfoMC_HH

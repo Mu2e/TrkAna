@@ -1,6 +1,10 @@
 import ntuplehelper
 
 nthelp = ntuplehelper.nthelp()
+
+nthelp.whatis(['evtinfomc.pbtime', 'evtinfo.event', 'hcnt.nbkg'])
+
+
 nthelp.whatis('dem.gap')
 nthelp.whatis(['dem.nhits', 'uem.nhits'])
 nthelp.whatis('dem.lha') # will show an error message that leaf cannot be found
@@ -12,6 +16,3 @@ nthelp.whatis('crvcoincs.timeStart')
 nthelp.whatis('crvsummarymc.minPathLayer')
 nthelp.whatis('crvcoincsmc.gparent')
 nthelp.whatis('crvcoincsmcplane.dir')
-
-nthelp.whatis('evtinfomc.pbtime')
-nthelp.whatis('evtinfo.event')
