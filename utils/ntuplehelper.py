@@ -4,9 +4,38 @@ import argparse
 
 class ntuplehelper:
 
+    track_types_dict = { 'kl' : "kinematic line fit (i.e. straight-line fit)",
+                         'dem' : "downstream e-minus fit",
+                         'uem' : "upstream e-minus fit",
+                         'dmm' : "downstream mu-minus fit",
+                         'umm' : "upstream mu-minus fit",
+                         'dep' : "downstream e-plus fit",
+                         'uep' : "upstream e-plus fit",
+                         'dmp' : "downstream mu-plus fit",
+                         'ump' : "upstream mu-plus fit",
+                         'trk' : "track"
+                        }
+
     # A dictionary of branch name to header file containing the struct
-    branch_struct_dict = { 'dem' : "TrkAna/inc/TrkInfo.hh",
-                           'uem' : "TrkAna/inc/TrkInfo.hh"}
+    branch_struct_dict = { 'evtinfo' : "TrkAna/inc/EventInfo.hh",
+                           'evtinfomc' : "TrkAna/inc/EventInfo.hh",
+                           'hcnt' : "TrkAna/inc/HitCount.hh",
+                           'tcnt' : "TrkAna/inc/TrkCount.hh",
+                           'trk' : "TrkAna/inc/TrkInfo.hh",
+                           'trkfit' : "TrkAna/inc/TrkInfo.hh",
+                           'trkmc' : "TrkAna/inc/TrkInfo.hh",
+                           'trkmcsim' : "TrkAna/inc/SimInfo.hh",
+                           'trktch' : "TrkAna/inc/TrkCaloHitInfo.hh",
+                          }
+
+    def check_track_type(self, branch):
+        retval = ""
+        for key in self.track_types_dict:
+            if key in branch: # branch could be "demmc" but key will be "dem"
+                retval = self.track_types_dict[key]
+                break
+
+        return retval
 
     def whatis(self, array):
         if type(array) is not list: # if a single string is passed, put it into an array
@@ -16,12 +45,20 @@ class ntuplehelper:
         for item in array:
             tokens = item.split('.')
             branch = tokens[0]
+
+            # Check if this is a track branch
+            branch_to_search = branch
+            explanation = self.check_track_type(branch)
+            if (explanation != ""):
+                print(branch+" = "+explanation)
+                branch_to_search = "trk" # we have keyed all the different track-related branches to "trk" in e.g. branch_struct_dict
+
             leaf = ""
             if len(tokens)>1:
                 leaf = tokens[1]
-            print(branch+"."+leaf)
+            print(branch_to_search+"."+leaf)
             try:
-                struct_file = self.branch_struct_dict[branch]
+                struct_file = self.branch_struct_dict[branch_to_search]
                 found = False;
                 with open(struct_file, 'r') as f:
                     lines = f.readlines()
@@ -33,7 +70,7 @@ class ntuplehelper:
                 if not found:
                     print(leaf+" could not be found...")
             except KeyError:
-                print(branch+" is not in branch_struct_dict...")
+                print(branch_to_search+" is not in branch_struct_dict...")
 
 # A main function so that this can be run on the command line
 def main():
