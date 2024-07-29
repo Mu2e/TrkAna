@@ -4,7 +4,7 @@ nthelp = ntuplehelper.nthelp()
 
 print("Testing a leaf from each branch")
 print("=========")
-nthelp.whatis(['evtinfomc.pbtime', 'evtinfo.event', 'hcnt.nbkg', 'tcnt.ndem', 'demmcsim.pdg', 'demtch.trkdepth'])
+nthelp.whatis(['evtinfomc.pbtime', 'evtinfo.event', 'hcnt.nbkg', 'tcnt.ndem', 'demmcsim.pdg', 'demtch.trkdepth', 'demtsh.ptoca', 'demtshmc.edep'])
 
 print("Testing a few leaves from a single branch (should only print the branch description once)")
 print("=========")

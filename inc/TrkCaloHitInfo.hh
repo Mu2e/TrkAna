@@ -1,5 +1,5 @@
 //
-// TrkCalHitInfo: branch with information on the calorimeter cluster assigned to a track
+// TrkCaloHitInfo: branch with information on the calorimeter cluster assigned to a track
 // original author: Dave Brown (LBNL), Jan 2019
 //
 #ifndef TrkCaloHitInfo_HH
