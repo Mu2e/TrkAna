@@ -1,16 +1,21 @@
 # How to get help -- ```ntuplehelper```
 
-## Introduction
+On this page, you will learn how to use the [```ntuplehelper```](../../utiles/ntuplehelper.py) utility to get more information about what the different branches and leaves are. You will need to be in a TrkAna environment e.g.
 
-On this page, you will learn how to get more information about
+```
+mu2einit
+muse setup TrkAna
+```
 
-### From the command line
+You can use this utility:
+
+* on the command line:
 
 ```
 python3 ${TRKANA_INC}/TrkAna/utils/ntuplehelper.py --branches dem.nhits demmcsim.startCode
 ```
 
-### From within a python
+* and from within python:
 
 ```
 >>> import ntuplehelper
@@ -20,5 +25,5 @@ python3 ${TRKANA_INC}/TrkAna/utils/ntuplehelper.py --branches dem.nhits demmcsim
 
 see [the test script for more examples](../../utils/ntuplehelper-test.py)
 
-### Notice something missing?
-Post it on the #trkana Slack channel
+
+If you notice something missing or a bug, then post it to the #trkana Slack channel and we will fix it
