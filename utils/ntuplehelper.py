@@ -21,11 +21,11 @@ class nthelp:
     branch_struct_dict = { 'evtinfo' : "EventInfo",
                            'evtinfomc' : "EventInfoMC",
                            'hcnt' : "HitCount",
-                           'tcnt' : "TrkCount",
+                           'tcnt' : "TrkCount", # TODO: leaves can't be retrieved because they are runtime made
                            'trk' : "TrkInfo.hh",
                            'trkfit' : "TrkInfo.hh",
                            'trkmc' : "TrkInfo.hh",
-                           'trkmcsim' : "SimInfo.hh",
+                           'trkmcsim' : "SimInfo",
                            'trktch' : "TrkCaloHitInfo.hh",
                            'trktsh' : "TrkStrawHitInfo.hh",
                            'trktshmc' : "TrkStrawHitInfoMC.hh",
@@ -73,11 +73,11 @@ class nthelp:
             # Check if this is a track branch
             branch_to_search = i_branch
             track_type, explanation = self.check_track_type(i_branch)
+            branch_output = i_branch;
             if (explanation != ""):
-                print(i_branch+" = "+explanation)
+                branch_output += " ("+track_type+" = "+explanation+")"
                 branch_to_search = branch.replace(track_type, "trk") # we have keyed all the different track-related branches to "trk" in e.g. branch_struct_dict
 
-            branch_output = i_branch;
             leaf_output = "";
             leaf_explanations = {};
             try:
@@ -96,14 +96,14 @@ class nthelp:
                         for i_leaf in leaves:
                             if (row.find(" "+i_leaf+" ") != -1) or (row.find(" "+i_leaf+";") != -1): # add spaces around leaf so that we don't find substrings
                                 #                            print(row)
-                                leaf_explanations[i_leaf] = row#.replace("\t", "")
+                                leaf_explanations[i_leaf] = row
             except KeyError:
                 print(branch_to_search+" is not in branch_struct_dict...\n")
 
             # Check that we have all the explanations...
             for i_leaf in leaves:
                 if i_leaf not in leaf_explanations:
-                    leaf_explanations[i_leaf] = "not found";
+                    leaf_explanations[i_leaf] = "not found\n";
                 # ... and produce the output text
                 leaf_output += i_branch + "." + i_leaf + ": "+leaf_explanations[i_leaf];
 
