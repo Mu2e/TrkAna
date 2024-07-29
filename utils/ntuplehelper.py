@@ -21,7 +21,7 @@ class nthelp:
     branch_struct_dict = { 'evtinfo' : "EventInfo",
                            'evtinfomc' : "EventInfoMC",
                            'hcnt' : "HitCount",
-                           'tcnt' : "TrkCount.hh",
+                           'tcnt' : "TrkCount",
                            'trk' : "TrkInfo.hh",
                            'trkfit' : "TrkInfo.hh",
                            'trkmc' : "TrkInfo.hh",
