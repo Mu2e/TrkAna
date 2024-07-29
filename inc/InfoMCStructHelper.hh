@@ -11,7 +11,7 @@
 #include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMC.hh"
 
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
-#include "TrkAna/inc/TrkInfo.hh"
+#include "TrkAna/inc/TrkInfoMC.hh"
 #include "TrkAna/inc/SimInfo.hh"
 #include "TrkAna/inc/TrkStrawHitInfoMC.hh"
 #include "TrkAna/inc/CaloClusterInfoMC.hh"

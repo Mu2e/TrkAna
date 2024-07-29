@@ -22,9 +22,12 @@ class nthelp:
                            'evtinfomc' : "EventInfoMC",
                            'hcnt' : "HitCount",
                            'tcnt' : "TrkCount", # TODO: leaves can't be retrieved because they are runtime made
-                           'trk' : "TrkInfo.hh",
-                           'trkfit' : "TrkInfo.hh",
-                           'trkmc' : "TrkInfo.hh",
+                           'trk' : "TrkInfo",
+                           'trkfit' : "TrkFitInfo",
+                           'trkmc' : "TrkInfoMC",
+                           'trklh' : "LoopHelixInfo",
+                           'trkch' : "CentralHelixInfo",
+                           'trkkl' : "KinematicLineInfo",
                            'trkmcsim' : "SimInfo",
                            'trktch' : "TrkCaloHitInfo",
                            'trktsh' : "TrkStrawHitInfo",
@@ -76,7 +79,7 @@ class nthelp:
             branch_output = i_branch;
             if (explanation != ""):
                 branch_output += " ("+track_type+" = "+explanation+")"
-                branch_to_search = i_branch.replace(track_type, "trk") # we have keyed all the different track-related branches to "trk" in e.g. branch_struct_dict
+                branch_to_search = i_branch.replace(track_type, "trk", 1) # we have keyed all the different track-related branches to "trk" in e.g. branch_struct_dict; also only replace 1 occurance so that klkl branch is handled correctly
 
             leaf_output = "";
             leaf_explanations = {};

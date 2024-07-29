@@ -18,6 +18,10 @@
 
 #include "TrkAna/inc/HitCount.hh"
 #include "TrkAna/inc/TrkInfo.hh"
+#include "TrkAna/inc/TrkFitInfo.hh"
+#include "TrkAna/inc/LoopHelixInfo.hh"
+#include "TrkAna/inc/CentralHelixInfo.hh"
+#include "TrkAna/inc/KinematicLineInfo.hh"
 #include "TrkAna/inc/TrkStrawHitInfo.hh"
 #include "TrkAna/inc/TrkStrawMatInfo.hh"
 #include "TrkAna/inc/TrkCaloHitInfo.hh"
