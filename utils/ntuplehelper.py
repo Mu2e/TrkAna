@@ -29,7 +29,7 @@ class nthelp:
                            'trktch' : "TrkCaloHitInfo",
                            'trktsh' : "TrkStrawHitInfo",
                            'trktshmc' : "TrkStrawHitInfoMC",
-                           'trktsm' : "TrkStrawMatInfo.hh",
+                           'trktsm' : "TrkStrawMatInfo",
                            'trkmcsci' : "MCStepInfo.hh",
                            'trkmcssi' : "MCStepInfo.hh",
                            "crvsummary" : "CrvSummaryReco.hh",
