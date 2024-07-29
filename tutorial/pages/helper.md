@@ -1,6 +1,6 @@
 # How to get help -- ```ntuplehelper```
 
-On this page, you will learn how to use the [```ntuplehelper```](../../utiles/ntuplehelper.py) utility to get more information about what the different branches and leaves are. You will need to be in a TrkAna environment e.g.
+On this page, you will learn how to use the [```ntuplehelper```](../../utils/ntuplehelper.py) utility to get more information about what the different branches and leaves are. You will need to be in a TrkAna environment e.g.
 
 ```
 mu2einit
