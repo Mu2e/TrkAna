@@ -1,6 +1,6 @@
-from ntuplehelper import ntuplehelper
+import ntuplehelper
 
-nthelp = ntuplehelper()
+nthelp = ntuplehelper.nthelp()
 nthelp.whatis('dem.gap')
 nthelp.whatis(['dem.nhits', 'uem.nhits'])
 nthelp.whatis('dem.lha') # will show an error message that leaf cannot be found

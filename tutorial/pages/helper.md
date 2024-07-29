@@ -13,11 +13,9 @@ python3 ${TRKANA_INC}/TrkAna/utils/ntuplehelper.py --branches dem.nhits demmcsim
 ### From within a python
 
 ```
-from ntuplehelper import ntuplehelper
-
-nthelp = ntuplehelper()
-nthelp.whatis('dem.gap') # just one leaf
-nthelp.whatis(['dem.nhits', 'uem.nhits']) # for multiple leaves, put them in a list between [ ]
+>>> import ntuplehelper
+>>> nthelp = ntuplehelper.nthelp()
+>>> nthelp.whatis('dem.hits')
 ```
 
 see [the test script for more examples](../../utils/ntuplehelper-test.py)

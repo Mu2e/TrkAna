@@ -3,7 +3,7 @@
 import os
 import argparse
 
-class ntuplehelper:
+class nthelp:
 
     track_types_dict = { 'kl' : "kinematic line fit (i.e. straight-line fit)",
                          'dem' : "downstream e-minus fit",
@@ -95,8 +95,8 @@ def main():
 
     args = parser.parse_args()
 
-    nthelp = ntuplehelper()
-    nthelp.whatis(args.branches)
+    nth = nthelp()
+    nth.whatis(args.branches)
 
 if __name__ == "__main__":
     main()
