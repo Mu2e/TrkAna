@@ -30,10 +30,10 @@ class ntuplehelper:
                           }
 
     def check_track_type(self, branch):
-        retval = ""
+        retval = ["", ""]
         for key in self.track_types_dict:
             if key in branch: # branch could be "demmc" but key will be "dem"
-                retval = self.track_types_dict[key]
+                retval = [key, self.track_types_dict[key]]
                 break
 
         return retval
@@ -49,10 +49,10 @@ class ntuplehelper:
 
             # Check if this is a track branch
             branch_to_search = branch
-            explanation = self.check_track_type(branch)
+            track_type, explanation = self.check_track_type(branch)
             if (explanation != ""):
                 print(branch+" = "+explanation)
-                branch_to_search = "trk" # we have keyed all the different track-related branches to "trk" in e.g. branch_struct_dict
+                branch_to_search = branch.replace(track_type, "trk") # we have keyed all the different track-related branches to "trk" in e.g. branch_struct_dict
 
             leaf = ""
             if len(tokens)>1:
