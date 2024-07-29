@@ -23,7 +23,7 @@ python3 ${TRKANA_INC}/TrkAna/utils/ntuplehelper.py --branches dem.nhits demmcsim
 >>> nthelp.whatis('dem.hits')
 ```
 
-see [the test script for more examples](../../utils/ntuplehelper-test.py)
+see [the validation script for more examples](../../validation/ntuplehelper-test.py)
 
 
 If you notice something missing or a bug, then post it to the #trkana Slack channel and we will fix it
