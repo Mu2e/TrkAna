@@ -2,7 +2,13 @@ import ntuplehelper
 
 nthelp = ntuplehelper.nthelp()
 
+print("Calling nthelp.whatis(['evtinfomc.pbtime', 'evtinfo.event', 'hcnt.nbkg']) (testing a leaf from each branch)")
+print("=========")
 nthelp.whatis(['evtinfomc.pbtime', 'evtinfo.event', 'hcnt.nbkg'])
+
+print("Calling nthelp.whatis(['evtinfo.run', 'evtinfo.subrun', 'evtinfo.event']) (this should only print the \"evtinfo\" description once)")
+print("=========")
+nthelp.whatis(['evtinfo.run', 'evtinfo.subrun', 'evtinfo.event']) # should only print the "evtinfo" description once
 
 
 nthelp.whatis('dem.gap')
