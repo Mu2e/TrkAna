@@ -11,11 +11,12 @@
 #include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMC.hh"
 
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
-#include "TrkAna/inc/TrkInfo.hh"
+#include "TrkAna/inc/TrkInfoMC.hh"
 #include "TrkAna/inc/SimInfo.hh"
 #include "TrkAna/inc/TrkStrawHitInfoMC.hh"
 #include "TrkAna/inc/CaloClusterInfoMC.hh"
 #include "TrkAna/inc/MCStepInfo.hh"
+#include "TrkAna/inc/MCStepSummaryInfo.hh"
 #include "TrkAna/inc/CrvHitInfoMC.hh"
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
 #include "Offline/MCDataProducts/inc/KalSeedMC.hh"

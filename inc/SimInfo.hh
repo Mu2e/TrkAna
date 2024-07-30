@@ -1,5 +1,5 @@
 //
-// structs used to record SimParticle information in TTrees.
+// SimInfo: branch to record SimParticles in genealogy
 // All momenta are in units of MeV/c, time in nsec WRT when the proton bunch pulse peak hits the production target,
 // positions are in mm WRT the center of the tracker.
 // Andy Edmonds (March 2019)
@@ -20,12 +20,12 @@ namespace mu2e
     int startCode = -1; // creation process code
     int stopCode = -1; // stop process code
     int gen = -1; // generator code
-    float time = -1.0;  // Origin time of the SimParticle
+    float time = -1.0;  // Origin time of the SimParticle [ns]
     int index; // index into the SimInfo vector
-    XYZVectorF mom = XYZVectorF();  // origin momentumof the SimParticle
-    XYZVectorF pos = XYZVectorF();  // origin position of the SimParticle
-    XYZVectorF endmom = XYZVectorF();  // end momentumof the SimParticle
-    XYZVectorF endpos = XYZVectorF();  // end position of the SimParticle
+    XYZVectorF mom = XYZVectorF();  // origin momentumof the SimParticle [MeV/c]
+    XYZVectorF pos = XYZVectorF();  // origin position of the SimParticle [mm, in detector coords]
+    XYZVectorF endmom = XYZVectorF();  // end momentumof the SimParticle [MeV/c]
+    XYZVectorF endpos = XYZVectorF();  // end position of the SimParticle [mm, in detector coords]
     MCRelationship prirel = MCRelationship(); // relationship to the event primary particles
     MCRelationship trkrel = MCRelationship(); // relationship to the particle that created hits in the track
     void reset() { *this = SimInfo(); }

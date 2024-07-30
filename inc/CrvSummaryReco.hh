@@ -1,6 +1,8 @@
 #ifndef CrvSummaryReco_hh
 #define CrvSummaryReco_hh
 
+// CrvSummaryReco: branch that provides a summary of the CRV information
+
 namespace mu2e
 {
   struct CrvSummaryReco

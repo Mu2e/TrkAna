@@ -1,5 +1,5 @@
 //
-// Struct describing MC truth of single straw hit assigned to a track, for use in TTree diagnostics
+// TrkStrawHitInfoMC: branch describing MC truth of straw hits assigned to a track, for use in TTree diagnostics
 //
 #ifndef TrkStrawHitInfoMC_HH
 #define TrkStrawHitInfoMC_HH

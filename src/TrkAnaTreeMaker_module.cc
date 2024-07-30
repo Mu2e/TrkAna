@@ -66,7 +66,13 @@
 #include "TrkAna/inc/HitCount.hh"
 #include "TrkAna/inc/TrkCount.hh"
 #include "TrkAna/inc/EventInfo.hh"
+#include "TrkAna/inc/EventInfoMC.hh"
 #include "TrkAna/inc/TrkInfo.hh"
+#include "TrkAna/inc/TrkInfoMC.hh"
+#include "TrkAna/inc/TrkFitInfo.hh"
+#include "TrkAna/inc/LoopHelixInfo.hh"
+#include "TrkAna/inc/CentralHelixInfo.hh"
+#include "TrkAna/inc/KinematicLineInfo.hh"
 #include "TrkAna/inc/SimInfo.hh"
 #include "TrkAna/inc/EventWeightInfo.hh"
 #include "TrkAna/inc/TrkStrawHitInfo.hh"
@@ -84,6 +90,7 @@
 #include "TrkAna/inc/MVAResultInfo.hh"
 #include "TrkAna/inc/BestCrvAssns.hh"
 #include "TrkAna/inc/MCStepInfo.hh"
+#include "TrkAna/inc/MCStepSummaryInfo.hh"
 
 // C++ includes.
 #include <iostream>

@@ -1,13 +1,15 @@
 #ifndef CrvPlaneInfoMC_hh
 #define CrvPlaneInfoMC_hh
 
+// CrvPlaneInfoMC: information about the point where the MC trajectory crosses the xz plane of CRV-T
+
 #include "TrkAna/inc/RootVectors.hh"
 namespace CLHEP {class Hep3Vector; }
 #include <vector>
 
 namespace mu2e
 {
-  struct CrvPlaneInfoMC  //information about the point where the MC trajectory crosses the xz plane of CRV-T
+  struct CrvPlaneInfoMC
   {
     int    pdgId = -1;            //PDG ID of this MC particle
     int    primaryPdgId = -1;     //PDG ID of the primary particle of this MC particle
