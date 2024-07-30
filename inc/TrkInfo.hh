@@ -1,5 +1,5 @@
 //
-// TrkInfo: array branch containing general information about all reconstructed track
+// TrkInfo: array branch containing general information about all reconstructed track. Example structure: [ trk1, trk2, ... trkN ]
 // All momenta are in units of MeV/c, time in nsec WRT when the proton bunch pulse peak hits the production target,
 // positions are in mm WRT the center of the tracker.
 // Dave Brown (LBNL)
