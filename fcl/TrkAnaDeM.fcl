@@ -25,10 +25,9 @@ physics :
       # optionally select only the 'best' single candidate per event, where 'best' is defined by the selector
       SelectBest : true
     }
+    MakeSS : @local::CommonMC.MakeSSReco
   }
-  TriggerPath : [
-    MergeKKDeM
-  ]
+  TriggerPath : [ MergeKKDeM, MakeSS ]
   analyzers : {
     TrkAnaDeM : {
       @table::TrkAnaTreeMaker

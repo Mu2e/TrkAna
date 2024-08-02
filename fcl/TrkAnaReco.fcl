@@ -13,12 +13,11 @@ physics :
 {
   producers : {
     @table::TrkAnaReco.producers
-    PBIWeight : @local::PBIWeight
   }
   analyzers : { @table::TrkAnaReco.analyzers }
 }
 
-physics.TrkAnaTrigPath : [ @sequence::MergeKKProducersPath, PBIWeight, TrkQualDeM ]
+physics.TrkAnaTrigPath : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualDeM ]
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
 
 physics.trigger_paths : [ TrkAnaTrigPath ]

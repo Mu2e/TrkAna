@@ -43,6 +43,7 @@ physics :
       # optionally select only the 'best' single candidate per event, where 'best' is defined by the selector
       SelectBest : true
     }
+    MakeSS : @local::CommonMC.MakeSSDigi
   }
   filters : {
     @table::CalPatRec.filters
@@ -57,6 +58,7 @@ physics :
     MHDeM,
     KKDeM,
     MergeKKDeM,
+    MakeSS,
     @sequence::Reconstruction.MCReco
   ]
   analyzers : {
@@ -87,7 +89,6 @@ outputs : {
 }
 #include "Production/JobConfig/reco/epilog.fcl"
 #include "Production/Validation/database.fcl"
-#include "Production/JobConfig/reco/MakeSurfaceSteps.fcl"
 # Override provenance of some objects since this job doesn't run CompressRecoMCs
 physics.producers.CaloHitTruthMatch.primaryParticle : "compressDigiMCs"
 physics.producers.CaloHitTruthMatch.caloShowerSimCollection : "compressDigiMCs"
@@ -97,6 +98,7 @@ physics.producers.SelectRecoMC.HelixSeedCollections  : ["MHDeM"]
 physics.producers.KKDeM.ModuleSettings.HelixSeedCollections : [ "MHDeM" ]
 physics.producers.KKDeM.ModuleSettings.ComboHitCollection : "makeSH"
 physics.producers.KKDeM.ModuleSettings.CaloClusterCollection : "CaloClusterMaker"
+physics.producers.compressRecoMCs.surfaceStepTags: [ "MakeSS" ]
 # since this is a diagnostic test, save failed fits as well
 physics.producers.KKDeM.ModuleSettings.SaveAllFits : true
 physics.end_paths : [ EndPath ]

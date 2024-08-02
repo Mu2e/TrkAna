@@ -27,3 +27,4 @@
 #include "TrkAna/inc/CrvSummaryReco.hh"
 #include "TrkAna/inc/CrvSummaryMC.hh"
 #include "TrkAna/inc/MVAResultInfo.hh"
+#include "TrkAna/inc/SurfaceStepInfo.hh"
