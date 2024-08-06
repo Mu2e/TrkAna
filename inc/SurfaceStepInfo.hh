@@ -10,7 +10,7 @@ namespace mu2e {
   class SurfaceStep;
   struct SurfaceStepInfo {
     SurfaceId sid; // id of the component being traversed
-    float time = 1e15;  // time the particle enters this component the WRT MC primary proton (ns)
+    float time = 0;  // time the particle enters this component the WRT MC primary proton (ns)
     float edep = 0; // total energy loss through this detector component (MeV)
     float path = 0; // path length take through this detector component (mm)
     XYZVectorF pos;  // particle position at the middle of this step in Detector Coordinates (mm)

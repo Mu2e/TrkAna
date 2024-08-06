@@ -630,7 +630,7 @@ namespace mu2e {
         _extraMCStepInfos.at(i_branch).at(i_extraMCStepTag).clear();
         _extraMCStepSummaryInfos.at(i_branch).at(i_extraMCStepTag).clear();
       }
-      _surfaceStepInfos.clear();
+      _surfaceStepInfos.at(i_branch).clear();
 
       if(_fillcalomc) { _allMCTCHIs.at(i_branch).clear(); }
 
