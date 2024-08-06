@@ -110,13 +110,15 @@ root -l Macro.C
 
 The python exercises can be completed either on the command line, in a python notebook, or with a python script. 
 
-For all of these, you will need to setup [pyana](https://mu2ewiki.fnal.gov/wiki/Pyana):
+For all of these, you will need a python environment. We provide a common python environment that all Mu2e analyzers can use. We recommend this common environment over a personal python environment to allow easier sharing of scripts between users.
+
+As of writing (Aug 2024), the environment to use is:
 
 ```
-setup pyana v1_05_00
+source /exp/mu2e/app/users/sophie/pyana-tests/sophie-pyana/bin/activate
 ```
 
-Pyana is a UPS package that provides a common python environment that all Mu2e analyzers can use. We recommend the use of pyana over a personal python environment to allow easier sharing of scripts between users.
+Note: that we will soon be releasing a more permanent solution
 
 ### Python Command Line
 
