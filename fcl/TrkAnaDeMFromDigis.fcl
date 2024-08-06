@@ -77,6 +77,7 @@ physics :
         }
       ]
       ExtraMCStepCollectionTags : [ "compressDigiMCs:protonabsorber", "compressDigiMCs:stoppingtarget" ]
+      SurfaceStepCollectionTag : "compressRecoMCs"
     }
   }
   EndPath : [TrkAnaDeM]

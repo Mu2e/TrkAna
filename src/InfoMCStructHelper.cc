@@ -380,7 +380,7 @@ namespace mu2e {
     auto simp = kseedmc.simParticle().simParticle(_spcH);
     for (auto const& ss : surfsteps) {
       if(ss.simParticle() == simp){
-        std::cout << "Found matching surface step sid" << ss << " particle time " << simp->startGlobalTime() << std::endl;
+//        std::cout << "Found matching surface step sid" << ss << " particle time " << simp->startGlobalTime() << std::endl;
         ssic.emplace_back(ss);
       }
     }

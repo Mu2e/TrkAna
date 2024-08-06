@@ -207,7 +207,7 @@ TrkAnaTreeMaker : {
     MaxVDDt : 5 # ns
   }
   ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
-  SurfaceStepCollectionTag : "compressRecoMCs"
+  SurfaceStepCollectionTag : "MakeSS"
 }
 
 TrkAnaReco : {
@@ -218,7 +218,7 @@ TrkAnaReco : {
     @table::TrkPIDProducers
     @table::MergeKKProducers
 # patch for SurfaceSteps in MDC2020
-    MakeSS : @local::CommonMC.MakeSSDigi
+    MakeSS : @local::CommonMC.MakeSSReco
   }
 
   analyzers : {
