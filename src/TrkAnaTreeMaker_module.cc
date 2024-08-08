@@ -245,7 +245,7 @@ namespace mu2e {
       std::map<BranchIndex, std::map<StepCollIndex, std::vector<MCStepSummaryInfo>>> _extraMCStepSummaryInfos;
       // SurfaceSteps
       art::InputTag _surfaceStepsTag;
-      std::map<BranchIndex, std::vector<SurfaceStepInfo>> _surfaceStepInfos;
+      std::map<BranchIndex, std::vector<std::vector<SurfaceStepInfo>>> _surfaceStepInfos;
       art::Handle<SurfaceStepCollection> _surfaceStepsHandle;
       //
       art::Handle<PrimaryParticle> _pph;
@@ -392,7 +392,7 @@ namespace mu2e {
       }
       if(_conf.SurfaceStepsTag(_surfaceStepsTag)){
         for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
-          _surfaceStepInfos[i_branch] = std::vector<SurfaceStepInfo>();
+          _surfaceStepInfos[i_branch] = std::vector<std::vector<SurfaceStepInfo>>();
         }
       }
     }
@@ -838,7 +838,8 @@ namespace mu2e {
           // fill SurfaceStep info
           if(_surfaceStepsHandle.isValid()){
             auto& ssi = _surfaceStepInfos.at(i_branch);
-            _infoMCStructHelper.fillSurfaceStepInfos(kseedmc,*_surfaceStepsHandle,ssi);
+            ssi.push_back(std::vector<SurfaceStepInfo>());
+            _infoMCStructHelper.fillSurfaceStepInfos(kseedmc,*_surfaceStepsHandle,ssi.back());
           }
           break;
         }
