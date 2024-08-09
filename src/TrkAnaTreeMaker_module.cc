@@ -90,6 +90,7 @@
 #include "TrkAna/inc/MVAResultInfo.hh"
 #include "TrkAna/inc/BestCrvAssns.hh"
 #include "TrkAna/inc/MCStepInfo.hh"
+#include "TrkAna/inc/SurfaceStepInfo.hh"
 #include "TrkAna/inc/MCStepSummaryInfo.hh"
 
 // C++ includes.
@@ -177,6 +178,8 @@ namespace mu2e {
         fhicl::Atom<art::InputTag> kalSeedMCTag{Name("KalSeedMCAssns"), Comment("Tag for KalSeedMCAssn"), art::InputTag()};
         // extra MC
         fhicl::OptionalSequence<art::InputTag> extraMCStepTags{Name("ExtraMCStepCollectionTags"), Comment("Input tags for any other StepPointMCCollections you want written out")};
+        // passive elements and Virtual Detector MC information
+        fhicl::OptionalAtom<art::InputTag> SurfaceStepsTag{Name("SurfaceStepCollectionTag"), Comment("SurfaceStep Collection")};
         // Calo MC
         fhicl::Atom<bool> fillCaloMC{ Name("FillCaloMC"),Comment("Fill CaloMC information"), true};
         fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
@@ -240,6 +243,10 @@ namespace mu2e {
       std::vector<art::Handle<StepPointMCCollection>> _extraMCStepCollections;
       std::map<BranchIndex, std::map<StepCollIndex, std::vector<MCStepInfos>>> _extraMCStepInfos;
       std::map<BranchIndex, std::map<StepCollIndex, std::vector<MCStepSummaryInfo>>> _extraMCStepSummaryInfos;
+      // SurfaceSteps
+      art::InputTag _surfaceStepsTag;
+      std::map<BranchIndex, std::vector<std::vector<SurfaceStepInfo>>> _surfaceStepInfos;
+      art::Handle<SurfaceStepCollection> _surfaceStepsHandle;
       //
       art::Handle<PrimaryParticle> _pph;
       art::Handle<KalSeedMCAssns> _ksmcah;
@@ -383,6 +390,11 @@ namespace mu2e {
           }
         }
       }
+      if(_conf.SurfaceStepsTag(_surfaceStepsTag)){
+        for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+          _surfaceStepInfos[i_branch] = std::vector<std::vector<SurfaceStepInfo>>();
+        }
+      }
     }
   }
 
@@ -458,6 +470,10 @@ namespace mu2e {
             _trkana->Branch(mcsiname.c_str(),&_extraMCStepInfos[i_branch][ixtra],_buffsize,_splitlevel);
             _trkana->Branch(mcssiname.c_str(),&_extraMCStepSummaryInfos[i_branch][ixtra],_buffsize,_splitlevel);
           }
+        }
+        if(_conf.SurfaceStepsTag(_surfaceStepsTag)){
+          _trkana->Branch((branch+"mcssi.").c_str(),&_surfaceStepInfos[i_branch],_buffsize,_splitlevel);
+          std::cout << "Created branch " << branch << "mcssi" << std::endl;
         }
       }
     }
@@ -591,6 +607,7 @@ namespace mu2e {
       event.getByLabel(tag,mcstepch);
       _extraMCStepCollections.push_back(mcstepch);
     }
+    event.getByLabel(_surfaceStepsTag,_surfaceStepsHandle);
 
     // loop through all track types
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
@@ -613,6 +630,7 @@ namespace mu2e {
         _extraMCStepInfos.at(i_branch).at(i_extraMCStepTag).clear();
         _extraMCStepSummaryInfos.at(i_branch).at(i_extraMCStepTag).clear();
       }
+      _surfaceStepInfos.at(i_branch).clear();
 
       if(_fillcalomc) { _allMCTCHIs.at(i_branch).clear(); }
 
@@ -816,6 +834,12 @@ namespace mu2e {
             auto& mcsic = _extraMCStepInfos[i_branch][ixt];
             auto& mcssi = _extraMCStepSummaryInfos.at(i_branch).at(ixt);
             _infoMCStructHelper.fillExtraMCStepInfos(kseedmc,mcsc,mcsic,mcssi);
+          }
+          // fill SurfaceStep info
+          if(_surfaceStepsHandle.isValid()){
+            auto& ssi = _surfaceStepInfos.at(i_branch);
+            ssi.push_back(std::vector<SurfaceStepInfo>());
+            _infoMCStructHelper.fillSurfaceStepInfos(kseedmc,*_surfaceStepsHandle,ssi.back());
           }
           break;
         }
