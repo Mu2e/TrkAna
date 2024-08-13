@@ -55,4 +55,6 @@
   <class name="std::vector<mu2e::CrvPlaneInfoMC>" />
   <class name="mu2e::CrvSummaryReco" />
   <class name="mu2e::CrvSummaryMC" />
+  <class name="mu2e::SurfaceStepInfo" />
+  <class name="std::vector<mu2e::SurfaceStepInfo>" />
 </lcgdict>

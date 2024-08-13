@@ -1,5 +1,6 @@
 #include "Offline/Filters/fcl/prolog.fcl"
 #include "Offline/Compression/fcl/prolog.fcl"
+#include "Offline/CommonMC/fcl/prolog.fcl"
 #include "Offline/fcl/TrkCaloDt.fcl"
 BEGIN_PROLOG
 # Track quality module
@@ -206,6 +207,7 @@ TrkAnaTreeMaker : {
     MaxVDDt : 5 # ns
   }
   ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
+  SurfaceStepCollectionTag : "MakeSS"
 }
 
 TrkAnaReco : {
@@ -215,6 +217,8 @@ TrkAnaReco : {
     @table::TrkQualProducers
     @table::TrkPIDProducers
     @table::MergeKKProducers
+# patch for SurfaceSteps in MDC2020
+    MakeSS : @local::CommonMC.MakeSSReco
   }
 
   analyzers : {
@@ -227,7 +231,7 @@ TrkAnaReco : {
     genCountLogger : @local::genCountLogger
   }
 
-  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath ]
+  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath]
   EndSequenceNoMC : [ TrkAna ]
   EndSequence : [ TrkAna, genCountLogger ]
 
