@@ -12,10 +12,15 @@ You can use this utility:
 * on the command line:
 
 ```
-python3 ${TRKANA_INC}/TrkAna/utils/ntuplehelper.py --branches dem.nhits demmcsim.*
+ntuplehelper --branches dem.nhits demmcsim.*
 ```
 
-* and from within python:
+* on the ROOT command lineL
+```
+root[0] .! ntuplehelper --branches dem.nhits demmcsim.*
+```
+
+* from within python:
 
 ```
 >>> import ntuplehelper
@@ -23,7 +28,7 @@ python3 ${TRKANA_INC}/TrkAna/utils/ntuplehelper.py --branches dem.nhits demmcsim
 >>> nthelp.whatis(['dem.hits', 'demmcsim.*'])
 ```
 
-Both he above produce this output:
+The above produces this output:
 
 ```
 dem (dem = downstream e-minus fit): array branch containing general information about all reconstructed track
