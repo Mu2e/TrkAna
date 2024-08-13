@@ -1,7 +1,4 @@
-#!/bin/python3
-
 import os
-import argparse
 
 class nthelp:
 
@@ -121,20 +118,3 @@ class nthelp:
             # Display the output text
             print(branch_output)
             print(leaf_output)
-
-# A main function so that this can be run on the command line
-def main():
-    parser = argparse.ArgumentParser(
-        prog='ntuplehelper.py',
-        description='A python utility class to get information about branches and leaves',
-        epilog='For help contact Andy Edmonds via e-mail/Slack')
-
-    parser.add_argument('--branches', required=True, nargs='*', help="Use format \"branch.leaf\". Multiple items are allowed. Using a \"*\" for the leaf will print description of all leaves for the branch")
-
-    args = parser.parse_args()
-
-    nth = nthelp()
-    nth.whatis(args.branches)
-
-if __name__ == "__main__":
-    main()
