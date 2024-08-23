@@ -194,9 +194,9 @@ namespace mu2e {
       explicit TrkAnaTreeMaker(const Parameters& conf);
       virtual ~TrkAnaTreeMaker() { }
 
-      void beginJob();
+      void beginJob() override;
       void beginSubRun(const art::SubRun & subrun ) override;
-      void analyze(const art::Event& e);
+      void analyze(const art::Event& e) override;
 
     private:
 
