@@ -231,7 +231,9 @@ TrkAnaReco : {
     genCountLogger : @local::genCountLogger
   }
 
-  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath]
+  #  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath]
+  TrigSequence : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualDeM ]
+  TrigSequenceNoMC : [ @sequence::MergeKKProducersPath, TrkQualDeM ]
   EndSequenceNoMC : [ TrkAna ]
   EndSequence : [ TrkAna, genCountLogger ]
 

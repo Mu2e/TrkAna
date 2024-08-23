@@ -404,7 +404,9 @@ namespace mu2e {
     _trkana=tfs->make<TTree>("trkana","track analysis");
     // add event info branch
     _trkana->Branch("evtinfo.",&_einfo,_buffsize,_splitlevel);
-    _trkana->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
+    if (_fillmc) {
+      _trkana->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
+    }
     // hit counting branch
     _trkana->Branch("hcnt.",&_hcnt);
     // track counting branches
@@ -701,13 +703,15 @@ namespace mu2e {
     _einfo.pbtime = PBT.pbtime_;
     _einfo.pbterr = PBT.pbterr_;
 
-    auto PBTMChandle = event.getValidHandle<mu2e::ProtonBunchTimeMC>(_PBTMCTag);
-    auto PBTMC = *PBTMChandle;
-    _einfomc.pbtime = PBTMC.pbtime_;
+    if (_fillmc) {
+      auto PBTMChandle = event.getValidHandle<mu2e::ProtonBunchTimeMC>(_PBTMCTag);
+      auto PBTMC = *PBTMChandle;
+      _einfomc.pbtime = PBTMC.pbtime_;
 
-    auto PBIhandle = event.getValidHandle<mu2e::ProtonBunchIntensity>(_PBITag);
-    auto PBI = *PBIhandle;
-    _einfomc.nprotons = PBI.intensity();
+      auto PBIhandle = event.getValidHandle<mu2e::ProtonBunchIntensity>(_PBITag);
+      auto PBI = *PBIhandle;
+      _einfomc.nprotons = PBI.intensity();
+    }
 
     // get event weight products
     std::vector<Float_t> weights;
