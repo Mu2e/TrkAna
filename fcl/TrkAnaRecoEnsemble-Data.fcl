@@ -2,6 +2,7 @@
 
 physics.analyzers.TrkAna.FillMCInfo : false
 
+physics.TrkAnaTrigPath : [ @sequence::TrkAnaReco.TrigSequenceNoMC ]
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequenceNoMC ]
 
 services.TFileService.fileName: "nts.owner.trkana-reco-ensemble-data.version.sequencer.root"
