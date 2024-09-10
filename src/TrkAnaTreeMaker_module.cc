@@ -820,7 +820,7 @@ namespace mu2e {
         //        std::cout << "KalSeed Ptr " << kseedptr << " match Ptr " << iksmca->first << "?" << std::endl;
         if(iksmca->first == kseedptr) {
           auto const& kseedmc = *(iksmca->second);
-          _infoMCStructHelper.fillTrkInfoMC(kseed, kseedmc, _allMCTIs.at(i_branch));
+          _infoMCStructHelper.fillTrkInfoMC(kseed, kseedmc, _surfaceStepsHandle, _allMCTIs.at(i_branch));
           auto& mcvdis = _allMCVDInfos.at(i_branch);
           _infoMCStructHelper.fillVDInfo(kseed, kseedmc, mcvdis);
           _infoMCStructHelper.fillAllSimInfos(kseedmc, primary, _allMCSimTIs.at(i_branch), branchConfig.options().genealogyDepth(), branchConfig.options().matchDepth());
