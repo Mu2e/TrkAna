@@ -43,7 +43,9 @@ physics :
           options : { fillMC : true   genealogyDepth : -1 }
         }
       ]
-      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
+#      ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
+      SurfaceStepCollectionTag : "compressRecoMCs"
+#      SurfaceStepCollectionTag : "MakeSS"
     }
   }
   EndPath : [TrkAnaDeM]
