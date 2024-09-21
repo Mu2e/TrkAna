@@ -6,7 +6,7 @@ In this tutorial you will use mock data samples to extract signal and background
 
 We will use "/pnfs/mu2e/tape/phy-nts/nts/mu2e/ensemble-1BB-CEDIOCRYCosmic-600000s-p95MeVc-Triggered/MDC2020ad_perfect_v1_3/tka/7d/c6/nts.mu2e.ensemble-1BB-CEDIOCRYCosmic-600000s-p95MeVc-Triggered.MDC2020ad_perfect_v1_3.0.tka".
 
-This contatins a week of Mock Data at 1BB mode with CE, DIO and Cosmics. The signal rate is just below the current limit at 1e-13.
+The exact details of this sample are: https://mu2ewiki.fnal.gov/wiki/MDC2024:_Mock_Data#Mock-Dataset-0_.28MDS0.29_.2895_MeV.2Fc.29 (pass0b). 
 
 in the following example we rename the above file simply "pass0b.root" for ease.
 
