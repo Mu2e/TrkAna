@@ -1,4 +1,6 @@
 
+This example follows from the earlier example entitled "physics-analysis".
+
 ### Fitting to momentum using RooFit
 
 Firstly add the following includes:

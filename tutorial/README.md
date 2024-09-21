@@ -32,6 +32,14 @@ Note that the tutorials below still need to be updated for version 5 TrkAna tree
 
 1. [Plotting MC Truth Information of Ancestor Particles](pages/genealogy.md): In this exercise, we will use the ```demmcsim``` branch to plot the starting position of the muons that generate conversion electrons, and the starting positions of decay-in-orbit electrons.
 
+Physics Analysis Examples:
+
+1. [Mock Data Histograms](pages/physics-analysis.md): In this exercise, we extract a combined mock data set and plot momentun and apply a set of simple cuts. This uses a ROOT/C++ example.
+
+1. [Fitting to Mock Data](pages/fitting-physics-analysis.md): In this exercise, we follow from the first analysis example to use RooFit to fit to the Mock Data.
+
+1. [Python Counting Example](pages/simplepython-cutsandplot.md): In this exercise, we do some simple cut and count analysis using uproot and python.
+
 Incomplete tutorials that have something useful:
 
 1. [Plotting the Time Difference between a Track and CRV hit in the Extracted Position](pages/crv-extracted.md): In this exercise, we will use the ```crvinfo``` branch to plot the time difference between a track and CRV hit in the extracted position. 
