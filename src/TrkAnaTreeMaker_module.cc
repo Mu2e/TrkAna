@@ -33,7 +33,7 @@
 #include "Offline/Mu2eUtilities/inc/fromStrings.hh"
 #include "Offline/TrackerGeom/inc/Tracker.hh"
 #include "Offline/GeometryService/inc/GeomHandle.hh"
-#include "Offline/KinKalGeom/inc/SurfaceId.hh"
+#include "Offline/DataProducts/inc/SurfaceId.hh"
 // Framework includes.
 #include "art/Framework/Core/EDAnalyzer.h"
 #include "art/Framework/Principal/Event.h"
@@ -66,7 +66,13 @@
 #include "TrkAna/inc/HitCount.hh"
 #include "TrkAna/inc/TrkCount.hh"
 #include "TrkAna/inc/EventInfo.hh"
+#include "TrkAna/inc/EventInfoMC.hh"
 #include "TrkAna/inc/TrkInfo.hh"
+#include "TrkAna/inc/TrkInfoMC.hh"
+#include "TrkAna/inc/TrkFitInfo.hh"
+#include "TrkAna/inc/LoopHelixInfo.hh"
+#include "TrkAna/inc/CentralHelixInfo.hh"
+#include "TrkAna/inc/KinematicLineInfo.hh"
 #include "TrkAna/inc/SimInfo.hh"
 #include "TrkAna/inc/EventWeightInfo.hh"
 #include "TrkAna/inc/TrkStrawHitInfo.hh"
@@ -84,6 +90,8 @@
 #include "TrkAna/inc/MVAResultInfo.hh"
 #include "TrkAna/inc/BestCrvAssns.hh"
 #include "TrkAna/inc/MCStepInfo.hh"
+#include "TrkAna/inc/SurfaceStepInfo.hh"
+#include "TrkAna/inc/MCStepSummaryInfo.hh"
 
 // C++ includes.
 #include <iostream>
@@ -108,7 +116,7 @@ namespace mu2e {
         using Comment=fhicl::Comment;
         fhicl::Atom<bool> fillmc{Name("fillMC"), Comment("Switch to turn on filling of MC information for this set of tracks"), false};
         fhicl::Atom<bool> fillhits{Name("fillHits"), Comment("Switch to turn on filling of hit-level information for this set of tracks"), false};
-        fhicl::OptionalAtom<std::string> trkpid{Name("trkpid"), Comment("TrkCaloHitPIDCollection input tag to be written out (use prefix if fcl parameter suffix (e.g. DeM) is defined)")};
+        fhicl::OptionalAtom<std::string> trkpid{Name("trkpid"), Comment("TrkCaloHitPIDCollection input tag to be written out")};
         fhicl::Atom<bool> filltrkpid{Name("fillTrkPID"), Comment("Switch to turn on filling of the full TrkPIDInfo for this set of tracks"), false};
         fhicl::Atom<bool> required{Name("required"), Comment("True/false if you require this type of track in the event"), false};
         fhicl::Atom<int> genealogyDepth{Name("genealogyDepth"), Comment("The depth of the genealogy information you want to keep"), 1};
@@ -119,9 +127,8 @@ namespace mu2e {
         using Name=fhicl::Name;
         using Comment=fhicl::Comment;
 
-        fhicl::Atom<std::string> input{Name("input"), Comment("KalSeedCollection input tag (use prefix if fcl parameter suffix is defined)")};
+        fhicl::Atom<std::string> input{Name("input"), Comment("KalSeedCollection input tag")};
         fhicl::Atom<std::string> branch{Name("branch"), Comment("Name of output branch")};
-        fhicl::Atom<std::string> suffix{Name("suffix"), Comment("Fit suffix (e.g. DeM)"), ""};
         fhicl::Atom<std::string> trkQualTag{Name("trkQualTag"), Comment("Input tag for MVAResultCollection to use for TrkQual"), ""};
         fhicl::Table<BranchOptConfig> options{Name("options"), Comment("Optional arguments for a branch")};
       };
@@ -171,6 +178,8 @@ namespace mu2e {
         fhicl::Atom<art::InputTag> kalSeedMCTag{Name("KalSeedMCAssns"), Comment("Tag for KalSeedMCAssn"), art::InputTag()};
         // extra MC
         fhicl::OptionalSequence<art::InputTag> extraMCStepTags{Name("ExtraMCStepCollectionTags"), Comment("Input tags for any other StepPointMCCollections you want written out")};
+        // passive elements and Virtual Detector MC information
+        fhicl::OptionalAtom<art::InputTag> SurfaceStepsTag{Name("SurfaceStepCollectionTag"), Comment("SurfaceStep Collection")};
         // Calo MC
         fhicl::Atom<bool> fillCaloMC{ Name("FillCaloMC"),Comment("Fill CaloMC information"), true};
         fhicl::Atom<art::InputTag> caloClusterMCTag{Name("CaloClusterMCTag"), Comment("Tag for CaloClusterMCCollection") ,art::InputTag()};
@@ -185,9 +194,9 @@ namespace mu2e {
       explicit TrkAnaTreeMaker(const Parameters& conf);
       virtual ~TrkAnaTreeMaker() { }
 
-      void beginJob();
+      void beginJob() override;
       void beginSubRun(const art::SubRun & subrun ) override;
-      void analyze(const art::Event& e);
+      void analyze(const art::Event& e) override;
 
     private:
 
@@ -237,6 +246,10 @@ namespace mu2e {
       std::vector<art::Handle<StepPointMCCollection>> _extraMCStepCollections;
       std::map<BranchIndex, std::map<StepCollIndex, std::vector<MCStepInfos>>> _extraMCStepInfos;
       std::map<BranchIndex, std::map<StepCollIndex, std::vector<MCStepSummaryInfo>>> _extraMCStepSummaryInfos;
+      // SurfaceSteps
+      art::InputTag _surfaceStepsTag;
+      std::map<BranchIndex, std::vector<std::vector<SurfaceStepInfo>>> _surfaceStepInfos;
+      art::Handle<SurfaceStepCollection> _surfaceStepsHandle;
       //
       art::Handle<PrimaryParticle> _pph;
       art::Handle<KalSeedMCAssns> _ksmcah;
@@ -381,6 +394,11 @@ namespace mu2e {
           }
         }
       }
+      if(_conf.SurfaceStepsTag(_surfaceStepsTag)){
+        for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
+          _surfaceStepInfos[i_branch] = std::vector<std::vector<SurfaceStepInfo>>();
+        }
+      }
     }
   }
 
@@ -390,7 +408,9 @@ namespace mu2e {
     _trkana=tfs->make<TTree>("trkana","track analysis");
     // add event info branch
     _trkana->Branch("evtinfo.",&_einfo,_buffsize,_splitlevel);
-    _trkana->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
+    if (_fillmc) {
+      _trkana->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
+    }
     // hit counting branch
     _trkana->Branch("hcnt.",&_hcnt);
     // track counting branches
@@ -457,6 +477,10 @@ namespace mu2e {
             _trkana->Branch(mcsiname.c_str(),&_extraMCStepInfos[i_branch][ixtra],_buffsize,_splitlevel);
             _trkana->Branch(mcssiname.c_str(),&_extraMCStepSummaryInfos[i_branch][ixtra],_buffsize,_splitlevel);
           }
+        }
+        if(_conf.SurfaceStepsTag(_surfaceStepsTag)){
+          _trkana->Branch((branch+"mcssi.").c_str(),&_surfaceStepInfos[i_branch],_buffsize,_splitlevel);
+          std::cout << "Created branch " << branch << "mcssi" << std::endl;
         }
       }
     }
@@ -525,14 +549,14 @@ namespace mu2e {
     art::Handle<KalHelixAssns> khaH;
     if(_conf.helices()){ // find associated Helices
       BranchConfig i_branchConfig = _allBranches.at(0);
-      art::InputTag kalSeedInputTag = i_branchConfig.input() + i_branchConfig.suffix();
+      art::InputTag kalSeedInputTag = i_branchConfig.input();
       event.getByLabel(kalSeedInputTag,khaH);
     }
 
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       art::Handle<KalSeedPtrCollection> kalSeedPtrCollHandle;
-      art::InputTag kalSeedPtrInputTag = i_branchConfig.input() + i_branchConfig.suffix();
+      art::InputTag kalSeedPtrInputTag = i_branchConfig.input();
       event.getByLabel(kalSeedPtrInputTag,kalSeedPtrCollHandle);
       _allKSPCHs.push_back(kalSeedPtrCollHandle);
 
@@ -546,7 +570,7 @@ namespace mu2e {
       // also create the reco qual branches
       std::vector<art::Handle<RecoQualCollection> > recoQualCollHandles;
       std::vector<art::Handle<RecoQualCollection> > selectedRQCHs;
-      selectedRQCHs = createSpecialBranch(event, i_branchConfig.branch()+"qual", recoQualCollHandles, _allRQIs.at(i_branch), _allRQIs.at(i_branch)._qualsAndCalibs, true, i_branchConfig.suffix());
+      selectedRQCHs = createSpecialBranch(event, i_branchConfig.branch()+"qual", recoQualCollHandles, _allRQIs.at(i_branch), _allRQIs.at(i_branch)._qualsAndCalibs, true);
       for (const auto& i_selectedRQCH : selectedRQCHs) {
         if (i_selectedRQCH->size() != kalSeedPtrCollHandle->size()) {
           throw cet::exception("TrkAna") << "Sizes of KalSeedPtrCollection and this RecoQualCollection are inconsistent (" << kalSeedPtrCollHandle->size() << " and " << i_selectedRQCH->size() << " respectively)";
@@ -558,7 +582,7 @@ namespace mu2e {
       std::string i_trkpid_tag;
       art::Handle<TrkCaloHitPIDCollection> trkpidCollHandle;
       if (i_branchConfig.options().trkpid(i_trkpid_tag) && i_branchConfig.options().filltrkpid() && _conf.filltrkpid()) {
-        art::InputTag trkpidInputTag = i_trkpid_tag + i_branchConfig.suffix();
+        art::InputTag trkpidInputTag = i_trkpid_tag;
         event.getByLabel(trkpidInputTag,trkpidCollHandle);
         if (trkpidCollHandle->size() != kalSeedPtrCollHandle->size()) {
           throw cet::exception("TrkAna") << "Sizes of KalSeedPtrCollection and TrkCaloHitPIDCollection are inconsistent (" << kalSeedPtrCollHandle->size() << " and " << trkpidCollHandle->size() << " respectively)";
@@ -592,6 +616,7 @@ namespace mu2e {
       event.getByLabel(tag,mcstepch);
       _extraMCStepCollections.push_back(mcstepch);
     }
+    event.getByLabel(_surfaceStepsTag,_surfaceStepsHandle);
 
     // loop through all track types
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
@@ -614,6 +639,7 @@ namespace mu2e {
         _extraMCStepInfos.at(i_branch).at(i_extraMCStepTag).clear();
         _extraMCStepSummaryInfos.at(i_branch).at(i_extraMCStepTag).clear();
       }
+      _surfaceStepInfos.at(i_branch).clear();
 
       if(_fillcalomc) { _allMCTCHIs.at(i_branch).clear(); }
 
@@ -684,13 +710,15 @@ namespace mu2e {
     _einfo.pbtime = PBT.pbtime_;
     _einfo.pbterr = PBT.pbterr_;
 
-    auto PBTMChandle = event.getValidHandle<mu2e::ProtonBunchTimeMC>(_PBTMCTag);
-    auto PBTMC = *PBTMChandle;
-    _einfomc.pbtime = PBTMC.pbtime_;
+    if (_fillmc) {
+      auto PBTMChandle = event.getValidHandle<mu2e::ProtonBunchTimeMC>(_PBTMCTag);
+      auto PBTMC = *PBTMChandle;
+      _einfomc.pbtime = PBTMC.pbtime_;
 
-    auto PBIhandle = event.getValidHandle<mu2e::ProtonBunchIntensity>(_PBITag);
-    auto PBI = *PBIhandle;
-    _einfomc.nprotons = PBI.intensity();
+      auto PBIhandle = event.getValidHandle<mu2e::ProtonBunchIntensity>(_PBITag);
+      auto PBI = *PBIhandle;
+      _einfomc.nprotons = PBI.intensity();
+    }
 
     // get event weight products
     std::vector<Float_t> weights;
@@ -822,6 +850,12 @@ namespace mu2e {
             auto& mcsic = _extraMCStepInfos[i_branch][ixt];
             auto& mcssi = _extraMCStepSummaryInfos.at(i_branch).at(ixt);
             _infoMCStructHelper.fillExtraMCStepInfos(kseedmc,mcsc,mcsic,mcssi);
+          }
+          // fill SurfaceStep info
+          if(_surfaceStepsHandle.isValid()){
+            auto& ssi = _surfaceStepInfos.at(i_branch);
+            ssi.push_back(std::vector<SurfaceStepInfo>());
+            _infoMCStructHelper.fillSurfaceStepInfos(kseedmc,*_surfaceStepsHandle,ssi.back());
           }
           break;
         }

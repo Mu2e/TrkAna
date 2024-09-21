@@ -56,4 +56,5 @@
   <class name="mu2e::CrvSummaryReco" />
   <class name="mu2e::CrvSummaryMC" />
   <class name="std::vector<std::vector<mu2e::MVAResultInfo> >" />
+  <class name="mu2e::SurfaceStepInfo" />
 </lcgdict>

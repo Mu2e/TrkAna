@@ -13,13 +13,15 @@ physics :
 {
   producers : {
     @table::TrkAnaReco.producers
-    PBIWeight : @local::PBIWeight
   }
   analyzers : { @table::TrkAnaReco.analyzers }
 }
 
-physics.TrkAnaTrigPath : [ @sequence::MergeKKProducersPath, PBIWeight, TrkQualDeM ]
+physics.TrkAnaTrigPath : [ @sequence::TrkAnaReco.TrigSequence ]
 physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
+
+physics.trigger_paths : [ TrkAnaTrigPath ]
+physics.end_paths : [ TrkAnaEndPath ]
 
 # Include more information (MC, full TrkQual and TrkPID branches)
 # TODO: add these options back

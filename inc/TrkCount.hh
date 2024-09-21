@@ -3,7 +3,7 @@
 #include <string>
 // root
 //
-// Struct to count tracks and track-related quantities in an event
+// TrkCount: branch to count tracks and track-related quantities in an event
 // Dave Brown, LBNL 7/8/2016
 namespace mu2e
 {

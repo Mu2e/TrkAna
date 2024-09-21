@@ -1,5 +1,6 @@
 #include "Offline/Filters/fcl/prolog.fcl"
 #include "Offline/Compression/fcl/prolog.fcl"
+#include "Offline/CommonMC/fcl/prolog.fcl"
 #include "Offline/fcl/TrkCaloDt.fcl"
 BEGIN_PROLOG
 # Track quality module
@@ -130,44 +131,41 @@ MergeKKProducersPath : [ MergeKKDeM, MergeKKUeM, MergeKKDmuM, MergeKKDeP, MergeK
 MergeKKNoFieldPath : [ MergeKKLine ]
 
 
-DeM : { input : "MergeKK"
+DeM : { input : "MergeKKDeM"
   branch : "dem"
-  suffix : "DeM"
   options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   trkQualTag : "TrkQualDeM"
 }
-UeM : { input : "MergeKK"
+UeM : { input : "MergeKKUeM"
   branch : "uem"
-  suffix : "UeM"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
-DmuM : { input : "MergeKK"
+DmuM : { input : "MergeKKDmuM"
   branch : "dmm"
-  suffix : "DmuM"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
-UmuM : { input : "MergeKK"
+UmuM : { input : "MergeKKUmuM"
   branch : "umm"
-  suffix : "UmuM"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
-DeP : { input : "MergeKK"
+DeP : { input : "MergeKKDeP"
   branch : "dep"
-  suffix : "DeP"
   options : { fillMC : true   genealogyDepth : -1 }
 }
-UeP : { input : "MergeKK"
+UeP : { input : "MergeKKUeP"
   branch : "uep"
-  suffix : "UeP"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
-DmuP : { input : "MergeKK"
+DmuP : { input : "MergeKKDmuP"
   branch : "dmp"
-  suffix : "DmuP"
 }
-UmuP : { input : "MergeKK"
+UmuP : { input : "MergeKKUmuP"
   branch : "ump"
-  suffix : "UmuP"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
-Ext : { input : "MergeKK"
+Ext : { input : "MergeKKLine"
   branch : "kl"
-  suffix : "Line"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
 
 
@@ -209,6 +207,7 @@ TrkAnaTreeMaker : {
     MaxVDDt : 5 # ns
   }
   ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
+  SurfaceStepCollectionTag : "MakeSS"
 }
 
 TrkAnaReco : {
@@ -218,6 +217,8 @@ TrkAnaReco : {
     @table::TrkQualProducers
     @table::TrkPIDProducers
     @table::MergeKKProducers
+# patch for SurfaceSteps in MDC2020
+    MakeSS : @local::CommonMC.MakeSSReco
   }
 
   analyzers : {
@@ -230,7 +231,9 @@ TrkAnaReco : {
     genCountLogger : @local::genCountLogger
   }
 
-  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath ]
+  #  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath]
+  TrigSequence : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualDeM ]
+  TrigSequenceNoMC : [ @sequence::MergeKKProducersPath, TrkQualDeM ]
   EndSequenceNoMC : [ TrkAna ]
   EndSequence : [ TrkAna, genCountLogger ]
 

@@ -1,5 +1,10 @@
 # Minimal job to reconstructed downstream electrons from digis and analyze the output with TrkAna
-# Run this on digi datasets (for example dig.mu2e.CeEndpointMix1BBSignal.MDC2020r_best_v1_0.art)
+# #include this script in a subscript which specifies the database (ie
+##include "TrkAna/fcl/TrkAnaDeMFromDigis.fcl"
+#services.DbService.purpose: MDC2020_best
+#services.DbService.version: v1_3
+#services.DbService.verbose : 2
+# and run that on digi datasets (for example dig.mu2e.CeEndpointMix1BBSignal.MDC2020r_best_v1_0.art)
 #include "Offline/fcl/minimalMessageService.fcl"
 #include "Offline/fcl/standardServices.fcl"
 #include "Production/JobConfig/reco/prolog.fcl"
@@ -13,11 +18,11 @@ physics :
 {
   producers : {
     @table::TrkHitReco.producers
-    @table::Tracking.producers
+    @table::TrkReco.producers
     @table::CalPatRec.producers
     @table::CaloReco.producers
     @table::CaloCluster.producers
-    @table::CaloMC.TruthProducers
+    @table::CaloMC.producers
     @table::CrvResponsePackage.producers
     @table::Reconstruction.producers
     @table::TrkAnaReco.producers
@@ -29,14 +34,16 @@ physics :
       # a simple selector is used here, but any selector implemented as a tool can be used
       Selector : {
         tool_type : SimpleKalSeedSelector
-        MinimumMomentum : 95.0 # MeV/c
-        MaximumMomentum : 110.0 #MeV/c
-        MinimumFitConsistency : 1e-6
-        MinDeltaNHitFraction : 0.05 # Consider a 5% difference in hit count to be 'significant', and call the track more hits 'better'.  Otherwise, use fit quality to determine 'better'
+        MinMomentum : 75.0 # MeV/c
+        MaxMomentum : 300.0 #MeV/c
+        MinFitConsistency : 1e-10
+        MinDeltaNHitFraction : 0.05 # Consider a 5% difference in active hit count to be 'significant', and call the track more hits 'better'.  Otherwise, use fit quality to determine 'better'
+        MinActiveHits : 15 # Require a reasonable # of active hits
       }
-      # optionall select only the 'best' single candidate per event, where 'best' is defined by the selector
+      # optionally select only the 'best' single candidate per event, where 'best' is defined by the selector
       SelectBest : true
     }
+    MakeSS : @local::CommonMC.MakeSSDigi
   }
   filters : {
     @table::CalPatRec.filters
@@ -51,6 +58,7 @@ physics :
     MHDeM,
     KKDeM,
     MergeKKDeM,
+    MakeSS,
     @sequence::Reconstruction.MCReco
   ]
   analyzers : {
@@ -63,13 +71,13 @@ physics :
       FillHitInfo : true
       FillTriggerInfo : false
       branches :  [
-        { input: "MergeKK"
+        { input: "MergeKKDeM"
           branch : "trk"
-          suffix : "DeM"
           options : { fillMC : true   genealogyDepth : -1 }
         }
       ]
       ExtraMCStepCollectionTags : [ "compressDigiMCs:protonabsorber", "compressDigiMCs:stoppingtarget" ]
+      SurfaceStepCollectionTag : "compressRecoMCs"
     }
   }
   EndPath : [TrkAnaDeM]
@@ -91,6 +99,7 @@ physics.producers.SelectRecoMC.HelixSeedCollections  : ["MHDeM"]
 physics.producers.KKDeM.ModuleSettings.HelixSeedCollections : [ "MHDeM" ]
 physics.producers.KKDeM.ModuleSettings.ComboHitCollection : "makeSH"
 physics.producers.KKDeM.ModuleSettings.CaloClusterCollection : "CaloClusterMaker"
+physics.producers.compressRecoMCs.surfaceStepTags: [ "MakeSS" ]
 # since this is a diagnostic test, save failed fits as well
 physics.producers.KKDeM.ModuleSettings.SaveAllFits : true
 physics.end_paths : [ EndPath ]

@@ -43,9 +43,8 @@ physics :
       FillHitInfo : true
       FillTriggerInfo : false
       branches :  [
-        { input: "KK"
+        { input: "KKLine"
           branch : "kl"
-          suffix : "Line"
           options : { fillMC : true   genealogyDepth : 5 }
         }
       ]

@@ -1,5 +1,5 @@
 //
-// Struct to describe straw materials on the Kalman fit
+// TrkStrawMatInfo: branch to describe straw materials on the Kalman fit
 //
 #ifndef TrkStrawMatInfoHH
 #define TrkStrawMatInfoHH

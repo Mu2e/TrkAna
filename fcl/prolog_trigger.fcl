@@ -24,27 +24,23 @@ TrkAnaTrigger : {
     }
   }
   TTtprDe : {
-    input : "MergeTTKSF"
+    input : "MergeTTKSFDe"
     branch : "trk"
-    suffix : "De"
     options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   }
   TTcprDe : {
-    input : "MergeTTCalSeedFit"
+    input : "MergeTTCalSeedFitDe"
     branch : "trk"
-    suffix : "De"
     options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   }
   TTapr : {
     input : "MergeTTAprKSF"
     branch : "trk"
-    suffix : ""
     options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   }
   TTmprDe : {
-    input : "MergeTTMprKSF"
+    input : "MergeTTMprKSFDe"
     branch : "trk"
-    suffix : "De"
     options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
   }
 }

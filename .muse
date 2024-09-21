@@ -1,0 +1,4 @@
+# make dictionaries available to ROOT
+ROOT_LIBRARY_PATH
+
+PYTHONPATH utils

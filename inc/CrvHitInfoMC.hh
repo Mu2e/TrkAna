@@ -1,12 +1,15 @@
 #ifndef CrvHitInfoMC_hh
 #define CrvHitInfoMC_hh
+
+// CrvHitInfoMC: information about the MC track which most likely caused the CRV coincidence triplets
+
 namespace CLHEP {class Hep3Vector; }
 #include <vector>
 #include "TrkAna/inc/RootVectors.hh"
 
 namespace mu2e
 {
-  struct CrvHitInfoMC  //information about the MC track which most likely caused the CRV coincidence triplets
+  struct CrvHitInfoMC
   {
     bool              valid = false;            //was an MC particle found that matches the coincidence triplets?
     int               pdgId = -1;            //PDG ID of this MC particle

@@ -109,7 +109,7 @@ ax.margins(0)
 ```
 You should see the S-bend of the transport solenoid and also the production solenoid.
 
-For plotting the positions of DIO electrons, we don't need to remember the process code numbers. Instead we can import the ```MCProducts``` class directly because it is included in pyana through [PyWrap](https://mu2ewiki.fnal.gov/wiki/PyWrap). This wraps some of our classes so that they can be called in python. To do this we just import MCDataProducts and get the enum:
+For plotting the positions of DIO electrons, we don't need to remember the process code numbers. Instead we can import the ```MCProducts``` class directly because it is included in our comman python environment through [PyWrap](https://mu2ewiki.fnal.gov/wiki/PyWrap). This wraps some of our classes so that they can be called in python. To do this we just import MCDataProducts and get the enum:
 
 ```
 import MCDataProducts

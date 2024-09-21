@@ -374,4 +374,16 @@ namespace mu2e {
     mcsics.push_back(mcsic);
     mcssis.push_back(mcssi);
   }
+
+  void InfoMCStructHelper::fillSurfaceStepInfos(KalSeedMC const& kseedmc, SurfaceStepCollection const& surfsteps,std::vector<SurfaceStepInfo>& ssic) {
+    // only look at SurfaceSteps associated with the primary MC truth match particle
+    auto simp = kseedmc.simParticle().simParticle(_spcH);
+    for (auto const& ss : surfsteps) {
+      if(ss.simParticle() == simp){
+//        std::cout << "Found matching surface step sid" << ss << " particle time " << simp->startGlobalTime() << std::endl;
+        ssic.emplace_back(ss);
+      }
+    }
+  }
+
 }

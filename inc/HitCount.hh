@@ -1,7 +1,7 @@
 #ifndef HitCountHH
 #define HitCountHH
 //
-// Struct to count hits in an event
+// HitCount: branch to count types of hits in an event
 // Dave Brown, LBNL 7/8/2016
 namespace mu2e
 {

@@ -1,5 +1,5 @@
 //
-// Struct to record additional MC step information
+// MCStepInfo: branch to record StepPointMC information
 //
 #ifndef MCStepInfo_HH
 #define MCStepInfo_HH
@@ -22,22 +22,6 @@ namespace mu2e {
     bool valid() { return vid>=0; }
   };
 
-  struct MCStepSummaryInfo {
-    unsigned nsteps = 0; // number of indivdual steps
-    float ftime = 1e15;  // time of the first step WRT MC primary proton (ns)
-    float ltime = -1e15;  // time of the last step WRT MC primary proton (ns)
-    float de = 0; // sum energy deposit through these steps (MeV)
-    float dp = 0; // sum momentum magnitude change through this step (MeV/c)
-    void reset() {*this = MCStepSummaryInfo(); }
-
-    void addStep(MCStepInfo const& mcsi) {
-      nsteps++;
-      ftime = std::min(ftime,mcsi.time);
-      ltime = std::max(ltime,mcsi.time);
-      de += mcsi.de;
-      dp += mcsi.dp;
-    }
-  };
   using MCStepInfos = std::vector<MCStepInfo>;
 }
 #endif

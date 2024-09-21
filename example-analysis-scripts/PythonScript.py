@@ -2,7 +2,7 @@
 # To run (on a mu2egpvm machine):
 # > setup mu2e
 # > muse setup TrkAna
-# > setup pyana v1_04_00
+# > source /exp/mu2e/app/users/sophie/pyana-tests/sophie-pyana/bin/activate
 # > python TrkAna/example-analysis-scripts/PythonScript.py
 #
 import uproot
