@@ -803,12 +803,8 @@ namespace mu2e {
     if (trkQualHandle.isValid()) { // might not have a valid handle
       _allTrkQualResults.at(i_branch).result = trkQualHandle->at(i_kseedptr)._value;
       _allTrkQualResults.at(i_branch).valid= 1; //TODO
-      std::cout<<"size old "<<_allTrkQualResults.size()<<std::endl;
-      std::cout<<"branch "<<_allTrkQualResults.at(i_branch).result<<std::endl;
-    
-      _allTrkQualResultsNew.at(i_branch).push_back(_allTrkQualResults.at(i_branch));
-      std::cout<<"size new "<<_allTrkQualResultsNew.size()<<std::endl;
-      std::cout<<"size new "<<_allTrkQualResultsNew.at(i_branch).size()<<std::endl;
+      _infoStructHelper.fillTrkQualInfo(kseed, trkQualHandle->at(i_kseedptr) , _allTrkQualResultsNew.at(i_branch)); // FIXME - multiple fills!!!
+      std::cout<<"size new[branch] "<<_allTrkQualResultsNew.at(i_branch).size()<<std::endl;
     }
     
     // all RecoQuals
