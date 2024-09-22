@@ -228,7 +228,6 @@ namespace mu2e {
       std::vector<std::vector<art::Handle<RecoQualCollection> > > _allRQCHs; // outer vector is for each track type, inner vector is all RecoQuals
       std::vector<art::Handle<TrkCaloHitPIDCollection> > _allTCHPCHs; // we will only allow one TrkCaloHitPID object per track type to be fully written out
       std::vector<art::Handle<MVAResultCollection> > _allTrkQualCHs; 
-      //std::map<BranchIndex, std::vector<std::vector<MVAResultInfo>>>  _allTrkQualCHsNew; //TODO - understand the differences
 
       // quality branches (outputs)
       std::vector<RecoQualInfo> _allRQIs;
@@ -545,7 +544,6 @@ namespace mu2e {
     _allTCHPCHs.clear();
     _allBestCrvAssns.clear();
     _allTrkQualCHs.clear();
-    //_allTrkQualCHsNew.clear();
 
     art::Handle<KalHelixAssns> khaH;
     if(_conf.helices()){ // find associated Helices
@@ -566,7 +564,6 @@ namespace mu2e {
         event.getByLabel(i_branchConfig.trkQualTag(),trkQualCollHandle);
       }
       _allTrkQualCHs.emplace_back(trkQualCollHandle);
-      //_allTrkQualCHsNew.at(i_branch).emplace_back(trkQualCollHandle);
 
       // also create the reco qual branches
       std::vector<art::Handle<RecoQualCollection> > recoQualCollHandles;
