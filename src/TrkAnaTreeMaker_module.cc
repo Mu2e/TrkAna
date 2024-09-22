@@ -234,7 +234,7 @@ namespace mu2e {
       std::vector<RecoQualInfo> _allRQIs;
       std::vector<TrkPIDInfo> _allTPIs;
       std::vector<MVAResultInfo> _allTrkQualResults;
-      std::map<BranchIndex, std::vector<std::vector<MVAResultInfo>>> _allTrkQualResultsNew;
+      std::map<BranchIndex, std::vector<MVAResultInfo>> _allTrkQualResultsNew;
     
       // trigger information
       unsigned _trigbits;
@@ -382,7 +382,8 @@ namespace mu2e {
       _allTSHIMCs[i_branch] = std::vector<std::vector<TrkStrawHitInfoMC>>();
 
       MVAResultInfo tqr;
-      _allTrkQualResultsNew[i_branch] = std::vector<std::vector<MVAResultInfo>>();
+      _allTrkQualResultsNew[i_branch] = std::vector<MVAResultInfo>();
+      _allTrkQualResultsNew[i_branch].emplace_back(tqr);
       _allTrkQualResults.emplace_back(tqr);
 
 
@@ -801,11 +802,13 @@ namespace mu2e {
     const auto& trkQualHandle = _allTrkQualCHs.at(i_branch);
     if (trkQualHandle.isValid()) { // might not have a valid handle
       _allTrkQualResults.at(i_branch).result = trkQualHandle->at(i_kseedptr)._value;
-      float r = trkQualHandle->at(i_kseedptr)._value;
-      std::cout<<"result "<<r<<std::endl;
-      std::cout<<"size "<<_allTrkQualResults.size()<<std::endl;
+      _allTrkQualResults.at(i_branch).valid= 1; //TODO
+      std::cout<<"size old "<<_allTrkQualResults.size()<<std::endl;
       std::cout<<"branch "<<_allTrkQualResults.at(i_branch).result<<std::endl;
-      _allTrkQualResultsNew.at(i_branch).push_back(_allTrkQualResults);
+    
+      _allTrkQualResultsNew.at(i_branch).push_back(_allTrkQualResults.at(i_branch));
+      std::cout<<"size new "<<_allTrkQualResultsNew.size()<<std::endl;
+      std::cout<<"size new "<<_allTrkQualResultsNew.at(i_branch).size()<<std::endl;
     }
     
     // all RecoQuals
