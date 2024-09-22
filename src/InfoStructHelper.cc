@@ -194,7 +194,7 @@ namespace mu2e {
  void InfoStructHelper::fillTrkQualInfo(const KalSeed& kseed, MVAResult mva, std::vector<MVAResultInfo>& all_mvas) {
     MVAResultInfo temp_result;
     temp_result.result = mva._value;
-    temp_result.valid = 1;
+    temp_result.valid = true;
     all_mvas.push_back(temp_result);
  }
 

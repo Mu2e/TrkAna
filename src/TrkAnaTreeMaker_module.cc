@@ -802,9 +802,10 @@ namespace mu2e {
     const auto& trkQualHandle = _allTrkQualCHs.at(i_branch);
     if (trkQualHandle.isValid()) { // might not have a valid handle
       _allTrkQualResults.at(i_branch).result = trkQualHandle->at(i_kseedptr)._value;
-      _allTrkQualResults.at(i_branch).valid= 1; //TODO
-      _infoStructHelper.fillTrkQualInfo(kseed, trkQualHandle->at(i_kseedptr) , _allTrkQualResultsNew.at(i_branch)); // FIXME - multiple fills!!!
-      std::cout<<"size new[branch] "<<_allTrkQualResultsNew.at(i_branch).size()<<std::endl;
+      _allTrkQualResults.at(i_branch).valid= true;
+      _allTrkQualResultsNew.at(i_branch).clear();
+      _infoStructHelper.fillTrkQualInfo(kseed, trkQualHandle->at(i_kseedptr) , _allTrkQualResultsNew.at(i_branch));
+      
     }
     
     // all RecoQuals
