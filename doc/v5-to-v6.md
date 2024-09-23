@@ -1,10 +1,14 @@
 # Major Changes from v5 to v6
 
-There was a major update when we moved from v5 to v6. Here is a table of changes for you to consult:
+There was a major update when we moved from v5 to v6. Here are tables of changes for you to consult. Note that the same change may appear in multiple tables since it may be important in one area but defined in another. For example, the folder name is defined in fcl but is also important to know in the Tree / Branch / Leaf Changes
 
-## Branch / Leaf Changes
+## Tree / Branch / Leaf Changes
+|  | v5 | v6 | Notes |
+|---|--|--|---|
+| folder name | ```TrkAna``` | ```EventNtuple``` | defined in fcl|
+| tree name | ```trkana``` | ```ntuple``` | defined in code |
 
-## Fcl Files
+## Fcl File Changes
 Many fcl files were renamed, updated, or deleted
 
 | fcl file | v5 --> v6 |
@@ -12,13 +16,18 @@ Many fcl files were renamed, updated, or deleted
 | CrvExpert.fcl | deleted |
 | TrkAnaReco_wTrkQualFilter.fcl | deleted |
 
-## Name Changes
+## Fcl Parameter Changes 
+|  | v5 | v6 | Notes |
+|---|--|--|---|
+| prolog.fcl table name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` | the table that contains the default module configuration |
+| folder name | ```TrkAna``` | ```EventNtuple``` | |
+| default output file name | ```nts.owner.trkana-reco.version.sequencer.root``` | ```nts.owner.description.version.sequencer.root``` | |
+
+
+## Important Code Changes
 
 |  | v5 | v6 | Notes |
 |---|--|--|---|
 | src file name | ```TrkAnaTreeMaker_module.cc``` | ```EventNtupleMaker_module.cc``` | |
 | art module name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` |  |
-| prolog.fcl table name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` | |
-| tree name | ```trkana``` | ```ntuple``` |  |
-| folder name | ```TrkAna``` | ```EventNtuple``` | |
-| default output file name | ```nts.owner.trkana-reco.version.sequencer.root``` | ```nts.owner.description.version.sequencer.root``` | |
+| tree name | ```trkana``` | ```ntuple``` | defined in code |
