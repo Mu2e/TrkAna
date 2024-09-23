@@ -1,7 +1,7 @@
 void create_val_file(std::string filename, std::string outfilename) {
 
   TFile* ntuple_file = new TFile(filename.c_str(), "READ");
-  TTree* ntuple = (TTree*) ntuple_file->Get("TrkAna/ntuple");
+  TTree* ntuple = (TTree*) ntuple_file->Get("EventNtuple/ntuple");
 
   TFile* file = new TFile(outfilename.c_str(), "RECREATE");
 
