@@ -1,0 +1,6 @@
+#include "TrkAna/fcl/from_mcs_mockdata.fcl"
+
+physics.analyzers.EventNtuple.branches : [ @local::DeM ]
+physics.analyzers.EventNtuple.FillTriggerInfo : false
+physics.EventNtuplePath : [ MergeKKDeM, PBIWeight, TrkQualDeM, TrkPIDDeM ]
+physics.EventNtupleEndPath : [ EventNtuple, genCountLogger ]
