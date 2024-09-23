@@ -11,14 +11,12 @@ services : @local::Services.Reco
 
 physics :
 {
-  producers : {
-    @table::TrkAnaReco.producers
-  }
-  analyzers : { @table::TrkAnaReco.analyzers }
+  producers : { @table::EventNtuple.producers }
+  analyzers : { @table::EventNtuple.analyzers }
 }
 
-physics.TrkAnaTrigPath : [ @sequence::TrkAnaReco.TrigSequence ]
-physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
+physics.TrkAnaTrigPath : [ @sequence::EventNtuple.TrigSequence ]
+physics.TrkAnaEndPath : [ @sequence::EventNtuple.EndSequence ]
 
 physics.trigger_paths : [ TrkAnaTrigPath ]
 physics.end_paths : [ TrkAnaEndPath ]

@@ -211,14 +211,13 @@ EventNtupleMaker : {
   SurfaceStepCollectionTag : "MakeSS"
 }
 
-TrkAnaReco : {
-
+EventNtuple : {
   producers: {
     PBIWeight : @local::PBIWeight
     @table::TrkQualProducers
     @table::TrkPIDProducers
     @table::MergeKKProducers
-# patch for SurfaceSteps in MDC2020
+    # patch for SurfaceSteps in MDC2020
     MakeSS : @local::CommonMC.MakeSSReco
   }
 

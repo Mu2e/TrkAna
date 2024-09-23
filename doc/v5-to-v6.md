@@ -19,9 +19,10 @@ Many fcl files were renamed, updated, or deleted
 ## Fcl Parameter Changes 
 |  | v5 | v6 | Notes |
 |---|--|--|---|
-| prolog.fcl table name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` | the table that contains the default module configuration |
 | folder name | ```TrkAna``` | ```EventNtuple``` | |
 | default output file name | ```nts.owner.trkana-reco.version.sequencer.root``` | ```nts.owner.description.version.sequencer.root``` | |
+| prolog.fcl table name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` | the table that contains the default module configuration |
+| prolog.fcl physics block | ```TrkAnaReco``` | ```EventNtuple``` | the block that contains ```producers```, ```analyzers```, etc. |
 
 
 ## Important Code Changes
