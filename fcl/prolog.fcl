@@ -206,7 +206,8 @@ TrkAnaTreeMaker : {
     MinGoodMomFraction : 0.9
     MaxVDDt : 5 # ns
   }
-  ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
+#  ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
+  ExtraMCStepCollectionTags : []
   SurfaceStepCollectionTag : "MakeSS"
 }
 

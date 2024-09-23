@@ -28,6 +28,7 @@
 #include "Offline/GeometryService/inc/GeomHandle.hh"
 #include "Offline/GlobalConstantsService/inc/GlobalConstantsHandle.hh"
 #include "Offline/GlobalConstantsService/inc/ParticleDataList.hh"
+#include "art/Framework/Principal/Handle.h"
 
 #include <vector>
 #include <functional>
@@ -64,7 +65,7 @@ namespace mu2e {
       InfoMCStructHelper(const Config& conf);
       void updateEvent(const art::Event& event);
 
-      void fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, std::vector<TrkInfoMC>& all_trkinfomcs);
+      void fillTrkInfoMC(const KalSeed& kseed, const KalSeedMC& kseedmc, art::Handle<SurfaceStepCollection> surfaceStepsHandle, std::vector<TrkInfoMC>& all_trkinfomcs);
       void fillTrkInfoMCDigis(const KalSeed& kseed, const KalSeedMC& kseedmc, TrkInfoMC& trkinfomc);
       void fillHitInfoMC(const KalSeedMC& kseedmc, TrkStrawHitInfoMC& tshinfomc, const TrkStrawHitMC& tshmc);
       void fillAllSimInfos(const KalSeedMC& kseedmc, const PrimaryParticle& primary, std::vector<std::vector<SimInfo>>& all_siminfos, int n_generations, int n_match);

@@ -14,6 +14,7 @@ namespace mu2e
     XYZVectorF mom;
     XYZVectorF pos;
     double time;
+    float dmom; // scalar momentum change in positive time direction
     float momerr = -1000;  // projected error on the scalar momentum
     bool inbounds = false; // was the intersection within the (literal) surface bounds
     bool gap = false; // was the intersection in a piecewise trajectory gap
