@@ -1,4 +1,4 @@
-#include "TrkAna/fcl/from_mcs_mockdata_noMC.fcl"
+#include "TrkAna/fcl/from_mcs-mockdata.fcl"
 
 physics.analyzers.EventNtuple.FillMCInfo : false
 
