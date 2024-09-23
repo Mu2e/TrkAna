@@ -29,12 +29,12 @@ physics.end_paths : [ TrkAnaEndPath ]
 #physics.analyzers.TrkAnaPos.candidate.options : @local::AllOpt
 
 # for hit level diagnostics, set diagLevel to 2
-physics.analyzers.TrkAna.diagLevel : 1
-physics.analyzers.TrkAna.FillMCInfo : true
-physics.analyzers.TrkAna.FillCRVCoincs : true
-physics.analyzers.TrkAna.FillTriggerInfo : false
-physics.analyzers.TrkAna.FitType : LoopHelix
+physics.analyzers.EventNtuple.diagLevel : 1
+physics.analyzers.EventNtuple.FillMCInfo : true
+physics.analyzers.EventNtuple.FillCRVCoincs : true
+physics.analyzers.EventNtuple.FillTriggerInfo : false
+physics.analyzers.EventNtuple.FitType : LoopHelix
 
-physics.analyzers.TrkAna.FillTrkPIDInfo : false
+physics.analyzers.EventNtuple.FillTrkPIDInfo : false
 
 services.TFileService.fileName: "nts.owner.trkana-reco.version.sequencer.root"

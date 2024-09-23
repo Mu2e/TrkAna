@@ -223,7 +223,7 @@ TrkAnaReco : {
   }
 
   analyzers : {
-    TrkAna : { @table::EventNtupleMaker  }
+    EventNtuple : { @table::EventNtupleMaker  }
 
     TrkAnaExt : { @table::EventNtupleMaker
       branches : [ @local::Ext ]
@@ -235,8 +235,8 @@ TrkAnaReco : {
   #  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath]
   TrigSequence : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualDeM ]
   TrigSequenceNoMC : [ @sequence::MergeKKProducersPath, TrkQualDeM ]
-  EndSequenceNoMC : [ TrkAna ]
-  EndSequence : [ TrkAna, genCountLogger ]
+  EndSequenceNoMC : [ EventNtuple ]
+  EndSequence : [ EventNtuple, genCountLogger ]
 
 }
 

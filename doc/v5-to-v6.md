@@ -16,4 +16,4 @@ Many fcl files were renamed, updated, or deleted
 | art module name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` |  |
 | prolog.fcl table name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` | |
 | tree name | ```trkana``` | ```ntuple``` |  |
-
+| folder name | ```TrkAna``` | ```EventNtuple``` | |
