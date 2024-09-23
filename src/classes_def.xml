@@ -43,6 +43,7 @@
   <class name="mu2e::EventWeightInfo" />
   <class name="mu2e::RecoQualInfo" />
   <class name="mu2e::MVAResultInfo" />
+  <class name="std::vector<std::vector<mu2e::MVAResultInfo> >" />
   <class name="mu2e::CrvHitInfoReco" />
   <class name="std::vector<mu2e::CrvHitInfoReco>" />
   <class name="mu2e::CrvHitInfoMC" />
@@ -57,5 +58,5 @@
   <class name="mu2e::CrvSummaryMC" />
   <class name="mu2e::SurfaceStepInfo" />
   <class name="std::vector<mu2e::SurfaceStepInfo>" />
-  <class name="std::vector<std::vector<mu2e::MVAResultInfo> >" />
+  <class name="std::vector<std::vector<mu2e::SurfaceStepInfo> >" />
 </lcgdict>
