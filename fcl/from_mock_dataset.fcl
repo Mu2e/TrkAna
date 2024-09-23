@@ -16,7 +16,7 @@ physics :
 }
 
 physics.EventNtuplePath : [ @sequence::EventNtuple.Path ]
-physics.EventNtupleEndPath : [ @sequence::EventNtuple.EndPath ]
+physics.EventNtupleEndPath : [ @sequence::EventNtuple.EndPathNoMC ]
 
 physics.trigger_paths : [ EventNtuplePath ]
 physics.end_paths : [ EventNtupleEndPath ]

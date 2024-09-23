@@ -11,10 +11,11 @@ There was a major update when we moved from v5 to v6. Here are tables of changes
 ## Fcl File Changes
 Many fcl files were renamed, updated, or deleted
 
-| fcl file | v5 --> v6 |
-|----|---|
-| CrvExpert.fcl | deleted |
-| TrkAnaReco_wTrkQualFilter.fcl | deleted |
+| fcl file | v5 --> v6 | notes |
+|----|---|----|
+| TrkAnaReco.fcl | from_mock_dataset.fcl | for running on mock datasets, ```genCountLogger``` also removed  |
+| CrvExpert.fcl | deleted | |
+| TrkAnaReco_wTrkQualFilter.fcl | deleted | |
 
 ## Fcl Parameter Changes 
 |  | v5 | v6 | Notes |
