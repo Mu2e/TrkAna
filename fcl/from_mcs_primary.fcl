@@ -1,0 +1,3 @@
+#include "TrkAna/inc/from_mcs_mockdata.fcl"
+
+physics.EventNtupleEndPath : [ @sequence::EventNtuple.EndPath ] # adds back genCountLogger
