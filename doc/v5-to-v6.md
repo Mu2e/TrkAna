@@ -7,6 +7,9 @@ There was a major update when we moved from v5 to v6. Here is a table of changes
 ## Fcl Files
 Many fcl files were renamed, updated, or deleted
 
+| fcl file | v5 --> v6 | notes |
+|----|---|----|
+| CrvExpert.fcl | deleted | refers to v4 ```TrkAnaNeg``` and ```TrkAnaPos``` |
 
 ## Name Changes
 
