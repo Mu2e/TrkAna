@@ -195,7 +195,7 @@ namespace mu2e {
       std::vector<BranchConfig> _allBranches; // configurations for all track branches
 
       // main TTree
-      TTree* _trkana;
+      TTree* _ntuple;
       // general event info branch
       EventInfo _einfo;
       EventInfoMC _einfomc;
@@ -393,66 +393,66 @@ namespace mu2e {
   void EventNtupleMaker::beginJob( ){
     art::ServiceHandle<art::TFileService> tfs;
     // create TTree
-    _trkana=tfs->make<TTree>("trkana","track analysis");
+    _ntuple=tfs->make<TTree>("ntuple","Mu2e Event Ntuple");
     // add event info branch
-    _trkana->Branch("evtinfo.",&_einfo,_buffsize,_splitlevel);
+    _ntuple->Branch("evtinfo.",&_einfo,_buffsize,_splitlevel);
     if (_fillmc) {
-      _trkana->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
+      _ntuple->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
     }
     // hit counting branch
-    _trkana->Branch("hcnt.",&_hcnt);
+    _ntuple->Branch("hcnt.",&_hcnt);
     // track counting branches
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string leafname = i_branchConfig.branch();
-      _trkana->Branch(("tcnt.n"+leafname).c_str(),&_tcnt._counts[i_branch]);
+      _ntuple->Branch(("tcnt.n"+leafname).c_str(),&_tcnt._counts[i_branch]);
     }
 
     // create all track branches
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string branch = i_branchConfig.branch();
-      _trkana->Branch((branch+".").c_str(),&_allTIs.at(i_branch),_buffsize,_splitlevel);
-      _trkana->Branch((branch+"fit.").c_str(),&_allTFIs.at(i_branch),_buffsize,_splitlevel);
+      _ntuple->Branch((branch+".").c_str(),&_allTIs.at(i_branch),_buffsize,_splitlevel);
+      _ntuple->Branch((branch+"fit.").c_str(),&_allTFIs.at(i_branch),_buffsize,_splitlevel);
 // add traj-specific branches
-      if(_ftype == LoopHelix )_trkana->Branch((branch+"lh.").c_str(),&_allLHIs.at(i_branch),_buffsize,_splitlevel);
-      if(_ftype == CentralHelix )_trkana->Branch((branch+"ch.").c_str(),&_allCHIs.at(i_branch),_buffsize,_splitlevel);
-      if(_ftype == KinematicLine )_trkana->Branch((branch+"kl.").c_str(),&_allKLIs.at(i_branch),_buffsize,_splitlevel);
+      if(_ftype == LoopHelix )_ntuple->Branch((branch+"lh.").c_str(),&_allLHIs.at(i_branch),_buffsize,_splitlevel);
+      if(_ftype == CentralHelix )_ntuple->Branch((branch+"ch.").c_str(),&_allCHIs.at(i_branch),_buffsize,_splitlevel);
+      if(_ftype == KinematicLine )_ntuple->Branch((branch+"kl.").c_str(),&_allKLIs.at(i_branch),_buffsize,_splitlevel);
       // TrkCaloHit: currently only 1
-      _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
-      _trkana->Branch((branch+"trkqual.").c_str(),&_allTrkQualResults.at(i_branch),_buffsize,_splitlevel);
+      _ntuple->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
+      _ntuple->Branch((branch+"trkqual.").c_str(),&_allTrkQualResults.at(i_branch),_buffsize,_splitlevel);
       if (_conf.filltrkpid() && i_branchConfig.options().filltrkpid()) {
         int n_trkpid_vars = TrkCaloHitPID::n_vars;
         for (int i_trkpid_var = 0; i_trkpid_var < n_trkpid_vars; ++i_trkpid_var) {
           TrkCaloHitPID::MVA_varindex i_index =TrkCaloHitPID::MVA_varindex(i_trkpid_var);
           std::string varname = TrkCaloHitPID::varName(i_index);
-          _trkana->Branch((branch+"trkpid."+varname).c_str(), &_allTPIs.at(i_branch)._tchpvars[i_index]);
+          _ntuple->Branch((branch+"trkpid."+varname).c_str(), &_allTPIs.at(i_branch)._tchpvars[i_index]);
         }
-        _trkana->Branch((branch+"trkpid.mvaout").c_str(), &_allTPIs.at(i_branch)._mvaout);
-        _trkana->Branch((branch+"trkpid.mvastat").c_str(), &_allTPIs.at(i_branch)._mvastat);
-        _trkana->Branch((branch+"trkpid.disk0frad").c_str(), &_allTPIs.at(i_branch)._diskfrad[0]);
-        _trkana->Branch((branch+"trkpid.disk1frad").c_str(), &_allTPIs.at(i_branch)._diskfrad[1]);
-        _trkana->Branch((branch+"trkpid.disk0brad").c_str(), &_allTPIs.at(i_branch)._diskbrad[0]);
-        _trkana->Branch((branch+"trkpid.disk1brad").c_str(), &_allTPIs.at(i_branch)._diskbrad[1]);
+        _ntuple->Branch((branch+"trkpid.mvaout").c_str(), &_allTPIs.at(i_branch)._mvaout);
+        _ntuple->Branch((branch+"trkpid.mvastat").c_str(), &_allTPIs.at(i_branch)._mvastat);
+        _ntuple->Branch((branch+"trkpid.disk0frad").c_str(), &_allTPIs.at(i_branch)._diskfrad[0]);
+        _ntuple->Branch((branch+"trkpid.disk1frad").c_str(), &_allTPIs.at(i_branch)._diskfrad[1]);
+        _ntuple->Branch((branch+"trkpid.disk0brad").c_str(), &_allTPIs.at(i_branch)._diskbrad[0]);
+        _ntuple->Branch((branch+"trkpid.disk1brad").c_str(), &_allTPIs.at(i_branch)._diskbrad[1]);
       }
       // optionally add hit-level branches
       // (for the time being diagLevel : 2 will still work, but I propose removing this at some point)
       if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){
-        _trkana->Branch((branch+"tsh.").c_str(),&_allTSHIs.at(i_branch),_buffsize,_splitlevel);
-        _trkana->Branch((branch+"tsm.").c_str(),&_allTSMIs.at(i_branch),_buffsize,_splitlevel);
+        _ntuple->Branch((branch+"tsh.").c_str(),&_allTSHIs.at(i_branch),_buffsize,_splitlevel);
+        _ntuple->Branch((branch+"tsm.").c_str(),&_allTSMIs.at(i_branch),_buffsize,_splitlevel);
       }
 
       // optionally add MC branches
       if(_fillmc && i_branchConfig.options().fillmc()){
-        _trkana->Branch((branch+"mc.").c_str(),&_allMCTIs.at(i_branch),_buffsize,_splitlevel);
+        _ntuple->Branch((branch+"mc.").c_str(),&_allMCTIs.at(i_branch),_buffsize,_splitlevel);
 
-        _trkana->Branch((branch+"mcsim.").c_str(),&_allMCSimTIs.at(i_branch),_buffsize,_splitlevel);
-        _trkana->Branch((branch+"mcvd.").c_str(),&_allMCVDInfos.at(i_branch),_buffsize,_splitlevel);
-        if(_fillcalomc)_trkana->Branch((branch+"tchmc.").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
+        _ntuple->Branch((branch+"mcsim.").c_str(),&_allMCSimTIs.at(i_branch),_buffsize,_splitlevel);
+        _ntuple->Branch((branch+"mcvd.").c_str(),&_allMCVDInfos.at(i_branch),_buffsize,_splitlevel);
+        if(_fillcalomc)_ntuple->Branch((branch+"tchmc.").c_str(),&_allMCTCHIs.at(i_branch),_buffsize,_splitlevel);
         // at hit-level MC information
         // (for the time being diagLevel will still work, but I propose removing this at some point)
         if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){
-          _trkana->Branch((branch+"tshmc.").c_str(),&_allTSHIMCs.at(i_branch),_buffsize,_splitlevel);
+          _ntuple->Branch((branch+"tshmc.").c_str(),&_allTSHIMCs.at(i_branch),_buffsize,_splitlevel);
         }
         // configure extra MCStep branches for this track type
         if(_conf.extraMCStepTags(_extraMCStepTags)){
@@ -461,43 +461,43 @@ namespace mu2e {
             auto inst = tag.instance();
             std::string  mcsiname = branch +"mcsic_" + inst + ".";
             std::string  mcssiname = branch + "mcssi_" + inst + ".";
-            _trkana->Branch(mcsiname.c_str(),&_extraMCStepInfos[i_branch][ixtra],_buffsize,_splitlevel);
-            _trkana->Branch(mcssiname.c_str(),&_extraMCStepSummaryInfos[i_branch][ixtra],_buffsize,_splitlevel);
+            _ntuple->Branch(mcsiname.c_str(),&_extraMCStepInfos[i_branch][ixtra],_buffsize,_splitlevel);
+            _ntuple->Branch(mcssiname.c_str(),&_extraMCStepSummaryInfos[i_branch][ixtra],_buffsize,_splitlevel);
           }
         }
         if(_conf.SurfaceStepsTag(_surfaceStepsTag)){
-          _trkana->Branch((branch+"mcssi.").c_str(),&_surfaceStepInfos[i_branch],_buffsize,_splitlevel);
+          _ntuple->Branch((branch+"mcssi.").c_str(),&_surfaceStepInfos[i_branch],_buffsize,_splitlevel);
         }
       }
     }
 
     // trigger info.  Actual names should come from the BeginRun object FIXME
     if(_conf.filltrig()) {
-      _trkana->Branch("trigbits",&_trigbits,_buffsize,_splitlevel);
+      _ntuple->Branch("trigbits",&_trigbits,_buffsize,_splitlevel);
     }
     // calorimeter information for the downstream electron track
     // general CRV info
     if(_fillcrvcoincs) {
       // coincidence branches should be here FIXME
-      _trkana->Branch("crvsummary.",&_crvsummary,_buffsize,_splitlevel);
-      _trkana->Branch("crvcoincs.",&_crvcoincs,_buffsize,_splitlevel);
+      _ntuple->Branch("crvsummary.",&_crvsummary,_buffsize,_splitlevel);
+      _ntuple->Branch("crvcoincs.",&_crvcoincs,_buffsize,_splitlevel);
       if(_fillcrvpulses) {
-        _trkana->Branch("crvpulses.",&_crvpulses,_buffsize,_splitlevel);
+        _ntuple->Branch("crvpulses.",&_crvpulses,_buffsize,_splitlevel);
       }
       if(_fillcrvdigis) {
-        _trkana->Branch("crvdigis.",&_crvdigis,_buffsize,_splitlevel);
+        _ntuple->Branch("crvdigis.",&_crvdigis,_buffsize,_splitlevel);
       }
       if(_fillmc){
-        _trkana->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
-        _trkana->Branch("crvcoincsmc.",&_crvcoincsmc,_buffsize,_splitlevel);
-        _trkana->Branch("crvcoincsmcplane.",&_crvcoincsmcplane,_buffsize,_splitlevel);
+        _ntuple->Branch("crvsummarymc.",&_crvsummarymc,_buffsize,_splitlevel);
+        _ntuple->Branch("crvcoincsmc.",&_crvcoincsmc,_buffsize,_splitlevel);
+        _ntuple->Branch("crvcoincsmcplane.",&_crvcoincsmcplane,_buffsize,_splitlevel);
         if(_fillcrvpulses) {
-          _trkana->Branch("crvpulsesmc.",&_crvpulsesmc,_buffsize,_splitlevel);
+          _ntuple->Branch("crvpulsesmc.",&_crvpulsesmc,_buffsize,_splitlevel);
         }
       }
     }
     // helix info
-    if(_conf.helices()) _trkana->Branch("helixinfo.",&_hinfo,_buffsize,_splitlevel);
+    if(_conf.helices()) _ntuple->Branch("helixinfo.",&_hinfo,_buffsize,_splitlevel);
   }
 
   void EventNtupleMaker::beginSubRun(const art::SubRun & subrun ) {
@@ -680,7 +680,7 @@ namespace mu2e {
 
 
     // fill this row in the TTree
-    _trkana->Fill();
+    _ntuple->Fill();
   }
 
 
@@ -894,14 +894,14 @@ namespace mu2e {
         int n_leaves = leafnames.size();
         for (int i_leaf = 0; i_leaf < n_leaves; ++i_leaf) {
           std::string thisbranchname = (branchname+"."+leafnames.at(i_leaf));
-          if (!_trkana->GetBranch(thisbranchname.c_str())) {  // only want to create the branch once
-            _trkana->Branch(thisbranchname.c_str(), &array[i_leaf]);
+          if (!_ntuple->GetBranch(thisbranchname.c_str())) {  // only want to create the branch once
+            _ntuple->Branch(thisbranchname.c_str(), &array[i_leaf]);
           }
         }
       }
       else {
-        if (!_trkana->GetBranch((branchname+".").c_str())) {  // only want to create the branch once
-          _trkana->Branch((branchname+".").c_str(), &infostruct, infostruct.leafname(labels).c_str());
+        if (!_ntuple->GetBranch((branchname+".").c_str())) {  // only want to create the branch once
+          _ntuple->Branch((branchname+".").c_str(), &infostruct, infostruct.leafname(labels).c_str());
         }
       }
     }

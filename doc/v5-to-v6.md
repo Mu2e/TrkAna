@@ -13,6 +13,7 @@ Many fcl files were renamed, updated, or deleted
 |  | v5 | v6 | Notes |
 |---|--|--|---|
 | src file name | ```TrkAnaTreeMaker_module.cc``` | ```EventNtupleMaker_module.cc``` | |
-| art module name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` | |
+| art module name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` |  |
 | prolog.fcl table name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` | |
+| tree name | ```trkana``` | ```ntuple``` |  |
 
