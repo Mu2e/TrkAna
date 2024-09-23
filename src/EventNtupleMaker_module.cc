@@ -1,14 +1,5 @@
 //
-// Prototype analysis module using tracks.  This module associates information from the
-// Mu2e detector systems into a single coherent analysis TTree (trkana).  This module
-// depends on the data products produced by reconstruction and (if requested) their MC
-// counterparts.  The primary analysis object is the set of Downstream electron track fits.
-// Upstream electron fit and downstream muon are also required for PID and quality selection.
-// Calorimeter clusters and Track-cluster matching are used for PID. CRV coincidences are also
-// included for rejecting cosmic backgrounds.
-// Most of the calcluations are done by upstream modules and helper classes.
-// Original author: Dave Brown (LBNL) 7/7/2016
-// Updated November 2018 to run on KalSeeds only (A. Edmonds)
+// art module to create the EventNtuple
 //
 
 // Mu2e includes
@@ -107,7 +98,7 @@ namespace mu2e {
   typedef size_t BranchIndex;
   typedef size_t StepCollIndex;
 
-  class TrkAnaTreeMaker : public art::EDAnalyzer {
+  class EventNtupleMaker : public art::EDAnalyzer {
 
     public:
 
@@ -191,8 +182,8 @@ namespace mu2e {
       };
       typedef art::EDAnalyzer::Table<Config> Parameters;
 
-      explicit TrkAnaTreeMaker(const Parameters& conf);
-      virtual ~TrkAnaTreeMaker() { }
+      explicit EventNtupleMaker(const Parameters& conf);
+      virtual ~EventNtupleMaker() { }
 
       void beginJob() override;
       void beginSubRun(const art::SubRun & subrun ) override;
@@ -317,7 +308,7 @@ namespace mu2e {
 
   };
 
-  TrkAnaTreeMaker::TrkAnaTreeMaker(const Parameters& conf):
+  EventNtupleMaker::EventNtupleMaker(const Parameters& conf):
     art::EDAnalyzer(conf),
     _conf(conf()),
     _PBITag(conf().PBITag()),
@@ -399,7 +390,7 @@ namespace mu2e {
     }
   }
 
-  void TrkAnaTreeMaker::beginJob( ){
+  void EventNtupleMaker::beginJob( ){
     art::ServiceHandle<art::TFileService> tfs;
     // create TTree
     _trkana=tfs->make<TTree>("trkana","track analysis");
@@ -509,12 +500,12 @@ namespace mu2e {
     if(_conf.helices()) _trkana->Branch("helixinfo.",&_hinfo,_buffsize,_splitlevel);
   }
 
-  void TrkAnaTreeMaker::beginSubRun(const art::SubRun & subrun ) {
+  void EventNtupleMaker::beginSubRun(const art::SubRun & subrun ) {
     // get bfield
     _infoStructHelper.updateSubRun();
   }
 
-  void TrkAnaTreeMaker::analyze(const art::Event& event) {
+  void EventNtupleMaker::analyze(const art::Event& event) {
     // reset event level structs
     _einfo.reset();
     _einfomc.reset();
@@ -693,7 +684,7 @@ namespace mu2e {
   }
 
 
-  void TrkAnaTreeMaker::fillEventInfo( const art::Event& event) {
+  void EventNtupleMaker::fillEventInfo( const art::Event& event) {
     // fill basic event information
     _einfo.event = event.event();
     _einfo.run = event.run();
@@ -724,7 +715,7 @@ namespace mu2e {
     _wtinfo.setWeights(weights);
   }
 
-  void TrkAnaTreeMaker::fillTriggerBits(const art::Event& event,std::string const& process) {
+  void EventNtupleMaker::fillTriggerBits(const art::Event& event,std::string const& process) {
     //get the TriggerResult from the process that created the KalFinalFit downstream collection
     art::InputTag const tag{Form("TriggerResults::%s", process.c_str())};
     auto trigResultsH = event.getValidHandle<art::TriggerResults>(tag);
@@ -760,7 +751,7 @@ namespace mu2e {
     }
   }
 
-  void TrkAnaTreeMaker::fillAllInfos(const art::Handle<KalSeedPtrCollection>& kspch, BranchIndex i_branch, size_t i_kseedptr) {
+  void EventNtupleMaker::fillAllInfos(const art::Handle<KalSeedPtrCollection>& kspch, BranchIndex i_branch, size_t i_kseedptr) {
 
     const auto& kseedptr = (kspch->at(i_kseedptr));
     const auto& kseed = *kseedptr;
@@ -864,7 +855,7 @@ namespace mu2e {
   // some branches can't be made until the analyze() function because we want to write out all data products of a certain type
   // these all have an underlying array where we want to name the individual elements in the array with different leaf names
   template <typename T, typename TI, typename TIA>
-  std::vector<art::Handle<T> >  TrkAnaTreeMaker::createSpecialBranch(const art::Event& event, const std::string& branchname,
+  std::vector<art::Handle<T> >  EventNtupleMaker::createSpecialBranch(const art::Event& event, const std::string& branchname,
   std::vector<art::Handle<T> >& handles, // this parameter is only needed so that the template parameter T can be deduced. There is probably a better way to do this FIXME
   TI& infostruct, TIA& array, bool make_individual_branches, const std::string& selection) {
     std::vector<art::Handle<T> > outputHandles;
@@ -917,7 +908,7 @@ namespace mu2e {
     return outputHandles;
   }
 
-  void TrkAnaTreeMaker::resetTrackBranches() {
+  void EventNtupleMaker::resetTrackBranches() {
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
 
       _allRQIs.at(i_branch).reset();
@@ -928,5 +919,5 @@ namespace mu2e {
 
 // Part of the magic that makes this class a module.
 // create an instance of the module.  It also registers
-using mu2e::TrkAnaTreeMaker;
-DEFINE_ART_MODULE(TrkAnaTreeMaker)
+using mu2e::EventNtupleMaker;
+DEFINE_ART_MODULE(EventNtupleMaker)

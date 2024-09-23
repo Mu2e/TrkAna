@@ -170,7 +170,7 @@ Ext : { input : "MergeKKLine"
 
 
 TrkAnaTreeMaker : {
-  module_type : TrkAnaTreeMaker
+  module_type : EventNtupleMaker
   branches : [ @local::DeM, @local::DeP, @local::UeM, @local::UeP,
     @local::DmuM, @local::DmuP, @local::UmuM, @local::UmuP ]
   RecoCountTag : "SelectRecoMC"
