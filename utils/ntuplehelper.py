@@ -1,7 +1,4 @@
-#!/bin/python3
-
 import os
-import argparse
 
 class nthelp:
 
@@ -98,10 +95,16 @@ class nthelp:
 
                         # Check whether this row is an explanation for a leaf that we are asking for
                         for i_leaf in leaves:
-                            if (row.find(" "+i_leaf+" ") != -1) or (row.find(" "+i_leaf+";") != -1): # add spaces around leaf so that we don't find substrings
-                                #                            print(row)
-                                if i_leaf not in leaf_explanations: # we want to only take the first occurance
-                                    leaf_explanations[i_leaf] = row
+                            if i_leaf == "*":
+                                if (row.find(" = ") != -1) and (row.find(";") != -1) and (row.find("//") != -1):
+                                    if i_leaf not in leaf_explanations: # we want to only take the first occurance
+                                        leaf_explanations[i_leaf] = "\n"+row
+                                    else:
+                                        leaf_explanations[i_leaf] += row;
+                            else:
+                                if (row.find(" "+i_leaf+" ") != -1) or (row.find(" "+i_leaf+";") != -1): # add spaces around leaf so that we don't find substrings
+                                    if i_leaf not in leaf_explanations: # we want to only take the first occurance
+                                        leaf_explanations[i_leaf] = row
             except KeyError:
                 print(branch_to_search+" is not in branch_struct_dict...\n")
 
@@ -115,20 +118,3 @@ class nthelp:
             # Display the output text
             print(branch_output)
             print(leaf_output)
-
-# A main function so that this can be run on the command line
-def main():
-    parser = argparse.ArgumentParser(
-        prog='ntuplehelper.py',
-        description='A python utility class to get information about branches and leaves',
-        epilog='For help contact Andy Edmonds via e-mail/Slack')
-
-    parser.add_argument('--branches', required=True, nargs='*', help="Use format \"branch.leaf\". Multiple items are allowed")
-
-    args = parser.parse_args()
-
-    nth = nthelp()
-    nth.whatis(args.branches)
-
-if __name__ == "__main__":
-    main()
