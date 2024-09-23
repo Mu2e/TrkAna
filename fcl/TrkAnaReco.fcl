@@ -15,11 +15,11 @@ physics :
   analyzers : { @table::EventNtuple.analyzers }
 }
 
-physics.TrkAnaTrigPath : [ @sequence::EventNtuple.TrigSequence ]
-physics.TrkAnaEndPath : [ @sequence::EventNtuple.EndSequence ]
+physics.EventNtuplePath : [ @sequence::EventNtuple.Path ]
+physics.EventNtupleEndPath : [ @sequence::EventNtuple.EndPath ]
 
-physics.trigger_paths : [ TrkAnaTrigPath ]
-physics.end_paths : [ TrkAnaEndPath ]
+physics.trigger_paths : [ EventNtuplePath ]
+physics.end_paths : [ EventNtupleEndPath ]
 
 # for hit level diagnostics, set diagLevel to 2
 physics.analyzers.EventNtuple.diagLevel : 1

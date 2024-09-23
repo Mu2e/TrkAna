@@ -232,10 +232,10 @@ EventNtuple : {
   }
 
   #  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath]
-  TrigSequence : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualDeM ]
-  TrigSequenceNoMC : [ @sequence::MergeKKProducersPath, TrkQualDeM ]
-  EndSequenceNoMC : [ EventNtuple ]
-  EndSequence : [ EventNtuple, genCountLogger ]
+  Path : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualDeM ]
+  PathNoMC : [ @sequence::MergeKKProducersPath, TrkQualDeM ]
+  EndPath : [ EventNtuple, genCountLogger ]
+  EndPathNoMC : [ EventNtuple ]
 
 }
 
