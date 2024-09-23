@@ -187,10 +187,10 @@ EventNtupleMaker : {
   CrvDigisTag : "SelectRecoMC"
   CrvCoincidenceClusterMCAssnsTag : "CrvCoincidenceClusterMCAssns"
   CrvPlaneY : 2653
-  FillMCInfo : true
-  FillTrkPIDInfo : true
+  FillMCInfo : false
+  FillTrkPIDInfo : false
   FillHitInfo : false
-  FillTriggerInfo : true
+  FillTriggerInfo : false
   TriggerProcessName : "Mix"
   ProcessEmptyEvents : false
   FillCRVCoincs : true
@@ -209,7 +209,11 @@ EventNtupleMaker : {
 #  ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
   ExtraMCStepCollectionTags : []
   SurfaceStepCollectionTag : "MakeSS"
+  FitType : LoopHelix
 }
+
+EventNtupleMakerMC : @local::EventNtupleMaker
+EventNtupleMakerMC.FillMCInfo : true
 
 EventNtuple : {
   producers: {
