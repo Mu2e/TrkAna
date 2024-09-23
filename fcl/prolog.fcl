@@ -2,6 +2,9 @@
 #include "Offline/Compression/fcl/prolog.fcl"
 #include "Offline/CommonMC/fcl/prolog.fcl"
 #include "Offline/fcl/TrkCaloDt.fcl"
+
+#include "TrkAna/fcl/prolog_mc_reweighters.fcl"
+
 BEGIN_PROLOG
 # Track quality module
 TrkQual : {
@@ -56,34 +59,6 @@ TrkPIDProducers : {
 }
 TrkPIDProducersPath : [ TrkPIDDeM, TrkPIDDeP ]
 
-# DIO weighting for flat spectrum electrons
-DIOWeight: {
-  module_type: DecayInOrbitWeight
-  weightingScheme : pol58
-  inputModule : compressDigiMCs
-  verbosityLevel: 1
-}
-# converts ProtonBunchIntensity object to EventWeight object
-PBIWeight : {
-  module_type : PBIWeight
-  PBITag : "PBISim"
-  meanPBITag : "PBISim:MeanIntensity"
-}
-#Example configuration of RMCWeightModule
-RMCWeight : {
-  module_type : RMCWeight
-  kinematic_endpoint : 100
-  internalConversion : 1
-  verbosityLevel : 0
-}
-dioLLWeight : {
-  module_type : BinnedSpectrumWeight
-  genParticleTag : "compressDigiMCs"
-  genParticlePdgId : 11
-  genParticleGenId : dioTail
-  spectrumFileName : "Offline/ConditionsService/data/czarnecki_szafron_Al_2016.tbl"
-  BinCenter : false
-}
 genCountLogger: { module_type: GenEventCountReader }
 
 AllOpt : {

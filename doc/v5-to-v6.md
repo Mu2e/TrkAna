@@ -14,6 +14,7 @@ Many fcl files were renamed, updated, or deleted
 | fcl file | v5 --> v6 | notes |
 |----|---|----|
 | TrkAnaReco.fcl | from_mock_dataset.fcl | for running on mock datasets, ```genCountLogger``` also removed  |
+| prolog_mc_reweighters.fcl | new file | contains prolog blocks for reweighter modules which were previously in prolog.fcl itself |
 | CrvExpert.fcl | deleted | |
 | TrkAnaReco_wTrkQualFilter.fcl | deleted | |
 
