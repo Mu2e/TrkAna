@@ -476,7 +476,6 @@ namespace mu2e {
         }
         if(_conf.SurfaceStepsTag(_surfaceStepsTag)){
           _trkana->Branch((branch+"mcssi.").c_str(),&_surfaceStepInfos[i_branch],_buffsize,_splitlevel);
-          std::cout << "Created branch " << branch << "mcssi" << std::endl;
         }
       }
     }
@@ -747,8 +746,7 @@ namespace mu2e {
         if(ifnd != _tmap.end()){
           unsigned itrig = ifnd->second;
           _trigbits |= 1 << itrig;
-          if(_conf.debug() > 1)
-            cout << "Trigger path " << tnav.getTrigPath(ipath) << " Trigger ID " << itrig << " returns " << trigResults->accept(ipath) << endl;
+          if(_conf.debug() > 1) cout << "Trigger path " << tnav.getTrigPath(ipath) << " Trigger ID " << itrig << " returns " << trigResults->accept(ipath) << endl;
         }
       }
     }
@@ -823,12 +821,12 @@ namespace mu2e {
     if(_fillmc && branchConfig.options().fillmc()) {
       const PrimaryParticle& primary = *_pph;
       // use Assns interface to find the associated KalSeedMC; this uses ptrs
-      //      std::cout << "KalSeedMCMatch has " << _ksmcah->size() << " entries" << std::endl;
+      if(_conf.debug() > 1)std::cout << "KalSeedMCMatch has " << _ksmcah->size() << " entries" << std::endl;
       for(auto iksmca = _ksmcah->begin(); iksmca!= _ksmcah->end(); iksmca++){
-        //        std::cout << "KalSeed Ptr " << kseedptr << " match Ptr " << iksmca->first << "?" << std::endl;
+        if(_conf.debug() > 2) std::cout << "KalSeed Ptr " << kseedptr << " match Ptr " << iksmca->first << "?" << std::endl;
         if(iksmca->first == kseedptr) {
           auto const& kseedmc = *(iksmca->second);
-          _infoMCStructHelper.fillTrkInfoMC(kseed, kseedmc, _allMCTIs.at(i_branch));
+          _infoMCStructHelper.fillTrkInfoMC(kseed, kseedmc, _surfaceStepsHandle, _allMCTIs.at(i_branch));
           auto& mcvdis = _allMCVDInfos.at(i_branch);
           _infoMCStructHelper.fillVDInfo(kseed, kseedmc, mcvdis);
           _infoMCStructHelper.fillAllSimInfos(kseedmc, primary, _allMCSimTIs.at(i_branch), branchConfig.options().genealogyDepth(), branchConfig.options().matchDepth());
@@ -845,6 +843,7 @@ namespace mu2e {
           }
           // fill SurfaceStep info
           if(_surfaceStepsHandle.isValid()){
+            if(_conf.debug() > 2)std::cout << "SurfaceSteps from handle " << _surfaceStepsHandle << std::endl;
             auto& ssi = _surfaceStepInfos.at(i_branch);
             ssi.push_back(std::vector<SurfaceStepInfo>());
             _infoMCStructHelper.fillSurfaceStepInfos(kseedmc,*_surfaceStepsHandle,ssi.back());
@@ -881,11 +880,11 @@ namespace mu2e {
 
           // make sure that the selection (e.g. "DeM") appears at the end of the module label
           if (pos == std::string::npos) {
-            //      std::cout << "Selection not found" << std::endl;
+            if(_conf.debug() > 3)std::cout << "Selection not found" << std::endl;
             continue;
           }
           else if (pos+selection.length() != moduleLabel.size()) {
-            //      std::cout << "Selection wasn't at end of moduleLabel" << std::endl;
+            if(_conf.debug() > 3)std::cout << "Selection wasn't at end of moduleLabel" << std::endl;
             continue;
           }
           moduleLabel = moduleLabel.erase(pos, selection.length());

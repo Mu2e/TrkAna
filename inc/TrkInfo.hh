@@ -29,6 +29,13 @@ namespace mu2e
     int nbkg = 0; // number of active hits passing background selection
     int nsel = 0; // number of active hits passing all selections
     int nseg =0;     // number of trajectory segments
+    int nipaup = 0; // number of upstream IPA intersections
+    int nipadown = 0; // number of downstream IPA intersections
+    int nstup = 0; // number of upstream stopping target foil intersections
+    int nstdown = 0; // number of downstream stopping target foil intersections
+    bool tsdainter = false; // does track intersect the TSDA?
+    bool opainter = false; // does track intersect the OPA?
+    int firststinter=-1; // first intersection with a stopping target foil
     float chisq =-1;   // Kalman fit chisquared
     float fitcon =-1;  // Kalman fit chisqured consistency
     float radlen;  // total radiation length of (active) material crossed by this particle inside the tracker

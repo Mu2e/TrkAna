@@ -80,6 +80,32 @@ namespace mu2e {
       }
     }
 
+    // find intersections
+    const static SurfaceId ipasid(SurfaceIdDetail::IPA);
+    const static SurfaceId opasid(SurfaceIdDetail::OPA);
+    const static SurfaceId tsdasid(SurfaceIdDetail::TSDA);
+    const static SurfaceId stsid(SurfaceIdDetail::ST_Foils,-1);
+
+    auto ipainters = kseed.intersections(ipasid);
+    auto opainters = kseed.intersections(opasid);
+    auto tsdainters = kseed.intersections(tsdasid);
+    auto stinters = kseed.intersections(stsid);
+    trkinfo.tsdainter = tsdainters.size() > 0;
+    trkinfo.opainter = opainters.size() > 0;
+
+    for(auto ipainter : ipainters) {
+      if(ipainter->momentum3().Z() > 0.0)
+        ++trkinfo.nipadown;
+      else
+        ++trkinfo.nipaup;
+    }
+    for(auto stinter : stinters) {
+      if(stinter->momentum3().Z() > 0.0)
+        ++trkinfo.nstdown;
+      else
+        ++trkinfo.nstup;
+    }
+
     fillTrkInfoStraws(kseed, trkinfo);
 
     trkinfos.push_back(trkinfo);
@@ -110,6 +136,7 @@ namespace mu2e {
       tfi.gap = kinter.gap();
       tfi.sid = kinter.surfid_.id().id();
       tfi.sindex = kinter.surfid_.index();
+      tfi.dmom = kinter.dMom();
       tfis.push_back(tfi);
     }
     // now flag early and latest intersections
