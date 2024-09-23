@@ -10,6 +10,10 @@ print("Testing a few leaves from a single branch (should only print the branch d
 print("=========")
 nthelp.whatis(['evtinfo.run', 'evtinfo.subrun', 'evtinfo.event']) # should only print the "evtinfo" description once
 
+print("Testing wildcard")
+print("=========")
+nthelp.whatis(["dem.*", "demfit.*"])
+
 print("Testing a few errors")
 print("=========")
 nthelp.whatis(['dem.lha', 'fff.gap', 'fff.ddd'])
