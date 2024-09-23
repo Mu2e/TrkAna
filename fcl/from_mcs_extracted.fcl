@@ -1,0 +1,8 @@
+#include "TrkAna/fcl/from_mcs_mockdata.fcl"
+
+physics.EventNtuplePath : [ @sequence::EventNtuple.PathExt ] # path for extracted position cosmics
+physics.analyzers.EventNtuple.branches : [ @local::Ext ]
+physics.analyzers.EventNtuple.FitType : KinematicLine
+
+services.GeometryService.inputFile: "Production/JobConfig/cosmic/geom_cosmic_extracted.txt"
+services.TFileService.fileName: "nts.owner.trkanaextracted-reco.version.sequencer.root"

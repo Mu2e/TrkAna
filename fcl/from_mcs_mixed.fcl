@@ -1,1 +1,1 @@
-#include "TrkAna/inc/from_mcs_primary.fcl"
+#include "TrkAna/fcl/from_mcs_primary.fcl"

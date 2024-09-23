@@ -162,7 +162,7 @@ EventNtupleMaker : {
   CrvDigisTag : "SelectRecoMC"
   CrvCoincidenceClusterMCAssnsTag : "CrvCoincidenceClusterMCAssns"
   CrvPlaneY : 2653
-  FillMCInfo : false
+  FillMCInfo : true
   FillTrkPIDInfo : false
   FillHitInfo : false
   FillTriggerInfo : false
@@ -187,9 +187,6 @@ EventNtupleMaker : {
   FitType : LoopHelix
 }
 
-EventNtupleMakerMC : @local::EventNtupleMaker
-EventNtupleMakerMC.FillMCInfo : true
-
 EventNtuple : {
   producers: {
     PBIWeight : @local::PBIWeight
@@ -202,16 +199,12 @@ EventNtuple : {
 
   analyzers : {
     EventNtuple : { @table::EventNtupleMaker  }
-
-    TrkAnaExt : { @table::EventNtupleMaker
-      branches : [ @local::Ext ]
-    }
-
     genCountLogger : @local::genCountLogger
   }
 
   #  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath]
   Path : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualDeM ]
+  PathExt : [ @sequence::MergeKKNoFieldPath ]
   PathNoMC : [ @sequence::MergeKKProducersPath, TrkQualDeM ]
   EndPath : [ EventNtuple, genCountLogger ]
   EndPathNoMC : [ EventNtuple ]
