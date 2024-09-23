@@ -21,3 +21,4 @@ Many fcl files were renamed, updated, or deleted
 | prolog.fcl table name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` | |
 | tree name | ```trkana``` | ```ntuple``` |  |
 | folder name | ```TrkAna``` | ```EventNtuple``` | |
+| default output file name | ```nts.owner.trkana-reco.version.sequencer.root``` | ```nts.owner.description.version.sequencer.root``` | |

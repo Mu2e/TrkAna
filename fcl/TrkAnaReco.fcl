@@ -3,7 +3,7 @@
 #include "Offline/fcl/standardServices.fcl"
 #include "TrkAna/fcl/prolog.fcl"
 
-process_name : TrkAnaReco
+process_name : EventNtuple
 
 source : { module_type : RootInput }
 
@@ -23,18 +23,12 @@ physics.TrkAnaEndPath : [ @sequence::TrkAnaReco.EndSequence ]
 physics.trigger_paths : [ TrkAnaTrigPath ]
 physics.end_paths : [ TrkAnaEndPath ]
 
-# Include more information (MC, full TrkQual and TrkPID branches)
-# TODO: add these options back
-#physics.analyzers.TrkAnaNeg.candidate.options : @local::AllOpt
-#physics.analyzers.TrkAnaPos.candidate.options : @local::AllOpt
-
 # for hit level diagnostics, set diagLevel to 2
 physics.analyzers.EventNtuple.diagLevel : 1
 physics.analyzers.EventNtuple.FillMCInfo : true
 physics.analyzers.EventNtuple.FillCRVCoincs : true
 physics.analyzers.EventNtuple.FillTriggerInfo : false
 physics.analyzers.EventNtuple.FitType : LoopHelix
-
 physics.analyzers.EventNtuple.FillTrkPIDInfo : false
 
-services.TFileService.fileName: "nts.owner.trkana-reco.version.sequencer.root"
+services.TFileService.fileName: "nts.owner.description.version.sequencer.root"
