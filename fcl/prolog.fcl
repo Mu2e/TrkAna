@@ -169,7 +169,7 @@ Ext : { input : "MergeKKLine"
 }
 
 
-TrkAnaTreeMaker : {
+EventNtupleMaker : {
   module_type : EventNtupleMaker
   branches : [ @local::DeM, @local::DeP, @local::UeM, @local::UeP,
     @local::DmuM, @local::DmuP, @local::UmuM, @local::UmuP ]
@@ -223,9 +223,9 @@ TrkAnaReco : {
   }
 
   analyzers : {
-    TrkAna : { @table::TrkAnaTreeMaker  }
+    TrkAna : { @table::EventNtupleMaker  }
 
-    TrkAnaExt : { @table::TrkAnaTreeMaker
+    TrkAnaExt : { @table::EventNtupleMaker
       branches : [ @local::Ext ]
     }
 

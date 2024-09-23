@@ -14,4 +14,5 @@ Many fcl files were renamed, updated, or deleted
 |---|--|--|---|
 | src file name | ```TrkAnaTreeMaker_module.cc``` | ```EventNtupleMaker_module.cc``` | |
 | art module name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` | |
+| prolog.fcl table name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` | |
 
