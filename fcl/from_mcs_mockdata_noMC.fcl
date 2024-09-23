@@ -1,0 +1,6 @@
+#include "TrkAna/fcl/from_mcs_mockdata_noMC.fcl"
+
+physics.analyzers.EventNtuple.FillMCInfo : false
+
+physics.EventNtuplePath : [ @sequence::EventNtuple.PathNoMC ]
+physics.EventNtupleEndPath : [ @sequence::EventNtuple.EndPathNoMC ]

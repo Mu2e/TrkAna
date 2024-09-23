@@ -17,9 +17,11 @@ Many fcl files were renamed, updated, or deleted
 | TrkAnaReco.fcl | from_mcs_mockdata.fcl | for running on mock datasets, ```genCountLogger``` also removed  |
 | TrkAnaExtracted.fcl | from_mcs_extracted.fcl | for running on mcs "extracted position" datasets, now #includes from_mcs_mockdata.fcl as a base |
 | TrkAnaReco_ceSimReco.fcl | from_mcs_ceSimReco.fcl | for running on the output of ceSimReco.fcl |
+| TrkAnaRecoEnsemble-Data.fcl | from_mcs_mockdata_noMC.fcl | for running on mock data with no MC information |
 | from_mcs_primary.fcl | new file | for running on mcs "primary" datasets |
 | from_mcs_mixed.fcl | new file | for running on mcs "mixed" datasets |
 | prolog_mc_reweighters.fcl | new file | contains prolog blocks for reweighter modules which were previously in prolog.fcl itself |
+| TrkAnaRecoEnsemble-MC.fcl | deleted | use from_mcs_mockdata.fcl |
 | CrvExpert.fcl | deleted | |
 | TrkAnaReco_wTrkQualFilter.fcl | deleted | |
 | TrkAnaReco_addMCUpstream.fcl | deleted | |
