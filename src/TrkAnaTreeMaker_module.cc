@@ -227,12 +227,13 @@ namespace mu2e {
 
       std::vector<std::vector<art::Handle<RecoQualCollection> > > _allRQCHs; // outer vector is for each track type, inner vector is all RecoQuals
       std::vector<art::Handle<TrkCaloHitPIDCollection> > _allTCHPCHs; // we will only allow one TrkCaloHitPID object per track type to be fully written out
-      std::vector<art::Handle<MVAResultCollection> > _allTrkQualCHs;
+      std::vector<art::Handle<MVAResultCollection> > _allTrkQualCHs; 
 
       // quality branches (outputs)
       std::vector<RecoQualInfo> _allRQIs;
       std::vector<TrkPIDInfo> _allTPIs;
-      std::vector<MVAResultInfo> _allTrkQualResults;
+      std::map<BranchIndex, std::vector<MVAResultInfo>> _allTrkQualResults;
+    
       // trigger information
       unsigned _trigbits;
       std::map<size_t,unsigned> _tmap; // map between path and trigger ID.  ID should come from trigger itself FIXME!
@@ -379,7 +380,7 @@ namespace mu2e {
       _allTSHIMCs[i_branch] = std::vector<std::vector<TrkStrawHitInfoMC>>();
 
       MVAResultInfo tqr;
-      _allTrkQualResults.emplace_back(tqr);
+      _allTrkQualResults[i_branch] = std::vector<MVAResultInfo>();
 
 
       if(_conf.extraMCStepTags(_extraMCStepTags)){
@@ -428,7 +429,7 @@ namespace mu2e {
       if(_ftype == KinematicLine )_trkana->Branch((branch+"kl.").c_str(),&_allKLIs.at(i_branch),_buffsize,_splitlevel);
       // TrkCaloHit: currently only 1
       _trkana->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
-      _trkana->Branch((branch+"trkqual.").c_str(), &_allTrkQualResults.at(i_branch));
+      _trkana->Branch((branch+"trkqual.").c_str(),&_allTrkQualResults.at(i_branch),_buffsize,_splitlevel);
       if (_conf.filltrkpid() && i_branchConfig.options().filltrkpid()) {
         int n_trkpid_vars = TrkCaloHitPID::n_vars;
         for (int i_trkpid_var = 0; i_trkpid_var < n_trkpid_vars; ++i_trkpid_var) {
@@ -626,6 +627,8 @@ namespace mu2e {
       _allMCTIs.at(i_branch).clear();
       _allMCVDInfos.at(i_branch).clear();
       _allMCSimTIs.at(i_branch).clear();
+      
+      _allTrkQualResults.at(i_branch).clear();
 
       for (StepCollIndex i_extraMCStepTag = 0; i_extraMCStepTag < _extraMCStepTags.size(); ++i_extraMCStepTag) {
         _extraMCStepInfos.at(i_branch).at(i_extraMCStepTag).clear();
@@ -791,9 +794,10 @@ namespace mu2e {
 
     const auto& trkQualHandle = _allTrkQualCHs.at(i_branch);
     if (trkQualHandle.isValid()) { // might not have a valid handle
-      _allTrkQualResults.at(i_branch).result = trkQualHandle->at(i_kseedptr)._value;
+      _infoStructHelper.fillTrkQualInfo(kseed, trkQualHandle->at(i_kseedptr) , _allTrkQualResults.at(i_branch));
+      
     }
-
+    
     // all RecoQuals
     std::vector<Float_t> recoQuals; // for the output value
     for (const auto& i_recoQualHandle : _allRQCHs.at(i_branch)) {

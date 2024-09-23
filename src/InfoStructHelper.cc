@@ -172,6 +172,7 @@ namespace mu2e {
     }
     all_lhis.push_back(lhis);
   }
+ 
   void InfoStructHelper::fillCentralHelixInfo(const KalSeed& kseed, std::vector<std::vector<CentralHelixInfo>>& all_chis) {
     std::vector<CentralHelixInfo> chis;
     for(auto const& kinter : kseed.intersections()) {
@@ -215,6 +216,13 @@ namespace mu2e {
       klis.push_back(kli);
     }
     all_klis.push_back(klis);
+ }
+ 
+ void InfoStructHelper::fillTrkQualInfo(const KalSeed& kseed, MVAResult mva, std::vector<MVAResultInfo>& all_mvas) {
+    MVAResultInfo temp_result;
+    temp_result.result = mva._value;
+    temp_result.valid = true;
+    all_mvas.push_back(temp_result);
  }
 
   void InfoStructHelper::fillTrkInfoHits(const KalSeed& kseed, TrkInfo& trkinfo) {
