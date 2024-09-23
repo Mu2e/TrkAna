@@ -22,6 +22,8 @@ Many fcl files were renamed, updated, or deleted
 | prolog_mc_reweighters.fcl | new file | contains prolog blocks for reweighter modules which were previously in prolog.fcl itself |
 | CrvExpert.fcl | deleted | |
 | TrkAnaReco_wTrkQualFilter.fcl | deleted | |
+| TrkAnaReco_addMCUpstream.fcl | deleted | |
+| TrkAnaReco_addStopTgtVDs.fcl | deleted | |
 
 ## Fcl Parameter Changes 
 |  | v5 | v6 | Notes |
