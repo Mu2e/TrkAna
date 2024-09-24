@@ -90,6 +90,8 @@ MergeKKUmuP          : @local::MergeKK
 MergeKKUmuP.KalSeedCollections : [ "KKUmuP" ]
 MergeKKLine          : @local::MergeKK
 MergeKKLine.KalSeedCollections : [ "KKLine" ]
+MergeKKAll          : @local::MergeKK
+MergeKKAll.KalSeedCollections : ["KKDeM", "KKDeP", "KKUeM", "KKUeP", "KKDmuM", "KKDmuP", "KKUmuM", "KKUmuP" ]
 
 MergeKKProducers : {
   MergeKKDeM : @local::MergeKKDeM
@@ -101,9 +103,11 @@ MergeKKProducers : {
   MergeKKUmuM : @local::MergeKKUmuM
   MergeKKUmuP : @local::MergeKKUmuP
   MergeKKLine : @local::MergeKKLine
+  MergeKKAll : @local::MergeKKAll
 }
-MergeKKProducersPath : [ MergeKKDeM, MergeKKUeM, MergeKKDmuM, MergeKKDeP, MergeKKUeP, MergeKKDmuP, MergeKKUmuM, MergeKKUmuP ]
+MergeKKProducersPath : [ MergeKKAll ]
 MergeKKNoFieldPath : [ MergeKKLine ]
+MergeKKSeparatePath : [ MergeKKDeM, MergeKKUeM, MergeKKDmuM, MergeKKDeP, MergeKKUeP, MergeKKDmuP, MergeKKUmuM, MergeKKUmuP ]
 
 
 DeM : { input : "MergeKKDeM"
@@ -142,12 +146,15 @@ Ext : { input : "MergeKKLine"
   branch : "kl"
   options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
+All : { input : "MergeKKAll"
+  branch : "trk"
+  options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
+}
 
 
 EventNtupleMaker : {
   module_type : EventNtupleMaker
-  branches : [ @local::DeM, @local::DeP, @local::UeM, @local::UeP,
-    @local::DmuM, @local::DmuP, @local::UmuM, @local::UmuP ]
+  branches : [ @local::All ]
   RecoCountTag : "SelectRecoMC"
   PBITag : "PBISim"
   PBTTag : "EWMProducer"
@@ -205,6 +212,7 @@ EventNtuple : {
   #  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath]
   Path : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualDeM ]
   PathExt : [ @sequence::MergeKKNoFieldPath ]
+  PathSeparate : [ @sequence::MergeKKSeparatePath, PBIWeight, MakeSS, TrkQualDeM ]
   PathNoMC : [ @sequence::MergeKKProducersPath, TrkQualDeM ]
   EndPath : [ EventNtuple, genCountLogger ]
   EndPathNoMC : [ EventNtuple ]

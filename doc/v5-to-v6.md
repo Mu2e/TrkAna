@@ -8,9 +8,10 @@ There was a major update when we moved from v5 to v6. Here are tables of changes
 | tree name | ```trkana``` | ```ntuple``` | defined in code |
 | folder name | ```TrkAna``` | ```EventNtuple``` | defined in fcl |
 | folder name | ```TrkAnaExt``` | ```EventNtuple``` | defined in fcl |
+| branch | ```dem```, ```uem```, etc. | ```trk``` | all track types are now in a single branch |
 
 ## Fcl File Changes
-Many fcl files were renamed, updated, or deleted
+Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6 are all fcl files are documented on the new [fcl README page](../fcl/README.md)
 
 | fcl file | v5 --> v6 | notes |
 |----|---|----|
@@ -18,14 +19,12 @@ Many fcl files were renamed, updated, or deleted
 | TrkAnaExtracted.fcl | from_mcs-extracted.fcl | for running on mcs "extracted position" datasets, now #includes from_mcs-mockdata.fcl as a base |
 | TrkAnaReco_ceSimReco.fcl | from_mcs-ceSimReco.fcl | for running on the output of ceSimReco.fcl |
 | TrkAnaRecoEnsemble-Data.fcl | from_mcs-mockdata_noMC.fcl | for running on mock data with no MC information |
-| from_mcs-primary.fcl | new file | for running on mcs "primary" datasets |
-| from_mcs-mixed.fcl | new file | for running on mcs "mixed" datasets |
-| prolog_mc_reweighters.fcl | new file | contains prolog blocks for reweighter modules which were previously in prolog.fcl itself |
-| TrkAnaRecoEnsemble-MC.fcl | deleted | use from_mcs-mockdata.fcl |
+| TrkAnaRecoEnsemble-MC.fcl | deleted | use from_mcs-mockdata.fcl instead|
 | CrvExpert.fcl | deleted | |
 | TrkAnaReco_wTrkQualFilter.fcl | deleted | |
 | TrkAnaReco_addMCUpstream.fcl | deleted | |
 | TrkAnaReco_addStopTgtVDs.fcl | deleted | |
+| TrkAnaReco_mergedKalSeeds.fcl | deleted | all track types in one branch is now the default |
 
 ## Fcl Parameter Changes 
 |  | v5 | v6 | Notes |
