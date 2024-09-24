@@ -3,15 +3,15 @@
 There was a major update when we moved from v5 to v6. Here are tables of changes for you to consult. Note that the same change may appear in multiple tables since it may be important in one area but defined in another. For example, the folder name is defined in fcl but is also important to know in the Tree / Branch / Leaf Changes
 
 ## Tree / Branch / Leaf Changes
-|  | v5 | v6 | Notes |
-|---|--|--|---|
+|   | v5 | v6 | Notes |
+|---|---|---|---|
 | tree name | ```trkana``` | ```ntuple``` | defined in code |
 | folder name | ```TrkAna``` | ```EventNtuple``` | defined in fcl |
 | folder name | ```TrkAnaExt``` | ```EventNtuple``` | defined in fcl |
 | branch | ```dem```, ```uem```, etc. | ```trk``` | all track types are now in a single branch |
 
 ## Fcl File Changes
-Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6 are all fcl files are documented on the new [fcl README page](../fcl/README.md)
+Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6 and all fcl files are documented on the new [fcl README page](../fcl/README.md)
 
 | fcl file | v5 --> v6 | notes |
 |----|---|----|
@@ -34,6 +34,9 @@ Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6
 | prolog.fcl table name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` | the table that contains the default module configuration |
 | prolog.fcl physics block | ```TrkAnaReco``` | ```EventNtuple``` | the block that contains ```producers```, ```analyzers```, etc. |
 | prolog.fcl path names | ```Sequence``` | ```Path``` | for consistency with previous stages of processing|
+| EventNtupleMaker module parameter | ```ProcessEmptyEvents``` | removed | not used anywhere |
+| EventNtupleMaker module parameter | ```required``` | removed | not used anywhere |
+| EventNtupleMaker module parameter | ```RecoCountTag``` | removed | not used anywhere | 
 
 
 ## Important Code Changes

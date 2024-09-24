@@ -9,7 +9,6 @@ TrkAnaTrigger : {
     diagLevel : 2
     FillCRVCoincs : false
     FillCaloMC : false
-    RecoCountTag : ""
     FillTriggerInfo : true
     FillTrkPIDInfo : false
     FillHitInfo : true
