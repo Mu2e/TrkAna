@@ -2,7 +2,9 @@
 ## Naming Convention
 The naming convention for fcl files is:
 
-```from_tier-type_extra.fcl```
+```
+from_tier-type_extra.fcl
+```
 
 where ```tier``` is the data tier of the input dataset, ```type``` is the type of dataset (e.g. primary-only, extracted position), and ```extra``` gives some extra information (optional)
 
