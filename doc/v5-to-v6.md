@@ -20,11 +20,11 @@ Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6
 | TrkAnaReco_ceSimReco.fcl | from_mcs-ceSimReco.fcl | for running on the output of ceSimReco.fcl |
 | TrkAnaRecoEnsemble-Data.fcl | from_mcs-mockdata_noMC.fcl | for running on mock data with no MC information |
 | TrkAnaRecoEnsemble-MC.fcl | deleted | use from_mcs-mockdata.fcl instead|
+| TrkAnaReco_mergedKalSeeds.fcl | deleted | all track types in one branch is now the default |
 | CrvExpert.fcl | deleted | |
 | TrkAnaReco_wTrkQualFilter.fcl | deleted | |
 | TrkAnaReco_addMCUpstream.fcl | deleted | |
 | TrkAnaReco_addStopTgtVDs.fcl | deleted | |
-| TrkAnaReco_mergedKalSeeds.fcl | deleted | all track types in one branch is now the default |
 
 ## Fcl Parameter Changes 
 |  | v5 | v6 | Notes |
