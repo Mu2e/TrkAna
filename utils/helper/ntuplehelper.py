@@ -1,6 +1,6 @@
 import os
 
-class nthelp:
+class nthelper:
 
     track_types_dict = { 'kl' : "kinematic line fit (i.e. straight-line fit)",
                          'dem' : "downstream e-minus fit",

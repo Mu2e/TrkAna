@@ -1,6 +1,6 @@
 import ntuplehelper
 
-nthelp = ntuplehelper.nthelp()
+nthelp = ntuplehelper.nthelper()
 
 print("Testing a leaf from each branch")
 print("=========")
