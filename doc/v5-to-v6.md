@@ -38,7 +38,8 @@ Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6
 | prolog.fcl path names | ```Sequence``` | ```Path``` | for consistency with previous stages of processing|
 | EventNtupleMaker module parameter | ```ProcessEmptyEvents``` | removed | not used anywhere |
 | EventNtupleMaker module parameter | ```required``` | removed | not used anywhere |
-| EventNtupleMaker module parameter | ```RecoCountTag``` | removed | not used anywhere | 
+| EventNtupleMaker module parameter | ```RecoCountTag``` | removed | not used anywhere |
+| ```FillHits``` default value | ```false``` | ```true``` | changed in prolog.fcl |
 
 
 ## Important Code Changes

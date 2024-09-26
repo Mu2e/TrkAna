@@ -170,7 +170,7 @@ EventNtupleMaker : {
   CrvPlaneY : 2653
   FillMCInfo : true
   FillTrkPIDInfo : false
-  FillHitInfo : false
+  FillHitInfo : true
   FillTriggerInfo : false
   TriggerProcessName : "Mix"
   FillCRVCoincs : true
