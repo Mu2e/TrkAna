@@ -215,13 +215,13 @@ namespace mu2e {
 
       std::vector<std::vector<art::Handle<RecoQualCollection> > > _allRQCHs; // outer vector is for each track type, inner vector is all RecoQuals
       std::vector<art::Handle<TrkCaloHitPIDCollection> > _allTCHPCHs; // we will only allow one TrkCaloHitPID object per track type to be fully written out
-      std::vector<art::Handle<MVAResultCollection> > _allTrkQualCHs; 
+      std::vector<art::Handle<MVAResultCollection> > _allTrkQualCHs;
 
       // quality branches (outputs)
       std::vector<RecoQualInfo> _allRQIs;
       std::vector<TrkPIDInfo> _allTPIs;
       std::map<BranchIndex, std::vector<MVAResultInfo>> _allTrkQualResults;
-    
+
       // trigger information
       unsigned _trigbits;
       std::map<size_t,unsigned> _tmap; // map between path and trigger ID.  ID should come from trigger itself FIXME!
@@ -615,7 +615,7 @@ namespace mu2e {
       _allMCTIs.at(i_branch).clear();
       _allMCVDInfos.at(i_branch).clear();
       _allMCSimTIs.at(i_branch).clear();
-      
+
       _allTrkQualResults.at(i_branch).clear();
 
       for (StepCollIndex i_extraMCStepTag = 0; i_extraMCStepTag < _extraMCStepTags.size(); ++i_extraMCStepTag) {
@@ -783,9 +783,8 @@ namespace mu2e {
     const auto& trkQualHandle = _allTrkQualCHs.at(i_branch);
     if (trkQualHandle.isValid()) { // might not have a valid handle
       _infoStructHelper.fillTrkQualInfo(kseed, trkQualHandle->at(i_kseedptr) , _allTrkQualResults.at(i_branch));
-      
     }
-    
+
     // all RecoQuals
     std::vector<Float_t> recoQuals; // for the output value
     for (const auto& i_recoQualHandle : _allRQCHs.at(i_branch)) {
