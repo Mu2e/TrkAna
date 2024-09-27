@@ -298,7 +298,7 @@ namespace mu2e {
       void fillEventInfo(const art::Event& event);
       void fillTriggerBits(const art::Event& event,std::string const& process);
       void resetTrackBranches();
-      void fillAllInfos(const art::Handle<KalSeedPtrCollection>& kspch, BranchIndex i_branch, size_t i_kseedptr);
+      void fillAllTrackInfos(const art::Handle<KalSeedPtrCollection>& kspch, BranchIndex i_branch, size_t i_kseedptr);
 
       template <typename T, typename TI, typename TIA>
         std::vector<art::Handle<T> > createSpecialBranch(const art::Event& event, const std::string& branchname,
@@ -633,7 +633,7 @@ namespace mu2e {
       for (size_t i_kseedptr = 0; i_kseedptr < kseedptr_coll.size(); ++i_kseedptr) {
         resetTrackBranches(); // reset track branches here so that we don't get information from previous tracks in the next entry
 
-        fillAllInfos(kseedptr_coll_h, i_branch, i_kseedptr); // fill the info structs for this track
+        fillAllTrackInfos(kseedptr_coll_h, i_branch, i_kseedptr); // fill the info structs for this track
         if(_conf.helices()){
           auto const& khassns = khaH.product();
           // find the associated HelixSeed to this KalSeed using the assns.
@@ -754,7 +754,7 @@ namespace mu2e {
     }
   }
 
-  void EventNtupleMaker::fillAllInfos(const art::Handle<KalSeedPtrCollection>& kspch, BranchIndex i_branch, size_t i_kseedptr) {
+  void EventNtupleMaker::fillAllTrackInfos(const art::Handle<KalSeedPtrCollection>& kspch, BranchIndex i_branch, size_t i_kseedptr) {
 
     const auto& kseedptr = (kspch->at(i_kseedptr));
     const auto& kseed = *kseedptr;
