@@ -10,6 +10,7 @@
 #include <limits>
 
 namespace mu2e {
+  // TODO: Propose to delete this function since it is unused
   void InfoStructHelper::fillHitCount(StrawHitFlagCollection const& shfC, HitCount& hitcount) {
     hitcount.nsd = shfC.size();
     for(const auto& shf : shfC) {
@@ -21,6 +22,8 @@ namespace mu2e {
   }
 
   void InfoStructHelper::fillHitCount(RecoCount const& nrec, HitCount& hitcount) {
+    hitcount.nsd = nrec._nstrawdigi;
+    // TODO: add other counts from RecoCount?
     hitcount.nesel = nrec._nshfesel;
     hitcount.nrsel = nrec._nshfrsel;
     hitcount.ntsel = nrec._nshftsel;

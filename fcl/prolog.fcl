@@ -155,6 +155,7 @@ All : { input : "MergeKKAll"
 EventNtupleMaker : {
   module_type : EventNtupleMaker
   branches : [ @local::All ]
+  RecoCountTag : "SelectRecoMC"
   PBITag : "PBISim"
   PBTTag : "EWMProducer"
   PBTMCTag : "EWMProducer"

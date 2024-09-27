@@ -133,6 +133,7 @@ namespace mu2e {
         fhicl::Atom<int> splitlevel{Name("splitlevel"),99};
         fhicl::Atom<int> buffsize{Name("buffsize"),32000};
         // General event info
+        fhicl::Atom<art::InputTag> rctag{Name("RecoCountTag"), Comment("RecoCount"), art::InputTag()};
         fhicl::Atom<art::InputTag> PBITag{Name("PBITag"), Comment("Tag for ProtonBunchIntensity object") ,art::InputTag()};
         fhicl::Atom<art::InputTag> PBTTag{Name("PBTTag"), Comment("Tag for ProtonBunchTime object") ,art::InputTag()};
         fhicl::Atom<bool> filltrig{Name("FillTriggerInfo"),false};
@@ -196,7 +197,7 @@ namespace mu2e {
       // general event info branch
       EventInfo _einfo;
       EventInfoMC _einfomc;
-      art::InputTag _PBITag, _PBTTag, _PBTMCTag;
+      art::InputTag _recoCountTag, _PBITag, _PBTTag, _PBTMCTag;
       // hit counting
       HitCount _hcnt;
       // track counting
@@ -308,6 +309,7 @@ namespace mu2e {
   EventNtupleMaker::EventNtupleMaker(const Parameters& conf):
     art::EDAnalyzer(conf),
     _conf(conf()),
+    _recoCountTag(conf().rctag()),
     _PBITag(conf().PBITag()),
     _PBTTag(conf().PBTTag()),
     _PBTMCTag(conf().PBTMCTag()),
@@ -397,7 +399,7 @@ namespace mu2e {
       _ntuple->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
     }
     // hit counting branch
-    _ntuple->Branch("hcnt.",&_hcnt);
+    _ntuple->Branch("hitcount.",&_hcnt);
     // track counting branches
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
@@ -686,8 +688,12 @@ namespace mu2e {
     _einfo.event = event.event();
     _einfo.run = event.run();
     _einfo.subrun = event.subRun();
-    // currently no reco nproton estimate TODO
 
+    auto recoCountHandle = event.getValidHandle<mu2e::RecoCount>(_recoCountTag);
+    auto recoCount = *recoCountHandle;
+    _infoStructHelper.fillHitCount(recoCount, _hcnt);
+
+    // currently no reco nproton estimate TODO
     auto PBThandle = event.getValidHandle<mu2e::ProtonBunchTime>(_PBTTag);
     auto PBT = *PBThandle;
     _einfo.pbtime = PBT.pbtime_;
