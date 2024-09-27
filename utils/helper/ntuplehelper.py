@@ -27,6 +27,7 @@ class nthelper:
                            'trkkl' : "KinematicLineInfo",
                            'trkmcsim' : "SimInfo",
                            'trkcalohit' : "TrkCaloHitInfo",
+                           'trkcalohitmc' : "CaloClusterInfoMC",
                            'trktsh' : "TrkStrawHitInfo",
                            'trktshmc' : "TrkStrawHitInfoMC",
                            'trktsm' : "TrkStrawMatInfo",
