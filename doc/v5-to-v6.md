@@ -9,6 +9,7 @@ There was a major update when we moved from v5 to v6. Here are tables of changes
 | folder name | ```TrkAna``` | ```EventNtuple``` | defined in fcl |
 | folder name | ```TrkAnaExt``` | ```EventNtuple``` | defined in fcl |
 | branch | ```dem```, ```uem```, etc. | ```trk``` | all track types are now in a single branch |
+| branch | ```demtrkqual``` | ```trkqual``` | otherwise it would have been ```trktrkqual```|
 
 ## Fcl File Changes
 Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6 and all fcl files are documented on the new [fcl README page](../fcl/README.md)

@@ -417,7 +417,7 @@ namespace mu2e {
       if(_ftype == KinematicLine )_ntuple->Branch((branch+"kl.").c_str(),&_allKLIs.at(i_branch),_buffsize,_splitlevel);
       // TrkCaloHit: currently only 1
       _ntuple->Branch((branch+"tch.").c_str(),&_allTCHIs.at(i_branch));
-      _ntuple->Branch((branch+"trkqual.").c_str(),&_allTrkQualResults.at(i_branch),_buffsize,_splitlevel);
+      _ntuple->Branch((branch+"qual.").c_str(),&_allTrkQualResults.at(i_branch),_buffsize,_splitlevel);
       if (_conf.filltrkpid() && i_branchConfig.options().filltrkpid()) {
         int n_trkpid_vars = TrkCaloHitPID::n_vars;
         for (int i_trkpid_var = 0; i_trkpid_var < n_trkpid_vars; ++i_trkpid_var) {
