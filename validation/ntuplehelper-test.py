@@ -4,7 +4,7 @@ nthelp = ntuplehelper.nthelper()
 
 print("Testing a leaf from each branch")
 print("=========")
-nthelp.whatis(['evtinfomc.pbtime', 'evtinfo.event', 'hitcount.nbkg', 'tcnt.ndem', 'demmcsim.pdg', 'demtch.trkdepth', 'demtsh.ptoca', 'demtshmc.edep', 'demtsm.tlen', 'crvsummary.totalPEs', 'crvsummarymc.sectorNumber', 'crvcoincs.time', 'crvcoincsmc.primaryE', 'crvcoincsmcplane.dir', 'demmcsci.dp', 'demmcssi.dp', 'dem.nactive', 'demmc.ndigigood', 'demfit.mom', 'demlh.cx', 'demch.omega', 'klkl.phi0', 'trkqual.result'])
+nthelp.whatis(['evtinfomc.pbtime', 'evtinfo.event', 'hitcount.nbkg', 'tcnt.ndem', 'demmcsim.pdg', 'demcalohit.trkdepth', 'demtsh.ptoca', 'demtshmc.edep', 'demtsm.tlen', 'crvsummary.totalPEs', 'crvsummarymc.sectorNumber', 'crvcoincs.time', 'crvcoincsmc.primaryE', 'crvcoincsmcplane.dir', 'demmcsci.dp', 'demmcssi.dp', 'dem.nactive', 'demmc.ndigigood', 'demfit.mom', 'demlh.cx', 'demch.omega', 'klkl.phi0', 'trkqual.result'])
 
 print("Testing a few leaves from a single branch (should only print the branch description once)")
 print("=========")

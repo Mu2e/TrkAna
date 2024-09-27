@@ -10,6 +10,7 @@ There was a major update when we moved from v5 to v6. Here are tables of changes
 | folder name | ```TrkAnaExt``` | ```EventNtuple``` | defined in fcl |
 | branch | ```dem```, ```uem```, etc. | ```trk``` | all track types are now in a single branch |
 | branch | ```demtrkqual``` | ```trkqual``` | otherwise it would have been ```trktrkqual```|
+| branch | ```demtch``` | ```trkcalohit``` | |
 | branch | ```hcnt``` | ```hitcount``` | also now filled |
 
 ## Fcl File Changes

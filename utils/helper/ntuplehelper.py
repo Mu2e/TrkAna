@@ -26,7 +26,7 @@ class nthelper:
                            'trkch' : "CentralHelixInfo",
                            'trkkl' : "KinematicLineInfo",
                            'trkmcsim' : "SimInfo",
-                           'trktch' : "TrkCaloHitInfo",
+                           'trkcalohit' : "TrkCaloHitInfo",
                            'trktsh' : "TrkStrawHitInfo",
                            'trktshmc' : "TrkStrawHitInfoMC",
                            'trktsm' : "TrkStrawMatInfo",

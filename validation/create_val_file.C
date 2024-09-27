@@ -33,10 +33,10 @@ void create_val_file(std::string filename, std::string outfilename) {
   ntuple->Draw("(trkfit[][trkmcvd.iinter].mom.R() - trkmcvd[].mom.R())>>h_demfit_momres_xit", "trkmcvd[].sid==2", "goff");
 
   // trkcalohit histograms
-  ntuple->Draw("trktch.ctime>>h_demtch_ctime_all", "", "goff");
-  ntuple->Draw("trktch.ctime>>h_demtch_ctime_active", "trktch.active==1", "goff");
-  ntuple->Draw("trktch.ctime>>h_demtch_ctime_inactive", "trktch.active==0", "goff");
-  ntuple->Draw("trktch.ctime-trklh.t0>>h_demtch_demfit_dt_ent", "trkfit.sid==0 && trktch.active==1", "goff");
+  ntuple->Draw("trkcalohit.ctime>>h_demtch_ctime_all", "", "goff");
+  ntuple->Draw("trkcalohit.ctime>>h_demtch_ctime_active", "trkcalohit.active==1", "goff");
+  ntuple->Draw("trkcalohit.ctime>>h_demtch_ctime_inactive", "trkcalohit.active==0", "goff");
+  ntuple->Draw("trkcalohit.ctime-trklh.t0>>h_demtch_demfit_dt_ent", "trkfit.sid==0 && trktch.active==1", "goff");
 
   // crv histograms
   ntuple->Draw("crvsummary.totalPEs>>h_crvsummary_totalPEs_all", "", "goff");
