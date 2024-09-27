@@ -17,7 +17,7 @@ class nthelper:
     # A dictionary of branch name to header file containing the struct
     branch_struct_dict = { 'evtinfo' : "EventInfo",
                            'evtinfomc' : "EventInfoMC",
-                           'hcnt' : "HitCount",
+                           'hitcount' : "HitCount",
                            'tcnt' : "TrkCount", # TODO: leaves can't be retrieved because they are runtime made
                            'trk' : "TrkInfo",
                            'trkfit' : "TrkFitInfo",
