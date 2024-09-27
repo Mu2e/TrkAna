@@ -36,7 +36,8 @@ class nthelper:
                            "crvsummarymc" : "CrvSummaryMC",
                            "crvcoincs" : "CrvHitInfoReco",
                            "crvcoincsmc" : "CrvHitInfoMC",
-                           "crvcoincsmcplane" : "CrvPlaneInfoMC"
+                           "crvcoincsmcplane" : "CrvPlaneInfoMC",
+                           "trkqual" : "MVAResultInfo"
                           }
 
     def check_track_type(self, branch):
