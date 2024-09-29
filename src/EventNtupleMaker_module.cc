@@ -298,7 +298,7 @@ namespace mu2e {
       void fillEventInfo(const art::Event& event);
       void fillTriggerBits(const art::Event& event,std::string const& process);
       void resetTrackBranches();
-      void fillTrackInfos(const art::Handle<KalSeedPtrCollection>& kspch, BranchIndex i_branch, size_t i_kseedptr);
+      void fillTrackBranches(const art::Handle<KalSeedPtrCollection>& kspch, BranchIndex i_branch, size_t i_kseedptr);
 
       template <typename T, typename TI, typename TIA>
         std::vector<art::Handle<T> > createSpecialBranch(const art::Event& event, const std::string& branchname,
