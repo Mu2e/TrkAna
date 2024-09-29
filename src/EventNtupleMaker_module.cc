@@ -754,7 +754,7 @@ namespace mu2e {
     }
   }
 
-  void EventNtupleMaker::fillTrackInfos(const art::Handle<KalSeedPtrCollection>& kspch, BranchIndex i_branch, size_t i_kseedptr) {
+  void EventNtupleMaker::fillTrackBranches(const art::Handle<KalSeedPtrCollection>& kspch, BranchIndex i_branch, size_t i_kseedptr) {
 
     const auto& kseedptr = (kspch->at(i_kseedptr));
     const auto& kseed = *kseedptr;
