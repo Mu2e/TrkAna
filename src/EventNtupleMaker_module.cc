@@ -633,7 +633,7 @@ namespace mu2e {
       for (size_t i_kseedptr = 0; i_kseedptr < kseedptr_coll.size(); ++i_kseedptr) {
         resetTrackBranches(); // reset track branches here so that we don't get information from previous tracks in the next entry
 
-        fillTrackInfos(kseedptr_coll_h, i_branch, i_kseedptr); // fill the info structs for this track
+        fillTrackBranches(kseedptr_coll_h, i_branch, i_kseedptr); // fill the info structs for this track
         if(_conf.helices()){
           auto const& khassns = khaH.product();
           // find the associated HelixSeed to this KalSeed using the assns.
