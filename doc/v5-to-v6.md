@@ -55,4 +55,4 @@ Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6
 | src file name | ```TrkAnaTreeMaker_module.cc``` | ```EventNtupleMaker_module.cc``` | |
 | art module name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` |  |
 | tree name | ```trkana``` | ```ntuple``` | defined in code |
-| art module function | ```fillAllInfos``` | ```fillAllTrackInfos``` | more descriptive |
+| art module function | ```fillAllInfos``` | ```fillTrackInfos``` | more descriptive |
