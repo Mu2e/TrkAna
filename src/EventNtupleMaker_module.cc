@@ -437,8 +437,8 @@ namespace mu2e {
       // optionally add hit-level branches
       // (for the time being diagLevel : 2 will still work, but I propose removing this at some point)
       if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){
-        _ntuple->Branch((branch+"tsh.").c_str(),&_allTSHIs.at(i_branch),_buffsize,_splitlevel);
-        _ntuple->Branch((branch+"tsm.").c_str(),&_allTSMIs.at(i_branch),_buffsize,_splitlevel);
+        _ntuple->Branch((branch+"hits.").c_str(),&_allTSHIs.at(i_branch),_buffsize,_splitlevel);
+        _ntuple->Branch((branch+"mats.").c_str(),&_allTSMIs.at(i_branch),_buffsize,_splitlevel);
       }
 
       // optionally add MC branches
@@ -451,7 +451,7 @@ namespace mu2e {
         // at hit-level MC information
         // (for the time being diagLevel will still work, but I propose removing this at some point)
         if(_conf.diag() > 1 || (_conf.fillhits() && i_branchConfig.options().fillhits())){
-          _ntuple->Branch((branch+"tshmc.").c_str(),&_allTSHIMCs.at(i_branch),_buffsize,_splitlevel);
+          _ntuple->Branch((branch+"hitsmc.").c_str(),&_allTSHIMCs.at(i_branch),_buffsize,_splitlevel);
         }
         // configure extra MCStep branches for this track type
         if(_conf.extraMCStepTags(_extraMCStepTags)){
