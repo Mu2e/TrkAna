@@ -9,12 +9,12 @@ There are various classes that combine together branches at different dimenions
 
 | Class | Single Objects | Vectors | Vector-of-Vectors |
 |-----|-----|----|-----|
-| Event | ```evtinfo``` | ```trk``` | ```trkfit``` |
+| Event | ```evtinfo```, ```evtinfomc``` | ```trk``` | ```trkfit``` |
 | Track | ```trk``` | ```trkfit``` | none |
 | TrackSegment | ```trkfit``` | none | none |
 
 ## Supported Branches
 The currently supported branches are:
-* evtinfo
+* evtinfo, evtinfomc
 * trk
 * trkfit

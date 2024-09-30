@@ -21,7 +21,7 @@ void PrintEvents(std::string filename) {
   for (int i_event = 0; i_event < util.GetNEvents(); ++i_event) {
     const auto& event = util.GetEvent(i_event);
     std::cout << "" << event.evtinfo->run << ":" << event.evtinfo->subrun << ":" << event.evtinfo->event << " has: " << std::endl;
-
+    std::cout << "pbtime (reco) = " << event.evtinfo->pbtime << " ns, pbtime (MC) = " << event.evtinfomc->pbtime << " ns" << std::endl;
     const auto& all_tracks = event.GetTracks();
     const auto& good_tracks = event.GetTracks(good_track);
     std::cout << all_tracks.size() << " total tracks and " << good_tracks.size() << " good tracks" << std::endl;

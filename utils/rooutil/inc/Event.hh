@@ -2,6 +2,7 @@
 #define Event_hh_
 
 #include "TrkAna/inc/EventInfo.hh"
+#include "TrkAna/inc/EventInfoMC.hh"
 
 #include "TrkAna/utils/rooutil/inc/Track.hh"
 
@@ -16,6 +17,11 @@ struct Event {
     ntuple->SetBranchAddress("evtinfo", &this->evtinfo);
     ntuple->SetBranchAddress("trk", &this->trk);
     ntuple->SetBranchAddress("trkfit", &this->trkfit);
+
+    // Check if the MC branches exist
+    if (ntuple->GetBranch("evtinfomc")) {
+      ntuple->SetBranchAddress("evtinfomc", &this->evtinfomc);
+    }
 
     if (debug) {
       std::cout << "Event::Event(): All done." << std::endl;
@@ -41,7 +47,6 @@ struct Event {
     }
   }
 
-
   int nTracks() const { return trk->size(); }
 
   Tracks GetTracks() const { return tracks; }
@@ -61,6 +66,8 @@ struct Event {
 
   // Pointers to the data
   mu2e::EventInfo* evtinfo = nullptr;
+  mu2e::EventInfoMC* evtinfomc = nullptr;
+
   std::vector<mu2e::TrkInfo>* trk = nullptr;
   std::vector<std::vector<mu2e::TrkFitInfo>>* trkfit = nullptr;
 };

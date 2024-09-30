@@ -57,3 +57,4 @@ Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6
 | tree name | ```trkana``` | ```ntuple``` | defined in code |
 | art module function | ```fillAllInfos``` | ```fillTrackBranches``` | more descriptive |
 | art module code | ```ntuple->Branch("evtinfo.")``` | ```ntuple->Branch("evtinfo")``` | period removed for better access in RooUtil |
+| art module code | ```ntuple->Branch("evtinfomc.")``` | ```ntuple->Branch("evtinfomc")``` | period removed for better access in RooUtil |

@@ -396,7 +396,7 @@ namespace mu2e {
     // add event info branch
     _ntuple->Branch("evtinfo",&_einfo,_buffsize,_splitlevel);
     if (_fillmc) {
-      _ntuple->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
+      _ntuple->Branch("evtinfomc",&_einfomc,_buffsize,_splitlevel);
     }
     // hit counting branch
     _ntuple->Branch("hitcount.",&_hcnt);
