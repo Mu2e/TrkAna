@@ -40,17 +40,23 @@ void PrintEvents(std::string filename) {
       else {
         std::cout << " BAD TRACK";
       }
-      std::cout << std::endl << "  and " << track.trkfit->size() << " segments:" << std::endl;
+      std::cout << std::endl;
     }
 
     std::cout << "Now looping through the good tracks only..." << std::endl;
     for (const auto& track : good_tracks) {
       std::cout << "  This track has " << track.trk->nhits << " hits and " << track.trk->nactive << " active hits (fit consistency = " << track.trk->fitcon << ")" << std::endl;
-      for (const auto& trkfit : *track.trkfit) {
-        std::cout << "    surfaceID " << trkfit.sid << ": p = " << trkfit.mom.R() << " MeV/c" << std::endl;
-        if (trkfit.sid == mu2e::SurfaceIdDetail::TT_Front) {
-          hRecoMom->Fill(trkfit.mom.R());
-        }
+
+      const auto& all_segments = track.GetSegments();
+      std::cout << "  and " << all_segments.size() << " segments:" << std::endl;
+      for (const auto& segment : all_segments) {
+        std::cout << "    surfaceID " << segment.trkfit->sid << ": p = " << segment.trkfit->mom.R() << " MeV/c" << std::endl;
+      }
+
+      const auto& trk_ent_segments = track.GetSegments(tracker_entrance);
+      for (const auto& segment : trk_ent_segments) {
+        std::cout << "    filling histogram with surfaceID " << segment.trkfit->sid << ": p = " << segment.trkfit->mom.R() << " MeV/c" << std::endl;
+        hRecoMom->Fill(segment.trkfit->mom.R());
       }
     }
   }

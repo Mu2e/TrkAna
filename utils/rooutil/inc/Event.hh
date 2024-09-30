@@ -29,7 +29,7 @@ struct Event {
     tracks.clear();
 
     for (int i_track = 0; i_track < nTracks(); ++i_track) {
-      Track track(&(trk->at(i_track)), &(trkfit->at(i_track))); // passing the addresses of the underlying structs
+      Track track(&(trk->at(i_track)), &(trkfit->at(i_track)), debug); // passing the addresses of the underlying structs
       if (debug) {
         std::cout << "Event::Update(): Adding track #" << i_track << " to tracks..." << std::endl;
       }
@@ -57,11 +57,12 @@ struct Event {
 
   Tracks tracks;
 
+  bool debug = false;
+
+  // Pointers to the data
   mu2e::EventInfo* evtinfo = nullptr;
   std::vector<mu2e::TrkInfo>* trk = nullptr;
   std::vector<std::vector<mu2e::TrkFitInfo>>* trkfit = nullptr;
-
-  bool debug = false;
 };
 
 #endif
