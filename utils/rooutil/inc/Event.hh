@@ -13,6 +13,7 @@ struct Event {
   };
 
   int nTracks() const { return trk->size(); }
+  mu2e::TrkInfo getTrack(size_t i_track) const { return trk->at(i_track); }
 
   mu2e::EventInfo* evtinfo = nullptr;
   std::vector<mu2e::TrkInfo>* trk = nullptr;

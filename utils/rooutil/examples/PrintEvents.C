@@ -11,5 +11,9 @@ void PrintEvents(std::string filename) {
   for (int i_event = 0; i_event < util.GetNEvents(); ++i_event) {
     const auto& event = util.GetEvent(i_event);
     std::cout << "" << event.evtinfo->run << ":" << event.evtinfo->subrun << ":" << event.evtinfo->event << " has " << event.nTracks() << " tracks" << std::endl;
+    for (int i_track = 0; i_track < event.nTracks(); ++i_track) {
+      const auto& track = event.getTrack(i_track);
+      std::cout << "  Track #" << i_track+1 << " has " << track.nhits << " hits and " << track.nactive << " active hits (fit consistency = " << track.fitcon << ")" << std::endl;
+    }
   }
 }
