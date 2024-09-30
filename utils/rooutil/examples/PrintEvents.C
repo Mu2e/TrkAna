@@ -1,5 +1,7 @@
 #include "TrkAna/utils/rooutil/inc/RooUtil.hh"
 
+#include "TH1F.h"
+
 #include <iostream>
 
 bool good_track(const Track& track) {
@@ -15,6 +17,8 @@ void PrintEvents(std::string filename) {
 
   RooUtil util(filename);
   std::cout << filename << " has " << util.GetNEvents() << " events" << std::endl;
+
+  TH1F* hRecoMom = new TH1F("hRecoMom", "Reconstructed Momentum at Tracker Entrance", 50,95,110);
 
   // Now loop through the events and print the number of tracks in each event
   for (int i_event = 0; i_event < util.GetNEvents(); ++i_event) {
@@ -36,10 +40,18 @@ void PrintEvents(std::string filename) {
         std::cout << " BAD TRACK";
       }
       std::cout << std::endl << "  and " << track.trkfit->size() << " segments:" << std::endl;
+    }
 
+    std::cout << "Now looping through the good tracks only..." << std::endl;
+    for (const auto& track : good_tracks) {
+      std::cout << "  This track has " << track.trk->nhits << " hits and " << track.trk->nactive << " active hits (fit consistency = " << track.trk->fitcon << ")" << std::endl;
       for (const auto& trkfit : *track.trkfit) {
         std::cout << "    surfaceID " << trkfit.sid << ": p = " << trkfit.mom.R() << " MeV/c" << std::endl;
+        if (trkfit.sid == mu2e::SurfaceIdDetail::TT_Front) {
+          hRecoMom->Fill(trkfit.mom.R());
+        }
       }
     }
   }
+  hRecoMom->Draw("HIST E");
 }

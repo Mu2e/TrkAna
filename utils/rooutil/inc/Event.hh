@@ -29,7 +29,7 @@ struct Event {
     tracks.clear();
 
     for (int i_track = 0; i_track < nTracks(); ++i_track) {
-      Track track(&(trk->at(i_track)), &(trkfit->at(i_track)));
+      Track track(&(trk->at(i_track)), &(trkfit->at(i_track))); // passing the addresses of the underlying structs
       if (debug) {
         std::cout << "Event::Update(): Adding track #" << i_track << " to tracks..." << std::endl;
       }
