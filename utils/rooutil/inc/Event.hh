@@ -11,6 +11,8 @@ struct Event {
     ntuple->SetBranchAddress("trk", &this->trk);
   };
 
+  int nTracks() const { return trk->size(); }
+
   mu2e::EventInfo* evtinfo = nullptr;
   std::vector<mu2e::TrkInfo>* trk = nullptr;
 };
