@@ -394,7 +394,7 @@ namespace mu2e {
     // create TTree
     _ntuple=tfs->make<TTree>("ntuple","Mu2e Event Ntuple");
     // add event info branch
-    _ntuple->Branch("evtinfo.",&_einfo,_buffsize,_splitlevel);
+    _ntuple->Branch("evtinfo",&_einfo,_buffsize,_splitlevel);
     if (_fillmc) {
       _ntuple->Branch("evtinfomc.",&_einfomc,_buffsize,_splitlevel);
     }

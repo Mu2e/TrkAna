@@ -48,7 +48,7 @@ Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6
 | ```FillHits``` default value | ```false``` | ```true``` | changed in prolog.fcl |
 
 
-## Important Code Changes
+## Other Code Changes
 
 |  | v5 | v6 | Notes |
 |---|--|--|---|
@@ -56,3 +56,4 @@ Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6
 | art module name | ```TrkAnaTreeMaker``` | ```EventNtupleMaker``` |  |
 | tree name | ```trkana``` | ```ntuple``` | defined in code |
 | art module function | ```fillAllInfos``` | ```fillTrackBranches``` | more descriptive |
+| art module code | ```ntuple->Branch("evtinfo.")``` | ```ntuple->Branch("evtinfo")``` | period removed for better access in RooUtil |
