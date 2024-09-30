@@ -7,11 +7,11 @@ It is currently under development and the available branches are listed [below](
 ## Classes
 There are various classes that combine together branches at different dimenions
 
-| Class | Branches |
-|-----|-----|
-| Event | ```evtinfo```, ```trk``` (vector), ```trkfit``` (vector-of-vector) |
-| Track | ```trk```, ```trkfit``` (vector) |
-| TrackSegment | ```trkfit``` |
+| Class | Single Objects | Vectors | Vector-of-Vectors |
+|-----|-----|----|-----|
+| Event | ```evtinfo``` | ```trk``` | ```trkfit``` |
+| Track | ```trk``` | ```trkfit``` | none |
+| TrackSegment | ```trkfit``` | none | none |
 
 ## Supported Branches
 The currently supported branches are:
