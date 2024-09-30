@@ -18,6 +18,9 @@ struct Track {
       segments.emplace_back(segment);
     }
 
+    // Time order the segments
+    std::sort(segments.begin(), segments.end(), TrackSegment::earliest);
+
     if (debug) {
       std::cout << "Track::Track(): All done." << std::endl;
     }
@@ -37,7 +40,6 @@ struct Track {
   }
 
   TrackSegments segments;
-
   bool debug = false;
 
   // Pointers to the data

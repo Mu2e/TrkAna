@@ -1,12 +1,10 @@
 #include "TrkAna/utils/rooutil/inc/RooUtil.hh"
 #include "TrkAna/utils/rooutil/inc/common_cuts.hh"
 
-#include "TH1F.h"
-
 #include <iostream>
 
 bool good_track(const Track& track) {
-  if (track.trk->fitcon > 1e-3 && is_e_minus(track)) {
+  if (track.trk->fitcon > 1e-3 && is_e_minus(track) && is_downstream(track)) {
     return true;
   }
   else {
@@ -19,8 +17,6 @@ void PrintEvents(std::string filename) {
   RooUtil util(filename);
   std::cout << filename << " has " << util.GetNEvents() << " events" << std::endl;
 
-  TH1F* hRecoMom = new TH1F("hRecoMom", "Reconstructed Momentum at Tracker Entrance", 50,95,110);
-
   // Now loop through the events and print the number of tracks in each event
   for (int i_event = 0; i_event < util.GetNEvents(); ++i_event) {
     const auto& event = util.GetEvent(i_event);
@@ -31,34 +27,15 @@ void PrintEvents(std::string filename) {
     std::cout << all_tracks.size() << " total tracks and " << good_tracks.size() << " good tracks" << std::endl;
 
     int i_track = 0;
-    for (const auto& track : all_tracks) {
+    for (const auto& track : good_tracks) {
       ++i_track;
       std::cout << "  Track #" << i_track << " has " << track.trk->nhits << " hits and " << track.trk->nactive << " active hits (fit consistency = " << track.trk->fitcon << ")";
-      if (good_track(track)) {
-        std::cout << " GOOD TRACK";
-      }
-      else {
-        std::cout << " BAD TRACK";
-      }
-      std::cout << std::endl;
-    }
-
-    std::cout << "Now looping through the good tracks only..." << std::endl;
-    for (const auto& track : good_tracks) {
-      std::cout << "  This track has " << track.trk->nhits << " hits and " << track.trk->nactive << " active hits (fit consistency = " << track.trk->fitcon << ")" << std::endl;
 
       const auto& all_segments = track.GetSegments();
       std::cout << "  and " << all_segments.size() << " segments:" << std::endl;
       for (const auto& segment : all_segments) {
-        std::cout << "    surfaceID " << segment.trkfit->sid << ": p = " << segment.trkfit->mom.R() << " MeV/c" << std::endl;
-      }
-
-      const auto& trk_ent_segments = track.GetSegments(tracker_entrance);
-      for (const auto& segment : trk_ent_segments) {
-        std::cout << "    filling histogram with surfaceID " << segment.trkfit->sid << ": p = " << segment.trkfit->mom.R() << " MeV/c" << std::endl;
-        hRecoMom->Fill(segment.trkfit->mom.R());
+        std::cout << "    surfaceID " << segment.trkfit->sid << ": z = " << segment.trkfit->pos.z() << " mm, t = " << segment.trkfit->time << " ns, p = " << segment.trkfit->mom.R() << " MeV/c" << std::endl;
       }
     }
   }
-  hRecoMom->Draw("HIST E");
 }
