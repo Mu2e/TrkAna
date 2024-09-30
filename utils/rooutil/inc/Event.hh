@@ -2,6 +2,7 @@
 #define Event_hh_
 
 #include "TrkAna/inc/EventInfo.hh"
+#include "TrkAna/inc/TrkInfo.hh"
 
 #include "TTree.h"
 

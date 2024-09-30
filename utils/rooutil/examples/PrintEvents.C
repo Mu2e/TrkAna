@@ -1,5 +1,7 @@
 #include "TrkAna/utils/rooutil/inc/RooUtil.hh"
 
+#include <iostream>
+
 void PrintEvents(std::string filename) {
 
   RooUtil util(filename);
