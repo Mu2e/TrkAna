@@ -1,11 +1,12 @@
 #include "TrkAna/utils/rooutil/inc/RooUtil.hh"
+#include "TrkAna/utils/rooutil/inc/common_cuts.hh"
 
 #include "TH1F.h"
 
 #include <iostream>
 
 bool good_track(const Track& track) {
-  if (track.trk->fitcon > 1e-3) {
+  if (track.trk->fitcon > 1e-3 && is_e_minus(track)) {
     return true;
   }
   else {
