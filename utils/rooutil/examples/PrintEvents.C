@@ -13,7 +13,7 @@ bool good_track(const Track& track) {
 
 void PrintEvents(std::string filename) {
 
-  RooUtil util(filename);
+  RooUtil util(filename, "EventNtuple/ntuple", true); // turn on debug
   std::cout << filename << " has " << util.GetNEvents() << " events" << std::endl;
 
   // Now loop through the events and print the number of tracks in each event
@@ -21,12 +21,14 @@ void PrintEvents(std::string filename) {
     const auto& event = util.GetEvent(i_event);
     std::cout << "" << event.evtinfo->run << ":" << event.evtinfo->subrun << ":" << event.evtinfo->event << " has: " << std::endl;
 
+    const auto& all_tracks = event.GetTracks();
     const auto& good_tracks = event.GetTracks(good_track);
-    std::cout << event.nTracks() << " total tracks and " << good_tracks.size() << " good tracks" << std::endl;
+    std::cout << all_tracks.size() << " total tracks and " << good_tracks.size() << " good tracks" << std::endl;
 
-    for (int i_track = 0; i_track < event.nTracks(); ++i_track) {
-      const auto& track = event.getTrack(i_track);
-      std::cout << "  Track #" << i_track+1 << " has " << track.trk->nhits << " hits and " << track.trk->nactive << " active hits (fit consistency = " << track.trk->fitcon << ")";
+    int i_track = 0;
+    for (const auto& track : all_tracks) {
+      ++i_track;
+      std::cout << "  Track #" << i_track << " has " << track.trk->nhits << " hits and " << track.trk->nactive << " active hits (fit consistency = " << track.trk->fitcon << ")";
       if (good_track(track)) {
         std::cout << " GOOD TRACK";
       }
