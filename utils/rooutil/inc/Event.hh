@@ -8,9 +8,11 @@
 struct Event {
   Event(TTree* ntuple) {
     ntuple->SetBranchAddress("evtinfo", &this->evtinfo);
+    ntuple->SetBranchAddress("trk", &this->trk);
   };
 
   mu2e::EventInfo* evtinfo = nullptr;
+  std::vector<mu2e::TrkInfo>* trk = nullptr;
 };
 
 #endif
