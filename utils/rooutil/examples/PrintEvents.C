@@ -13,7 +13,7 @@ bool good_track(const Track& track) {
 
 void PrintEvents(std::string filename) {
 
-  RooUtil util(filename, "EventNtuple/ntuple", true); // turn on debug
+  RooUtil util(filename);
   std::cout << filename << " has " << util.GetNEvents() << " events" << std::endl;
 
   // Now loop through the events and print the number of tracks in each event
