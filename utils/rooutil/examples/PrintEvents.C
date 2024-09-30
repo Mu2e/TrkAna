@@ -19,7 +19,10 @@ void PrintEvents(std::string filename) {
   // Now loop through the events and print the number of tracks in each event
   for (int i_event = 0; i_event < util.GetNEvents(); ++i_event) {
     const auto& event = util.GetEvent(i_event);
-    std::cout << "" << event.evtinfo->run << ":" << event.evtinfo->subrun << ":" << event.evtinfo->event << " has " << event.nTracks() << " tracks" << std::endl;
+    std::cout << "" << event.evtinfo->run << ":" << event.evtinfo->subrun << ":" << event.evtinfo->event << " has: " << std::endl;
+
+    const auto& good_tracks = event.GetTracks(good_track);
+    std::cout << event.nTracks() << " total tracks and " << good_tracks.size() << " good tracks" << std::endl;
 
     for (int i_track = 0; i_track < event.nTracks(); ++i_track) {
       const auto& track = event.getTrack(i_track);

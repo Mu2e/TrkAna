@@ -18,6 +18,9 @@ public:
 
   const Event& GetEvent(int i_event) {
     ntuple->GetEntry(i_event);
+
+    event->Update();
+
     return *event;
   }
 

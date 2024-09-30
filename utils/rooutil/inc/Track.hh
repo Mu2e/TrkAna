@@ -11,4 +11,7 @@ struct Track {
   std::vector<mu2e::TrkFitInfo>* trkfit = nullptr;
 };
 
+typedef bool (*TrackCut)(const Track& track);
+typedef std::vector<Track> Tracks;
+
 #endif
