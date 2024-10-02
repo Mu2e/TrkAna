@@ -9,21 +9,21 @@ TrkQual : {
   datFilename : "Offline/TrkDiag/data/TrkQual_ANN1_v1.dat"
 }
 TrkQualDeM           : @local::TrkQual
-TrkQualDeM.KalSeedCollection : "KKDeM"
+TrkQualDeM.KalSeedPtrCollection : "MergeKKDeM"
 TrkQualUeM           : @local::TrkQual
-TrkQualUeM.KalSeedCollection : "KKUeM"
+TrkQualUeM.KalSeedPtrCollection : "MergeKKUeM"
 TrkQualDmuM          : @local::TrkQual
-TrkQualDmuM.KalSeedCollection : "KKDmuM"
+TrkQualDmuM.KalSeedPtrCollection : "MergeKKDmuM"
 TrkQualUmuM          : @local::TrkQual
-TrkQualUmuM.KalSeedCollection : "KKUmuM"
+TrkQualUmuM.KalSeedPtrCollection : "MergeKKUmuM"
 TrkQualDeP           : @local::TrkQual
-TrkQualDeP.KalSeedCollection : "KKDeP"
+TrkQualDeP.KalSeedPtrCollection : "MergeKKDeP"
 TrkQualUeP           : @local::TrkQual
-TrkQualUeP.KalSeedCollection : "KKUeP"
+TrkQualUeP.KalSeedPtrCollection : "MergeKKUeP"
 TrkQualDmuP          : @local::TrkQual
-TrkQualDmuP.KalSeedCollection : "KKDmuP"
+TrkQualDmuP.KalSeedPtrCollection : "MergeKKDmuP"
 TrkQualUmuP          : @local::TrkQual
-TrkQualUmuP.KalSeedCollection : "KKUmuP"
+TrkQualUmuP.KalSeedPtrCollection : "MergeKKUmuP"
 
 TrkQualProducers : {
   TrkQualDeM : @local::TrkQualDeM
