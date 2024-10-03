@@ -39,7 +39,8 @@ class nthelper:
                            "crvcoincsmc" : "CrvHitInfoMC",
                            "crvcoincsmcplane" : "CrvPlaneInfoMC",
                            "trkqual" : "MVAResultInfo",
-                           "helices" : "HelixInfo"
+                           "helices" : "HelixInfo",
+                           "trksegsmc" : "SurfaceStepInfo"
                           }
 
     def check_track_type(self, branch):

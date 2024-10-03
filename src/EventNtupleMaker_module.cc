@@ -465,7 +465,7 @@ namespace mu2e {
           }
         }
         if(_conf.SurfaceStepsTag(_surfaceStepsTag)){
-          _ntuple->Branch((branch+"mcssi.").c_str(),&_surfaceStepInfos[i_branch],_buffsize,_splitlevel);
+          _ntuple->Branch((branch+"segsmc.").c_str(),&_surfaceStepInfos[i_branch],_buffsize,_splitlevel);
         }
       }
     }
