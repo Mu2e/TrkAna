@@ -12,21 +12,23 @@ TrkQual : {
   datFilename : "Offline/TrkDiag/data/TrkQual_ANN1_v1.dat"
 }
 TrkQualDeM           : @local::TrkQual
-TrkQualDeM.KalSeedCollection : "KKDeM"
+TrkQualDeM.KalSeedPtrCollection : "MergeKKDeM"
 TrkQualUeM           : @local::TrkQual
-TrkQualUeM.KalSeedCollection : "KKUeM"
+TrkQualUeM.KalSeedPtrCollection : "MergeKKUeM"
 TrkQualDmuM          : @local::TrkQual
-TrkQualDmuM.KalSeedCollection : "KKDmuM"
+TrkQualDmuM.KalSeedPtrCollection : "MergeKKDmuM"
 TrkQualUmuM          : @local::TrkQual
-TrkQualUmuM.KalSeedCollection : "KKUmuM"
+TrkQualUmuM.KalSeedPtrCollection : "MergeKKUmuM"
 TrkQualDeP           : @local::TrkQual
-TrkQualDeP.KalSeedCollection : "KKDeP"
+TrkQualDeP.KalSeedPtrCollection : "MergeKKDeP"
 TrkQualUeP           : @local::TrkQual
-TrkQualUeP.KalSeedCollection : "KKUeP"
+TrkQualUeP.KalSeedPtrCollection : "MergeKKUeP"
 TrkQualDmuP          : @local::TrkQual
-TrkQualDmuP.KalSeedCollection : "KKDmuP"
+TrkQualDmuP.KalSeedPtrCollection : "MergeKKDmuP"
 TrkQualUmuP          : @local::TrkQual
-TrkQualUmuP.KalSeedCollection : "KKUmuP"
+TrkQualUmuP.KalSeedPtrCollection : "MergeKKUmuP"
+TrkQualAll          : @local::TrkQual
+TrkQualAll.KalSeedPtrCollection : "MergeKKAll"
 
 TrkQualProducers : {
   TrkQualDeM : @local::TrkQualDeM
@@ -37,6 +39,7 @@ TrkQualProducers : {
   TrkQualDmuP : @local::TrkQualDmuP
   TrkQualUmuM : @local::TrkQualUmuM
   TrkQualUmuP : @local::TrkQualUmuP
+  TrkQualAll : @local::TrkQualAll
 }
 TrkQualProducersPath : [ TrkQualDeM, TrkQualUeM, TrkQualDmuM, TrkQualDeP, TrkQualUeP, TrkQualDmuP, TrkQualUmuM, TrkQualUmuP ]
 
@@ -209,11 +212,11 @@ EventNtuple : {
   }
 
   #  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath]
-  Path : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualDeM ]
-  PathNoMakeSS : [ @sequence::MergeKKProducersPath, PBIWeight, TrkQualDeM ]
+  Path : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualAll ]
+  PathNoMakeSS : [ @sequence::MergeKKProducersPath, PBIWeight, TrkQualAll ]
   PathExt : [ @sequence::MergeKKNoFieldPath ]
-  PathSeparate : [ @sequence::MergeKKSeparatePath, PBIWeight, MakeSS, TrkQualDeM ]
-  PathNoMC : [ @sequence::MergeKKProducersPath, TrkQualDeM ]
+  PathSeparate : [ @sequence::MergeKKSeparatePath, PBIWeight, MakeSS, TrkQualAll ]
+  PathNoMC : [ @sequence::MergeKKProducersPath, TrkQualAll ]
   EndPath : [ EventNtuple, genCountLogger ]
   EndPathNoMC : [ EventNtuple ]
 
