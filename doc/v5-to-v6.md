@@ -17,6 +17,7 @@ There was a major update when we moved from v5 to v6. Here are tables of changes
 | branch | ```demtsh``` | ```trkhits``` | |
 | branch | ```demtshmc``` | ```trkhitsmc``` | |
 | branch | ```demtsm``` | ```trkmats``` | mats = materials |
+| branch | ```helixinfo``` | ```helices``` | also now a vector branch |
 
 ## Fcl File Changes
 Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6 and all fcl files are documented on the new [fcl README page](../fcl/README.md)
