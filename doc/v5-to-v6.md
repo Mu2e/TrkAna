@@ -18,6 +18,9 @@ There was a major update when we moved from v5 to v6. Here are tables of changes
 | branch | ```demtshmc``` | ```trkhitsmc``` | |
 | branch | ```demtsm``` | ```trkmats``` | mats = materials |
 | branch | ```helixinfo``` | ```helices``` | also now a vector branch |
+| branch | ```demlh``` | ```trksegpars_lh``` | pars = parameters, lh = LoopHelix |
+| branch | ```demch``` | ```trksegpars_ch``` | pars = parameters, ch = CentralHelix |
+| branch | ```demkl``` | ```trksegpars_kl``` | pars = parameters, kl = KinematicLine |
 
 ## Fcl File Changes
 Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6 and all fcl files are documented on the new [fcl README page](../fcl/README.md)
