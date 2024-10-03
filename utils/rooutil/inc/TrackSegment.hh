@@ -1,6 +1,7 @@
 #ifndef TrackSegment_hh_
 #define TrackSegment_hh_
 
+#include <functional>
 #include "TrkAna/inc/TrkSegInfo.hh"
 
 struct TrackSegment {
@@ -14,7 +15,7 @@ struct TrackSegment {
   }
 };
 
-typedef bool (*TrackSegmentCut)(const TrackSegment& track_seg);
+typedef std::function<bool(const TrackSegment&)> TrackSegmentCut;
 typedef std::vector<TrackSegment> TrackSegments;
 
 #endif

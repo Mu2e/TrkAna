@@ -27,6 +27,9 @@ TrkQualDmuP          : @local::TrkQual
 TrkQualDmuP.KalSeedPtrCollection : "MergeKKDmuP"
 TrkQualUmuP          : @local::TrkQual
 TrkQualUmuP.KalSeedPtrCollection : "MergeKKUmuP"
+TrkQualAll          : @local::TrkQual
+TrkQualAll.KalSeedPtrCollection : "MergeKKAll"
+
 
 TrkQualProducers : {
   TrkQualDeM : @local::TrkQualDeM
@@ -37,6 +40,7 @@ TrkQualProducers : {
   TrkQualDmuP : @local::TrkQualDmuP
   TrkQualUmuM : @local::TrkQualUmuM
   TrkQualUmuP : @local::TrkQualUmuP
+  TrkQualAll : @local::TrkQualAll
 }
 TrkQualProducersPath : [ TrkQualDeM, TrkQualUeM, TrkQualDmuM, TrkQualDeP, TrkQualUeP, TrkQualDmuP, TrkQualUmuM, TrkQualUmuP ]
 
@@ -209,10 +213,11 @@ EventNtuple : {
   }
 
   #  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath]
-  Path : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualDeM ]
+  Path : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualAll ]
+  PathNoMakeSS : [ @sequence::MergeKKProducersPath, PBIWeight, TrkQualAll ]
   PathExt : [ @sequence::MergeKKNoFieldPath ]
-  PathSeparate : [ @sequence::MergeKKSeparatePath, PBIWeight, MakeSS, TrkQualDeM ]
-  PathNoMC : [ @sequence::MergeKKProducersPath, TrkQualDeM ]
+  PathSeparate : [ @sequence::MergeKKSeparatePath, PBIWeight, MakeSS, @sequence::TrkQualProducersPath]
+  PathNoMC : [ @sequence::MergeKKProducersPath, TrkQualAll ]
   EndPath : [ EventNtuple, genCountLogger ]
   EndPathNoMC : [ EventNtuple ]
 

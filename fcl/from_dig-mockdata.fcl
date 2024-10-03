@@ -1,0 +1,61 @@
+#include "Offline/fcl/minimalMessageService.fcl"
+#include "Offline/fcl/standardProducers.fcl"
+#include "Offline/fcl/standardServices.fcl"
+#include "Production/JobConfig/reco/prolog.fcl"
+#include "TrkAna/fcl/prolog.fcl"
+
+process_name : EventNtuple
+
+source : { module_type : RootInput }
+
+services : @local::Services.Reco
+
+physics :
+{
+  producers : {
+    @table::Reconstruction.producers
+    @table::EventNtuple.producers
+    MakeSS : @local::CommonMC.MakeSSDigi
+  }
+  filters : {
+    @table::Reconstruction.filters
+  }
+
+  analyzers : {
+    @table::Reconstruction.analyzers
+    @table::EventNtuple.analyzers
+  }
+}
+outputs : {
+  Output : {
+    @table::Reconstruction.Output
+    SelectEvents : [ "EventNtuplePath" ]
+  }
+}
+
+
+physics.EventNtuplePath : [
+  MakeSS,
+  @sequence::Reconstruction.RecoMCPath,
+  @sequence::EventNtuple.PathNoMakeSS
+]
+physics.EventNtupleEndPath : [ @sequence::Reconstruction.EndPath, @sequence::EventNtuple.EndPathNoMC ]
+physics.analyzers.EventNtuple.SelectEvents : [ "EventNtuplePath" ]
+
+physics.trigger_paths : [ EventNtuplePath ]
+physics.end_paths : [ EventNtupleEndPath ]
+
+physics.producers.compressRecoMCs.surfaceStepTags: [ "MakeSS" ] # because these are not made in compressDigiMCs
+
+#include "Production/JobConfig/common/epilog.fcl"
+#include "Production/JobConfig/reco/epilog.fcl"
+
+outputs.Output.fileName: "mcs.owner.description.version.sequencer.art"
+services.TFileService.fileName: "nts.owner.description.version.sequencer.root"
+
+#
+#  Temporarily drop the trigger products: the embedded ComboHitCollections have incompatible schema
+#
+#include "Production/JobConfig/reco/drop_trigger.fcl"
+
+#include "Production/Validation/database.fcl"
