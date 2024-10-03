@@ -215,7 +215,7 @@ EventNtuple : {
   Path : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualAll ]
   PathNoMakeSS : [ @sequence::MergeKKProducersPath, PBIWeight, TrkQualAll ]
   PathExt : [ @sequence::MergeKKNoFieldPath ]
-  PathSeparate : [ @sequence::MergeKKSeparatePath, PBIWeight, MakeSS, TrkQualAll ]
+  PathSeparate : [ @sequence::MergeKKSeparatePath, PBIWeight, MakeSS, @sequence::TrkQualProducersPath]
   PathNoMC : [ @sequence::MergeKKProducersPath, TrkQualAll ]
   EndPath : [ EventNtuple, genCountLogger ]
   EndPathNoMC : [ EventNtuple ]
