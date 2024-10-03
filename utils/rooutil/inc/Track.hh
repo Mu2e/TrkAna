@@ -1,6 +1,7 @@
 #ifndef Track_hh_
 #define Track_hh_
 
+#include <functional>
 #include "TrkAna/inc/TrkInfo.hh"
 #include "TrkAna/inc/TrkSegInfo.hh"
 
@@ -47,7 +48,7 @@ struct Track {
   std::vector<mu2e::TrkSegInfo>* trksegs = nullptr;
 };
 
-typedef bool (*TrackCut)(const Track& track);
+typedef std::function<bool(const Track&)> TrackCut;
 typedef std::vector<Track> Tracks;
 
 #endif
