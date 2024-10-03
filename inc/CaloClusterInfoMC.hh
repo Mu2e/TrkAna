@@ -1,5 +1,5 @@
 //
-// Struct describing MC truth for calorimeter cluster
+// CaloClusterInfoMC: struct describing MC truth for calorimeter cluster
 // original author: Dave Brown (LBNL), Jan 2019
 //
 #ifndef CaloClusterInfoMC_HH

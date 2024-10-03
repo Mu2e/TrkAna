@@ -12,20 +12,20 @@ You can use this utility:
 * on the command line:
 
 ```
-ntuplehelper --branches dem.nhits demmcsim.*
+ntuplehelper dem.nhits demmcsim.*
 ```
 
 * on the ROOT command lineL
 ```
-root[0] .! ntuplehelper --branches dem.nhits demmcsim.*
+root[0] .! ntuplehelper dem.nhits demmcsim.*
 ```
 
 * from within python:
 
 ```
 >>> import ntuplehelper
->>> nthelp = ntuplehelper.nthelp()
->>> nthelp.whatis(['dem.hits', 'demmcsim.*'])
+>>> nthelper = ntuplehelper.nthelper()
+>>> nthelper.whatis(['dem.hits', 'demmcsim.*'])
 ```
 
 The above produces this output:

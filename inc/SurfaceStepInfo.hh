@@ -1,5 +1,5 @@
 //
-// SurfaceStep info to summarize energy deposition in a passive element, or passage through a virtual detector
+// SurfaceStepInfo: info to summarize MC energy deposition in a passive element, or passage through a virtual detector
 //
 #ifndef SurfaceStepInfo_HH
 #define SurfaceStepInfo_HH

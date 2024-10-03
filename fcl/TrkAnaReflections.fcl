@@ -5,7 +5,7 @@
 #include "TrkAna/fcl/prolog.fcl"
 BEGIN_PROLOG
 TAR : {
-  @table::TrkAnaTreeMaker
+  @table::EventNtupleMaker
   FitType : LoopHelix
   diagLevel : 2
   FillMCInfo : true

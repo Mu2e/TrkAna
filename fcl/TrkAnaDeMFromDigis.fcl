@@ -63,7 +63,7 @@ physics :
   ]
   analyzers : {
     TrkAnaDeM : {
-      @table::TrkAnaTreeMaker
+      @table::EventNtupleMaker
       FitType : LoopHelix
       diagLevel : 2
       FillMCInfo : true

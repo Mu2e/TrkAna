@@ -5,11 +5,10 @@
 BEGIN_PROLOG
 TrkAnaTrigger : {
   TrkAnaTT : {
-    @table::TrkAnaTreeMaker
+    @table::EventNtupleMaker
     diagLevel : 2
     FillCRVCoincs : false
     FillCaloMC : false
-    RecoCountTag : ""
     FillTriggerInfo : true
     FillTrkPIDInfo : false
     FillHitInfo : true
