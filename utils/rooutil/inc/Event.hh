@@ -16,7 +16,7 @@ struct Event {
 
     ntuple->SetBranchAddress("evtinfo", &this->evtinfo);
     ntuple->SetBranchAddress("trk", &this->trk);
-    ntuple->SetBranchAddress("trkfit", &this->trkfit);
+    ntuple->SetBranchAddress("trksegs", &this->trksegs);
 
     // Check if the MC branches exist
     if (ntuple->GetBranch("evtinfomc")) {
@@ -35,7 +35,7 @@ struct Event {
     tracks.clear();
 
     for (int i_track = 0; i_track < nTracks(); ++i_track) {
-      Track track(&(trk->at(i_track)), &(trkfit->at(i_track)), debug); // passing the addresses of the underlying structs
+      Track track(&(trk->at(i_track)), &(trksegs->at(i_track)), debug); // passing the addresses of the underlying structs
       if (debug) {
         std::cout << "Event::Update(): Adding track #" << i_track << " to tracks..." << std::endl;
       }
@@ -69,7 +69,7 @@ struct Event {
   mu2e::EventInfoMC* evtinfomc = nullptr;
 
   std::vector<mu2e::TrkInfo>* trk = nullptr;
-  std::vector<std::vector<mu2e::TrkFitInfo>>* trkfit = nullptr;
+  std::vector<std::vector<mu2e::TrkSegInfo>>* trksegs = nullptr;
 };
 
 #endif

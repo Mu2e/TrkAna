@@ -1,16 +1,16 @@
 #ifndef TrackSegment_hh_
 #define TrackSegment_hh_
 
-#include "TrkAna/inc/TrkFitInfo.hh"
+#include "TrkAna/inc/TrkSegInfo.hh"
 
 struct TrackSegment {
-  TrackSegment(mu2e::TrkFitInfo* trkfit) : trkfit(trkfit) { }
+  TrackSegment(mu2e::TrkSegInfo* trkseg) : trkseg(trkseg) { }
 
   // Pointers to the data
-  mu2e::TrkFitInfo* trkfit = nullptr;
+  mu2e::TrkSegInfo* trkseg = nullptr;
 
   static bool earliest(const TrackSegment& seg1, const TrackSegment& seg2) {
-    return seg1.trkfit->time < seg2.trkfit->time;
+    return seg1.trkseg->time < seg2.trkseg->time;
   }
 };
 

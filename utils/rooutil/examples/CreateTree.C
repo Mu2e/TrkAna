@@ -14,7 +14,7 @@ void CreateTree(std::string filename) {
   TTree* tree = new TTree("example_tree", "An example tree");
   // Here we will write out one track per row along with its track segment at the tracker entrance
   mu2e::TrkInfo trk;
-  mu2e::TrkFitInfo trk_ent;
+  mu2e::TrkSegInfo trk_ent;
   tree->Branch("trk", &trk);
   tree->Branch("trk_ent", &trk_ent);
 
@@ -38,7 +38,7 @@ void CreateTree(std::string filename) {
 
       // Loop through the tracker entrance track segments
       for (const auto& segment : trk_ent_segments) {
-        trk_ent = *(segment.trkfit); // we will fill this data into the tree
+        trk_ent = *(segment.trkseg); // we will fill this data into the tree
       }
 
       // Fill the tree once per track

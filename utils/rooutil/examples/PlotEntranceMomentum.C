@@ -34,7 +34,7 @@ void PlotEntranceMomentum(std::string filename) {
       for (const auto& segment : trk_ent_segments) {
 
         // Fill the histogram
-        hRecoMom->Fill(segment.trkfit->mom.R());
+        hRecoMom->Fill(segment.trkseg->mom.R());
       }
     }
   }
