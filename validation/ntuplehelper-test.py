@@ -4,7 +4,7 @@ nthelp = ntuplehelper.nthelper()
 
 print("Testing a leaf from each branch")
 print("=========")
-nthelp.whatis(['evtinfomc.pbtime', 'evtinfo.event', 'hitcount.nbkg', 'tcnt.ndem', 'demmcsim.pdg', 'demcalohit.trkdepth', 'trkcalohitmc.nsim', 'demtsh.ptoca', 'demtshmc.edep', 'demtsm.tlen', 'crvsummary.totalPEs', 'crvsummarymc.sectorNumber', 'crvcoincs.time', 'crvcoincsmc.primaryE', 'crvcoincsmcplane.dir', 'demmcsci.dp', 'demmcssi.dp', 'dem.nactive', 'demmc.ndigigood', 'demfit.mom', 'demlh.cx', 'demch.omega', 'klkl.phi0', 'trkqual.result'])
+nthelp.whatis(['evtinfomc.pbtime', 'evtinfo.event', 'hitcount.nbkg', 'tcnt.ndem', 'trkmcsim.pdg', 'trkcalohit.trkdepth', 'trkcalohitmc.nsim', 'trkhits.ptoca', 'trkhitsmc.edep', 'trkmats.tlen', 'crvsummary.totalPEs', 'crvsummarymc.sectorNumber', 'crvcoincs.time', 'crvcoincsmc.primaryE', 'crvcoincsmcplane.dir', 'trkmcsci.dp', 'trkmcssi.dp', 'trk.nactive', 'trkmc.ndigigood', 'trksegs.mom', 'trklh.cx', 'trkch.omega', 'klkl.phi0', 'trkqual.result'])
 
 print("Testing a few leaves from a single branch (should only print the branch description once)")
 print("=========")
@@ -12,7 +12,7 @@ nthelp.whatis(['evtinfo.run', 'evtinfo.subrun', 'evtinfo.event']) # should only 
 
 print("Testing wildcard")
 print("=========")
-nthelp.whatis(["dem.*", "demfit.*"])
+nthelp.whatis(["trk.*", "trksegs.*"])
 
 print("Testing a few errors")
 print("=========")

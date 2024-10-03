@@ -8,7 +8,7 @@
 #include "TrkAna/inc/TrkCount.hh"
 #include "TrkAna/inc/TrkInfo.hh"
 #include "TrkAna/inc/TrkInfoMC.hh"
-#include "TrkAna/inc/TrkFitInfo.hh"
+#include "TrkAna/inc/TrkSegInfo.hh"
 #include "TrkAna/inc/LoopHelixInfo.hh"
 #include "TrkAna/inc/CentralHelixInfo.hh"
 #include "TrkAna/inc/KinematicLineInfo.hh"

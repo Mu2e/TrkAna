@@ -20,7 +20,7 @@ class nthelper:
                            'hitcount' : "HitCount",
                            'tcnt' : "TrkCount", # TODO: leaves can't be retrieved because they are runtime made
                            'trk' : "TrkInfo",
-                           'trkfit' : "TrkFitInfo",
+                           'trksegs' : "TrkSegInfo",
                            'trkmc' : "TrkInfoMC",
                            'trklh' : "LoopHelixInfo",
                            'trkch' : "CentralHelixInfo",

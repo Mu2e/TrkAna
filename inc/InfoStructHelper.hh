@@ -18,7 +18,7 @@
 
 #include "TrkAna/inc/HitCount.hh"
 #include "TrkAna/inc/TrkInfo.hh"
-#include "TrkAna/inc/TrkFitInfo.hh"
+#include "TrkAna/inc/TrkSegInfo.hh"
 #include "TrkAna/inc/LoopHelixInfo.hh"
 #include "TrkAna/inc/CentralHelixInfo.hh"
 #include "TrkAna/inc/KinematicLineInfo.hh"
@@ -52,7 +52,7 @@ namespace mu2e {
     void fillHitCount(RecoCount const& nrec, HitCount& hitcount);
 
     void fillTrkInfo(const KalSeed& kseed,std::vector<TrkInfo>& trkinfo);
-    void fillTrkFitInfo(const KalSeed& kseed,std::vector<std::vector<TrkFitInfo>>& trkfitinfos);
+    void fillTrkSegInfo(const KalSeed& kseed,std::vector<std::vector<TrkSegInfo>>& trkseginfos);
     void fillTrkInfoHits(const KalSeed& kseed,TrkInfo& trkinfo);
     void fillTrkInfoStraws(const KalSeed& kseed,TrkInfo& trkinfo);
     void fillLoopHelixInfo(const KalSeed& kseed, std::vector<std::vector<LoopHelixInfo>>& lhis);

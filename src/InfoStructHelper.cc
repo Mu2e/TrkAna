@@ -114,8 +114,8 @@ namespace mu2e {
     trkinfos.push_back(trkinfo);
   }
 
-  void InfoStructHelper::fillTrkFitInfo(const KalSeed& kseed, std::vector<std::vector<TrkFitInfo>>& all_tfis) {
-    std::vector<TrkFitInfo> tfis;
+  void InfoStructHelper::fillTrkSegInfo(const KalSeed& kseed, std::vector<std::vector<TrkSegInfo>>& all_tsis) {
+    std::vector<TrkSegInfo> tsis;
     double tmin(std::numeric_limits<float>::max());
     double tmax(std::numeric_limits<float>::lowest());
     size_t imin(0), imax(0);
@@ -130,24 +130,24 @@ namespace mu2e {
         tmax = kinter.time();
         imax = ikinter;
       }
-      TrkFitInfo tfi;
-      tfi.mom = kinter.momentum3();
-      tfi.pos = kinter.position3();
-      tfi.time = kinter.time();
-      tfi.momerr = kinter.momerr();
-      tfi.inbounds = kinter.inBounds();
-      tfi.gap = kinter.gap();
-      tfi.sid = kinter.surfid_.id().id();
-      tfi.sindex = kinter.surfid_.index();
-      tfi.dmom = kinter.dMom();
-      tfis.push_back(tfi);
+      TrkSegInfo tsi;
+      tsi.mom = kinter.momentum3();
+      tsi.pos = kinter.position3();
+      tsi.time = kinter.time();
+      tsi.momerr = kinter.momerr();
+      tsi.inbounds = kinter.inBounds();
+      tsi.gap = kinter.gap();
+      tsi.sid = kinter.surfid_.id().id();
+      tsi.sindex = kinter.surfid_.index();
+      tsi.dmom = kinter.dMom();
+      tsis.push_back(tsi);
     }
     // now flag early and latest intersections
-    if(tfis.size() > 0){
-      tfis[imin].early = true;
-      tfis[imax].late = true;
+    if(tsis.size() > 0){
+      tsis[imin].early = true;
+      tsis[imax].late = true;
     }
-    all_tfis.push_back(tfis);
+    all_tsis.push_back(tsis);
   }
 
   void InfoStructHelper::fillLoopHelixInfo(const KalSeed& kseed, std::vector<std::vector<LoopHelixInfo>>& all_lhis) {

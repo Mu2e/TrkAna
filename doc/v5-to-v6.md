@@ -9,6 +9,7 @@ There was a major update when we moved from v5 to v6. Here are tables of changes
 | folder name | ```TrkAna``` | ```EventNtuple``` | defined in fcl |
 | folder name | ```TrkAnaExt``` | ```EventNtuple``` | defined in fcl |
 | branch | ```dem```, ```uem```, etc. | ```trk``` | all track types are now in a single branch |
+| branch | ```demfit```, ```uemfit```, etc. | ```trksegs``` | track segments |
 | branch | ```demtrkqual``` | ```trkqual``` | otherwise it would have been ```trktrkqual```|
 | branch | ```demtch``` | ```trkcalohit``` | |
 | branch | ```demtchmc``` | ```trkcalohitmc``` | |
@@ -58,3 +59,4 @@ Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6
 | art module function | ```fillAllInfos``` | ```fillTrackBranches``` | more descriptive |
 | art module code | ```ntuple->Branch("evtinfo.")``` | ```ntuple->Branch("evtinfo")``` | period removed for better access in RooUtil |
 | art module code | ```ntuple->Branch("evtinfomc.")``` | ```ntuple->Branch("evtinfomc")``` | period removed for better access in RooUtil |
+| info struct | ```TrkFitInfo``` | ```TrkSegInfo``` | to match new branch name, also other changes in module (e.g. ```_allTFIs``` to ```_allTSIs```)|

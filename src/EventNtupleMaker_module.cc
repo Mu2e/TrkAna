@@ -60,7 +60,7 @@
 #include "TrkAna/inc/EventInfoMC.hh"
 #include "TrkAna/inc/TrkInfo.hh"
 #include "TrkAna/inc/TrkInfoMC.hh"
-#include "TrkAna/inc/TrkFitInfo.hh"
+#include "TrkAna/inc/TrkSegInfo.hh"
 #include "TrkAna/inc/LoopHelixInfo.hh"
 #include "TrkAna/inc/CentralHelixInfo.hh"
 #include "TrkAna/inc/KinematicLineInfo.hh"
@@ -206,7 +206,7 @@ namespace mu2e {
       std::vector<art::Handle<KalSeedPtrCollection> > _allKSPCHs;
       // track branches (outputs)
       std::map<BranchIndex, std::vector<TrkInfo>> _allTIs;
-      std::map<BranchIndex, std::vector<std::vector<TrkFitInfo>>> _allTFIs;
+      std::map<BranchIndex, std::vector<std::vector<TrkSegInfo>>> _allTSIs;
       std::map<BranchIndex, std::vector<std::vector<LoopHelixInfo>>> _allLHIs;
       std::map<BranchIndex, std::vector<std::vector<CentralHelixInfo>>> _allCHIs;
       std::map<BranchIndex, std::vector<std::vector<KinematicLineInfo>>> _allKLIs;
@@ -342,7 +342,7 @@ namespace mu2e {
       auto i_branchConfig = _allBranches.at(i_branch);
       _allTIs[i_branch] = std::vector<TrkInfo>();
       // fit sampling (KalIntersection) at a surface
-      _allTFIs[i_branch] = std::vector<std::vector<TrkFitInfo>>();
+      _allTSIs[i_branch] = std::vector<std::vector<TrkSegInfo>>();
       // fit-specific branches
       _allLHIs[i_branch] = std::vector<std::vector<LoopHelixInfo>>();
       _allCHIs[i_branch] = std::vector<std::vector<CentralHelixInfo>>();
@@ -412,7 +412,7 @@ namespace mu2e {
       BranchConfig i_branchConfig = _allBranches.at(i_branch);
       std::string branch = i_branchConfig.branch();
       _ntuple->Branch((branch+".").c_str(),&_allTIs.at(i_branch),_buffsize,_splitlevel);
-      _ntuple->Branch((branch+"fit.").c_str(),&_allTFIs.at(i_branch),_buffsize,_splitlevel);
+      _ntuple->Branch((branch+"segs.").c_str(),&_allTSIs.at(i_branch),_buffsize,_splitlevel);
 // add traj-specific branches
       if(_ftype == LoopHelix )_ntuple->Branch((branch+"lh.").c_str(),&_allLHIs.at(i_branch),_buffsize,_splitlevel);
       if(_ftype == CentralHelix )_ntuple->Branch((branch+"ch.").c_str(),&_allCHIs.at(i_branch),_buffsize,_splitlevel);
@@ -604,7 +604,7 @@ namespace mu2e {
     // loop through all track types
     for (BranchIndex i_branch = 0; i_branch < _allBranches.size(); ++i_branch) {
       _allTIs.at(i_branch).clear();
-      _allTFIs.at(i_branch).clear();
+      _allTSIs.at(i_branch).clear();
       _allLHIs.at(i_branch).clear();
       _allCHIs.at(i_branch).clear();
       _allKLIs.at(i_branch).clear();
@@ -762,7 +762,7 @@ namespace mu2e {
     _infoStructHelper.fillTrkInfo(kseed,_allTIs.at(i_branch));
 
     // fit information at specific points:e
-    _infoStructHelper.fillTrkFitInfo(kseed,_allTFIs.at(i_branch));
+    _infoStructHelper.fillTrkSegInfo(kseed,_allTSIs.at(i_branch));
     if(_ftype == LoopHelix && kseed.loopHelixFit())_infoStructHelper.fillLoopHelixInfo(kseed,_allLHIs.at(i_branch));
     if(_ftype == CentralHelix && kseed.centralHelixFit())_infoStructHelper.fillCentralHelixInfo(kseed,_allCHIs.at(i_branch));
     if(_ftype == KinematicLine && kseed.kinematicLineFit())_infoStructHelper.fillKinematicLineInfo(kseed,_allKLIs.at(i_branch));

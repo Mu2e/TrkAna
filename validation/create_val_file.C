@@ -17,26 +17,26 @@ void create_val_file(std::string filename, std::string outfilename) {
   ntuple->Draw("evtinfomc.nprotons>>h_evtinfomc_nprotons", "", "");
   ntuple->Draw("evtinfomc.pbtime>>h_evtinfomc_pbtime", "", "");
 
-  // trkfit histograms
-  ntuple->Draw("trkfit.mom.R()>>h_demfit_mom_all", "", "goff");
-  ntuple->Draw("trkfit.mom.R()>>h_demfit_mom_ent", "trkfit.sid==0", "goff");
-  ntuple->Draw("trkfit.mom.R()>>h_demfit_mom_mid", "trkfit.sid==1", "goff");
-  ntuple->Draw("trkfit.mom.R()>>h_demfit_mom_xit", "trkfit.sid==2", "goff");
-  ntuple->Draw("trkfit.mom.R()>>h_demfit_mom_ent_t0cut", "trkfit.sid==0 && trklh.t0>=700", "goff");
-  ntuple->Draw("trkfit.mom.R()>>h_demfit_mom_mid_t0cut", "trkfit.sid==1 && trklh.t0>=700", "goff");
-  ntuple->Draw("trkfit.mom.R()>>h_demfit_mom_xit_t0cut", "trkfit.sid==2 && trklh.t0>=700", "goff");
+  // trksegs histograms
+  ntuple->Draw("trksegs.mom.R()>>h_demfit_mom_all", "", "goff");
+  ntuple->Draw("trksegs.mom.R()>>h_demfit_mom_ent", "trksegs.sid==0", "goff");
+  ntuple->Draw("trksegs.mom.R()>>h_demfit_mom_mid", "trksegs.sid==1", "goff");
+  ntuple->Draw("trksegs.mom.R()>>h_demfit_mom_xit", "trksegs.sid==2", "goff");
+  ntuple->Draw("trksegs.mom.R()>>h_demfit_mom_ent_t0cut", "trksegs.sid==0 && trklh.t0>=700", "goff");
+  ntuple->Draw("trksegs.mom.R()>>h_demfit_mom_mid_t0cut", "trksegs.sid==1 && trklh.t0>=700", "goff");
+  ntuple->Draw("trksegs.mom.R()>>h_demfit_mom_xit_t0cut", "trksegs.sid==2 && trklh.t0>=700", "goff");
 
   // resolution histograms
-  ntuple->Draw("(trkfit[][trkmcvd.iinter].mom.R() - trkmcvd[].mom.R())>>h_demfit_momres_all", "", "goff");
-  ntuple->Draw("(trkfit[][trkmcvd.iinter].mom.R() - trkmcvd[].mom.R())>>h_demfit_momres_ent", "trkmcvd[].sid==0", "goff");
-  ntuple->Draw("(trkfit[][trkmcvd.iinter].mom.R() - trkmcvd[].mom.R())>>h_demfit_momres_mid", "trkmcvd[].sid==1", "goff");
-  ntuple->Draw("(trkfit[][trkmcvd.iinter].mom.R() - trkmcvd[].mom.R())>>h_demfit_momres_xit", "trkmcvd[].sid==2", "goff");
+  ntuple->Draw("(trksegs[][trkmcvd.iinter].mom.R() - trkmcvd[].mom.R())>>h_demfit_momres_all", "", "goff");
+  ntuple->Draw("(trksegs[][trkmcvd.iinter].mom.R() - trkmcvd[].mom.R())>>h_demfit_momres_ent", "trkmcvd[].sid==0", "goff");
+  ntuple->Draw("(trksegs[][trkmcvd.iinter].mom.R() - trkmcvd[].mom.R())>>h_demfit_momres_mid", "trkmcvd[].sid==1", "goff");
+  ntuple->Draw("(trksegs[][trkmcvd.iinter].mom.R() - trkmcvd[].mom.R())>>h_demfit_momres_xit", "trkmcvd[].sid==2", "goff");
 
   // trkcalohit histograms
   ntuple->Draw("trkcalohit.ctime>>h_demtch_ctime_all", "", "goff");
   ntuple->Draw("trkcalohit.ctime>>h_demtch_ctime_active", "trkcalohit.active==1", "goff");
   ntuple->Draw("trkcalohit.ctime>>h_demtch_ctime_inactive", "trkcalohit.active==0", "goff");
-  ntuple->Draw("trkcalohit.ctime-trklh.t0>>h_demtch_demfit_dt_ent", "trkfit.sid==0 && trktch.active==1", "goff");
+  ntuple->Draw("trkcalohit.ctime-trklh.t0>>h_demtch_demfit_dt_ent", "trksegs.sid==0 && trktch.active==1", "goff");
 
   // trkcalohitmc histograms
   ntuple->Draw("trkcalohitmc.nsim>>h_trkcalohitmc_nsim_all", "", "goff");
