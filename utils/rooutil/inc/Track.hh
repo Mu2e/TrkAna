@@ -2,16 +2,16 @@
 #define Track_hh_
 
 #include "TrkAna/inc/TrkInfo.hh"
-#include "TrkAna/inc/TrkFitInfo.hh"
+#include "TrkAna/inc/TrkSegInfo.hh"
 
 #include "TrkAna/utils/rooutil/inc/TrackSegment.hh"
 
 struct Track {
-  Track(mu2e::TrkInfo* trk, std::vector<mu2e::TrkFitInfo>* trkfit, bool debug = false) : trk(trk), trkfit(trkfit), debug(debug) {
+  Track(mu2e::TrkInfo* trk, std::vector<mu2e::TrkSegInfo>* trksegs, bool debug = false) : trk(trk), trksegs(trksegs), debug(debug) {
 
     // Create the underlying track segments
     for (int i_segment = 0; i_segment < nSegments(); ++i_segment) {
-      TrackSegment segment(&(trkfit->at(i_segment))); // passing the addresses of the underlying structs
+      TrackSegment segment(&(trksegs->at(i_segment))); // passing the addresses of the underlying structs
       if (debug) {
         std::cout << "Track::Track(): Adding segment #" << i_segment << " to segments..." << std::endl;
       }
@@ -26,7 +26,7 @@ struct Track {
     }
   }
 
-  int nSegments() const { return trkfit->size(); }
+  int nSegments() const { return trksegs->size(); }
 
   TrackSegments GetSegments() const { return segments; }
   TrackSegments GetSegments(TrackSegmentCut cut) const {
@@ -44,7 +44,7 @@ struct Track {
 
   // Pointers to the data
   mu2e::TrkInfo* trk = nullptr;
-  std::vector<mu2e::TrkFitInfo>* trkfit = nullptr;
+  std::vector<mu2e::TrkSegInfo>* trksegs = nullptr;
 };
 
 typedef bool (*TrackCut)(const Track& track);

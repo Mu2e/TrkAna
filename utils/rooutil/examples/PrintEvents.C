@@ -34,7 +34,7 @@ void PrintEvents(std::string filename) {
       const auto& all_segments = track.GetSegments();
       std::cout << "  and " << all_segments.size() << " segments:" << std::endl;
       for (const auto& segment : all_segments) {
-        std::cout << "    surfaceID " << segment.trkfit->sid << ": z = " << segment.trkfit->pos.z() << " mm, t = " << segment.trkfit->time << " ns, p = " << segment.trkfit->mom.R() << " MeV/c" << std::endl;
+        std::cout << "    surfaceID " << segment.trkseg->sid << ": z = " << segment.trkseg->pos.z() << " mm, t = " << segment.trkseg->time << " ns, p = " << segment.trkseg->mom.R() << " MeV/c" << std::endl;
       }
     }
   }
