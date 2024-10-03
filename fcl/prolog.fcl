@@ -210,6 +210,7 @@ EventNtuple : {
 
   #  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath]
   Path : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualDeM ]
+  PathNoMakeSS : [ @sequence::MergeKKProducersPath, PBIWeight, TrkQualDeM ]
   PathExt : [ @sequence::MergeKKNoFieldPath ]
   PathSeparate : [ @sequence::MergeKKSeparatePath, PBIWeight, MakeSS, TrkQualDeM ]
   PathNoMC : [ @sequence::MergeKKProducersPath, TrkQualDeM ]
