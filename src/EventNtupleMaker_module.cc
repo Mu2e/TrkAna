@@ -283,7 +283,7 @@ namespace mu2e {
       std::vector<CrvHitInfoMC> _crvpulsesmc;
       std::vector<CrvHitInfoReco> _crvrecoinfo;
       // helices
-      HelixInfo _hinfo;
+      std::vector<HelixInfo> _hinfos;
       // struct helpers
       InfoStructHelper _infoStructHelper;
       InfoMCStructHelper _infoMCStructHelper;
@@ -496,7 +496,7 @@ namespace mu2e {
       }
     }
     // helix info
-    if(_conf.helices()) _ntuple->Branch("helixinfo.",&_hinfo,_buffsize,_splitlevel);
+    if(_conf.helices()) _ntuple->Branch("helices.",&_hinfos,_buffsize,_splitlevel);
   }
 
   void EventNtupleMaker::beginSubRun(const art::SubRun & subrun ) {
@@ -510,8 +510,11 @@ namespace mu2e {
     _einfomc.reset();
     _hcnt.reset();
     _tcnt.reset();
-    _hinfo.reset();
     _wtinfo.reset();
+
+    // clear the vector branches
+    _hinfos.clear();
+
     // update timing maps for MC
     if(_fillmc){
       _infoMCStructHelper.updateEvent(event);
@@ -638,7 +641,7 @@ namespace mu2e {
           auto const& khassns = khaH.product();
           // find the associated HelixSeed to this KalSeed using the assns.
           auto hptr = (*khassns)[i_kseedptr].second;
-          _infoStructHelper.fillHelixInfo(hptr, _hinfo);
+          _infoStructHelper.fillHelixInfo(hptr, _hinfos);
         }
       }
     }

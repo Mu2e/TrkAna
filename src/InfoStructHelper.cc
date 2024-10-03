@@ -415,7 +415,8 @@ namespace mu2e {
   }
 
 
-  void InfoStructHelper::fillHelixInfo(art::Ptr<HelixSeed> const& hptr, HelixInfo& hinfo) {
+  void InfoStructHelper::fillHelixInfo(art::Ptr<HelixSeed> const& hptr, std::vector<HelixInfo>& all_hinfos) {
+    HelixInfo hinfo;
     if(hptr.isNonnull()){
       // count hits, active and not
       for(size_t ihit=0;ihit < hptr->hits().size(); ihit++){
@@ -443,6 +444,7 @@ namespace mu2e {
         if(hptr->caloCluster().isNonnull())
           hinfo.ecalo  = hptr->caloCluster()->energyDep();
       }
+      all_hinfos.emplace_back(hinfo);
     }
   }
 
