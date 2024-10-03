@@ -60,6 +60,12 @@ struct Event {
     return select_tracks;
   }
 
+  int CountTracks() const { return tracks.size(); }
+  int CountTracks(TrackCut cut) const {
+    Tracks select_tracks = GetTracks(cut);
+    return select_tracks.size();
+  }
+
   Tracks tracks;
 
   bool debug = false;
