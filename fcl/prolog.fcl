@@ -153,6 +153,7 @@ Ext : { input : "MergeKKLine"
 All : { input : "MergeKKAll"
   branch : "trk"
   options : { fillHits : true fillMC : true   genealogyDepth : -1 matchDepth : -1 }
+  trkQualTag : "TrkQualAll"
 }
 
 
