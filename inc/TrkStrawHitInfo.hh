@@ -5,7 +5,7 @@
 #define TrkStrawHitInfoHH
 
 
-//#include "TrkAna/inc/RootVectors.hh"
+//#include "EventNtuple/inc/RootVectors.hh"
 #include "Offline/DataProducts/inc/TrkTypes.hh"
 namespace mu2e
 {

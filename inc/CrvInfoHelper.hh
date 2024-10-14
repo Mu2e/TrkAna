@@ -1,13 +1,13 @@
 //
 //  Replacement for CRVAnalysis
 //
-#include "TrkAna/inc/CrvHitInfoReco.hh"
-#include "TrkAna/inc/CrvHitInfoMC.hh"
-#include "TrkAna/inc/CrvWaveformInfo.hh"
-#include "TrkAna/inc/CrvSummaryReco.hh"
-#include "TrkAna/inc/CrvSummaryMC.hh"
-#include "TrkAna/inc/CrvPlaneInfoMC.hh"
-#include "TrkAna/inc/CrvPulseInfoReco.hh"
+#include "EventNtuple/inc/CrvHitInfoReco.hh"
+#include "EventNtuple/inc/CrvHitInfoMC.hh"
+#include "EventNtuple/inc/CrvWaveformInfo.hh"
+#include "EventNtuple/inc/CrvSummaryReco.hh"
+#include "EventNtuple/inc/CrvSummaryMC.hh"
+#include "EventNtuple/inc/CrvPlaneInfoMC.hh"
+#include "EventNtuple/inc/CrvPulseInfoReco.hh"
 #include "Offline/DataProducts/inc/CRVId.hh"
 #include "Offline/RecoDataProducts/inc/CrvCoincidenceCluster.hh"
 #include "Offline/RecoDataProducts/inc/CrvRecoPulse.hh"

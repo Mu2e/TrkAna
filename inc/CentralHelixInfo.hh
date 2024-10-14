@@ -6,7 +6,7 @@
 //
 #ifndef CentralHelixInfo_HH
 #define CentralHelixInfo_HH
-#include "TrkAna/inc/RootVectors.hh"
+#include "EventNtuple/inc/RootVectors.hh"
 #include "Offline/DataProducts/inc/SurfaceId.hh"
 namespace mu2e
 {

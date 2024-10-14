@@ -16,7 +16,7 @@
 #include "fhiclcpp/types/Table.h"
 #include "fhiclcpp/types/OptionalSequence.h"
 
-#include "TrkAna/inc/BestCrvAssns.hh"
+#include "EventNtuple/inc/BestCrvAssns.hh"
 
 // C++ includes.
 #include <iostream>

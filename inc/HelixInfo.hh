@@ -1,8 +1,8 @@
 //
 // HelixInfo: struct for HelixSeed info
 //
-#ifndef TrkAna_HelixInfo_hh
-#define TrkAna_HelixInfo_hh
+#ifndef EventNtuple_HelixInfo_hh
+#define EventNtuple_HelixInfo_hh
 namespace mu2e {
   struct HelixInfo {
     int nch = -1; // number of combo hits potentially used for this helix

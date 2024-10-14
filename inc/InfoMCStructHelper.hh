@@ -2,8 +2,8 @@
 // Namespace for collecting tools used in MC truth evaluation
 // Original author: Dave Brown (LBNL) 8/10/2016
 //
-#ifndef TrkAna_InfoMCStructHelper_hh
-#define TrkAna_InfoMCStructHelper_hh
+#ifndef EventNtuple_InfoMCStructHelper_hh
+#define EventNtuple_InfoMCStructHelper_hh
 #include "fhiclcpp/types/Atom.h"
 #include "Offline/RecoDataProducts/inc/StrawHitIndex.hh"
 #include "Offline/MCDataProducts/inc/StrawDigiMC.hh"
@@ -11,14 +11,14 @@
 #include "Offline/MCDataProducts/inc/CrvCoincidenceClusterMC.hh"
 
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
-#include "TrkAna/inc/TrkInfoMC.hh"
-#include "TrkAna/inc/SimInfo.hh"
-#include "TrkAna/inc/TrkStrawHitInfoMC.hh"
-#include "TrkAna/inc/CaloClusterInfoMC.hh"
-#include "TrkAna/inc/MCStepInfo.hh"
-#include "TrkAna/inc/MCStepSummaryInfo.hh"
-#include "TrkAna/inc/SurfaceStepInfo.hh"
-#include "TrkAna/inc/CrvHitInfoMC.hh"
+#include "EventNtuple/inc/TrkInfoMC.hh"
+#include "EventNtuple/inc/SimInfo.hh"
+#include "EventNtuple/inc/TrkStrawHitInfoMC.hh"
+#include "EventNtuple/inc/CaloClusterInfoMC.hh"
+#include "EventNtuple/inc/MCStepInfo.hh"
+#include "EventNtuple/inc/MCStepSummaryInfo.hh"
+#include "EventNtuple/inc/SurfaceStepInfo.hh"
+#include "EventNtuple/inc/CrvHitInfoMC.hh"
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
 #include "Offline/MCDataProducts/inc/KalSeedMC.hh"
 #include "BTrk/BbrGeom/HepPoint.h"

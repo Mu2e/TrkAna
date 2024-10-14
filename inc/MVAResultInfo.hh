@@ -1,6 +1,6 @@
 //
 // MVAResultInfo: array branch containing the output of a multi-variate analysis (MVA)
-// structs used to record MVAResult information into TrkAna tree
+// structs used to record MVAResult information into EventNtuple
 // Andy Edmonds (January 2024)
 //
 #ifndef MVAResultInfo_HH
