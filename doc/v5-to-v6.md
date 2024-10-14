@@ -2,7 +2,7 @@
 
 There was a major update when we moved from v5 to v6. Here are tables of changes for you to consult. Note that the same change may appear in multiple tables since it may be important in one area but defined in another. For example, the folder name is defined in fcl but is also important to know in the Tree / Branch / Leaf Changes.
 
-Instructions for developers to upgrade their development areas are [here](doc/v5-to-v6_developers.md)
+Instructions for developers to upgrade their development areas are [here](v5-to-v6_developers.md)
 
 ## Tree / Branch / Leaf Changes
 |   | v5 | v6 | Notes |
