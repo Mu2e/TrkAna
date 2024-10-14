@@ -29,25 +29,21 @@ physics :
       @table::TrkReco.SelectReflections
       UpstreamKalSeedCollection : "KKUeM"
       DownstreamKalSeedCollection : "KKDeM"
-      debugLevel : 1
     }
     ReflecteP : {
       @table::TrkReco.SelectReflections
       UpstreamKalSeedCollection : "KKUeP"
       DownstreamKalSeedCollection : "KKDeP"
-      debugLevel : 1
     }
     ReflectmuM : {
       @table::TrkReco.SelectReflections
       UpstreamKalSeedCollection : "KKUmuM"
       DownstreamKalSeedCollection : "KKDmuM"
-      debugLevel : 1
     }
     ReflectmuP : {
       @table::TrkReco.SelectReflections
       UpstreamKalSeedCollection : "KKUmuP"
       DownstreamKalSeedCollection : "KKDmuP"
-      debugLevel : 1
     }
   }
   eMTrig : [ ReflecteM ]
@@ -91,14 +87,23 @@ physics :
         }
       ]
     }
+    printModule : {
+      module_type : PrintModule
+      PrintEvent : false
+      PrintSubRun : true
+      CosmicLivetimePrinter : {
+        verbose : 1
+      }
+    } # printModule
   }
   eMEnd : [ "TAReM" ]
   ePEnd : [ "TAReP" ]
   muMEnd : [ "TARmuM" ]
   muPEnd : [ "TARmuP" ]
+  CLPrint : [ "printModule" ]
 }
 
-physics.trigger_paths : [ "eMTrig", "ePTrig", "muMTrig", "muPTrig" ]
-physics.end_paths : [ "eMEnd", "ePEnd", "muMEnd", "muPEnd" ]
+physics.trigger_paths : [ "eMTrig", "ePTrig", "muMTrig", "muPTrig"]
+physics.end_paths : [ "eMEnd", "ePEnd", "muMEnd", "muPEnd", "CLPrint" ]
 services.TimeTracker.printSummary: true
 services.TFileService.fileName: "nts.owner.TAReflect.version.sequence.root"
