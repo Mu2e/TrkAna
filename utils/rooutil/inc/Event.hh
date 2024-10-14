@@ -1,10 +1,10 @@
 #ifndef Event_hh_
 #define Event_hh_
 
-#include "TrkAna/inc/EventInfo.hh"
-#include "TrkAna/inc/EventInfoMC.hh"
+#include "EventNtuple/inc/EventInfo.hh"
+#include "EventNtuple/inc/EventInfoMC.hh"
 
-#include "TrkAna/utils/rooutil/inc/Track.hh"
+#include "EventNtuple/utils/rooutil/inc/Track.hh"
 
 #include "TTree.h"
 

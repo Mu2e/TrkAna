@@ -2,7 +2,7 @@
 #define TrackSegment_hh_
 
 #include <functional>
-#include "TrkAna/inc/TrkSegInfo.hh"
+#include "EventNtuple/inc/TrkSegInfo.hh"
 
 struct TrackSegment {
   TrackSegment(mu2e::TrkSegInfo* trkseg) : trkseg(trkseg) { }

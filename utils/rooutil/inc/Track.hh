@@ -2,10 +2,10 @@
 #define Track_hh_
 
 #include <functional>
-#include "TrkAna/inc/TrkInfo.hh"
-#include "TrkAna/inc/TrkSegInfo.hh"
+#include "EventNtuple/inc/TrkInfo.hh"
+#include "EventNtuple/inc/TrkSegInfo.hh"
 
-#include "TrkAna/utils/rooutil/inc/TrackSegment.hh"
+#include "EventNtuple/utils/rooutil/inc/TrackSegment.hh"
 
 struct Track {
   Track(mu2e::TrkInfo* trk, std::vector<mu2e::TrkSegInfo>* trksegs, bool debug = false) : trk(trk), trksegs(trksegs), debug(debug) {

@@ -23,7 +23,7 @@ The currently supported branches are:
 
 ### Common Cut Functions
 
-Here are the common cut functions defined in ```TrkAna/utils/rooutil/inc/common_cuts.hh``` with explanations:
+Here are the common cut functions defined in ```EventNtuple/utils/rooutil/inc/common_cuts.hh``` with explanations:
 
 | function | cuts on | result |
 |----|----|----|
