@@ -29,25 +29,21 @@ physics :
       @table::TrkReco.SelectReflections
       UpstreamKalSeedCollection : "KKUeM"
       DownstreamKalSeedCollection : "KKDeM"
-      debugLevel : 1
     }
     ReflecteP : {
       @table::TrkReco.SelectReflections
       UpstreamKalSeedCollection : "KKUeP"
       DownstreamKalSeedCollection : "KKDeP"
-      debugLevel : 1
     }
     ReflectmuM : {
       @table::TrkReco.SelectReflections
       UpstreamKalSeedCollection : "KKUmuM"
       DownstreamKalSeedCollection : "KKDmuM"
-      debugLevel : 1
     }
     ReflectmuP : {
       @table::TrkReco.SelectReflections
       UpstreamKalSeedCollection : "KKUmuP"
       DownstreamKalSeedCollection : "KKDmuP"
-      debugLevel : 1
     }
   }
   eMTrig : [ ReflecteM ]
