@@ -9,7 +9,7 @@ There are various classes that combine together branches at different dimenions
 
 | Class | Single Objects | Vectors | Vector-of-Vectors |
 |-----|-----|----|-----|
-| Event | ```evtinfo```, ```evtinfomc``` | ```trk``` | ```trkfit``` |
+| Event | ```evtinfo```, ```evtinfomc``` | ```trk``` | ```trksegs``` |
 | Track | ```trk``` | ```trksegs``` | none |
 | TrackSegment | ```trkseg``` | none | none |
 
