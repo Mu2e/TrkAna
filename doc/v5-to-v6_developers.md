@@ -13,7 +13,6 @@ cd ../
 rm -rf build/XXX/ # if you like
 mu2einit
 muse setup
-
 muse build -j4 --mu2eCompactPrint
 ```
 
