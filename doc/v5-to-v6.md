@@ -32,6 +32,12 @@ Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6
 | TrkAnaExtracted.fcl | from_mcs-extracted.fcl | for running on mcs "extracted position" datasets, now #includes from_mcs-mockdata.fcl as a base |
 | TrkAnaReco_ceSimReco.fcl | from_mcs-ceSimReco.fcl | for running on the output of ceSimReco.fcl |
 | TrkAnaRecoEnsemble-Data.fcl | from_mcs-mockdata_noMC.fcl | for running on mock data with no MC information |
+| TrkAnaDeM.fcl | only #includes updated |  |
+| TrkAnaDeMFromDigis.fcl | only #includes updated |  |
+| TrkAnaLineFromDigis.fcl | only #includes updated |  |
+| TrkAnaReflections.fcl | only #includes updated |  |
+| TrkAnaTrigger.fcl | only #includes updated |  |
+| TrkAnaTriggerFromDigis.fcl | only #includes updated |  |
 | TrkAnaRecoEnsemble-MC.fcl | deleted | use from_mcs-mockdata.fcl instead|
 | TrkAnaReco_mergedKalSeeds.fcl | deleted | all track types in one branch is now the default |
 | CrvExpert.fcl | deleted | |

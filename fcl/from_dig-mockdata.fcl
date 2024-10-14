@@ -2,7 +2,7 @@
 #include "Offline/fcl/standardProducers.fcl"
 #include "Offline/fcl/standardServices.fcl"
 #include "Production/JobConfig/reco/prolog.fcl"
-#include "TrkAna/fcl/prolog.fcl"
+#include "EventNtuple/fcl/prolog.fcl"
 
 process_name : EventNtuple
 

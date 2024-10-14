@@ -5,7 +5,7 @@
 
 #include "Offline/CommonMC/fcl/prolog_trigger.fcl"
 #include "Production/JobConfig/digitize/prolog.fcl"
-#include "TrkAna/fcl/prolog_trigger.fcl"
+#include "EventNtuple/fcl/prolog_trigger.fcl"
 #include "mu2e_trig_config/test/triggerTest.fcl"
 #
 #  Add MC truth matching for the highP_stopTarg triggers

@@ -1,6 +1,6 @@
 # Minimal job to reconstructed downstream electrons from digis and analyze the output with TrkAna
 # #include this script in a subscript which specifies the database (ie
-##include "TrkAna/fcl/TrkAnaDeMFromDigis.fcl"
+##include "EventNtuple/fcl/TrkAnaDeMFromDigis.fcl"
 #services.DbService.purpose: MDC2020_best
 #services.DbService.version: v1_3
 #services.DbService.verbose : 2
@@ -9,7 +9,7 @@
 #include "Offline/fcl/standardServices.fcl"
 #include "Production/JobConfig/reco/prolog.fcl"
 #include "Offline/Mu2eKinKal/fcl/prolog.fcl"
-#include "TrkAna/fcl/prolog.fcl"
+#include "EventNtuple/fcl/prolog.fcl"
 
 process_name: TADeMDigis
 source : { module_type : RootInput }
