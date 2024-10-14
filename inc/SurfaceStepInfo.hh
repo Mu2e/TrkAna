@@ -4,7 +4,7 @@
 #ifndef SurfaceStepInfo_HH
 #define SurfaceStepInfo_HH
 #include "Offline/DataProducts/inc/SurfaceId.hh"
-#include "TrkAna/inc/RootVectors.hh"
+#include "EventNtuple/inc/RootVectors.hh"
 
 namespace mu2e {
   class SurfaceStep;

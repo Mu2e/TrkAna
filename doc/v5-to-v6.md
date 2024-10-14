@@ -1,6 +1,8 @@
 # Major Changes from v5 to v6
 
-There was a major update when we moved from v5 to v6. Here are tables of changes for you to consult. Note that the same change may appear in multiple tables since it may be important in one area but defined in another. For example, the folder name is defined in fcl but is also important to know in the Tree / Branch / Leaf Changes
+There was a major update when we moved from v5 to v6. Here are tables of changes for you to consult. Note that the same change may appear in multiple tables since it may be important in one area but defined in another. For example, the folder name is defined in fcl but is also important to know in the Tree / Branch / Leaf Changes.
+
+Instructions for developers to upgrade their development areas are [here](v5-to-v6_developers.md)
 
 ## Tree / Branch / Leaf Changes
 |   | v5 | v6 | Notes |
@@ -32,6 +34,12 @@ Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6
 | TrkAnaExtracted.fcl | from_mcs-extracted.fcl | for running on mcs "extracted position" datasets, now #includes from_mcs-mockdata.fcl as a base |
 | TrkAnaReco_ceSimReco.fcl | from_mcs-ceSimReco.fcl | for running on the output of ceSimReco.fcl |
 | TrkAnaRecoEnsemble-Data.fcl | from_mcs-mockdata_noMC.fcl | for running on mock data with no MC information |
+| TrkAnaDeM.fcl | only #includes updated |  |
+| TrkAnaDeMFromDigis.fcl | only #includes updated |  |
+| TrkAnaLineFromDigis.fcl | only #includes updated |  |
+| TrkAnaReflections.fcl | only #includes updated |  |
+| TrkAnaTrigger.fcl | only #includes updated |  |
+| TrkAnaTriggerFromDigis.fcl | only #includes updated |  |
 | TrkAnaRecoEnsemble-MC.fcl | deleted | use from_mcs-mockdata.fcl instead|
 | TrkAnaReco_mergedKalSeeds.fcl | deleted | all track types in one branch is now the default |
 | CrvExpert.fcl | deleted | |
@@ -40,6 +48,7 @@ Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6
 | TrkAnaReco_addStopTgtVDs.fcl | deleted | |
 | TrkAnaReco_multipleBestCrv.fcl | deleted | |
 | TrkAnaReco_multipleBestCrv_differentThresholds.fcl | deleted | |
+| TrkAnaReco_MultipleTrkQual.fcl | deleted | |
 
 ## Fcl Parameter Changes 
 |  | v5 | v6 | Notes |

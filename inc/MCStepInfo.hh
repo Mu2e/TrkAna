@@ -4,7 +4,7 @@
 #ifndef MCStepInfo_HH
 #define MCStepInfo_HH
 #include <vector>
-#include "TrkAna/inc/RootVectors.hh"
+#include "EventNtuple/inc/RootVectors.hh"
 
 namespace mu2e {
   struct MCStepInfo {

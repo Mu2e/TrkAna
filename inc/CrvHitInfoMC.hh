@@ -5,7 +5,7 @@
 
 namespace CLHEP {class Hep3Vector; }
 #include <vector>
-#include "TrkAna/inc/RootVectors.hh"
+#include "EventNtuple/inc/RootVectors.hh"
 
 namespace mu2e
 {

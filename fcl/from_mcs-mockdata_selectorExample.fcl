@@ -1,4 +1,4 @@
-#include "TrkAna/fcl/from_mcs-mockdata.fcl"
+#include "EventNtuple/fcl/from_mcs-mockdata.fcl"
 
 # a simple selector is used here, but any selector implemented as a tool can be used
 physics.producers.MergeKKAll.Selector : {

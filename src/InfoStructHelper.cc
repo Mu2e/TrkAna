@@ -2,7 +2,7 @@
 // Namespace for collecting tools used in TrkDiag tree filling
 // Original author: A. Edmonds (November 2018)
 //
-#include "TrkAna/inc/InfoStructHelper.hh"
+#include "EventNtuple/inc/InfoStructHelper.hh"
 #include "Offline/RecoDataProducts/inc/TrkStrawHitSeed.hh"
 #include "KinKal/Trajectory/CentralHelix.hh"
 #include "Offline/Mu2eKinKal/inc/WireHitState.hh"

@@ -3,7 +3,7 @@
 
 // CrvPlaneInfoMC: information about the point where the MC trajectory crosses the xz plane of CRV-T
 
-#include "TrkAna/inc/RootVectors.hh"
+#include "EventNtuple/inc/RootVectors.hh"
 namespace CLHEP {class Hep3Vector; }
 #include <vector>
 

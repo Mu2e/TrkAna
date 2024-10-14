@@ -20,11 +20,13 @@ Both of these are currently undergoing rapid development. Feel free to use these
 Validation scripts and instructions are [here](validation/README.md)
 
 ## Previous Versions
-The version history of EventNtuple is [here](https://mu2ewiki.fnal.gov/wiki/TrkAna#Version_History_.2F_TrkAna_Musings).
-* Special Note: there were major changes going from v5 to v6 and so we have provided a [list of v5 --> v6 changes](doc/v5-to-v6.md) for those with analysis scripts that ran on v5 ntuples
+The version history of EventNtuple is [here](https://mu2ewiki.fnal.gov/wiki/EventNtuple).
+
+### Upgrading from v5 to v6
+* For analyzers: a list of branch/leaf/name changes is [here](doc/v5-to-v6.md)
+* For developers: instructions to update your development area are [here](doc/v5-to-v6_developers.md)
 
 ## Other Useful Links
 
-* [Mu2eWiki page](https://mu2ewiki.fnal.gov/wiki/TrkAna)
+* [Mu2eWiki page](https://mu2ewiki.fnal.gov/wiki/EventNtuple)
 * [tutorial](tutorial/README.md)
-* [instructions for developers](https://mu2ewiki.fnal.gov/wiki/TrkAna#For_Developers)

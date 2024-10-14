@@ -4,7 +4,7 @@
 #include "TFile.h"
 #include "TTree.h"
 
-#include "TrkAna/utils/rooutil/inc/Event.hh"
+#include "EventNtuple/utils/rooutil/inc/Event.hh"
 
 class RooUtil {
 public:

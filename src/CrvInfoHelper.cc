@@ -1,4 +1,4 @@
-#include "TrkAna/inc/CrvInfoHelper.hh"
+#include "EventNtuple/inc/CrvInfoHelper.hh"
 
 #include "Offline/CosmicRayShieldGeom/inc/CosmicRayShield.hh"
 #include "Offline/CRVConditions/inc/CRVDigitizationPeriod.hh"

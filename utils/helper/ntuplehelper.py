@@ -90,7 +90,7 @@ class nthelper:
                 if (".hh" not in struct_file):
                     struct_file += ".hh"
 #                print(struct_file)
-                with open(os.environ.get("TRKANA_INC")+"/TrkAna/inc/"+struct_file, 'r') as f:
+                with open(os.environ.get("EVENTNTUPLE_INC")+"/EventNtuple/inc/"+struct_file, 'r') as f:
                     lines = f.readlines()
                     for row in lines:
                         if (row.find("// "+struct) != -1):

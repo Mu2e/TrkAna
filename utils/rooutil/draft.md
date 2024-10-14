@@ -9,7 +9,7 @@ There are various classes that combine together branches at different dimenions
 
 | Class | Single Objects | Vectors | Vector-of-Vectors |
 |-----|-----|----|-----|
-| Event | ```evtinfo```, ```evtinfomc``` | ```trk``` | ```trkfit``` |
+| Event | ```evtinfo```, ```evtinfomc``` | ```trk``` | ```trksegs``` |
 | Track | ```trk``` | ```trksegs``` | none |
 | TrackSegment | ```trkseg``` | none | none |
 
@@ -23,7 +23,7 @@ The currently supported branches are:
 
 ### Common Cut Functions
 
-Here are the common cut functions defined in ```TrkAna/utils/rooutil/inc/common_cuts.hh``` with explanations:
+Here are the common cut functions defined in ```EventNtuple/utils/rooutil/inc/common_cuts.hh``` with explanations:
 
 | function | cuts on | result |
 |----|----|----|

@@ -4,7 +4,7 @@
 //
 #ifndef TrkCaloHitInfo_HH
 #define TrkCaloHitInfo_HH
-#include "TrkAna/inc/RootVectors.hh"
+#include "EventNtuple/inc/RootVectors.hh"
 namespace mu2e
 {
   struct TrkCaloHitInfo {
