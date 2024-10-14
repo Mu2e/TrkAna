@@ -3,7 +3,7 @@
 
 // CrvHitInfoReco: information about a cluster of CRV coincidence triplets
 
-#include "TrkAna/inc/RootVectors.hh"
+#include "EventNtuple/inc/RootVectors.hh"
 #include "Offline/DataProducts/inc/CRVId.hh"
 namespace CLHEP {class Hep3Vector; }
 #include <vector>

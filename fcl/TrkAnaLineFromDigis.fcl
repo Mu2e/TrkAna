@@ -4,7 +4,7 @@
 #include "Offline/fcl/standardServices.fcl"
 #include "Production/JobConfig/reco/prolog.fcl"
 #include "Offline/Mu2eKinKal/fcl/prolog.fcl"
-#include "TrkAna/fcl/prolog.fcl"
+#include "EventNtuple/fcl/prolog.fcl"
 
 process_name: TALineDigis
 source : { module_type : RootInput }
@@ -35,7 +35,7 @@ physics :
   RecoPath : [ @sequence::Reconstruction.LineRecoMCPath ]
   analyzers : {
     TrkAnaLine : {
-      @table::TrkAnaTreeMaker
+      @table::EventNtupleMaker
       FitType : KinematicLine
       diagLevel : 2
       FillMCInfo : true

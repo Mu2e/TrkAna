@@ -35,9 +35,9 @@
   <class name="std::vector<mu2e::TrkCaloHitInfo>" />
   <class name="mu2e::CaloClusterInfoMC" />
   <class name="std::vector<mu2e::CaloClusterInfoMC>" />
-  <class name="mu2e::TrkFitInfo" />
-  <class name="std::vector<mu2e::TrkFitInfo>" />
-  <class name="std::vector<std::vector<mu2e::TrkFitInfo>>" />
+  <class name="mu2e::TrkSegInfo" />
+  <class name="std::vector<mu2e::TrkSegInfo>" />
+  <class name="std::vector<std::vector<mu2e::TrkSegInfo>>" />
   <class name="mu2e::TrkInfoMC" />
   <class name="std::vector<mu2e::TrkInfoMC>" />
   <class name="mu2e::EventWeightInfo" />

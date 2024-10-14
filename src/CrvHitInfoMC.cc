@@ -1,4 +1,4 @@
-#include "TrkAna/inc/CrvHitInfoMC.hh"
+#include "EventNtuple/inc/CrvHitInfoMC.hh"
 #include "CLHEP/Vector/ThreeVector.h"
 namespace mu2e {
   CrvHitInfoMC::CrvHitInfoMC(bool valid, int pdgId,

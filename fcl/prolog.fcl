@@ -2,6 +2,9 @@
 #include "Offline/Compression/fcl/prolog.fcl"
 #include "Offline/CommonMC/fcl/prolog.fcl"
 #include "Offline/fcl/TrkCaloDt.fcl"
+
+#include "EventNtuple/fcl/prolog_mc_reweighters.fcl"
+
 BEGIN_PROLOG
 # Track quality module
 TrkQual : {
@@ -24,6 +27,9 @@ TrkQualDmuP          : @local::TrkQual
 TrkQualDmuP.KalSeedPtrCollection : "MergeKKDmuP"
 TrkQualUmuP          : @local::TrkQual
 TrkQualUmuP.KalSeedPtrCollection : "MergeKKUmuP"
+TrkQualAll          : @local::TrkQual
+TrkQualAll.KalSeedPtrCollection : "MergeKKAll"
+
 
 TrkQualProducers : {
   TrkQualDeM : @local::TrkQualDeM
@@ -34,6 +40,7 @@ TrkQualProducers : {
   TrkQualDmuP : @local::TrkQualDmuP
   TrkQualUmuM : @local::TrkQualUmuM
   TrkQualUmuP : @local::TrkQualUmuP
+  TrkQualAll : @local::TrkQualAll
 }
 TrkQualProducersPath : [ TrkQualDeM, TrkQualUeM, TrkQualDmuM, TrkQualDeP, TrkQualUeP, TrkQualDmuP, TrkQualUmuM, TrkQualUmuP ]
 
@@ -56,34 +63,6 @@ TrkPIDProducers : {
 }
 TrkPIDProducersPath : [ TrkPIDDeM, TrkPIDDeP ]
 
-# DIO weighting for flat spectrum electrons
-DIOWeight: {
-  module_type: DecayInOrbitWeight
-  weightingScheme : pol58
-  inputModule : compressDigiMCs
-  verbosityLevel: 1
-}
-# converts ProtonBunchIntensity object to EventWeight object
-PBIWeight : {
-  module_type : PBIWeight
-  PBITag : "PBISim"
-  meanPBITag : "PBISim:MeanIntensity"
-}
-#Example configuration of RMCWeightModule
-RMCWeight : {
-  module_type : RMCWeight
-  kinematic_endpoint : 100
-  internalConversion : 1
-  verbosityLevel : 0
-}
-dioLLWeight : {
-  module_type : BinnedSpectrumWeight
-  genParticleTag : "compressDigiMCs"
-  genParticlePdgId : 11
-  genParticleGenId : dioTail
-  spectrumFileName : "Offline/ConditionsService/data/czarnecki_szafron_Al_2016.tbl"
-  BinCenter : false
-}
 genCountLogger: { module_type: GenEventCountReader }
 
 AllOpt : {
@@ -115,6 +94,8 @@ MergeKKUmuP          : @local::MergeKK
 MergeKKUmuP.KalSeedCollections : [ "KKUmuP" ]
 MergeKKLine          : @local::MergeKK
 MergeKKLine.KalSeedCollections : [ "KKLine" ]
+MergeKKAll          : @local::MergeKK
+MergeKKAll.KalSeedCollections : ["KKDeM", "KKDeP", "KKUeM", "KKUeP", "KKDmuM", "KKDmuP", "KKUmuM", "KKUmuP" ]
 
 MergeKKProducers : {
   MergeKKDeM : @local::MergeKKDeM
@@ -126,9 +107,11 @@ MergeKKProducers : {
   MergeKKUmuM : @local::MergeKKUmuM
   MergeKKUmuP : @local::MergeKKUmuP
   MergeKKLine : @local::MergeKKLine
+  MergeKKAll : @local::MergeKKAll
 }
-MergeKKProducersPath : [ MergeKKDeM, MergeKKUeM, MergeKKDmuM, MergeKKDeP, MergeKKUeP, MergeKKDmuP, MergeKKUmuM, MergeKKUmuP ]
+MergeKKProducersPath : [ MergeKKAll ]
 MergeKKNoFieldPath : [ MergeKKLine ]
+MergeKKSeparatePath : [ MergeKKDeM, MergeKKUeM, MergeKKDmuM, MergeKKDeP, MergeKKUeP, MergeKKDmuP, MergeKKUmuM, MergeKKUmuP ]
 
 
 DeM : { input : "MergeKKDeM"
@@ -167,12 +150,16 @@ Ext : { input : "MergeKKLine"
   branch : "kl"
   options : { fillMC : true   genealogyDepth : -1 matchDepth : -1 }
 }
+All : { input : "MergeKKAll"
+  branch : "trk"
+  options : { fillHits : true fillMC : true   genealogyDepth : -1 matchDepth : -1 }
+  trkQualTag : "TrkQualAll"
+}
 
 
-TrkAnaTreeMaker : {
-  module_type : TrkAnaTreeMaker
-  branches : [ @local::DeM, @local::DeP, @local::UeM, @local::UeP,
-    @local::DmuM, @local::DmuP, @local::UmuM, @local::UmuP ]
+EventNtupleMaker : {
+  module_type : EventNtupleMaker
+  branches : [ @local::All ]
   RecoCountTag : "SelectRecoMC"
   PBITag : "PBISim"
   PBTTag : "EWMProducer"
@@ -188,11 +175,10 @@ TrkAnaTreeMaker : {
   CrvCoincidenceClusterMCAssnsTag : "CrvCoincidenceClusterMCAssns"
   CrvPlaneY : 2653
   FillMCInfo : true
-  FillTrkPIDInfo : true
-  FillHitInfo : false
-  FillTriggerInfo : true
+  FillTrkPIDInfo : false
+  FillHitInfo : true
+  FillTriggerInfo : false
   TriggerProcessName : "Mix"
-  ProcessEmptyEvents : false
   FillCRVCoincs : true
   FillCRVPulses : false
   FillCRVDigis : false
@@ -209,34 +195,32 @@ TrkAnaTreeMaker : {
 #  ExtraMCStepCollectionTags : [ "compressRecoMCs:protonabsorber", "compressRecoMCs:stoppingtarget" ]
   ExtraMCStepCollectionTags : []
   SurfaceStepCollectionTag : "MakeSS"
+  FitType : LoopHelix
 }
 
-TrkAnaReco : {
-
+EventNtuple : {
   producers: {
     PBIWeight : @local::PBIWeight
     @table::TrkQualProducers
     @table::TrkPIDProducers
     @table::MergeKKProducers
-# patch for SurfaceSteps in MDC2020
+    # patch for SurfaceSteps in MDC2020
     MakeSS : @local::CommonMC.MakeSSReco
   }
 
   analyzers : {
-    TrkAna : { @table::TrkAnaTreeMaker  }
-
-    TrkAnaExt : { @table::TrkAnaTreeMaker
-      branches : [ @local::Ext ]
-    }
-
+    EventNtuple : { @table::EventNtupleMaker  }
     genCountLogger : @local::genCountLogger
   }
 
   #  TrigSequence : [ PBIWeight, @sequence::TrkQualProducersPath, @sequence::TrkPIDProducersPath]
-  TrigSequence : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualDeM ]
-  TrigSequenceNoMC : [ @sequence::MergeKKProducersPath, TrkQualDeM ]
-  EndSequenceNoMC : [ TrkAna ]
-  EndSequence : [ TrkAna, genCountLogger ]
+  Path : [ @sequence::MergeKKProducersPath, PBIWeight, MakeSS, TrkQualAll ]
+  PathNoMakeSS : [ @sequence::MergeKKProducersPath, PBIWeight, TrkQualAll ]
+  PathExt : [ @sequence::MergeKKNoFieldPath ]
+  PathSeparate : [ @sequence::MergeKKSeparatePath, PBIWeight, MakeSS, @sequence::TrkQualProducersPath]
+  PathNoMC : [ @sequence::MergeKKProducersPath, TrkQualAll ]
+  EndPath : [ EventNtuple, genCountLogger ]
+  EndPathNoMC : [ EventNtuple ]
 
 }
 

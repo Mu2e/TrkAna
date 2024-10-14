@@ -1,1 +1,9 @@
 *~
+*.art
+*.root
+*.log
+*.so
+*.d
+*.pcm
+*__pycache__
+backing

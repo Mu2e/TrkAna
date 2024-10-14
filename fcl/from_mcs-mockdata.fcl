@@ -1,0 +1,24 @@
+#include "Offline/fcl/minimalMessageService.fcl"
+#include "Offline/fcl/standardProducers.fcl"
+#include "Offline/fcl/standardServices.fcl"
+#include "EventNtuple/fcl/prolog.fcl"
+
+process_name : EventNtuple
+
+source : { module_type : RootInput }
+
+services : @local::Services.Reco
+
+physics :
+{
+  producers : { @table::EventNtuple.producers }
+  analyzers : { @table::EventNtuple.analyzers }
+}
+
+physics.EventNtuplePath : [ @sequence::EventNtuple.Path ]
+physics.EventNtupleEndPath : [ @sequence::EventNtuple.EndPathNoMC ]
+
+physics.trigger_paths : [ EventNtuplePath ]
+physics.end_paths : [ EventNtupleEndPath ]
+
+services.TFileService.fileName: "nts.owner.description.version.sequencer.root"

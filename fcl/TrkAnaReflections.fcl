@@ -2,10 +2,10 @@
 #include "Offline/fcl/minimalMessageService.fcl"
 #include "Offline/fcl/standardServices.fcl"
 #include "Offline/TrkReco/fcl/prolog.fcl"
-#include "TrkAna/fcl/prolog.fcl"
+#include "EventNtuple/fcl/prolog.fcl"
 BEGIN_PROLOG
 TAR : {
-  @table::TrkAnaTreeMaker
+  @table::EventNtupleMaker
   FitType : LoopHelix
   diagLevel : 2
   FillMCInfo : true

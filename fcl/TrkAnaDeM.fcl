@@ -1,7 +1,7 @@
 # Minimal job to run TrkAna on the 'best' downstream electrons. Runs on mcs files
 #include "Offline/fcl/minimalMessageService.fcl"
 #include "Offline/fcl/standardServices.fcl"
-#include "TrkAna/fcl/prolog.fcl"
+#include "EventNtuple/fcl/prolog.fcl"
 
 process_name: TADeM
 source : { module_type : RootInput }
@@ -30,7 +30,7 @@ physics :
   TriggerPath : [ MergeKKDeM, MakeSS ]
   analyzers : {
     TrkAnaDeM : {
-      @table::TrkAnaTreeMaker
+      @table::EventNtupleMaker
       FitType : LoopHelix
       diagLevel : 2
       FillMCInfo : true

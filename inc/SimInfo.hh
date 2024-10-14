@@ -6,7 +6,7 @@
 //
 #ifndef SimInfo_HH
 #define SimInfo_HH
-#include "TrkAna/inc/RootVectors.hh"
+#include "EventNtuple/inc/RootVectors.hh"
 #include "Offline/MCDataProducts/inc/MCRelationship.hh"
 namespace mu2e
 {

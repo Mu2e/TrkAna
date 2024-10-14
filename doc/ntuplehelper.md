@@ -1,10 +1,10 @@
 # How to get help -- ```ntuplehelper```
 
-On this page, you will learn how to use the [```ntuplehelper```](../../utils/ntuplehelper.py) utility to get more information about what the different branches and leaves are. You will need to be in a TrkAna environment e.g.
+On this page, you will learn how to use the [```ntuplehelper```](../../utils/ntuplehelper.py) utility to get more information about what the different branches and leaves are. You will need to be in a EventNtuple environment e.g.
 
 ```
 mu2einit
-muse setup TrkAna
+muse setup EventNtuple
 ```
 
 You can use this utility:
@@ -12,20 +12,20 @@ You can use this utility:
 * on the command line:
 
 ```
-ntuplehelper --branches dem.nhits demmcsim.*
+ntuplehelper dem.nhits demmcsim.*
 ```
 
 * on the ROOT command lineL
 ```
-root[0] .! ntuplehelper --branches dem.nhits demmcsim.*
+root[0] .! ntuplehelper dem.nhits demmcsim.*
 ```
 
 * from within python:
 
 ```
 >>> import ntuplehelper
->>> nthelp = ntuplehelper.nthelp()
->>> nthelp.whatis(['dem.hits', 'demmcsim.*'])
+>>> nthelper = ntuplehelper.nthelper()
+>>> nthelper.whatis(['dem.hits', 'demmcsim.*'])
 ```
 
 The above produces this output:

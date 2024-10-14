@@ -1,15 +1,14 @@
 #
 #  Special configuration base for running TrkAna on trigger fits
 #
-#include "TrkAna/fcl/prolog.fcl"
+#include "EventNtuple/fcl/prolog.fcl"
 BEGIN_PROLOG
 TrkAnaTrigger : {
   TrkAnaTT : {
-    @table::TrkAnaTreeMaker
+    @table::EventNtupleMaker
     diagLevel : 2
     FillCRVCoincs : false
     FillCaloMC : false
-    RecoCountTag : ""
     FillTriggerInfo : true
     FillTrkPIDInfo : false
     FillHitInfo : true

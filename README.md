@@ -1,18 +1,32 @@
-# TrkAna
+# EventNtuple
 
 ## Introduction
 
-TrkAna is an event-based ntuple for Mu2e analyses. Each entry in the ntuple corresponds to a single Mu2e event. 
+The EventNtuple is a simplified data format that can be used for Mu2e analyses.
 
+## Structure
+The EventNtuple structure is complex.
 
-## Useful Links
+The help understand what all the branches and leaves mean, we have an [```ntuplehelper```](doc/ntuplehelper.md) tool
 
-* [Mu2eWiki page](https://mu2ewiki.fnal.gov/wiki/TrkAna)
-* [utility to get explanations of branch and leaf names](tutorial/pages/helper.md)
-* [version history of TrkAna](https://mu2ewiki.fnal.gov/wiki/TrkAna#Version_History_.2F_TrkAna_Musings)
-* [tutorial](tutorial/README.md) (some but not all updated for v5)
-* [instructions for developers](https://mu2ewiki.fnal.gov/wiki/TrkAna#For_Developers)
-* [instructions for validation](validation/README.md)
+## Utilities
+To help with analyzing the EventNtuple given its complex structure, we have two sets of utilities:
+* [RooUtil](utils/rooutil/README.md) for ROOT-based analyses, and
+* [PyUtil](utils/pyutil/README.md) for python-based analyses.
 
-## Becoming obsolete
-* [spreadsheet explaining branch and leaf names](https://docs.google.com/spreadsheets/d/1IMZVgj74vxGTWqAFRtFEEcYChujJyc38VcopZh52jhc/edit)
+Both of these are currently undergoing rapid development. Feel free to use these and let us know your thoughts.
+
+## Validation
+Validation scripts and instructions are [here](validation/README.md)
+
+## Previous Versions
+The version history of EventNtuple is [here](https://mu2ewiki.fnal.gov/wiki/EventNtuple).
+
+### Upgrading from v5 to v6
+* For analyzers: a list of branch/leaf/name changes is [here](doc/v5-to-v6.md)
+* For developers: instructions to update your development area are [here](doc/v5-to-v6_developers.md)
+
+## Other Useful Links
+
+* [Mu2eWiki page](https://mu2ewiki.fnal.gov/wiki/EventNtuple)
+* [tutorial](tutorial/README.md)

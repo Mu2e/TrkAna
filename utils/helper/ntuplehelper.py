@@ -1,6 +1,6 @@
 import os
 
-class nthelp:
+class nthelper:
 
     track_types_dict = { 'kl' : "kinematic line fit (i.e. straight-line fit)",
                          'dem' : "downstream e-minus fit",
@@ -17,26 +17,30 @@ class nthelp:
     # A dictionary of branch name to header file containing the struct
     branch_struct_dict = { 'evtinfo' : "EventInfo",
                            'evtinfomc' : "EventInfoMC",
-                           'hcnt' : "HitCount",
+                           'hitcount' : "HitCount",
                            'tcnt' : "TrkCount", # TODO: leaves can't be retrieved because they are runtime made
                            'trk' : "TrkInfo",
-                           'trkfit' : "TrkFitInfo",
+                           'trksegs' : "TrkSegInfo",
                            'trkmc' : "TrkInfoMC",
-                           'trklh' : "LoopHelixInfo",
-                           'trkch' : "CentralHelixInfo",
-                           'trkkl' : "KinematicLineInfo",
+                           'trksegpars_lh' : "LoopHelixInfo",
+                           'trksegpars_ch' : "CentralHelixInfo",
+                           'trksegpars_kl' : "KinematicLineInfo",
                            'trkmcsim' : "SimInfo",
-                           'trktch' : "TrkCaloHitInfo",
-                           'trktsh' : "TrkStrawHitInfo",
-                           'trktshmc' : "TrkStrawHitInfoMC",
-                           'trktsm' : "TrkStrawMatInfo",
+                           'trkcalohit' : "TrkCaloHitInfo",
+                           'trkcalohitmc' : "CaloClusterInfoMC",
+                           'trkhits' : "TrkStrawHitInfo",
+                           'trkhitsmc' : "TrkStrawHitInfoMC",
+                           'trkmats' : "TrkStrawMatInfo",
                            'trkmcsci' : "MCStepInfo",
                            'trkmcssi' : "MCStepSummaryInfo",
                            "crvsummary" : "CrvSummaryReco",
                            "crvsummarymc" : "CrvSummaryMC",
                            "crvcoincs" : "CrvHitInfoReco",
                            "crvcoincsmc" : "CrvHitInfoMC",
-                           "crvcoincsmcplane" : "CrvPlaneInfoMC"
+                           "crvcoincsmcplane" : "CrvPlaneInfoMC",
+                           "trkqual" : "MVAResultInfo",
+                           "helices" : "HelixInfo",
+                           "trksegsmc" : "SurfaceStepInfo"
                           }
 
     def check_track_type(self, branch):
@@ -86,7 +90,7 @@ class nthelp:
                 if (".hh" not in struct_file):
                     struct_file += ".hh"
 #                print(struct_file)
-                with open(os.environ.get("TRKANA_INC")+"/TrkAna/inc/"+struct_file, 'r') as f:
+                with open(os.environ.get("EVENTNTUPLE_INC")+"/EventNtuple/inc/"+struct_file, 'r') as f:
                     lines = f.readlines()
                     for row in lines:
                         if (row.find("// "+struct) != -1):

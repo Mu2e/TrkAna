@@ -2,7 +2,7 @@
 #  Run TrkAna on the output of the trigger, including MC truth matching
 #
 #include "Offline/fcl/standardServices.fcl"
-#include "TrkAna/fcl/prolog_trigger.fcl"
+#include "EventNtuple/fcl/prolog_trigger.fcl"
 process_name : TrkAnaTriggerMC
 services : @local::Services.Reco
 source : {

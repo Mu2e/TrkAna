@@ -2,8 +2,8 @@
 // Class for help filling Info structs
 // Original author: A. Edmonds (November 2018)
 //
-#ifndef TrkAna_InfoStructHelper_hh
-#define TrkAna_InfoStructHelper_hh
+#ifndef EventNtuple_InfoStructHelper_hh
+#define EventNtuple_InfoStructHelper_hh
 #include "Offline/RecoDataProducts/inc/StrawHitIndex.hh"
 #include "Offline/RecoDataProducts/inc/KalSeed.hh"
 #include "Offline/RecoDataProducts/inc/StrawHitFlag.hh"
@@ -16,19 +16,19 @@
 #include "Offline/GeometryService/inc/GeomHandle.hh"
 #include "Offline/CalorimeterGeom/inc/DiskCalorimeter.hh"
 
-#include "TrkAna/inc/HitCount.hh"
-#include "TrkAna/inc/TrkInfo.hh"
-#include "TrkAna/inc/TrkFitInfo.hh"
-#include "TrkAna/inc/LoopHelixInfo.hh"
-#include "TrkAna/inc/CentralHelixInfo.hh"
-#include "TrkAna/inc/KinematicLineInfo.hh"
-#include "TrkAna/inc/TrkStrawHitInfo.hh"
-#include "TrkAna/inc/TrkStrawMatInfo.hh"
-#include "TrkAna/inc/TrkCaloHitInfo.hh"
-#include "TrkAna/inc/TrkPIDInfo.hh"
-#include "TrkAna/inc/HelixInfo.hh"
-#include "TrkAna/inc/MVAResultInfo.hh"
-#include "TrkAna/inc/CrvHitInfoReco.hh"
+#include "EventNtuple/inc/HitCount.hh"
+#include "EventNtuple/inc/TrkInfo.hh"
+#include "EventNtuple/inc/TrkSegInfo.hh"
+#include "EventNtuple/inc/LoopHelixInfo.hh"
+#include "EventNtuple/inc/CentralHelixInfo.hh"
+#include "EventNtuple/inc/KinematicLineInfo.hh"
+#include "EventNtuple/inc/TrkStrawHitInfo.hh"
+#include "EventNtuple/inc/TrkStrawMatInfo.hh"
+#include "EventNtuple/inc/TrkCaloHitInfo.hh"
+#include "EventNtuple/inc/TrkPIDInfo.hh"
+#include "EventNtuple/inc/HelixInfo.hh"
+#include "EventNtuple/inc/MVAResultInfo.hh"
+#include "EventNtuple/inc/CrvHitInfoReco.hh"
 #include "art/Framework/Principal/Handle.h"
 #include <vector>
 #include <functional>
@@ -52,7 +52,7 @@ namespace mu2e {
     void fillHitCount(RecoCount const& nrec, HitCount& hitcount);
 
     void fillTrkInfo(const KalSeed& kseed,std::vector<TrkInfo>& trkinfo);
-    void fillTrkFitInfo(const KalSeed& kseed,std::vector<std::vector<TrkFitInfo>>& trkfitinfos);
+    void fillTrkSegInfo(const KalSeed& kseed,std::vector<std::vector<TrkSegInfo>>& trkseginfos);
     void fillTrkInfoHits(const KalSeed& kseed,TrkInfo& trkinfo);
     void fillTrkInfoStraws(const KalSeed& kseed,TrkInfo& trkinfo);
     void fillLoopHelixInfo(const KalSeed& kseed, std::vector<std::vector<LoopHelixInfo>>& lhis);
@@ -63,7 +63,7 @@ namespace mu2e {
     void fillMatInfo(const KalSeed& kseed, std::vector<std::vector<TrkStrawMatInfo>>& tminfos );
     void fillCaloHitInfo(const KalSeed& kseed, std::vector<TrkCaloHitInfo>& tchinfo );
     void fillTrkPIDInfo(const TrkCaloHitPID& tchp, const KalSeed& kseed, TrkPIDInfo& trkpidInfo);
-    void fillHelixInfo(art::Ptr<HelixSeed> const& hptr, HelixInfo& hinfo);
+    void fillHelixInfo(art::Ptr<HelixSeed> const& hptr, std::vector<HelixInfo>& all_hinfos);
   };
 }
 

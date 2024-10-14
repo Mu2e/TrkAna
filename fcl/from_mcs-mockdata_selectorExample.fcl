@@ -1,0 +1,13 @@
+#include "EventNtuple/fcl/from_mcs-mockdata.fcl"
+
+# a simple selector is used here, but any selector implemented as a tool can be used
+physics.producers.MergeKKAll.Selector : {
+  tool_type : SimpleKalSeedSelector
+  MinMomentum : 75.0 # MeV/c
+  MaxMomentum : 300.0 #MeV/c
+  MinFitConsistency : 1e-10
+  MinDeltaNHitFraction : 0.05 # Consider a 5% difference in active hit count to be 'significant', and call the track more hits 'better'.  Otherwise, use fit quality to determine 'better'
+  MinActiveHits : 15 # Require a reasonable # of active hits
+}
+# optionally select only the 'best' single candidate per event, where 'best' is defined by the selector, this result in only one track per event
+SelectBest : true

@@ -1,20 +1,20 @@
 #!/bin/python3
 
 import argparse
-from ntuplehelper import nthelp
+from ntuplehelper import nthelper
 
 # A main function so that this can be run on the command line
 def main():
     parser = argparse.ArgumentParser(
         prog='ntuplehelper',
-        description='A python utility class to get information about branches and leaves',
+        description='A python utility class to get information about branches and leaves in the Mu2e EventNtuple',
         epilog='For help, post to the #trkana Slack channel')
 
-    parser.add_argument('--branches', required=True, nargs='*', help="Use format \"branch.leaf\". Multiple items are allowed. Using a \"*\" for the leaf will print description of all leaves for the branch")
+    parser.add_argument('branches', nargs='*', help="Use format \"branch.leaf\". Multiple items are allowed. Using a \"*\" for the leaf will print description of all leaves for the branch")
 
     args = parser.parse_args()
 
-    nth = nthelp()
+    nth = nthelper()
     nth.whatis(args.branches)
 
 

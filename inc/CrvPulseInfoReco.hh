@@ -1,7 +1,7 @@
 #ifndef CrvPulseInfoReco_hh
 #define CrvPulseInfoReco_hh
 
-#include "TrkAna/inc/RootVectors.hh"
+#include "EventNtuple/inc/RootVectors.hh"
 namespace CLHEP {class Hep3Vector; }
 #include <vector>
 

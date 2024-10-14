@@ -1,4 +1,4 @@
-#include "TrkAna/inc/CrvPlaneInfoMC.hh"
+#include "EventNtuple/inc/CrvPlaneInfoMC.hh"
 #include "CLHEP/Vector/ThreeVector.h"
 namespace mu2e {
   CrvPlaneInfoMC::CrvPlaneInfoMC(int pdgId, int primaryPdgId, float primaryE, CLHEP::Hep3Vector primaryPos,
