@@ -40,6 +40,7 @@ Many fcl files were renamed, updated, or deleted. New fcl files introduced in v6
 | TrkAnaReco_addStopTgtVDs.fcl | deleted | |
 | TrkAnaReco_multipleBestCrv.fcl | deleted | |
 | TrkAnaReco_multipleBestCrv_differentThresholds.fcl | deleted | |
+| TrkAnaReco_MultipleTrkQual.fcl | deleted | |
 
 ## Fcl Parameter Changes 
 |  | v5 | v6 | Notes |
