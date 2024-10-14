@@ -7,7 +7,7 @@ From your working directory before doing ```muse setup```:
 ```
 mv TrkAna/ EventNtuple/
 cd EventNtuple/
-git remote set-url origin git@github.com/YourUsername/EventNtuple
+git remote set-url origin git@github.com:YourUsername/EventNtuple
 git remote set-url mu2e https://github.com/Mu2e/EventNtuple
 cd ../
 rm -rf build/XXX/ # if you like
